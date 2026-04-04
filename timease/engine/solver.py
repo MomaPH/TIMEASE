@@ -333,6 +333,7 @@ class TimetableSolver:
         sessions_by_teacher: dict[str, list[int]] = defaultdict(list)
         sessions_by_subject: dict[str, list[int]] = defaultdict(list)
         conflicts: list[dict] = []
+        solver_warnings: list[str] = []
 
         for school_class in data.classes:
             for entry in curriculum_by_level.get(school_class.level, []):
@@ -375,6 +376,32 @@ class TimetableSolver:
                             if any(rt in specialized_room_types for rt in room.types):
                                 continue
                         eligible_room_idxs.append(r_idx)
+
+                    # When a required room type exists but no room of that type
+                    # has enough capacity, record an explicit warning so the admin
+                    # knows exactly why these sessions cannot be placed in the
+                    # specialized room (e.g. why SVT goes to Salle A instead of
+                    # the Laboratoire — in this case it won't be placed at all).
+                    if not eligible_room_idxs and subject.required_room_type:
+                        rooms_of_type = [
+                            r for r in data.rooms
+                            if subject.required_room_type in r.types
+                        ]
+                        if rooms_of_type:
+                            max_cap = max(r.capacity for r in rooms_of_type)
+                            if max_cap < school_class.student_count:
+                                warn_key = (school_class.name, entry.subject)
+                                warn_msg = (
+                                    f"'{entry.subject}' pour '{school_class.name}' "
+                                    f"({school_class.student_count} élèves) : "
+                                    f"toutes les salles de type "
+                                    f"'{subject.required_room_type}' ont une capacité "
+                                    f"insuffisante (maximum {max_cap} places). "
+                                    f"Les sessions ne peuvent pas être planifiées en "
+                                    f"salle spécialisée et seront omises du planning."
+                                )
+                                if warn_msg not in solver_warnings:
+                                    solver_warnings.append(warn_msg)
 
                 for k in range(spec.sessions_per_week):
                     # Last session may use a shorter duration (remainder split).
@@ -678,6 +705,7 @@ class TimetableSolver:
                 unscheduled_sessions=domain_filtered_sessions,
                 soft_constraints_satisfied=[],
                 soft_constraints_violated=[],
+                warnings=solver_warnings,
             )
 
         assignments: list[Assignment] = []
@@ -741,4 +769,5 @@ class TimetableSolver:
             soft_constraints_satisfied=soft_satisfied,
             soft_constraints_violated=soft_violated,
             soft_constraint_details=soft_details,
+            warnings=solver_warnings,
         )

@@ -74,6 +74,9 @@ class ConflictReport:
     fix_options: list[FixOption] = field(default_factory=list)
     """Fix options, sorted by ease (easiest first)."""
 
+    severity: str = "error"
+    """Severity level: ``"error"`` (blocks scheduling) or ``"warning"`` (degraded quality)."""
+
 
 # ---------------------------------------------------------------------------
 # Analyzer
@@ -131,6 +134,7 @@ class ConflictAnalyzer:
         reports += self._check_room_type_missing()
         reports += self._check_teacher_sole_overload()
         reports += self._check_class_hours_exceed_schedule()
+        reports += self._check_room_capacity_for_assignments()
         return reports
 
     def _check_no_teacher_for_subject(self) -> list[ConflictReport]:
@@ -206,6 +210,108 @@ class ConflictAnalyzer:
                         impact_fr=f"Débloque les sessions de {subj_str}.",
                         ease=3,
                     )
+                ],
+            ))
+        return reports
+
+    def _check_room_capacity_for_assignments(self) -> list[ConflictReport]:
+        """
+        For each TeacherAssignment where the subject requires a specific room type,
+        verify that at least one room of that type has capacity >= class student_count.
+        Reports a warning (not a hard error) when all specialized rooms are too small —
+        the solver will be unable to place those sessions in the required room type.
+        """
+        subject_map = {s.name: s for s in self._sd.subjects}
+        class_map = {c.name: c for c in self._sd.classes}
+
+        rooms_by_type: dict[str, list] = defaultdict(list)
+        for room in self._sd.rooms:
+            for rtype in room.types:
+                rooms_by_type[rtype].append(room)
+
+        reports: list[ConflictReport] = []
+        seen: set[tuple[str, str]] = set()  # (school_class, subject) pairs already reported
+
+        for ta in self._sd.teacher_assignments:
+            key = (ta.school_class, ta.subject)
+            if key in seen:
+                continue
+
+            subj = subject_map.get(ta.subject)
+            if subj is None or not subj.required_room_type:
+                continue
+
+            cls = class_map.get(ta.school_class)
+            if cls is None:
+                continue
+
+            room_type = subj.required_room_type
+            rooms_of_type = rooms_by_type.get(room_type, [])
+            if not rooms_of_type:
+                continue  # already caught by _check_room_type_missing
+
+            max_cap = max(r.capacity for r in rooms_of_type)
+            if cls.student_count <= max_cap:
+                continue  # at least one room fits — no conflict
+
+            seen.add(key)
+            best_room = max(rooms_of_type, key=lambda r: r.capacity)
+            needed = cls.student_count
+
+            reports.append(ConflictReport(
+                description_fr=(
+                    f"La classe {ta.school_class} ({cls.student_count} élèves) "
+                    f"dépasse la capacité des salles de type {room_type} "
+                    f"({max_cap} places) pour {ta.subject}."
+                ),
+                source="quick_check",
+                severity="warning",
+                fix_options=[
+                    FixOption(
+                        fix_fr=(
+                            f"Augmenter la capacité du {best_room.name} "
+                            f"à {needed} places"
+                        ),
+                        fix_action={
+                            "action": "update_room_capacity",
+                            "room": best_room.name,
+                            "new_capacity": needed,
+                        },
+                        impact_fr="Nécessite vérification physique de la salle",
+                        ease=2,
+                    ),
+                    FixOption(
+                        fix_fr=(
+                            f"Autoriser {ta.subject} pour {ta.school_class} "
+                            f"en salle standard"
+                        ),
+                        fix_action={
+                            "action": "remove_required_room_type",
+                            "subject": ta.subject,
+                            "class": ta.school_class,
+                        },
+                        impact_fr=(
+                            f"Les cours de {ta.subject} se feront sans "
+                            f"équipement de laboratoire"
+                        ),
+                        ease=2,
+                    ),
+                    FixOption(
+                        fix_fr=(
+                            f"Diviser {ta.school_class} en deux groupes "
+                            f"pour les cours de {ta.subject}"
+                        ),
+                        fix_action={
+                            "action": "split_class",
+                            "class": ta.school_class,
+                            "subject": ta.subject,
+                        },
+                        impact_fr=(
+                            "Nécessite deux créneaux au lieu d'un — "
+                            "fonctionnalité groupes requise"
+                        ),
+                        ease=3,
+                    ),
                 ],
             ))
         return reports

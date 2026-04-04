@@ -39,3 +39,5 @@ Solo developer using Claude Code. This is my first app project.
 
 ## Current status
 Phase 0 — Foundation. Building data models and sample data.
+Phase 1- Contraints implementation, export/imports, conflict reporting and analyzer, AI layer.
+

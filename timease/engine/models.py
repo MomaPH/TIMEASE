@@ -267,6 +267,7 @@ class TimetableResult:
     soft_constraints_satisfied: list[str] = field(default_factory=list)
     soft_constraints_violated: list[str] = field(default_factory=list)
     soft_constraint_details: list[dict] = field(default_factory=list)
+    warnings: list[str] = field(default_factory=list)
 
     def verify(self, school_data: "SchoolData") -> list[str]:
         """
