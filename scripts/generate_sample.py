@@ -111,6 +111,16 @@ def build_sample_school() -> SchoolData:
             max_hours_per_week=18,
         ),
         Teacher(
+            name="Mme Kouyaté",
+            subjects=["Mathématiques"],
+            max_hours_per_week=22,
+        ),
+        Teacher(
+            name="M. Coulibaly",
+            subjects=["Français"],
+            max_hours_per_week=22,
+        ),
+        Teacher(
             name="M. Sow",
             subjects=["Français", "Anglais"],
             max_hours_per_week=16,

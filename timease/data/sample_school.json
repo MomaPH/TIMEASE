@@ -180,6 +180,24 @@
       "preference_weight": 1.0
     },
     {
+      "name": "Mme Kouyaté",
+      "subjects": [
+        "Mathématiques"
+      ],
+      "max_hours_per_week": 22,
+      "unavailable_slots": [],
+      "preference_weight": 1.0
+    },
+    {
+      "name": "M. Coulibaly",
+      "subjects": [
+        "Français"
+      ],
+      "max_hours_per_week": 22,
+      "unavailable_slots": [],
+      "preference_weight": 1.0
+    },
+    {
       "name": "M. Sow",
       "subjects": [
         "Français",

@@ -71,7 +71,7 @@ class TestSampleSchoolLoading:
         assert len(sample_school.subjects) == 11
 
     def test_teacher_count(self, sample_school: SchoolData) -> None:
-        assert len(sample_school.teachers) == 12
+        assert len(sample_school.teachers) == 14
 
     def test_class_count(self, sample_school: SchoolData) -> None:
         assert len(sample_school.classes) == 8

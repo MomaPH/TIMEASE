@@ -1,10 +1,10 @@
 """
-Timetable solver for TIMEASE — Phase 1.
+Timetable solver for TIMEASE — Phase 2.
 
 Scope
 -----
-Assigns subjects to (day, time slot) pairs for every class.
-Teachers and rooms are NOT assigned in this phase.
+Assigns subjects AND teachers to (day, time slot) pairs for every class.
+Rooms are not yet assigned.
 
 What CP-SAT is
 --------------
@@ -16,6 +16,22 @@ relaxation to find a feasible — or provably optimal — assignment.
 
 Key idea: you never write search loops.  You declare *what* must hold, and
 the solver figures out *how* to make it hold.
+
+Two-layer variable design
+--------------------------
+Layer 1 — Session placement (from Phase 1):
+    x[class, subject, k, day, s] = 1  iff session k starts at slot s on day d
+
+Layer 2 — Teacher assignment (new in Phase 2):
+    t[class, subject, k, day, s, teacher] = 1
+        iff that teacher teaches session k of that subject for that class
+
+The two layers are linked by:
+    sum_teacher( t[…, teacher] ) == x[class, subject, k, day, s]
+
+This single equality enforces:
+  • If the session is scheduled (x=1): exactly one teacher is assigned.
+  • If it is not scheduled (x=0): no teacher is assigned.
 """
 
 from __future__ import annotations
@@ -31,6 +47,7 @@ from timease.engine.models import (
     Assignment,
     CurriculumEntry,
     SchoolData,
+    Teacher,
     TimetableResult,
 )
 
@@ -139,6 +156,30 @@ def _valid_start_slots(
     return valid
 
 
+def _session_overlaps_unavailability(
+    session_start: str,
+    session_end: str,
+    unavail: dict,
+) -> bool:
+    """
+    Return True if a session [session_start, session_end) overlaps with an
+    unavailability window.
+
+    The unavailability dict has the shape:
+        {"day": str, "start": str|None, "end": str|None, "session": str|None}
+
+    If both start and end are None the teacher is blocked for the entire day.
+    None boundaries are treated as open (00:00 / 23:59).
+
+    Time comparison works correctly on "HH:MM" strings as long as hours are
+    zero-padded — which our slot generator always guarantees.
+    """
+    u_start: str = unavail.get("start") or "00:00"
+    u_end: str   = unavail.get("end")   or "23:59"
+    # Classic interval overlap: [a,b) ∩ [c,d) ≠ ∅  ⟺  a < d AND c < b
+    return session_start < u_end and u_start < session_end
+
+
 # ---------------------------------------------------------------------------
 # Solver
 # ---------------------------------------------------------------------------
@@ -147,13 +188,16 @@ class TimetableSolver:
     """
     CP-SAT based timetable solver for TIMEASE.
 
-    Phase 1 guarantees
+    Phase 2 guarantees
     ------------------
     1. Every class's weekly curriculum is scheduled (exact minutes).
     2. No class is ever in two places at the same time.
+    3. Every scheduled session has exactly one qualified teacher.
+    4. No teacher is in two places at the same time.
+    5. Teacher weekly hours do not exceed their declared maximum.
+    6. Teachers are not assigned to slots they marked as unavailable.
 
-    Not yet handled: teacher assignment, room assignment, teacher conflicts,
-    room capacity, soft preferences.
+    Not yet handled: room assignment, room capacity, soft preferences.
     """
 
     def solve(self, data: SchoolData) -> TimetableResult:
@@ -175,11 +219,6 @@ class TimetableSolver:
 
         # ==================================================================
         # Step 1 — Derive the schedule structure
-        #
-        # get_all_slots() returns a flat list of (day, start, end) tuples.
-        # We regroup by day so each slot has a stable integer index *within*
-        # its day.  This per-day indexing is the timeline used by all
-        # interval variables later.
         # ==================================================================
         tc = data.timeslot_config
         base_unit = tc.base_unit_minutes
@@ -197,68 +236,56 @@ class TimetableSolver:
 
         # ==================================================================
         # Step 2 — Index curriculum entries by level
-        #
-        # CurriculumEntry objects are defined per school level ("6ème", …).
-        # We group them so we can look up "what does a 6ème class need?" in O(1).
         # ==================================================================
         curriculum_by_level: dict[str, list[CurriculumEntry]] = defaultdict(list)
         for entry in data.curriculum:
             curriculum_by_level[entry.level].append(entry)
 
         # ==================================================================
-        # Step 3 — Create the CP-SAT model
+        # Step 2b — Index teachers by subject
         #
-        # CpModel() is just a container.  At this point nothing is solved —
-        # we are only *describing* the combinatorial problem.  The solver in
-        # Step 6 will search for an assignment that satisfies all constraints.
+        # For each subject name, collect which Teacher objects are qualified
+        # to teach it.  This lookup drives both variable creation (which
+        # teacher vars to create) and qualification filtering.
+        # ==================================================================
+        teachers_by_subject: dict[str, list[Teacher]] = defaultdict(list)
+        for teacher in data.teachers:
+            for subject in teacher.subjects:
+                teachers_by_subject[subject].append(teacher)
+
+        # ==================================================================
+        # Step 3 — Create the CP-SAT model
         # ==================================================================
         model = cp_model.CpModel()
 
         # ==================================================================
-        # Step 4 — Create decision variables
+        # Step 4 — Create Layer 1 variables: session placement
         #
-        # For every possible placement of every session we create two objects:
+        # x[class, subject, k, day, s]  — BoolVar
+        #   = 1 iff session k of this subject for this class starts at slot s
         #
-        #   BoolVar x[class, subject, k, day, s]
-        #       = 1  ⟺  session k of this subject for this class is placed
-        #                starting at slot s on the given day.
-        #       = 0  otherwise (this placement is not chosen).
-        #
-        #   OptionalIntervalVar  interval[class, subject, k, day, s]
-        #       Represents the time window [s, s + duration) within the day.
-        #       It is "optional": it exists on the schedule only when the
-        #       associated BoolVar is 1.
-        #
-        # Why IntervalVar?
-        #   A session of 90 min (3 slots) occupies THREE consecutive slots,
-        #   not just the starting one.  IntervalVar encodes this span so that
-        #   CP-SAT's no-overlap propagator can reason about it efficiently.
-        #   Without intervals, we would need to manually enumerate which slots
-        #   each session covers — error-prone and slower.
-        #
-        # Variable count estimate for the sample school:
-        #   8 classes × ~10 subjects × ~3 sessions × 6 days × ~9 valid starts
-        #   ≈ 12 960 BoolVars  (well within CP-SAT's capacity)
+        # Also creates one OptionalIntervalVar per x-var for the class
+        # no-overlap constraint.
         # ==================================================================
 
-        # Primary lookup: (class_name, subject_name, session_k, day, slot) → BoolVar
+        # (class_name, subject_name, session_k, day, slot) → BoolVar
         x: dict[tuple[str, str, int, str, int], cp_model.IntVar] = {}
 
-        # Grouped by (class_name, day) for the add_no_overlap constraint.
+        # (class_name, day) → list[IntervalVar]  — for class no-overlap
         intervals_per_class_day: dict[
             tuple[str, str], list[cp_model.IntervalVar]
         ] = defaultdict(list)
 
-        # Grouped by (class_name, subject_name, session_k) for add_exactly_one.
-        # Built here to avoid iterating over the full x dict later.
+        # (class_name, subject_name, session_k) → list[BoolVar]
+        # — for add_exactly_one (each session placed once)
         placements: dict[
             tuple[str, str, int], list[cp_model.IntVar]
         ] = defaultdict(list)
 
-        # Computed session specs — reused in result extraction.
+        # (class_name, subject_name) → _SessionSpec  — reused later
         spec_for: dict[tuple[str, str], _SessionSpec] = {}
 
-        total_vars = 0
+        total_x_vars = 0
         for school_class in data.classes:
             entries = curriculum_by_level.get(school_class.level, [])
             if not entries:
@@ -275,22 +302,14 @@ class TimetableSolver:
                             day_slot_times[day], spec.duration_slots
                         )
                         for s in valid_starts:
-                            # --- BoolVar ----------------------------------
                             bvar = model.new_bool_var(
                                 f"x|{school_class.name}|{entry.subject}|k{k}|{day}|s{s}"
                             )
                             key = (school_class.name, entry.subject, k, day, s)
                             x[key] = bvar
                             placements[(school_class.name, entry.subject, k)].append(bvar)
-                            total_vars += 1
+                            total_x_vars += 1
 
-                            # --- OptionalIntervalVar ----------------------
-                            # Arguments:
-                            #   start      — integer start position in the day's slot list
-                            #   size       — number of slots this session occupies
-                            #   end        — start + size (CP-SAT verifies the identity)
-                            #   is_present — the BoolVar that "activates" this interval;
-                            #                when 0, the interval is ignored by no-overlap
                             interval = model.new_optional_interval_var(
                                 start=s,
                                 size=spec.duration_slots,
@@ -300,30 +319,118 @@ class TimetableSolver:
                             )
                             intervals_per_class_day[(school_class.name, day)].append(interval)
 
-        logger.info("Created %d BoolVars across %d (class×subject×session) groups", total_vars, len(placements))
+        # ==================================================================
+        # Step 4b — Create Layer 2 variables: teacher assignment
+        #
+        # For every x-variable, and for every teacher qualified to teach that
+        # subject, create one BoolVar:
+        #
+        #   t[class, subject, k, day, s, teacher] = 1
+        #       iff that teacher teaches session k at (day, s).
+        #
+        # We skip creating a variable if the teacher is unavailable during
+        # the entire session — this is equivalent to adding the constraint
+        # t[…] == 0, but avoids creating a variable that will immediately
+        # be forced to 0.
+        #
+        # We also create an OptionalIntervalVar for each teacher variable so
+        # that CP-SAT's no-overlap propagator can ensure a teacher is never
+        # in two places at once (Step 5f).
+        #
+        # Secondary indices built here for the constraint steps below:
+        #
+        #   teacher_vars_for_session[(cn, sn, k, day, s)]
+        #       All teacher BoolVars for this specific placement.
+        #       Used in Step 5d to link placement → teacher.
+        #
+        #   teacher_vars_by_teacher[teacher_name]
+        #       All (BoolVar, duration_slots) pairs for a teacher.
+        #       Used in Step 5e for the max-hours constraint.
+        #
+        #   teacher_intervals_by_day[(teacher_name, day)]
+        #       Interval vars for a teacher on one day.
+        #       Used in Step 5f for teacher no-overlap.
+        # ==================================================================
+
+        # (class_name, subject_name, k, day, s, teacher_name) → BoolVar
+        teacher_x: dict[tuple[str, str, int, str, int, str], cp_model.IntVar] = {}
+
+        teacher_vars_for_session: dict[
+            tuple[str, str, int, str, int], list[cp_model.IntVar]
+        ] = defaultdict(list)
+
+        teacher_vars_by_teacher: dict[
+            str, list[tuple[cp_model.IntVar, int]]   # (bvar, duration_slots)
+        ] = defaultdict(list)
+
+        teacher_intervals_by_day: dict[
+            tuple[str, str], list[cp_model.IntervalVar]
+        ] = defaultdict(list)
+
+        total_t_vars = 0
+        for (class_name, subject_name, k, day, s), x_var in x.items():
+            spec = spec_for[(class_name, subject_name)]
+            session_start, _  = day_slot_times[day][s]
+            _, session_end    = day_slot_times[day][s + spec.duration_slots - 1]
+
+            qualified = teachers_by_subject.get(subject_name, [])
+
+            for teacher in qualified:
+                # --- Unavailability filter --------------------------------
+                # If this session overlaps ANY of the teacher's unavailable
+                # windows on this day, skip creating the variable entirely.
+                # This is more efficient than creating the var and forcing
+                # it to 0 with a constraint.
+                blocked = any(
+                    unavail["day"] == day
+                    and _session_overlaps_unavailability(
+                        session_start, session_end, unavail
+                    )
+                    for unavail in teacher.unavailable_slots
+                )
+                if blocked:
+                    continue
+
+                # --- BoolVar ----------------------------------------------
+                t_var = model.new_bool_var(
+                    f"t|{class_name}|{subject_name}|k{k}|{day}|s{s}|{teacher.name}"
+                )
+                t_key = (class_name, subject_name, k, day, s, teacher.name)
+                teacher_x[t_key] = t_var
+
+                teacher_vars_for_session[(class_name, subject_name, k, day, s)].append(t_var)
+                teacher_vars_by_teacher[teacher.name].append((t_var, spec.duration_slots))
+                total_t_vars += 1
+
+                # --- OptionalIntervalVar ----------------------------------
+                # Same timeline (per-day slot indices) as the class intervals.
+                # is_present = t_var: interval only "exists" when teacher
+                # teaches this session.
+                t_interval = model.new_optional_interval_var(
+                    start=s,
+                    size=spec.duration_slots,
+                    end=s + spec.duration_slots,
+                    is_present=t_var,
+                    name=f"tiv|{teacher.name}|{class_name}|{subject_name}|k{k}|{day}|s{s}",
+                )
+                teacher_intervals_by_day[(teacher.name, day)].append(t_interval)
+
+        logger.info(
+            "Created %d session vars + %d teacher vars",
+            total_x_vars, total_t_vars,
+        )
 
         # ==================================================================
         # Step 5a — Constraint: each session is scheduled exactly once
         #
-        # add_exactly_one(literals)
-        #   Enforces: exactly one of the given BoolVars equals 1.
-        #   This is CP-SAT's dedicated cardinality constraint — more efficient
-        #   than writing Add(sum(literals) == 1) because the solver can use
-        #   specialised propagation for it.
-        #
-        # Here we apply it per (class, subject, session_k):
-        #   "Session k of Mathématiques for 6ème A must be placed on exactly
-        #    one (day, starting slot) combination."
-        #
-        # Together, iterating over k = 0…sessions_per_week-1 ensures the
-        # total scheduled minutes equals the curriculum requirement exactly.
+        # add_exactly_one(literals): exactly one BoolVar in the list is 1.
+        # Applied per (class, subject, session_k): session k must be placed
+        # on exactly one (day, slot) combination.
         # ==================================================================
         conflicts: list[dict] = []
 
         for (class_name, subject_name, k), pvars in placements.items():
             if not pvars:
-                # No valid placement exists (session too long for any block).
-                # Record the conflict; the model will be infeasible.
                 spec = spec_for.get((class_name, subject_name))
                 duration_min = (spec.duration_slots * base_unit) if spec else "?"
                 conflicts.append({
@@ -345,32 +452,8 @@ class TimetableSolver:
         # ==================================================================
         # Step 5b — Constraint: no class is double-booked
         #
-        # add_no_overlap(interval_vars)
-        #   Enforces: none of the given intervals may share a time slot.
-        #   Only "present" intervals (BoolVar == 1) participate.
-        #   This is the canonical CP-SAT constraint for scheduling problems
-        #   with variable-length tasks (think: machine scheduling, classroom
-        #   timetabling).
-        #
-        # Why not add_at_most_one?
-        #   add_at_most_one works on BoolVars, not intervals.  For single-slot
-        #   sessions, "at most one BoolVar per slot" is equivalent.  But for
-        #   a 90-min session (3 slots), a BoolVar at start slot s also *blocks*
-        #   slots s+1 and s+2.  add_no_overlap handles this automatically;
-        #   with add_at_most_one you would have to manually enumerate all
-        #   (subject, k, s) combinations whose session covers each slot t:
-        #
-        #       for t in range(slots_per_day):
-        #           covering = [x[c,subj,k,day,s]
-        #                        for subj, k, s
-        #                        if s <= t < s + duration[subj]]
-        #           model.add_at_most_one(covering)   # 576 constraints per class
-        #
-        #   add_no_overlap replaces all 576 per-day constraints with one,
-        #   and its propagator is O(n log n) instead of O(n²).
-        #
-        # We apply one add_no_overlap per (class, day) — intervals from
-        # different days never conflict, so mixing them would be wrong.
+        # add_no_overlap(intervals): no two present intervals may share time.
+        # One constraint per (class, day).
         # ==================================================================
         no_overlap_count = 0
         for (class_name, day), ivs in intervals_per_class_day.items():
@@ -378,71 +461,143 @@ class TimetableSolver:
                 model.add_no_overlap(ivs)
                 no_overlap_count += 1
 
-        logger.info("Added %d no-overlap constraints", no_overlap_count)
+        logger.info("Added %d class no-overlap constraints", no_overlap_count)
 
         # ==================================================================
-        # Step 5c — add_at_most_one: illustrative per-slot view
+        # Step 5c — add_at_most_one: illustrative per-slot view (redundant)
         #
         # Even though add_no_overlap already handles no-double-booking, we
-        # add per-slot add_at_most_one constraints here so you can see how
-        # the slot-level reasoning works.  CP-SAT detects the redundancy and
-        # prunes it without harm.
-        #
-        # For each (class, day, slot t): at most one session may *cover* t.
-        # A session starting at s with duration d covers t iff s ≤ t < s+d.
+        # add per-slot add_at_most_one constraints here to demonstrate the
+        # slot-level reasoning.  CP-SAT detects the redundancy harmlessly.
         # ==================================================================
         for school_class in data.classes:
             entries = curriculum_by_level.get(school_class.level, [])
             for day in tc.days:
                 n_slots = len(day_slot_times[day])
-                for t in range(n_slots):
-                    # All BoolVars whose session would occupy slot t on this day.
+                for t_idx in range(n_slots):
                     covering: list[cp_model.IntVar] = []
                     for entry in entries:
                         spec = spec_for.get((school_class.name, entry.subject))
                         if spec is None:
                             continue
                         for k in range(spec.sessions_per_week):
-                            # s must satisfy: s ≤ t  AND  t < s + duration
-                            #  ⟺  t - duration + 1 ≤ s ≤ t
                             for s in range(
-                                max(0, t - spec.duration_slots + 1), t + 1
+                                max(0, t_idx - spec.duration_slots + 1), t_idx + 1
                             ):
                                 key = (school_class.name, entry.subject, k, day, s)
                                 if key in x:
                                     covering.append(x[key])
-
                     if len(covering) > 1:
-                        # add_at_most_one: at most one of these is 1.
-                        # Semantics: at most one session covers slot t.
                         model.add_at_most_one(covering)
+
+        # ==================================================================
+        # Step 5d — Constraint: link session placement to teacher assignment
+        #
+        # For each possible session placement (class, subject, k, day, s):
+        #
+        #   sum( t[…, teacher] for all qualified teachers ) == x[…]
+        #
+        # When x = 1 (session scheduled): the sum must equal 1, so exactly
+        # one teacher var is 1 → exactly one teacher teaches it.
+        #
+        # When x = 0 (session not scheduled at this slot): the sum must
+        # equal 0 → no teacher is assigned to a cancelled placement.
+        #
+        # Why not add_exactly_one here?
+        # add_exactly_one is unconditional.  We need the count to equal x,
+        # which varies.  A linear equality (sum == x) captures this cleanly.
+        # CP-SAT handles linear equalities between BoolVars efficiently.
+        #
+        # Edge case: if no qualified teacher variable exists for a placement
+        # (all teachers blocked by unavailability), sum=0 forces x=0.  If
+        # this applies to ALL placements for a session, the add_exactly_one
+        # from Step 5a will conflict → INFEASIBLE, correctly detected.
+        # ==================================================================
+        for key, x_var in x.items():
+            class_name, subject_name, k, day, s = key
+            tvars = teacher_vars_for_session.get(key, [])
+
+            if not tvars:
+                # No available teacher for this placement.
+                # Force x=0: this placement cannot be used.
+                model.add(x_var == 0)
+                logger.debug(
+                    "No available teacher for %s / %s on %s slot %d — placement disabled",
+                    class_name, subject_name, day, s,
+                )
+            else:
+                # sum(teacher vars) == x_var
+                model.add(sum(tvars) == x_var)
+
+        # ==================================================================
+        # Step 5e — Constraint: teacher max hours per week
+        #
+        # For each teacher, the total minutes they are assigned must not
+        # exceed their declared max_hours_per_week.
+        #
+        # total_assigned_minutes = sum(t_var * session_duration_minutes)
+        #                        = sum(t_var * duration_slots * base_unit)
+        #
+        # Since t_var is a BoolVar (0 or 1), this is a weighted sum of
+        # Boolean variables — a standard linear constraint in CP-SAT.
+        #
+        # Note: duration_slots * base_unit is a constant for each term,
+        # so CP-SAT can treat it as a fixed coefficient.
+        # ==================================================================
+        for teacher in data.teachers:
+            pairs = teacher_vars_by_teacher.get(teacher.name, [])
+            if not pairs:
+                continue
+
+            # Build: sum( t_var * duration_minutes )
+            total_minutes = sum(
+                t_var * (duration_slots * base_unit)
+                for t_var, duration_slots in pairs
+            )
+            model.add(total_minutes <= teacher.max_hours_per_week * 60)
+
+        logger.info(
+            "Added max-hours constraints for %d teachers",
+            len(teacher_vars_by_teacher),
+        )
+
+        # ==================================================================
+        # Step 5f — Constraint: no teacher teaches two classes simultaneously
+        #
+        # Same technique as Step 5b but applied per (teacher, day) instead
+        # of per (class, day).
+        #
+        # Each teacher_interval is present only when the corresponding t_var
+        # is 1.  add_no_overlap guarantees no two present intervals overlap
+        # on the same day for the same teacher.
+        # ==================================================================
+        teacher_no_overlap_count = 0
+        for (teacher_name, day), ivs in teacher_intervals_by_day.items():
+            if len(ivs) > 1:
+                model.add_no_overlap(ivs)
+                teacher_no_overlap_count += 1
+
+        logger.info(
+            "Added %d teacher no-overlap constraints",
+            teacher_no_overlap_count,
+        )
 
         # ==================================================================
         # Step 6 — Solve
         #
-        # CpSolver.solve() launches the search.  The solver will:
-        #   1. Apply constraint propagation to reduce variable domains.
-        #   2. Use VSIDS heuristics to choose branching decisions.
-        #   3. Run SAT-based conflict analysis to learn new constraints.
-        #   4. Stop when: a proven-optimal solution is found (OPTIMAL),
-        #      or the time limit expires (FEASIBLE if a solution was found,
-        #      UNKNOWN otherwise), or the problem is proven unsolvable
-        #      (INFEASIBLE).
-        #
         # Status codes:
         #   cp_model.OPTIMAL    — best possible solution, proven.
-        #   cp_model.FEASIBLE   — valid solution found, but not proven optimal.
-        #   cp_model.INFEASIBLE — no solution exists (constraints contradict).
-        #   cp_model.UNKNOWN    — time limit hit before any solution was found.
+        #   cp_model.FEASIBLE   — valid solution, not proven optimal.
+        #   cp_model.INFEASIBLE — no solution exists.
+        #   cp_model.UNKNOWN    — time limit hit before any solution found.
         # ==================================================================
         solver = cp_model.CpSolver()
         solver.parameters.max_time_in_seconds = SOLVE_TIME_LIMIT_SECONDS
-        # Set log_search_progress = True to watch CP-SAT's internal search.
         solver.parameters.log_search_progress = False
 
         logger.info(
-            "Launching CP-SAT (time limit: %ds, variables: %d)...",
-            SOLVE_TIME_LIMIT_SECONDS, total_vars,
+            "Launching CP-SAT (time limit: %ds, vars: %d session + %d teacher)...",
+            SOLVE_TIME_LIMIT_SECONDS, total_x_vars, total_t_vars,
         )
         status = solver.solve(model)
         solve_time = time.perf_counter() - wall_start
@@ -455,9 +610,8 @@ class TimetableSolver:
         # ==================================================================
         # Step 7 — Extract results
         #
-        # solver.value(bvar) returns the integer value (0 or 1) that the
-        # solver assigned to a BoolVar in the solution.  We iterate over
-        # every variable and collect those set to 1.
+        # Walk every x-variable.  For each placement chosen (value=1), find
+        # the teacher variable that is also 1 for that placement.
         # ==================================================================
         feasible = status in (cp_model.OPTIMAL, cp_model.FEASIBLE)
 
@@ -475,22 +629,29 @@ class TimetableSolver:
                 soft_constraints_violated=[],
             )
 
+        # Build a quick reverse map: placement key → teacher name
+        # by scanning teacher_x for vars the solver set to 1.
+        chosen_teacher: dict[tuple[str, str, int, str, int], str] = {}
+        for (cn, sn, k, day, s, teacher_name), t_var in teacher_x.items():
+            if solver.value(t_var) == 1:
+                chosen_teacher[(cn, sn, k, day, s)] = teacher_name
+
         assignments: list[Assignment] = []
 
-        for (class_name, subject_name, _k, day, s), bvar in x.items():
-            if solver.value(bvar) != 1:
-                continue  # this placement was not chosen
+        for (class_name, subject_name, k, day, s), x_var in x.items():
+            if solver.value(x_var) != 1:
+                continue
 
             spec = spec_for[(class_name, subject_name)]
             start_time, _ = day_slot_times[day][s]
-            # The session ends at the END of its last slot.
-            _, end_time = day_slot_times[day][s + spec.duration_slots - 1]
+            _, end_time   = day_slot_times[day][s + spec.duration_slots - 1]
+            teacher_name  = chosen_teacher.get((class_name, subject_name, k, day, s), "")
 
             assignments.append(Assignment(
                 school_class=class_name,
                 subject=subject_name,
-                teacher="",      # Phase 1: not yet assigned
-                room=None,       # Phase 1: not yet assigned
+                teacher=teacher_name,
+                room=None,          # Phase 2: rooms not yet assigned
                 day=day,
                 start_time=start_time,
                 end_time=end_time,
