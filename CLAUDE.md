@@ -18,7 +18,7 @@ Solo developer using Claude Code. This is my first app project.
 - timease/engine/ — Solver engine. ZERO dependency on app/ or io/. Must be testable standalone.
 - timease/io/ — File import/export. Depends on engine/ only.
 - timease/app/ — Reflex web UI. Depends on engine/ and io/.
-- tests/ — pytest. Run: python -m pytest
+- tests/ — pytest. Run: uv run pytest
 - scripts/ — CLI utilities.
 
 ## Rules
@@ -33,9 +33,9 @@ Solo developer using Claude Code. This is my first app project.
 
 ## Commands
 - Install deps: uv sync
-- Run tests: python -m pytest
+- Run tests: uv run pytest
 - Run app: cd timease/app && reflex run
-- Run CLI solver: python scripts/solve_from_json.py timease/data/sample_school.json
+- Run CLI solver: uv run python scripts/solve_from_json.py timease/data/sample_school.json
 
 ## Current status
 Phase 0 — Foundation. Building data models and sample data.
