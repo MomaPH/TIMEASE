@@ -780,17 +780,17 @@
       "description_fr": "Toutes les classes commencent au créneau 08h00.",
       "priority": 5,
       "parameters": {
-        "start": "08:00"
+        "hour": "08:00"
       }
     },
     {
       "id": "H4",
       "type": "hard",
       "category": "max_consecutive",
-      "description_fr": "Maximum 4 heures consécutives par classe (8 créneaux de 30 min).",
+      "description_fr": "Maximum 4 heures consécutives par classe.",
       "priority": 5,
       "parameters": {
-        "max_consecutive_slots": 8
+        "max_hours": 4
       }
     },
     {
@@ -804,7 +804,7 @@
     {
       "id": "H11",
       "type": "hard",
-      "category": "unavailable_slot",
+      "category": "day_off",
       "description_fr": "Aucun cours le samedi après-midi.",
       "priority": 5,
       "parameters": {

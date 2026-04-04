@@ -48,6 +48,7 @@ from typing import NamedTuple
 
 from ortools.sat.python import cp_model
 
+from timease.engine.constraints import ConstraintBuilder
 from timease.engine.models import (
     Assignment,
     CurriculumEntry,
@@ -59,7 +60,7 @@ from timease.engine.models import (
 logger = logging.getLogger(__name__)
 
 # Hard wall-clock limit given to the solver.
-SOLVE_TIME_LIMIT_SECONDS = 120
+SOLVE_TIME_LIMIT_SECONDS = 300
 
 
 # ---------------------------------------------------------------------------
@@ -754,6 +755,35 @@ class TimetableSolver:
                 room_no_overlap_count += 1
 
         logger.info("Added %d room no-overlap constraints", room_no_overlap_count)
+
+        # ==================================================================
+        # Step 5i — Apply user-defined hard constraints
+        #
+        # ConstraintBuilder translates each Constraint object from SchoolData
+        # into one or more CP-SAT model constraints.  Only hard constraints
+        # are applied here; soft constraints are handled separately (not yet
+        # implemented).
+        #
+        # The builder receives the full variable maps so it can reference
+        # any x or teacher_x variable without re-indexing.
+        # ==================================================================
+        hard_constraints = [c for c in data.constraints if c.type == "hard"]
+        if hard_constraints:
+            logger.info("Applying %d user-defined hard constraints...", len(hard_constraints))
+            builder = ConstraintBuilder(
+                model=model,
+                data=data,
+                x=x,
+                teacher_x=teacher_x,
+                spec_for=spec_for,
+                day_slot_times=day_slot_times,
+                curriculum_by_level=curriculum_by_level,
+            )
+            cb_warnings = builder.apply_all(hard_constraints)
+            for w in cb_warnings:
+                logger.warning("ConstraintBuilder: %s", w)
+        else:
+            logger.info("No hard constraints to apply.")
 
         # ==================================================================
         # Step 6 — Solve

@@ -258,14 +258,14 @@ def build_sample_school() -> SchoolData:
             type="hard",
             category="start_time",
             description_fr="Toutes les classes commencent au créneau 08h00.",
-            parameters={"start": "08:00"},
+            parameters={"hour": "08:00"},
         ),
         Constraint(
             id="H4",
             type="hard",
             category="max_consecutive",
-            description_fr="Maximum 4 heures consécutives par classe (8 créneaux de 30 min).",
-            parameters={"max_consecutive_slots": 8},
+            description_fr="Maximum 4 heures consécutives par classe.",
+            parameters={"max_hours": 4},
         ),
         Constraint(
             id="H10",
@@ -277,7 +277,7 @@ def build_sample_school() -> SchoolData:
         Constraint(
             id="H11",
             type="hard",
-            category="unavailable_slot",
+            category="day_off",
             description_fr="Aucun cours le samedi après-midi.",
             parameters={"day": "samedi", "session": "Après-midi"},
         ),
