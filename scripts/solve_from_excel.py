@@ -7,7 +7,7 @@ Usage
 
 Options
 -------
-    --output DIR    Output directory (default: ./output/)
+    --output DIR    Output directory (default: ./exports/)
     --timeout N     Solver time limit in seconds (default: 120)
 
 Outputs written to *output*:
@@ -39,7 +39,7 @@ from timease.io.pdf_export import export_pdf
 from timease.io.word_export import export_word
 
 DEFAULT_TIMEOUT = 120
-DEFAULT_OUTPUT = "./output"
+DEFAULT_OUTPUT = "./exports"
 
 # ── ANSI helpers (mirrors solve_from_json.py) ──────────────────────────────
 
