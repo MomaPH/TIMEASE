@@ -7,6 +7,7 @@ Run from the project root:
 Options
 -------
 --timeout N     Solver time limit in seconds (default: 120).
+--output DIR    Output directory (default: ./exports/).
 --class NAME    Print only the timetable for this class.
 
 Examples
@@ -27,8 +28,13 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from timease.engine.models import Assignment, SchoolData
 from timease.engine.solver import TimetableSolver
+from timease.io.excel_export import export_timetable
+from timease.io.md_export import export_markdown
+from timease.io.pdf_export import export_pdf
+from timease.io.word_export import export_word
 
 DEFAULT_TIMEOUT = 120
+DEFAULT_OUTPUT = "./exports"
 SATISFACTION_THRESHOLD = 80.0
 
 # ---------------------------------------------------------------------------
@@ -206,6 +212,10 @@ def parse_args() -> argparse.Namespace:
         help=f"Durée limite du solveur en secondes (défaut : {DEFAULT_TIMEOUT}s)",
     )
     p.add_argument(
+        "--output", default=DEFAULT_OUTPUT, metavar="DIR",
+        help=f"Répertoire de sortie (défaut : {DEFAULT_OUTPUT})",
+    )
+    p.add_argument(
         "--class", dest="only_class", metavar="NOM",
         help="N'afficher que l'emploi du temps de cette classe",
     )
@@ -326,7 +336,37 @@ def run(args: argparse.Namespace) -> int:
         _print_grid(cls_name, cls_a, sd, palette)
 
     print()
-    return 0
+
+    # ------------------------------------------------------------------ export
+    print(header("EXPORT"))
+
+    out_dir = Path(args.output)
+    out_dir.mkdir(parents=True, exist_ok=True)
+    stem = Path(args.school_json).stem
+
+    exports: list[tuple[str, Path, object]] = [
+        ("Excel",    out_dir / f"{stem}_timetable.xlsx", export_timetable),
+        ("PDF",      out_dir / f"{stem}_timetable.pdf",  export_pdf),
+        ("Word",     out_dir / f"{stem}_timetable.docx", export_word),
+        ("Markdown", out_dir / f"{stem}_timetable.md",   export_markdown),
+    ]
+
+    all_ok = True
+    for fmt, dest, fn in exports:
+        try:
+            fn(result, sd, str(dest))
+            size = dest.stat().st_size
+            print(f"  {ok(f'{fmt:<10} → {dest}  ({size:,} octets)')}")
+        except Exception as exc:
+            print(f"  {err(f'{fmt}: {exc}')}")
+            all_ok = False
+
+    if all_ok:
+        print(f"\n  {GREEN}{BOLD}Tous les exports réussis.{RESET}")
+    else:
+        print(f"\n  {YELLOW}Certains exports ont échoué.{RESET}")
+
+    return 0 if all_ok else 1
 
 
 if __name__ == "__main__":
