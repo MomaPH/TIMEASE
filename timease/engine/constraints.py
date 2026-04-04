@@ -765,26 +765,41 @@ class SoftConstraintBuilder:
             total_dur = sum(self._sessions[i].dur_slots for i in s_idxs)
             target    = total_dur // self._n_days
 
-            # Tight upper bound: max load on any day ≤ n_slots_per_day
-            # (physical limit of the day).  Excess is at most this minus target.
-            max_day_load = self._n  # n_slots_per_day
+            # Tight upper bounds for over/under deviation from target.
+            max_day_load = self._n  # n_slots_per_day (physical ceiling)
             max_excess   = max(0, max_day_load - target)
+            max_deficit  = target  # load_d can be 0 on an empty day
 
-            if max_excess == 0:
-                continue  # perfectly divisible — no excess possible
+            if max_excess == 0 and max_deficit == 0:
+                continue  # perfectly divisible — no deviation possible
 
             for d in range(self._n_days):
                 load_d_terms = [
                     self._on_day.get(i, d) * self._sessions[i].dur_slots
                     for i in s_idxs
                 ]
-                # excess_d = max(0, load_d - target)
-                # Encoded as: excess_d >= load_d - target  (domain clamps to ≥ 0)
-                excess = self._model.new_int_var(
-                    0, max_excess, f"s3|{c.id}|{class_name}|d{d}"
-                )
-                self._model.add(excess >= sum(load_d_terms) - target)
-                terms.append((-priority, excess))
+                load_sum = sum(load_d_terms)
+
+                # Symmetric penalty: penalise BOTH over-loaded AND under-loaded days.
+                # Previously only over-loaded days were penalised, so the solver was
+                # happy to leave some days empty and pack others.
+                #
+                # excess_d  = max(0, load_d − target)
+                # deficit_d = max(0, target − load_d)
+                # Both are minimised via negative objective terms.
+                if max_excess > 0:
+                    excess = self._model.new_int_var(
+                        0, max_excess, f"s3|exc|{c.id}|{class_name}|d{d}"
+                    )
+                    self._model.add(excess >= load_sum - target)
+                    terms.append((-priority, excess))
+
+                if max_deficit > 0:
+                    deficit = self._model.new_int_var(
+                        0, max_deficit, f"s3|def|{c.id}|{class_name}|d{d}"
+                    )
+                    self._model.add(deficit >= target - load_sum)
+                    terms.append((-priority, deficit))
 
         return terms, None, warnings
 

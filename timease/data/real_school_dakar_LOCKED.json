@@ -1,0 +1,951 @@
+{
+  "school": {
+    "name": "Institut Al-Falah",
+    "academic_year": "2026-2027",
+    "city": "Dakar"
+  },
+  "timeslot_config": {
+    "days": [
+      "lundi",
+      "mardi",
+      "mercredi",
+      "jeudi",
+      "vendredi"
+    ],
+    "base_unit_minutes": 30,
+    "sessions": [
+      {
+        "name": "Matin",
+        "start_time": "08:00",
+        "end_time": "13:00"
+      },
+      {
+        "name": "Après-midi",
+        "start_time": "14:00",
+        "end_time": "16:30"
+      }
+    ]
+  },
+  "subjects": [
+    {
+      "name": "Mathématiques",
+      "short_name": "Maths",
+      "color": "#E6F1FB",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "SVT",
+      "short_name": "SVT",
+      "color": "#E1F5EE",
+      "required_room_type": "Laboratoire",
+      "needs_room": true
+    },
+    {
+      "name": "Physique-Chimie",
+      "short_name": "PC",
+      "color": "#FAECE7",
+      "required_room_type": "Laboratoire",
+      "needs_room": true
+    },
+    {
+      "name": "Coran",
+      "short_name": "Coran",
+      "color": "#F1EFE8",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Espagnol",
+      "short_name": "Esp",
+      "color": "#FBEAF0",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Anglais",
+      "short_name": "Ang",
+      "color": "#EEEDFE",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Éducation Islamique",
+      "short_name": "Ed.Isl",
+      "color": "#FAEEDA",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Projet Scientifique",
+      "short_name": "ProjSci",
+      "color": "#E6F1FB",
+      "required_room_type": null,
+      "needs_room": true
+    }
+  ],
+  "teachers": [
+    {
+      "name": "Samba",
+      "subjects": [
+        "Mathématiques"
+      ],
+      "max_hours_per_week": 12,
+      "unavailable_slots": [],
+      "preference_weight": 1.0
+    },
+    {
+      "name": "Ibrahima",
+      "subjects": [
+        "Mathématiques"
+      ],
+      "max_hours_per_week": 8,
+      "unavailable_slots": [],
+      "preference_weight": 1.0
+    },
+    {
+      "name": "Toumane",
+      "subjects": [
+        "Mathématiques"
+      ],
+      "max_hours_per_week": 10,
+      "unavailable_slots": [],
+      "preference_weight": 1.0
+    },
+    {
+      "name": "Camara",
+      "subjects": [
+        "SVT"
+      ],
+      "max_hours_per_week": 8,
+      "unavailable_slots": [],
+      "preference_weight": 1.0
+    },
+    {
+      "name": "Diaw",
+      "subjects": [
+        "SVT"
+      ],
+      "max_hours_per_week": 16,
+      "unavailable_slots": [],
+      "preference_weight": 1.0
+    },
+    {
+      "name": "Thioune",
+      "subjects": [
+        "Physique-Chimie"
+      ],
+      "max_hours_per_week": 8,
+      "unavailable_slots": [],
+      "preference_weight": 1.0
+    },
+    {
+      "name": "Carmen",
+      "subjects": [
+        "Physique-Chimie"
+      ],
+      "max_hours_per_week": 10,
+      "unavailable_slots": [],
+      "preference_weight": 1.0
+    },
+    {
+      "name": "Dane",
+      "subjects": [
+        "Coran"
+      ],
+      "max_hours_per_week": 14,
+      "unavailable_slots": [],
+      "preference_weight": 1.0
+    },
+    {
+      "name": "Mariama",
+      "subjects": [
+        "Coran"
+      ],
+      "max_hours_per_week": 10,
+      "unavailable_slots": [],
+      "preference_weight": 1.0
+    },
+    {
+      "name": "Maguette",
+      "subjects": [
+        "Coran",
+        "Éducation Islamique"
+      ],
+      "max_hours_per_week": 13,
+      "unavailable_slots": [
+        {
+          "day": "mercredi",
+          "session": "all"
+        }
+      ],
+      "preference_weight": 1.0
+    },
+    {
+      "name": "Seniora",
+      "subjects": [
+        "Espagnol"
+      ],
+      "max_hours_per_week": 12,
+      "unavailable_slots": [],
+      "preference_weight": 1.0
+    },
+    {
+      "name": "Sylla",
+      "subjects": [
+        "Anglais"
+      ],
+      "max_hours_per_week": 16,
+      "unavailable_slots": [],
+      "preference_weight": 1.0
+    },
+    {
+      "name": "Ndour",
+      "subjects": [
+        "Anglais"
+      ],
+      "max_hours_per_week": 14,
+      "unavailable_slots": [
+        {
+          "day": "mardi",
+          "session": "all"
+        },
+        {
+          "day": "jeudi",
+          "session": "all"
+        },
+        {
+          "day": "vendredi",
+          "session": "all"
+        }
+      ],
+      "preference_weight": 1.0
+    },
+    {
+      "name": "Evral",
+      "subjects": [
+        "Projet Scientifique"
+      ],
+      "max_hours_per_week": 10,
+      "unavailable_slots": [],
+      "preference_weight": 1.0
+    }
+  ],
+  "classes": [
+    {
+      "name": "6ème",
+      "level": "6ème",
+      "student_count": 30
+    },
+    {
+      "name": "5ème",
+      "level": "5ème",
+      "student_count": 28
+    },
+    {
+      "name": "4ème",
+      "level": "4ème",
+      "student_count": 32
+    },
+    {
+      "name": "3ème",
+      "level": "3ème",
+      "student_count": 25
+    }
+  ],
+  "rooms": [
+    {
+      "name": "Salle A",
+      "capacity": 35,
+      "types": [
+        "Standard"
+      ]
+    },
+    {
+      "name": "Salle B",
+      "capacity": 35,
+      "types": [
+        "Standard"
+      ]
+    },
+    {
+      "name": "Salle C",
+      "capacity": 35,
+      "types": [
+        "Standard"
+      ]
+    },
+    {
+      "name": "Salle D",
+      "capacity": 35,
+      "types": [
+        "Standard"
+      ]
+    },
+    {
+      "name": "Laboratoire",
+      "capacity": 30,
+      "types": [
+        "Laboratoire"
+      ]
+    }
+  ],
+  "teacher_assignments": [
+    {
+      "teacher": "Samba",
+      "subject": "Mathématiques",
+      "school_class": "6ème"
+    },
+    {
+      "teacher": "Ibrahima",
+      "subject": "Mathématiques",
+      "school_class": "5ème"
+    },
+    {
+      "teacher": "Samba",
+      "subject": "Mathématiques",
+      "school_class": "4ème"
+    },
+    {
+      "teacher": "Toumane",
+      "subject": "Mathématiques",
+      "school_class": "3ème"
+    },
+    {
+      "teacher": "Camara",
+      "subject": "SVT",
+      "school_class": "6ème"
+    },
+    {
+      "teacher": "Diaw",
+      "subject": "SVT",
+      "school_class": "5ème"
+    },
+    {
+      "teacher": "Diaw",
+      "subject": "SVT",
+      "school_class": "4ème"
+    },
+    {
+      "teacher": "Diaw",
+      "subject": "SVT",
+      "school_class": "3ème"
+    },
+    {
+      "teacher": "Thioune",
+      "subject": "Physique-Chimie",
+      "school_class": "4ème"
+    },
+    {
+      "teacher": "Carmen",
+      "subject": "Physique-Chimie",
+      "school_class": "3ème"
+    },
+    {
+      "teacher": "Dane",
+      "subject": "Coran",
+      "school_class": "6ème"
+    },
+    {
+      "teacher": "Mariama",
+      "subject": "Coran",
+      "school_class": "5ème"
+    },
+    {
+      "teacher": "Maguette",
+      "subject": "Coran",
+      "school_class": "4ème"
+    },
+    {
+      "teacher": "Dane",
+      "subject": "Coran",
+      "school_class": "3ème"
+    },
+    {
+      "teacher": "Seniora",
+      "subject": "Espagnol",
+      "school_class": "6ème"
+    },
+    {
+      "teacher": "Seniora",
+      "subject": "Espagnol",
+      "school_class": "5ème"
+    },
+    {
+      "teacher": "Seniora",
+      "subject": "Espagnol",
+      "school_class": "4ème"
+    },
+    {
+      "teacher": "Seniora",
+      "subject": "Espagnol",
+      "school_class": "3ème"
+    },
+    {
+      "teacher": "Sylla",
+      "subject": "Anglais",
+      "school_class": "6ème"
+    },
+    {
+      "teacher": "Ndour",
+      "subject": "Anglais",
+      "school_class": "5ème"
+    },
+    {
+      "teacher": "Ndour",
+      "subject": "Anglais",
+      "school_class": "4ème"
+    },
+    {
+      "teacher": "Sylla",
+      "subject": "Anglais",
+      "school_class": "3ème"
+    },
+    {
+      "teacher": "Maguette",
+      "subject": "Éducation Islamique",
+      "school_class": "6ème"
+    },
+    {
+      "teacher": "Maguette",
+      "subject": "Éducation Islamique",
+      "school_class": "5ème"
+    },
+    {
+      "teacher": "Maguette",
+      "subject": "Éducation Islamique",
+      "school_class": "4ème"
+    },
+    {
+      "teacher": "Maguette",
+      "subject": "Éducation Islamique",
+      "school_class": "3ème"
+    },
+    {
+      "teacher": "Evral",
+      "subject": "Projet Scientifique",
+      "school_class": "6ème"
+    },
+    {
+      "teacher": "Evral",
+      "subject": "Projet Scientifique",
+      "school_class": "5ème"
+    },
+    {
+      "teacher": "Evral",
+      "subject": "Projet Scientifique",
+      "school_class": "4ème"
+    },
+    {
+      "teacher": "Evral",
+      "subject": "Projet Scientifique",
+      "school_class": "3ème"
+    }
+  ],
+  "curriculum": [
+    {
+      "level": "6ème",
+      "subject": "Mathématiques",
+      "total_minutes_per_week": 240,
+      "mode": "auto",
+      "min_session_minutes": 60,
+      "max_session_minutes": 120,
+      "sessions_per_week": null,
+      "minutes_per_session": null
+    },
+    {
+      "level": "6ème",
+      "subject": "SVT",
+      "total_minutes_per_week": 210,
+      "mode": "auto",
+      "min_session_minutes": 60,
+      "max_session_minutes": 120,
+      "sessions_per_week": null,
+      "minutes_per_session": null
+    },
+    {
+      "level": "6ème",
+      "subject": "Coran",
+      "total_minutes_per_week": 300,
+      "mode": "auto",
+      "min_session_minutes": 60,
+      "max_session_minutes": 120,
+      "sessions_per_week": null,
+      "minutes_per_session": null
+    },
+    {
+      "level": "6ème",
+      "subject": "Espagnol",
+      "total_minutes_per_week": 120,
+      "mode": "auto",
+      "min_session_minutes": 60,
+      "max_session_minutes": 60,
+      "sessions_per_week": null,
+      "minutes_per_session": null
+    },
+    {
+      "level": "6ème",
+      "subject": "Anglais",
+      "total_minutes_per_week": 330,
+      "mode": "auto",
+      "min_session_minutes": 60,
+      "max_session_minutes": 120,
+      "sessions_per_week": null,
+      "minutes_per_session": null
+    },
+    {
+      "level": "6ème",
+      "subject": "Éducation Islamique",
+      "total_minutes_per_week": 60,
+      "mode": "manual",
+      "min_session_minutes": null,
+      "max_session_minutes": null,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "level": "6ème",
+      "subject": "Projet Scientifique",
+      "total_minutes_per_week": 90,
+      "mode": "manual",
+      "min_session_minutes": null,
+      "max_session_minutes": null,
+      "sessions_per_week": 1,
+      "minutes_per_session": 90
+    },
+    {
+      "level": "5ème",
+      "subject": "Mathématiques",
+      "total_minutes_per_week": 240,
+      "mode": "auto",
+      "min_session_minutes": 60,
+      "max_session_minutes": 120,
+      "sessions_per_week": null,
+      "minutes_per_session": null
+    },
+    {
+      "level": "5ème",
+      "subject": "SVT",
+      "total_minutes_per_week": 180,
+      "mode": "auto",
+      "min_session_minutes": 60,
+      "max_session_minutes": 90,
+      "sessions_per_week": null,
+      "minutes_per_session": null
+    },
+    {
+      "level": "5ème",
+      "subject": "Coran",
+      "total_minutes_per_week": 300,
+      "mode": "auto",
+      "min_session_minutes": 60,
+      "max_session_minutes": 120,
+      "sessions_per_week": null,
+      "minutes_per_session": null
+    },
+    {
+      "level": "5ème",
+      "subject": "Espagnol",
+      "total_minutes_per_week": 120,
+      "mode": "auto",
+      "min_session_minutes": 60,
+      "max_session_minutes": 60,
+      "sessions_per_week": null,
+      "minutes_per_session": null
+    },
+    {
+      "level": "5ème",
+      "subject": "Anglais",
+      "total_minutes_per_week": 300,
+      "mode": "auto",
+      "min_session_minutes": 60,
+      "max_session_minutes": 120,
+      "sessions_per_week": null,
+      "minutes_per_session": null
+    },
+    {
+      "level": "5ème",
+      "subject": "Éducation Islamique",
+      "total_minutes_per_week": 60,
+      "mode": "manual",
+      "min_session_minutes": null,
+      "max_session_minutes": null,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "level": "5ème",
+      "subject": "Projet Scientifique",
+      "total_minutes_per_week": 90,
+      "mode": "manual",
+      "min_session_minutes": null,
+      "max_session_minutes": null,
+      "sessions_per_week": 1,
+      "minutes_per_session": 90
+    },
+    {
+      "level": "4ème",
+      "subject": "Mathématiques",
+      "total_minutes_per_week": 240,
+      "mode": "auto",
+      "min_session_minutes": 60,
+      "max_session_minutes": 120,
+      "sessions_per_week": null,
+      "minutes_per_session": null
+    },
+    {
+      "level": "4ème",
+      "subject": "SVT",
+      "total_minutes_per_week": 240,
+      "mode": "auto",
+      "min_session_minutes": 60,
+      "max_session_minutes": 120,
+      "sessions_per_week": null,
+      "minutes_per_session": null
+    },
+    {
+      "level": "4ème",
+      "subject": "Physique-Chimie",
+      "total_minutes_per_week": 180,
+      "mode": "auto",
+      "min_session_minutes": 60,
+      "max_session_minutes": 90,
+      "sessions_per_week": null,
+      "minutes_per_session": null
+    },
+    {
+      "level": "4ème",
+      "subject": "Coran",
+      "total_minutes_per_week": 300,
+      "mode": "auto",
+      "min_session_minutes": 60,
+      "max_session_minutes": 120,
+      "sessions_per_week": null,
+      "minutes_per_session": null
+    },
+    {
+      "level": "4ème",
+      "subject": "Espagnol",
+      "total_minutes_per_week": 120,
+      "mode": "auto",
+      "min_session_minutes": 60,
+      "max_session_minutes": 60,
+      "sessions_per_week": null,
+      "minutes_per_session": null
+    },
+    {
+      "level": "4ème",
+      "subject": "Anglais",
+      "total_minutes_per_week": 300,
+      "mode": "auto",
+      "min_session_minutes": 60,
+      "max_session_minutes": 120,
+      "sessions_per_week": null,
+      "minutes_per_session": null
+    },
+    {
+      "level": "4ème",
+      "subject": "Éducation Islamique",
+      "total_minutes_per_week": 60,
+      "mode": "manual",
+      "min_session_minutes": null,
+      "max_session_minutes": null,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "level": "4ème",
+      "subject": "Projet Scientifique",
+      "total_minutes_per_week": 90,
+      "mode": "manual",
+      "min_session_minutes": null,
+      "max_session_minutes": null,
+      "sessions_per_week": 1,
+      "minutes_per_session": 90
+    },
+    {
+      "level": "3ème",
+      "subject": "Mathématiques",
+      "total_minutes_per_week": 360,
+      "mode": "auto",
+      "min_session_minutes": 60,
+      "max_session_minutes": 120,
+      "sessions_per_week": null,
+      "minutes_per_session": null
+    },
+    {
+      "level": "3ème",
+      "subject": "SVT",
+      "total_minutes_per_week": 270,
+      "mode": "auto",
+      "min_session_minutes": 60,
+      "max_session_minutes": 90,
+      "sessions_per_week": null,
+      "minutes_per_session": null
+    },
+    {
+      "level": "3ème",
+      "subject": "Physique-Chimie",
+      "total_minutes_per_week": 300,
+      "mode": "auto",
+      "min_session_minutes": 60,
+      "max_session_minutes": 120,
+      "sessions_per_week": null,
+      "minutes_per_session": null
+    },
+    {
+      "level": "3ème",
+      "subject": "Coran",
+      "total_minutes_per_week": 300,
+      "mode": "auto",
+      "min_session_minutes": 60,
+      "max_session_minutes": 120,
+      "sessions_per_week": null,
+      "minutes_per_session": null
+    },
+    {
+      "level": "3ème",
+      "subject": "Espagnol",
+      "total_minutes_per_week": 120,
+      "mode": "auto",
+      "min_session_minutes": 60,
+      "max_session_minutes": 60,
+      "sessions_per_week": null,
+      "minutes_per_session": null
+    },
+    {
+      "level": "3ème",
+      "subject": "Anglais",
+      "total_minutes_per_week": 360,
+      "mode": "auto",
+      "min_session_minutes": 60,
+      "max_session_minutes": 120,
+      "sessions_per_week": null,
+      "minutes_per_session": null
+    },
+    {
+      "level": "3ème",
+      "subject": "Éducation Islamique",
+      "total_minutes_per_week": 60,
+      "mode": "manual",
+      "min_session_minutes": null,
+      "max_session_minutes": null,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "level": "3ème",
+      "subject": "Projet Scientifique",
+      "total_minutes_per_week": 90,
+      "mode": "manual",
+      "min_session_minutes": null,
+      "max_session_minutes": null,
+      "sessions_per_week": 1,
+      "minutes_per_session": 90
+    }
+  ],
+  "constraints": [
+    {
+      "id": "H1",
+      "type": "hard",
+      "category": "start_time",
+      "priority": 0,
+      "parameters": {
+        "hour": "08:00"
+      },
+      "description_fr": "Tous les cours débutent à 8h"
+    },
+    {
+      "id": "H4",
+      "type": "hard",
+      "category": "max_consecutive",
+      "priority": 0,
+      "parameters": {
+        "max_hours": 5
+      },
+      "description_fr": "Maximum 5 heures consécutives"
+    },
+    {
+      "id": "H10",
+      "type": "hard",
+      "category": "one_teacher_per_subject_class",
+      "priority": 0,
+      "parameters": {},
+      "description_fr": "Un seul prof par matière par classe"
+    },
+    {
+      "id": "S1a",
+      "type": "soft",
+      "category": "teacher_time_preference",
+      "priority": 6,
+      "parameters": {
+        "teacher": "Samba",
+        "preferred_period": "Après-midi"
+      },
+      "description_fr": "Samba disponible après midi"
+    },
+    {
+      "id": "S4",
+      "type": "soft",
+      "category": "subject_spread",
+      "priority": 8,
+      "parameters": {},
+      "description_fr": "Les cours de même sujet d'une même classe sont séparés d'un jour au moins"
+    },
+    {
+      "id": "S5",
+      "type": "soft",
+      "category": "heavy_subjects_morning",
+      "priority": 6,
+      "parameters": {
+        "subjects": [
+          "Mathématiques",
+          "SVT",
+          "Physique-Chimie"
+        ]
+      },
+      "description_fr": "Mettre les cours scientifiques le matin"
+    },
+    {
+      "id": "H2a",
+      "type": "hard",
+      "category": "start_time_exceptions",
+      "priority": 0,
+      "parameters": {
+        "default_hour": "08:00",
+        "exceptions": [
+          {
+            "teacher": "Ibrahima",
+            "hour": "09:00"
+          }
+        ]
+      },
+      "description_fr": "Ibrahima débute à 9h"
+    }
+  ],
+  "_verification": {
+    "expected_teacher_assignments": {
+      "Samba": {
+        "Mathématiques": [
+          "6ème",
+          "4ème"
+        ],
+        "_total_hours": 8
+      },
+      "Ibrahima": {
+        "Mathématiques": [
+          "5ème"
+        ],
+        "_total_hours": 4
+      },
+      "Toumane": {
+        "Mathématiques": [
+          "3ème"
+        ],
+        "_total_hours": 6
+      },
+      "Camara": {
+        "SVT": [
+          "6ème"
+        ],
+        "_total_hours": 3.5
+      },
+      "Diaw": {
+        "SVT": [
+          "5ème",
+          "4ème",
+          "3ème"
+        ],
+        "_total_hours": 11.5
+      },
+      "Thioune": {
+        "Physique-Chimie": [
+          "4ème"
+        ],
+        "_total_hours": 3
+      },
+      "Carmen": {
+        "Physique-Chimie": [
+          "3ème"
+        ],
+        "_total_hours": 5
+      },
+      "Dane": {
+        "Coran": [
+          "6ème",
+          "3ème"
+        ],
+        "_total_hours": 10
+      },
+      "Mariama": {
+        "Coran": [
+          "5ème"
+        ],
+        "_total_hours": 5
+      },
+      "Maguette": {
+        "Coran": [
+          "4ème"
+        ],
+        "Éducation Islamique": [
+          "6ème",
+          "5ème",
+          "4ème",
+          "3ème"
+        ],
+        "_total_hours": 9,
+        "_unavailable": "mercredi"
+      },
+      "Seniora": {
+        "Espagnol": [
+          "6ème",
+          "5ème",
+          "4ème",
+          "3ème"
+        ],
+        "_total_hours": 8
+      },
+      "Sylla": {
+        "Anglais": [
+          "6ème",
+          "3ème"
+        ],
+        "_total_hours": 11.5
+      },
+      "Ndour": {
+        "Anglais": [
+          "5ème",
+          "4ème"
+        ],
+        "_total_hours": 10,
+        "_only_works": [
+          "lundi",
+          "mercredi"
+        ]
+      },
+      "Evral": {
+        "Projet Scientifique": [
+          "6ème",
+          "5ème",
+          "4ème",
+          "3ème"
+        ],
+        "_total_hours": 6
+      }
+    },
+    "expected_total_sessions": {
+      "6ème": "26h30 = 53 slots of 30min",
+      "5ème": "25h30 = 51 slots",
+      "4ème": "28h30 = 57 slots",
+      "3ème": "34h00 = 68 slots"
+    },
+    "stress_tests": [
+      "Ndour only works Monday + Wednesday but teaches 10h of Anglais to 2 classes — that's 5h/day, nearly filling both days",
+      "3ème has 34h/week in 37.5h available slots — 91% capacity, very tight",
+      "Lab shared by SVT (all 4 levels) + PC (2 levels) = ~17h of lab sessions in max ~37.5h lab availability",
+      "Maguette teaches 2 DIFFERENT subjects (Coran + Ed.Islamique) — verify no double-booking across subjects",
+      "Maguette unavailable Wednesday — 9h of teaching in 4 days only",
+      "Projet Scientifique is 90min sessions — tests non-standard duration spanning 3 base units"
+    ]
+  }
+}

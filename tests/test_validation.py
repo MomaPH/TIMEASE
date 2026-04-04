@@ -28,6 +28,7 @@ from timease.engine.models import (
     SessionConfig,
     Subject,
     Teacher,
+    TeacherAssignment,
     TimeslotConfig,
     TimetableResult,
     _MAX_CLASSES,
@@ -72,6 +73,9 @@ def _minimal_school() -> SchoolData:
             )
         ],
         constraints=[],
+        teacher_assignments=[
+            TeacherAssignment("M. Test", "Maths", "6A"),
+        ],
     )
 
 
@@ -359,38 +363,19 @@ class TestValidateWarnings:
         warnings = sd.validate_warnings()
         assert not any("dépasse la capacité" in w for w in warnings)
 
-    def test_teacher_load_warning(self) -> None:
-        """A teacher whose sole-subject demand exceeds 80 % of max should warn."""
+    def test_teacher_with_no_assignments_warns(self) -> None:
+        """A teacher registered with no TeacherAssignments should produce a warning."""
         sd = _minimal_school()
-        # Add a second class so that one teacher must teach 2 × 60 min = 120 min
-        sd.classes.append(SchoolClass("6B", "6ème", 30))
-        sd.curriculum.append(
-            CurriculumEntry(
-                level="6ème", subject="Maths",
-                total_minutes_per_week=60,
-                mode="manual", sessions_per_week=1, minutes_per_session=60,
-            )
-        )
-        # Teacher max = 10 h = 600 min; sole demand = 2 × 60 = 120 min
-        # 80 % threshold = 480 min — 120 < 480, so NO warning yet.
+        # Add a second teacher who has no assignments
+        sd.teachers.append(Teacher("M. Extra", ["Maths"], max_hours_per_week=10))
         warnings = sd.validate_warnings()
-        assert not any("charge obligatoire" in w for w in warnings)
+        assert any("M. Extra" in w for w in warnings)
 
-    def test_teacher_heavy_load_warning(self) -> None:
-        """Sole demand > 80 % of max must produce a warning."""
+    def test_teacher_with_assignment_no_warning(self) -> None:
+        """A teacher with at least one assignment must not trigger the warning."""
         sd = _minimal_school()
-        sd.teachers[0].max_hours_per_week = 2  # max = 120 min; 80 % = 96 min
-        sd.classes.append(SchoolClass("6B", "6ème", 30))
-        sd.curriculum.append(
-            CurriculumEntry(
-                level="6ème", subject="Maths",
-                total_minutes_per_week=60,
-                mode="manual", sessions_per_week=1, minutes_per_session=60,
-            )
-        )
-        # Sole demand = 2 × 60 = 120 min > 96 min threshold
         warnings = sd.validate_warnings()
-        assert any("charge obligatoire" in w for w in warnings)
+        assert not any("M. Test" in w and "aucun cours" in w for w in warnings)
 
 
 # ---------------------------------------------------------------------------
@@ -541,3 +526,187 @@ class TestTimetableResultVerify:
         # Only possible issue: curriculum mismatch (total 120 min, expected 60 min)
         # We don't care about curriculum here — only check no double-booking
         assert not any("Double réservation" in v for v in violations)
+
+
+# ---------------------------------------------------------------------------
+# 10. from_json / to_json round-trip
+# ---------------------------------------------------------------------------
+
+class TestJsonRoundTrip:
+    def test_round_trip_preserves_all_fields(self, tmp_path: Path) -> None:
+        """load → to_json → from_json must reproduce identical field values."""
+        original = SchoolData.from_json(SAMPLE_JSON)
+        out_path  = tmp_path / "school_copy.json"
+        original.to_json(out_path)
+        reloaded  = SchoolData.from_json(out_path)
+
+        assert reloaded.school.name         == original.school.name
+        assert reloaded.school.academic_year == original.school.academic_year
+        assert len(reloaded.teachers)   == len(original.teachers)
+        assert len(reloaded.classes)    == len(original.classes)
+        assert len(reloaded.rooms)      == len(original.rooms)
+        assert len(reloaded.subjects)   == len(original.subjects)
+        assert len(reloaded.curriculum) == len(original.curriculum)
+        assert len(reloaded.constraints) == len(original.constraints)
+
+        t_orig   = {t.name: t for t in original.teachers}
+        for t in reloaded.teachers:
+            assert t.subjects        == t_orig[t.name].subjects
+            assert t.max_hours_per_week == t_orig[t.name].max_hours_per_week
+
+    def test_round_trip_passes_validation(self, tmp_path: Path) -> None:
+        """Re-loaded data must still pass validate() with zero errors."""
+        original = SchoolData.from_json(SAMPLE_JSON)
+        out_path  = tmp_path / "school_copy2.json"
+        original.to_json(out_path)
+        reloaded  = SchoolData.from_json(out_path)
+        assert reloaded.validate() == []
+
+    def test_timeslot_config_preserved(self, tmp_path: Path) -> None:
+        """days, sessions, and base_unit_minutes survive the round-trip."""
+        original = SchoolData.from_json(SAMPLE_JSON)
+        out_path  = tmp_path / "school_copy3.json"
+        original.to_json(out_path)
+        reloaded  = SchoolData.from_json(out_path)
+
+        assert reloaded.timeslot_config.days == original.timeslot_config.days
+        assert reloaded.timeslot_config.base_unit_minutes == (
+            original.timeslot_config.base_unit_minutes
+        )
+        assert len(reloaded.timeslot_config.sessions) == len(
+            original.timeslot_config.sessions
+        )
+
+
+# ---------------------------------------------------------------------------
+# 11. validate_warnings(): S1/S5 soft-constraint conflict
+# ---------------------------------------------------------------------------
+
+class TestS1S5ConflictWarning:
+    def _make_conflicting_school(self) -> SchoolData:
+        """Teacher prefers afternoon (S1) but teaches a morning-preferred subject (S5)."""
+        sd = _minimal_school()
+        sd.constraints = [
+            Constraint(
+                id="S1",
+                type="soft",
+                category="teacher_time_preference",
+                description_fr="Samba préfère l'après-midi.",
+                parameters={"teacher": "M. Test", "preferred_session": "Après-midi"},
+            ),
+            Constraint(
+                id="S5",
+                type="soft",
+                category="heavy_subjects_morning",
+                description_fr="Maths le matin.",
+                parameters={"subjects": ["Maths"], "preferred_session": "Matin"},
+            ),
+        ]
+        return sd
+
+    def test_conflict_detected(self) -> None:
+        warnings = self._make_conflicting_school().validate_warnings()
+        assert any("incompatibles" in w for w in warnings), (
+            "Expected S1/S5 conflict warning, got: " + str(warnings)
+        )
+
+    def test_warning_names_teacher(self) -> None:
+        warnings = self._make_conflicting_school().validate_warnings()
+        conflict_warnings = [w for w in warnings if "incompatibles" in w]
+        assert any("M. Test" in w for w in conflict_warnings)
+
+    def test_no_conflict_when_preferences_align(self) -> None:
+        """Teacher prefers morning AND teaches a morning subject → no warning."""
+        sd = _minimal_school()
+        sd.constraints = [
+            Constraint(
+                id="S1",
+                type="soft",
+                category="teacher_time_preference",
+                description_fr="M. Test préfère le matin.",
+                parameters={"teacher": "M. Test", "preferred_session": "Matin"},
+            ),
+            Constraint(
+                id="S5",
+                type="soft",
+                category="heavy_subjects_morning",
+                description_fr="Maths le matin.",
+                parameters={"subjects": ["Maths"], "preferred_session": "Matin"},
+            ),
+        ]
+        warnings = sd.validate_warnings()
+        assert not any("incompatibles" in w for w in warnings)
+
+    def test_no_conflict_without_soft_constraints(self) -> None:
+        sd = _minimal_school()
+        sd.constraints = []
+        assert not any("incompatibles" in w for w in sd.validate_warnings())
+
+
+# ---------------------------------------------------------------------------
+# 12. ConflictAnalyzer: relaxation path
+# ---------------------------------------------------------------------------
+
+class TestConflictAnalyzerRelaxationPath:
+    """
+    Verify that the relaxation path in ConflictAnalyzer is reached and
+    produces a report when the school passes quick checks but is infeasible
+    due to one removable hard constraint.
+
+    Setup: 2 sessions that each need 60 min on a schedule with only 1 available
+    slot per class per day.  Adding a hard constraint that blocks the only
+    available day forces CP-SAT infeasibility; removing that constraint restores
+    feasibility.  Quick checks cannot catch this because teacher/hours/rooms all
+    look fine.
+    """
+
+    def _make_constrained_school(self) -> "SchoolData":
+        from timease.engine.models import (
+            Constraint, CurriculumEntry, Room, School, SchoolClass,
+            SchoolData, SessionConfig, Subject, Teacher, TimeslotConfig,
+        )
+        # Single day (lundi), 1 slot (08:00-09:00), 1 session needed.
+        # Hard constraint H3 blocks the only day → CP-SAT INFEASIBLE.
+        # Quick checks pass: teacher exists, room exists, no hour overflow
+        # (they don't check day-blocking against teacher day-off).
+        return SchoolData(
+            school=School("Relaxation Test", "2026-2027", "Dakar"),
+            timeslot_config=TimeslotConfig(
+                days=["lundi"],
+                sessions=[SessionConfig("Matin", "08:00", "09:00")],
+                base_unit_minutes=60,
+            ),
+            subjects=[Subject("Maths", "M", "#FFF")],
+            teachers=[Teacher("Prof", ["Maths"], max_hours_per_week=10)],
+            classes=[SchoolClass("6A", "6ème", 30)],
+            rooms=[Room("Salle", 40, ["Salle standard"])],
+            curriculum=[
+                CurriculumEntry("6ème", "Maths", 60, "manual",
+                                sessions_per_week=1, minutes_per_session=60),
+            ],
+            constraints=[
+                Constraint(
+                    id="H3",
+                    type="hard",
+                    category="day_off",
+                    description_fr="Lundi est bloqué.",
+                    parameters={"day": "lundi", "session": "all"},
+                ),
+            ],
+        )
+
+    def test_analyze_returns_reports(self) -> None:
+        from timease.engine.conflicts import ConflictAnalyzer
+        sd      = self._make_constrained_school()
+        reports = ConflictAnalyzer(sd).analyze()
+        assert len(reports) > 0, "Expected at least one conflict report"
+
+    def test_relaxation_source_present(self) -> None:
+        """At least one report must come from the relaxation path."""
+        from timease.engine.conflicts import ConflictAnalyzer
+        sd      = self._make_constrained_school()
+        reports = ConflictAnalyzer(sd).analyze()
+        sources = {r.source for r in reports}
+        assert "relaxation" in sources, (
+            f"No relaxation-source report; sources found: {sources}"
+        )

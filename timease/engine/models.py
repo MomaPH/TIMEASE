@@ -186,7 +186,6 @@ class CurriculumEntry:
     # --- auto mode ---
     min_session_minutes: int | None = None
     max_session_minutes: int | None = None
-
     def validate(self) -> None:
         """Raise ValueError if the entry is internally inconsistent."""
         if self.total_minutes_per_week <= 0:
@@ -205,6 +204,15 @@ class CurriculumEntry:
                 f"Le mode '{self.mode}' est invalide pour '{self.subject}' "
                 f"(niveau {self.level}). Valeurs acceptées : 'manual', 'auto'."
             )
+
+
+@dataclass
+class TeacherAssignment:
+    """Explicit binding: this teacher teaches this subject to this class."""
+
+    teacher: str        # must match Teacher.name
+    subject: str        # must match Subject.name
+    school_class: str   # must match SchoolClass.name
 
 
 # ---------------------------------------------------------------------------
@@ -251,6 +259,11 @@ class TimetableResult:
     solved: bool
     solve_time_seconds: float
     conflicts: list[dict] | None = None
+    # partial=True when some — but not all — curriculum sessions were placed.
+    # unscheduled_sessions lists the sessions the solver had to skip (e.g. no
+    # valid time slot after domain filtering).  See solver.py for details.
+    partial: bool = False
+    unscheduled_sessions: list[dict] = field(default_factory=list)
     soft_constraints_satisfied: list[str] = field(default_factory=list)
     soft_constraints_violated: list[str] = field(default_factory=list)
     soft_constraint_details: list[dict] = field(default_factory=list)
@@ -385,6 +398,7 @@ class SchoolData:
     rooms: list[Room]
     curriculum: list[CurriculumEntry]
     constraints: list[Constraint]
+    teacher_assignments: list[TeacherAssignment] = field(default_factory=list)
 
     # ------------------------------------------------------------------
     # Validation
@@ -489,7 +503,7 @@ class SchoolData:
                     f"La contrainte '{constraint.id}' a un type invalide "
                     f"'{constraint.type}' (valeurs acceptées : 'hard', 'soft')."
                 )
-            if not (1 <= constraint.priority <= 10):
+            if constraint.type == "soft" and not (1 <= constraint.priority <= 10):
                 errors.append(
                     f"La contrainte '{constraint.id}' a une priorité invalide "
                     f"({constraint.priority}) — doit être comprise entre 1 et 10."
@@ -531,16 +545,6 @@ class SchoolData:
         for entry in self.curriculum:
             if entry.subject not in subject_names:
                 continue
-            qualified = [t for t in self.teachers if entry.subject in t.subjects]
-            if not qualified:
-                errors.append(
-                    f"Aucun enseignant qualifié pour la matière '{entry.subject}' "
-                    f"(niveau {entry.level})."
-                )
-
-        for entry in self.curriculum:
-            if entry.subject not in subject_names:
-                continue
             required_type = subject_map[entry.subject].required_room_type
             if required_type is not None:
                 compatible = [r for r in self.rooms if required_type in r.types]
@@ -550,21 +554,83 @@ class SchoolData:
                         f"pour la matière '{entry.subject}'."
                     )
 
-        subject_total_minutes: dict[str, int] = defaultdict(int)
-        for entry in self.curriculum:
-            subject_total_minutes[entry.subject] += entry.total_minutes_per_week
+        # --- TeacherAssignment validation ---
+        teacher_names = {t.name for t in self.teachers}
+        class_names   = {c.name for c in self.classes}
+        subject_names_set = {s.name for s in self.subjects}
+        teacher_map_val = {t.name: t for t in self.teachers}
 
-        for subject_name, total_minutes in subject_total_minutes.items():
-            qualified = [t for t in self.teachers if subject_name in t.subjects]
-            if len(qualified) == 1:
-                teacher = qualified[0]
-                if teacher.max_hours_per_week * 60 < total_minutes:
+        # Check for unknown references in TeacherAssignment
+        seen_assignments: set[tuple[str, str]] = set()
+        for ta in self.teacher_assignments:
+            if ta.teacher not in teacher_names:
+                errors.append(
+                    f"TeacherAssignment: l'enseignant '{ta.teacher}' est inconnu."
+                )
+            if ta.subject not in subject_names_set:
+                errors.append(
+                    f"TeacherAssignment: la matière '{ta.subject}' est inconnue."
+                )
+            if ta.school_class not in class_names:
+                errors.append(
+                    f"TeacherAssignment: la classe '{ta.school_class}' est inconnue."
+                )
+            # Check qualification
+            t = teacher_map_val.get(ta.teacher)
+            if t is not None and ta.subject in subject_names_set:
+                if ta.subject not in t.subjects:
                     errors.append(
-                        f"L'enseignant '{teacher.name}' est le seul qualifié pour "
-                        f"'{subject_name}', mais sa capacité maximale "
-                        f"({teacher.max_hours_per_week} h/semaine) est insuffisante "
-                        f"pour couvrir les {total_minutes} minutes de curriculum hebdomadaire."
+                        f"TeacherAssignment: l'enseignant '{ta.teacher}' n'est pas "
+                        f"qualifié pour '{ta.subject}'."
                     )
+            # Duplicate check
+            key = (ta.school_class, ta.subject)
+            if key in seen_assignments:
+                errors.append(
+                    f"TeacherAssignment en double pour la classe '{ta.school_class}' "
+                    f"et la matière '{ta.subject}'."
+                )
+            seen_assignments.add(key)
+
+        # Check that every (class, subject) pair has an assignment
+        class_level_map = {c.name: c.level for c in self.classes}
+        curriculum_by_level: dict[str, list] = defaultdict(list)
+        for entry in self.curriculum:
+            curriculum_by_level[entry.level].append(entry)
+
+        for cls in self.classes:
+            level_entries = curriculum_by_level.get(cls.level, [])
+            for entry in level_entries:
+                if entry.subject not in subject_names_set:
+                    continue  # already reported above
+                if (cls.name, entry.subject) not in seen_assignments:
+                    errors.append(
+                        f"Aucune TeacherAssignment pour la classe '{cls.name}' "
+                        f"et la matière '{entry.subject}'."
+                    )
+
+        # Check teacher capacity
+        curriculum_minutes_map: dict[tuple[str, str], int] = {
+            (e.level, e.subject): e.total_minutes_per_week
+            for e in self.curriculum
+        }
+        teacher_assigned_minutes: dict[str, int] = defaultdict(int)
+        for ta in self.teacher_assignments:
+            level = class_level_map.get(ta.school_class)
+            if level is None:
+                continue
+            minutes = curriculum_minutes_map.get((level, ta.subject), 0)
+            teacher_assigned_minutes[ta.teacher] += minutes
+
+        for teacher in self.teachers:
+            assigned = teacher_assigned_minutes.get(teacher.name, 0)
+            max_min = teacher.max_hours_per_week * 60
+            if assigned > max_min:
+                errors.append(
+                    f"L'enseignant '{teacher.name}' a {assigned} min assignées "
+                    f"({assigned // 60}h{assigned % 60:02d}) mais son maximum est "
+                    f"{teacher.max_hours_per_week}h/semaine."
+                )
 
         return errors
 
@@ -599,26 +665,44 @@ class SchoolData:
                         f"pour la matière '{entry.subject}'."
                     )
 
-        # --- Teacher sole-subject load approaching capacity (> 80 %) ---
-        teacher_sole_minutes: dict[str, int] = defaultdict(int)
-        for entry in self.curriculum:
-            n_classes = len(class_by_level.get(entry.level, []))
-            qualified = [t for t in self.teachers if entry.subject in t.subjects]
-            if len(qualified) == 1:
-                teacher_sole_minutes[qualified[0].name] += (
-                    entry.total_minutes_per_week * n_classes
+        # --- Teacher with zero assignments ---
+        assigned_teachers = {ta.teacher for ta in self.teacher_assignments}
+        for teacher in self.teachers:
+            if teacher.name not in assigned_teachers:
+                warnings.append(
+                    f"L'enseignant '{teacher.name}' est enregistré mais n'a aucun cours "
+                    f"assigné. Est-ce intentionnel ?"
                 )
 
-        for teacher in self.teachers:
-            sole_min = teacher_sole_minutes.get(teacher.name, 0)
-            if sole_min == 0:
+        # --- Conflicting soft constraints: afternoon preference vs morning subjects ---
+        # Detect teacher with teacher_time_preference=Après-midi who also teaches
+        # subjects listed in heavy_subjects_morning.  These constraints compete
+        # directly and one will always be sacrificed.
+        morning_subjects: set[str] = set()
+        afternoon_pref_teachers: set[str] = set()
+        for c in self.constraints:
+            if c.type != "soft":
                 continue
-            threshold = int(teacher.max_hours_per_week * 60 * 0.8)
-            if sole_min > threshold:
+            if c.category == "heavy_subjects_morning":
+                morning_subjects.update(c.parameters.get("subjects", []))
+            elif c.category == "teacher_time_preference":
+                pref = c.parameters.get("preferred_session", "")
+                if "après" in pref.lower() or "apres" in pref.lower():
+                    t_name = c.parameters.get("teacher", "")
+                    if t_name:
+                        afternoon_pref_teachers.add(t_name)
+
+        for t_name in afternoon_pref_teachers:
+            teacher = next((t for t in self.teachers if t.name == t_name), None)
+            if teacher is None:
+                continue
+            conflicts_with_morning = [s for s in teacher.subjects if s in morning_subjects]
+            if conflicts_with_morning:
                 warnings.append(
-                    f"L'enseignant '{teacher.name}' a une charge obligatoire de "
-                    f"{sole_min / 60:.1f}h/semaine sur les matières où il/elle est "
-                    f"le/la seul(e) qualifié(e) ({teacher.max_hours_per_week}h max)."
+                    f"L'enseignant '{t_name}' préfère l'après-midi (teacher_time_preference) "
+                    f"mais enseigne des matières prioritairement le matin "
+                    f"(heavy_subjects_morning) : {conflicts_with_morning}. "
+                    f"Ces contraintes sont incompatibles — l'une sera sacrifiée."
                 )
 
         return warnings
@@ -657,4 +741,8 @@ class SchoolData:
             rooms=[Room(**r) for r in data["rooms"]],
             curriculum=[CurriculumEntry(**e) for e in data["curriculum"]],
             constraints=[Constraint(**c) for c in data["constraints"]],
+            teacher_assignments=[
+                TeacherAssignment(**ta)
+                for ta in data.get("teacher_assignments", [])
+            ],
         )

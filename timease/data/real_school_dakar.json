@@ -87,110 +87,187 @@
   "teachers": [
     {
       "name": "Samba Diallo",
-      "subjects": ["Mathématiques"],
+      "subjects": [
+        "Mathématiques"
+      ],
       "max_hours_per_week": 20,
       "unavailable_slots": [],
       "preference_weight": 1.0
     },
     {
       "name": "Fatou Mbaye",
-      "subjects": ["Mathématiques"],
+      "subjects": [
+        "Mathématiques"
+      ],
       "max_hours_per_week": 20,
       "unavailable_slots": [],
       "preference_weight": 1.0
     },
     {
       "name": "Rokhaya Gaye",
-      "subjects": ["Mathématiques"],
+      "subjects": [
+        "Mathématiques"
+      ],
       "max_hours_per_week": 15,
       "unavailable_slots": [],
       "preference_weight": 1.0
     },
     {
       "name": "Ibrahima Sow",
-      "subjects": ["SVT", "Physique-Chimie"],
+      "subjects": [
+        "SVT",
+        "Physique-Chimie"
+      ],
       "max_hours_per_week": 18,
       "unavailable_slots": [
-        {"day": "lundi",    "start": "08:00", "end": "09:00", "session": null},
-        {"day": "mardi",    "start": "08:00", "end": "09:00", "session": null},
-        {"day": "mercredi", "start": "08:00", "end": "09:00", "session": null},
-        {"day": "jeudi",    "start": "08:00", "end": "09:00", "session": null},
-        {"day": "vendredi", "start": "08:00", "end": "09:00", "session": null}
+        {
+          "day": "lundi",
+          "start": "08:00",
+          "end": "09:00",
+          "session": null
+        },
+        {
+          "day": "mardi",
+          "start": "08:00",
+          "end": "09:00",
+          "session": null
+        },
+        {
+          "day": "mercredi",
+          "start": "08:00",
+          "end": "09:00",
+          "session": null
+        },
+        {
+          "day": "jeudi",
+          "start": "08:00",
+          "end": "09:00",
+          "session": null
+        },
+        {
+          "day": "vendredi",
+          "start": "08:00",
+          "end": "09:00",
+          "session": null
+        }
       ],
       "preference_weight": 1.0
     },
     {
       "name": "Aissatou Fall",
-      "subjects": ["SVT", "Physique-Chimie"],
+      "subjects": [
+        "SVT",
+        "Physique-Chimie"
+      ],
       "max_hours_per_week": 15,
       "unavailable_slots": [],
       "preference_weight": 1.0
     },
     {
       "name": "Modou Fall",
-      "subjects": ["SVT", "Physique-Chimie"],
+      "subjects": [
+        "SVT",
+        "Physique-Chimie"
+      ],
       "max_hours_per_week": 18,
       "unavailable_slots": [],
       "preference_weight": 1.0
     },
     {
       "name": "Maguette Diop",
-      "subjects": ["Coran"],
+      "subjects": [
+        "Coran"
+      ],
       "max_hours_per_week": 25,
       "unavailable_slots": [
-        {"day": "mercredi", "start": null, "end": null, "session": "all"}
+        {
+          "day": "mercredi",
+          "start": null,
+          "end": null,
+          "session": "all"
+        }
       ],
       "preference_weight": 1.0
     },
     {
       "name": "Abdoulaye Kane",
-      "subjects": ["Coran"],
+      "subjects": [
+        "Coran"
+      ],
       "max_hours_per_week": 25,
       "unavailable_slots": [],
       "preference_weight": 1.0
     },
     {
       "name": "Omar Sy",
-      "subjects": ["Espagnol"],
+      "subjects": [
+        "Espagnol"
+      ],
       "max_hours_per_week": 16,
       "unavailable_slots": [],
       "preference_weight": 1.0
     },
     {
       "name": "Cheikh Ndour",
-      "subjects": ["Espagnol", "Anglais"],
+      "subjects": [
+        "Espagnol",
+        "Anglais"
+      ],
       "max_hours_per_week": 12,
       "unavailable_slots": [
-        {"day": "mardi",    "start": null, "end": null, "session": "all"},
-        {"day": "jeudi",    "start": null, "end": null, "session": "all"},
-        {"day": "vendredi", "start": null, "end": null, "session": "all"}
+        {
+          "day": "mardi",
+          "start": null,
+          "end": null,
+          "session": "all"
+        },
+        {
+          "day": "jeudi",
+          "start": null,
+          "end": null,
+          "session": "all"
+        },
+        {
+          "day": "vendredi",
+          "start": null,
+          "end": null,
+          "session": "all"
+        }
       ],
       "preference_weight": 1.0
     },
     {
       "name": "Mariama Ba",
-      "subjects": ["Anglais"],
+      "subjects": [
+        "Anglais"
+      ],
       "max_hours_per_week": 18,
       "unavailable_slots": [],
       "preference_weight": 1.0
     },
     {
       "name": "Ndeye Toure",
-      "subjects": ["Anglais"],
+      "subjects": [
+        "Anglais"
+      ],
       "max_hours_per_week": 18,
       "unavailable_slots": [],
       "preference_weight": 1.0
     },
     {
       "name": "Baye Diallo",
-      "subjects": ["Éducation Islamique"],
+      "subjects": [
+        "Éducation Islamique"
+      ],
       "max_hours_per_week": 5,
       "unavailable_slots": [],
       "preference_weight": 1.0
     },
     {
       "name": "Aminata Sarr",
-      "subjects": ["EPS"],
+      "subjects": [
+        "EPS"
+      ],
       "max_hours_per_week": 15,
       "unavailable_slots": [],
       "preference_weight": 1.0
@@ -222,227 +299,401 @@
     {
       "name": "Salle 1",
       "capacity": 35,
-      "types": ["Salle standard"]
+      "types": [
+        "Salle standard"
+      ]
     },
     {
       "name": "Salle 2",
       "capacity": 35,
-      "types": ["Salle standard"]
+      "types": [
+        "Salle standard"
+      ]
     },
     {
       "name": "Salle 3",
       "capacity": 35,
-      "types": ["Salle standard"]
+      "types": [
+        "Salle standard"
+      ]
     },
     {
       "name": "Salle 4",
       "capacity": 35,
-      "types": ["Salle standard"]
+      "types": [
+        "Salle standard"
+      ]
     },
     {
       "name": "Laboratoire",
       "capacity": 35,
-      "types": ["Laboratoire"]
+      "types": [
+        "Laboratoire"
+      ]
     },
     {
       "name": "Terrain",
       "capacity": 200,
-      "types": ["EPS"]
+      "types": [
+        "EPS"
+      ]
     }
   ],
   "curriculum": [
     {
-      "level": "6ème", "subject": "Mathématiques",
-      "total_minutes_per_week": 180, "mode": "auto",
-      "sessions_per_week": null, "minutes_per_session": null,
-      "min_session_minutes": 60, "max_session_minutes": 60
+      "level": "6ème",
+      "subject": "Mathématiques",
+      "total_minutes_per_week": 180,
+      "mode": "auto",
+      "sessions_per_week": null,
+      "minutes_per_session": null,
+      "min_session_minutes": 60,
+      "max_session_minutes": 60
     },
     {
-      "level": "6ème", "subject": "SVT",
-      "total_minutes_per_week": 180, "mode": "auto",
-      "sessions_per_week": null, "minutes_per_session": null,
-      "min_session_minutes": 60, "max_session_minutes": 60
+      "level": "6ème",
+      "subject": "SVT",
+      "total_minutes_per_week": 180,
+      "mode": "auto",
+      "sessions_per_week": null,
+      "minutes_per_session": null,
+      "min_session_minutes": 60,
+      "max_session_minutes": 60
     },
     {
-      "level": "6ème", "subject": "Physique-Chimie",
-      "total_minutes_per_week": 120, "mode": "auto",
-      "sessions_per_week": null, "minutes_per_session": null,
-      "min_session_minutes": 60, "max_session_minutes": 60
+      "level": "6ème",
+      "subject": "Physique-Chimie",
+      "total_minutes_per_week": 120,
+      "mode": "auto",
+      "sessions_per_week": null,
+      "minutes_per_session": null,
+      "min_session_minutes": 60,
+      "max_session_minutes": 60
     },
     {
-      "level": "6ème", "subject": "Coran",
-      "total_minutes_per_week": 300, "mode": "auto",
-      "sessions_per_week": null, "minutes_per_session": null,
-      "min_session_minutes": 60, "max_session_minutes": 60
+      "level": "6ème",
+      "subject": "Coran",
+      "total_minutes_per_week": 300,
+      "mode": "auto",
+      "sessions_per_week": null,
+      "minutes_per_session": null,
+      "min_session_minutes": 60,
+      "max_session_minutes": 60
     },
     {
-      "level": "6ème", "subject": "Espagnol",
-      "total_minutes_per_week": 120, "mode": "auto",
-      "sessions_per_week": null, "minutes_per_session": null,
-      "min_session_minutes": 60, "max_session_minutes": 60
+      "level": "6ème",
+      "subject": "Espagnol",
+      "total_minutes_per_week": 120,
+      "mode": "auto",
+      "sessions_per_week": null,
+      "minutes_per_session": null,
+      "min_session_minutes": 60,
+      "max_session_minutes": 60
     },
     {
-      "level": "6ème", "subject": "Anglais",
-      "total_minutes_per_week": 300, "mode": "auto",
-      "sessions_per_week": null, "minutes_per_session": null,
-      "min_session_minutes": 60, "max_session_minutes": 60
+      "level": "6ème",
+      "subject": "Anglais",
+      "total_minutes_per_week": 300,
+      "mode": "auto",
+      "sessions_per_week": null,
+      "minutes_per_session": null,
+      "min_session_minutes": 60,
+      "max_session_minutes": 60
     },
     {
-      "level": "6ème", "subject": "Éducation Islamique",
-      "total_minutes_per_week": 60, "mode": "manual",
-      "sessions_per_week": 1, "minutes_per_session": 60,
-      "min_session_minutes": null, "max_session_minutes": null
+      "level": "6ème",
+      "subject": "Éducation Islamique",
+      "total_minutes_per_week": 60,
+      "mode": "manual",
+      "sessions_per_week": 1,
+      "minutes_per_session": 60,
+      "min_session_minutes": null,
+      "max_session_minutes": null
     },
     {
-      "level": "6ème", "subject": "EPS",
-      "total_minutes_per_week": 120, "mode": "manual",
-      "sessions_per_week": 2, "minutes_per_session": 60,
-      "min_session_minutes": null, "max_session_minutes": null
+      "level": "6ème",
+      "subject": "EPS",
+      "total_minutes_per_week": 120,
+      "mode": "manual",
+      "sessions_per_week": 2,
+      "minutes_per_session": 60,
+      "min_session_minutes": null,
+      "max_session_minutes": null
     },
     {
-      "level": "5ème", "subject": "Mathématiques",
-      "total_minutes_per_week": 180, "mode": "auto",
-      "sessions_per_week": null, "minutes_per_session": null,
-      "min_session_minutes": 60, "max_session_minutes": 60
+      "level": "5ème",
+      "subject": "Mathématiques",
+      "total_minutes_per_week": 180,
+      "mode": "auto",
+      "sessions_per_week": null,
+      "minutes_per_session": null,
+      "min_session_minutes": 60,
+      "max_session_minutes": 60
     },
     {
-      "level": "5ème", "subject": "SVT",
-      "total_minutes_per_week": 120, "mode": "auto",
-      "sessions_per_week": null, "minutes_per_session": null,
-      "min_session_minutes": 60, "max_session_minutes": 60
+      "level": "5ème",
+      "subject": "SVT",
+      "total_minutes_per_week": 120,
+      "mode": "auto",
+      "sessions_per_week": null,
+      "minutes_per_session": null,
+      "min_session_minutes": 60,
+      "max_session_minutes": 60
     },
     {
-      "level": "5ème", "subject": "Physique-Chimie",
-      "total_minutes_per_week": 120, "mode": "auto",
-      "sessions_per_week": null, "minutes_per_session": null,
-      "min_session_minutes": 60, "max_session_minutes": 60
+      "level": "5ème",
+      "subject": "Physique-Chimie",
+      "total_minutes_per_week": 120,
+      "mode": "auto",
+      "sessions_per_week": null,
+      "minutes_per_session": null,
+      "min_session_minutes": 60,
+      "max_session_minutes": 60
     },
     {
-      "level": "5ème", "subject": "Coran",
-      "total_minutes_per_week": 300, "mode": "auto",
-      "sessions_per_week": null, "minutes_per_session": null,
-      "min_session_minutes": 60, "max_session_minutes": 60
+      "level": "5ème",
+      "subject": "Coran",
+      "total_minutes_per_week": 300,
+      "mode": "auto",
+      "sessions_per_week": null,
+      "minutes_per_session": null,
+      "min_session_minutes": 60,
+      "max_session_minutes": 60
     },
     {
-      "level": "5ème", "subject": "Espagnol",
-      "total_minutes_per_week": 120, "mode": "auto",
-      "sessions_per_week": null, "minutes_per_session": null,
-      "min_session_minutes": 60, "max_session_minutes": 60
+      "level": "5ème",
+      "subject": "Espagnol",
+      "total_minutes_per_week": 120,
+      "mode": "auto",
+      "sessions_per_week": null,
+      "minutes_per_session": null,
+      "min_session_minutes": 60,
+      "max_session_minutes": 60
     },
     {
-      "level": "5ème", "subject": "Anglais",
-      "total_minutes_per_week": 240, "mode": "auto",
-      "sessions_per_week": null, "minutes_per_session": null,
-      "min_session_minutes": 60, "max_session_minutes": 60
+      "level": "5ème",
+      "subject": "Anglais",
+      "total_minutes_per_week": 240,
+      "mode": "auto",
+      "sessions_per_week": null,
+      "minutes_per_session": null,
+      "min_session_minutes": 60,
+      "max_session_minutes": 60
     },
     {
-      "level": "5ème", "subject": "Éducation Islamique",
-      "total_minutes_per_week": 60, "mode": "manual",
-      "sessions_per_week": 1, "minutes_per_session": 60,
-      "min_session_minutes": null, "max_session_minutes": null
+      "level": "5ème",
+      "subject": "Éducation Islamique",
+      "total_minutes_per_week": 60,
+      "mode": "manual",
+      "sessions_per_week": 1,
+      "minutes_per_session": 60,
+      "min_session_minutes": null,
+      "max_session_minutes": null
     },
     {
-      "level": "5ème", "subject": "EPS",
-      "total_minutes_per_week": 120, "mode": "manual",
-      "sessions_per_week": 2, "minutes_per_session": 60,
-      "min_session_minutes": null, "max_session_minutes": null
+      "level": "5ème",
+      "subject": "EPS",
+      "total_minutes_per_week": 120,
+      "mode": "manual",
+      "sessions_per_week": 2,
+      "minutes_per_session": 60,
+      "min_session_minutes": null,
+      "max_session_minutes": null
     },
     {
-      "level": "4ème", "subject": "Mathématiques",
-      "total_minutes_per_week": 240, "mode": "auto",
-      "sessions_per_week": null, "minutes_per_session": null,
-      "min_session_minutes": 60, "max_session_minutes": 60
+      "level": "4ème",
+      "subject": "Mathématiques",
+      "total_minutes_per_week": 240,
+      "mode": "auto",
+      "sessions_per_week": null,
+      "minutes_per_session": null,
+      "min_session_minutes": 60,
+      "max_session_minutes": 60
     },
     {
-      "level": "4ème", "subject": "SVT",
-      "total_minutes_per_week": 120, "mode": "auto",
-      "sessions_per_week": null, "minutes_per_session": null,
-      "min_session_minutes": 60, "max_session_minutes": 60
+      "level": "4ème",
+      "subject": "SVT",
+      "total_minutes_per_week": 120,
+      "mode": "auto",
+      "sessions_per_week": null,
+      "minutes_per_session": null,
+      "min_session_minutes": 60,
+      "max_session_minutes": 60
     },
     {
-      "level": "4ème", "subject": "Physique-Chimie",
-      "total_minutes_per_week": 180, "mode": "auto",
-      "sessions_per_week": null, "minutes_per_session": null,
-      "min_session_minutes": 60, "max_session_minutes": 60
+      "level": "4ème",
+      "subject": "Physique-Chimie",
+      "total_minutes_per_week": 180,
+      "mode": "auto",
+      "sessions_per_week": null,
+      "minutes_per_session": null,
+      "min_session_minutes": 60,
+      "max_session_minutes": 60
     },
     {
-      "level": "4ème", "subject": "Coran",
-      "total_minutes_per_week": 300, "mode": "auto",
-      "sessions_per_week": null, "minutes_per_session": null,
-      "min_session_minutes": 60, "max_session_minutes": 60
+      "level": "4ème",
+      "subject": "Coran",
+      "total_minutes_per_week": 300,
+      "mode": "auto",
+      "sessions_per_week": null,
+      "minutes_per_session": null,
+      "min_session_minutes": 60,
+      "max_session_minutes": 60
     },
     {
-      "level": "4ème", "subject": "Espagnol",
-      "total_minutes_per_week": 120, "mode": "auto",
-      "sessions_per_week": null, "minutes_per_session": null,
-      "min_session_minutes": 60, "max_session_minutes": 60
+      "level": "4ème",
+      "subject": "Espagnol",
+      "total_minutes_per_week": 120,
+      "mode": "auto",
+      "sessions_per_week": null,
+      "minutes_per_session": null,
+      "min_session_minutes": 60,
+      "max_session_minutes": 60
     },
     {
-      "level": "4ème", "subject": "Anglais",
-      "total_minutes_per_week": 240, "mode": "auto",
-      "sessions_per_week": null, "minutes_per_session": null,
-      "min_session_minutes": 60, "max_session_minutes": 60
+      "level": "4ème",
+      "subject": "Anglais",
+      "total_minutes_per_week": 240,
+      "mode": "auto",
+      "sessions_per_week": null,
+      "minutes_per_session": null,
+      "min_session_minutes": 60,
+      "max_session_minutes": 60
     },
     {
-      "level": "4ème", "subject": "Éducation Islamique",
-      "total_minutes_per_week": 60, "mode": "manual",
-      "sessions_per_week": 1, "minutes_per_session": 60,
-      "min_session_minutes": null, "max_session_minutes": null
+      "level": "4ème",
+      "subject": "Éducation Islamique",
+      "total_minutes_per_week": 60,
+      "mode": "manual",
+      "sessions_per_week": 1,
+      "minutes_per_session": 60,
+      "min_session_minutes": null,
+      "max_session_minutes": null
     },
     {
-      "level": "4ème", "subject": "EPS",
-      "total_minutes_per_week": 120, "mode": "manual",
-      "sessions_per_week": 2, "minutes_per_session": 60,
-      "min_session_minutes": null, "max_session_minutes": null
+      "level": "4ème",
+      "subject": "EPS",
+      "total_minutes_per_week": 120,
+      "mode": "manual",
+      "sessions_per_week": 2,
+      "minutes_per_session": 60,
+      "min_session_minutes": null,
+      "max_session_minutes": null
     },
     {
-      "level": "3ème", "subject": "Mathématiques",
-      "total_minutes_per_week": 360, "mode": "auto",
-      "sessions_per_week": null, "minutes_per_session": null,
-      "min_session_minutes": 60, "max_session_minutes": 60
+      "level": "3ème",
+      "subject": "Mathématiques",
+      "total_minutes_per_week": 360,
+      "mode": "auto",
+      "sessions_per_week": null,
+      "minutes_per_session": null,
+      "min_session_minutes": 60,
+      "max_session_minutes": 60
     },
     {
-      "level": "3ème", "subject": "SVT",
-      "total_minutes_per_week": 270, "mode": "manual",
-      "sessions_per_week": 3, "minutes_per_session": 90,
-      "min_session_minutes": null, "max_session_minutes": null
+      "level": "3ème",
+      "subject": "SVT",
+      "total_minutes_per_week": 270,
+      "mode": "manual",
+      "sessions_per_week": 3,
+      "minutes_per_session": 90,
+      "min_session_minutes": null,
+      "max_session_minutes": null
     },
     {
-      "level": "3ème", "subject": "Physique-Chimie",
-      "total_minutes_per_week": 300, "mode": "auto",
-      "sessions_per_week": null, "minutes_per_session": null,
-      "min_session_minutes": 60, "max_session_minutes": 60
+      "level": "3ème",
+      "subject": "Physique-Chimie",
+      "total_minutes_per_week": 300,
+      "mode": "auto",
+      "sessions_per_week": null,
+      "minutes_per_session": null,
+      "min_session_minutes": 60,
+      "max_session_minutes": 60
     },
     {
-      "level": "3ème", "subject": "Coran",
-      "total_minutes_per_week": 300, "mode": "auto",
-      "sessions_per_week": null, "minutes_per_session": null,
-      "min_session_minutes": 60, "max_session_minutes": 60
+      "level": "3ème",
+      "subject": "Coran",
+      "total_minutes_per_week": 300,
+      "mode": "auto",
+      "sessions_per_week": null,
+      "minutes_per_session": null,
+      "min_session_minutes": 60,
+      "max_session_minutes": 60
     },
     {
-      "level": "3ème", "subject": "Espagnol",
-      "total_minutes_per_week": 120, "mode": "auto",
-      "sessions_per_week": null, "minutes_per_session": null,
-      "min_session_minutes": 60, "max_session_minutes": 60
+      "level": "3ème",
+      "subject": "Espagnol",
+      "total_minutes_per_week": 120,
+      "mode": "auto",
+      "sessions_per_week": null,
+      "minutes_per_session": null,
+      "min_session_minutes": 60,
+      "max_session_minutes": 60
     },
     {
-      "level": "3ème", "subject": "Anglais",
-      "total_minutes_per_week": 360, "mode": "auto",
-      "sessions_per_week": null, "minutes_per_session": null,
-      "min_session_minutes": 60, "max_session_minutes": 60
+      "level": "3ème",
+      "subject": "Anglais",
+      "total_minutes_per_week": 360,
+      "mode": "auto",
+      "sessions_per_week": null,
+      "minutes_per_session": null,
+      "min_session_minutes": 60,
+      "max_session_minutes": 60
     },
     {
-      "level": "3ème", "subject": "Éducation Islamique",
-      "total_minutes_per_week": 60, "mode": "manual",
-      "sessions_per_week": 1, "minutes_per_session": 60,
-      "min_session_minutes": null, "max_session_minutes": null
+      "level": "3ème",
+      "subject": "Éducation Islamique",
+      "total_minutes_per_week": 60,
+      "mode": "manual",
+      "sessions_per_week": 1,
+      "minutes_per_session": 60,
+      "min_session_minutes": null,
+      "max_session_minutes": null
     },
     {
-      "level": "3ème", "subject": "EPS",
-      "total_minutes_per_week": 120, "mode": "manual",
-      "sessions_per_week": 2, "minutes_per_session": 60,
-      "min_session_minutes": null, "max_session_minutes": null
+      "level": "3ème",
+      "subject": "EPS",
+      "total_minutes_per_week": 120,
+      "mode": "manual",
+      "sessions_per_week": 2,
+      "minutes_per_session": 60,
+      "min_session_minutes": null,
+      "max_session_minutes": null
     }
+  ],
+  "teacher_assignments": [
+    {"teacher": "Samba Diallo",   "subject": "Mathématiques",     "school_class": "6ème"},
+    {"teacher": "Rokhaya Gaye",   "subject": "Mathématiques",     "school_class": "5ème"},
+    {"teacher": "Fatou Mbaye",    "subject": "Mathématiques",     "school_class": "4ème"},
+    {"teacher": "Samba Diallo",   "subject": "Mathématiques",     "school_class": "3ème"},
+    {"teacher": "Ibrahima Sow",   "subject": "SVT",               "school_class": "6ème"},
+    {"teacher": "Aissatou Fall",  "subject": "SVT",               "school_class": "5ème"},
+    {"teacher": "Modou Fall",     "subject": "SVT",               "school_class": "4ème"},
+    {"teacher": "Ibrahima Sow",   "subject": "SVT",               "school_class": "3ème"},
+    {"teacher": "Aissatou Fall",  "subject": "Physique-Chimie",   "school_class": "6ème"},
+    {"teacher": "Modou Fall",     "subject": "Physique-Chimie",   "school_class": "5ème"},
+    {"teacher": "Modou Fall",     "subject": "Physique-Chimie",   "school_class": "4ème"},
+    {"teacher": "Aissatou Fall",  "subject": "Physique-Chimie",   "school_class": "3ème"},
+    {"teacher": "Maguette Diop",  "subject": "Coran",             "school_class": "6ème"},
+    {"teacher": "Abdoulaye Kane", "subject": "Coran",             "school_class": "5ème"},
+    {"teacher": "Maguette Diop",  "subject": "Coran",             "school_class": "4ème"},
+    {"teacher": "Abdoulaye Kane", "subject": "Coran",             "school_class": "3ème"},
+    {"teacher": "Omar Sy",        "subject": "Espagnol",          "school_class": "6ème"},
+    {"teacher": "Omar Sy",        "subject": "Espagnol",          "school_class": "5ème"},
+    {"teacher": "Cheikh Ndour",   "subject": "Espagnol",          "school_class": "4ème"},
+    {"teacher": "Cheikh Ndour",   "subject": "Espagnol",          "school_class": "3ème"},
+    {"teacher": "Ndeye Toure",    "subject": "Anglais",           "school_class": "6ème"},
+    {"teacher": "Mariama Ba",     "subject": "Anglais",           "school_class": "5ème"},
+    {"teacher": "Mariama Ba",     "subject": "Anglais",           "school_class": "4ème"},
+    {"teacher": "Cheikh Ndour",   "subject": "Anglais",           "school_class": "3ème"},
+    {"teacher": "Baye Diallo",    "subject": "Éducation Islamique","school_class": "6ème"},
+    {"teacher": "Baye Diallo",    "subject": "Éducation Islamique","school_class": "5ème"},
+    {"teacher": "Baye Diallo",    "subject": "Éducation Islamique","school_class": "4ème"},
+    {"teacher": "Baye Diallo",    "subject": "Éducation Islamique","school_class": "3ème"},
+    {"teacher": "Aminata Sarr",   "subject": "EPS",               "school_class": "6ème"},
+    {"teacher": "Aminata Sarr",   "subject": "EPS",               "school_class": "5ème"},
+    {"teacher": "Aminata Sarr",   "subject": "EPS",               "school_class": "4ème"},
+    {"teacher": "Aminata Sarr",   "subject": "EPS",               "school_class": "3ème"}
   ],
   "constraints": [
     {
@@ -499,7 +750,11 @@
       "description_fr": "Placer Mathématiques, SVT et Physique-Chimie le matin.",
       "priority": 2,
       "parameters": {
-        "subjects": ["Mathématiques", "SVT", "Physique-Chimie"],
+        "subjects": [
+          "Mathématiques",
+          "SVT",
+          "Physique-Chimie"
+        ],
         "preferred_session": "Matin"
       }
     }

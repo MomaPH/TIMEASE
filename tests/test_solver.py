@@ -25,6 +25,7 @@ from timease.engine.models import (
     SessionConfig,
     Subject,
     Teacher,
+    TeacherAssignment,
     TimeslotConfig,
     TimetableResult,
 )
@@ -101,6 +102,14 @@ def _make_school(constraints: list[Constraint] | None = None) -> SchoolData:
         CurriculumEntry("5ème", "SVT",             60, "manual",
                         sessions_per_week=1, minutes_per_session=60),
     ]
+    teacher_assignments = [
+        TeacherAssignment("Prof Maths",    "Mathématiques", "6ème"),
+        TeacherAssignment("Prof Français", "Français",      "6ème"),
+        TeacherAssignment("Prof SVT",      "SVT",           "6ème"),
+        TeacherAssignment("Prof Maths",    "Mathématiques", "5ème"),
+        TeacherAssignment("Prof Français", "Français",      "5ème"),
+        TeacherAssignment("Prof SVT",      "SVT",           "5ème"),
+    ]
     return SchoolData(
         school=school,
         timeslot_config=tc,
@@ -110,6 +119,7 @@ def _make_school(constraints: list[Constraint] | None = None) -> SchoolData:
         rooms=rooms,
         curriculum=curriculum,
         constraints=constraints or [],
+        teacher_assignments=teacher_assignments,
     )
 
 
@@ -431,6 +441,9 @@ class TestSoftConstraintsMatter:
             rooms=rooms,
             curriculum=curriculum,
             constraints=[soft],
+            teacher_assignments=[
+                TeacherAssignment("Prof Test", "Mathématiques", "6ème"),
+            ],
         )
 
     def _morning_count(self, assignments: list[Assignment]) -> int:
@@ -556,6 +569,7 @@ class TestMinSessionsPerDay:
             rooms=sd.rooms,
             curriculum=new_curriculum,
             constraints=sd.constraints,
+            teacher_assignments=sd.teacher_assignments,
         )
         result = TimetableSolver().solve(sd, timeout_seconds=FAST_TIMEOUT)
         assert result.solved
@@ -612,3 +626,161 @@ class TestPerformance:
             f"Solver took {elapsed:.1f}s — expected ≤ 60s"
         )
         assert len(result.assignments) > 0
+
+
+# ---------------------------------------------------------------------------
+# 14. TeacherAssignment — explicit teacher assignment
+# ---------------------------------------------------------------------------
+
+REAL_SCHOOL_JSON = Path(__file__).parent.parent / "timease" / "data" / "real_school_dakar.json"
+
+
+class TestExplicitTeacherAssignment:
+    """
+    TeacherAssignment objects drive the solver's teacher-to-class mapping.
+    The solver must use exactly the assigned teacher for each (class, subject).
+    """
+
+    def test_explicit_teacher_is_used(self) -> None:
+        """Solver uses the TeacherAssignment teacher, not a different one."""
+        sd = _make_school()
+        # All assignments are already explicit in _make_school().
+        # Verify that 6ème Français is taught by Prof Français.
+        result = TimetableSolver().solve(sd, timeout_seconds=FAST_TIMEOUT)
+        assert result.solved or result.partial
+        french_6 = [
+            a for a in result.assignments
+            if a.school_class == "6ème" and a.subject == "Français"
+        ]
+        assert all(a.teacher == "Prof Français" for a in french_6), (
+            f"Expected all 6ème Français taught by 'Prof Français'; "
+            f"got {[a.teacher for a in french_6]}"
+        )
+
+    def test_explicit_teacher_overrides_alternative(self) -> None:
+        """With two qualified teachers, TeacherAssignment pins the correct one."""
+        sd = _make_school()
+        extra_teacher = Teacher("Prof Maths 2", ["Mathématiques"], max_hours_per_week=10)
+        new_teachers  = sd.teachers + [extra_teacher]
+        # Reassign 5ème Maths to Prof Maths 2 explicitly.
+        new_assignments = [
+            TeacherAssignment("Prof Maths 2", "Mathématiques", "5ème")
+            if ta.school_class == "5ème" and ta.subject == "Mathématiques" else ta
+            for ta in sd.teacher_assignments
+        ]
+        sd = type(sd)(
+            school=sd.school, timeslot_config=sd.timeslot_config,
+            subjects=sd.subjects, teachers=new_teachers,
+            classes=sd.classes, rooms=sd.rooms,
+            curriculum=sd.curriculum, constraints=[],
+            teacher_assignments=new_assignments,
+        )
+        result = TimetableSolver().solve(sd, timeout_seconds=FAST_TIMEOUT)
+        assert result.solved or result.partial
+        maths_5 = [
+            a for a in result.assignments
+            if a.school_class == "5ème" and a.subject == "Mathématiques"
+        ]
+        assert all(a.teacher == "Prof Maths 2" for a in maths_5), (
+            "TeacherAssignment 'Prof Maths 2' should be used for 5ème Maths"
+        )
+
+    def test_all_subjects_get_teacher(self) -> None:
+        """Every curriculum entry must get a teacher from the assignments."""
+        sd     = _make_school()
+        result = TimetableSolver().solve(sd, timeout_seconds=FAST_TIMEOUT)
+        assert result.solved or result.partial
+        # All subjects must appear in the result
+        assert any(a.subject == "Français"      for a in result.assignments)
+        assert any(a.subject == "SVT"           for a in result.assignments)
+        assert any(a.subject == "Mathématiques" for a in result.assignments)
+
+    def test_validate_rejects_unknown_teacher(self) -> None:
+        """A TeacherAssignment referencing a non-existent teacher must error."""
+        sd = _make_school()
+        sd.teacher_assignments.append(
+            TeacherAssignment("Fantôme Inconnu", "Mathématiques", "6ème")
+        )
+        # Remove the valid duplicate so we only test the unknown one
+        sd.teacher_assignments = [
+            ta for ta in sd.teacher_assignments
+            if not (ta.school_class == "6ème" and ta.subject == "Mathématiques"
+                    and ta.teacher == "Prof Maths")
+        ]
+        errors = sd.validate()
+        assert any("inconnu" in e for e in errors), (
+            "Expected unknown-teacher error, got: " + str(errors)
+        )
+
+    def test_validate_rejects_unqualified_teacher(self) -> None:
+        """A TeacherAssignment for a subject the teacher can't teach must error."""
+        sd = _make_school()
+        # Replace 6ème Maths assignment with Prof Français who can't teach Maths
+        sd.teacher_assignments = [
+            TeacherAssignment("Prof Français", "Mathématiques", "6ème")
+            if ta.school_class == "6ème" and ta.subject == "Mathématiques" else ta
+            for ta in sd.teacher_assignments
+        ]
+        errors = sd.validate()
+        assert any("qualifié" in e for e in errors), (
+            "Expected unqualified-teacher error, got: " + str(errors)
+        )
+
+    def test_validate_rejects_missing_assignment(self) -> None:
+        """If a (class, subject) pair has no TeacherAssignment, validate() must error."""
+        sd = _make_school()
+        # Remove the assignment for 6ème SVT
+        sd.teacher_assignments = [
+            ta for ta in sd.teacher_assignments
+            if not (ta.school_class == "6ème" and ta.subject == "SVT")
+        ]
+        errors = sd.validate()
+        assert any("6ème" in e and "SVT" in e for e in errors), (
+            "Expected missing-assignment error for 6ème/SVT, got: " + str(errors)
+        )
+
+    def test_validate_rejects_duplicate_assignment(self) -> None:
+        """Two TeacherAssignments for the same (class, subject) must error."""
+        sd = _make_school()
+        sd.teacher_assignments.append(
+            TeacherAssignment("Prof Maths", "Mathématiques", "6ème")
+        )
+        errors = sd.validate()
+        assert any("double" in e.lower() for e in errors), (
+            "Expected duplicate-assignment error, got: " + str(errors)
+        )
+
+    @pytest.mark.skipif(
+        not REAL_SCHOOL_JSON.exists(),
+        reason="real_school_dakar.json not found",
+    )
+    def test_real_school_cheikh_gets_anglais_3eme(self) -> None:
+        """Cheikh Ndour is assigned Anglais 3ème via TeacherAssignment."""
+        sd = SchoolData.from_json(REAL_SCHOOL_JSON)
+        cheikh_anglais = next(
+            (ta for ta in sd.teacher_assignments
+             if ta.school_class == "3ème" and ta.subject == "Anglais"),
+            None,
+        )
+        assert cheikh_anglais is not None
+        assert cheikh_anglais.teacher == "Cheikh Ndour", (
+            f"Expected Cheikh Ndour for 3ème Anglais, got {cheikh_anglais.teacher}"
+        )
+        # Validate passes
+        assert sd.validate() == []
+
+    @pytest.mark.skipif(
+        not REAL_SCHOOL_JSON.exists(),
+        reason="real_school_dakar.json not found",
+    )
+    def test_real_school_cheikh_actually_teaches(self) -> None:
+        """After solving, Cheikh should have Anglais sessions in the timetable."""
+        sd     = SchoolData.from_json(REAL_SCHOOL_JSON)
+        result = TimetableSolver().solve(sd, timeout_seconds=60)
+        assert result.solved or result.partial
+        cheikh_sessions = [
+            a for a in result.assignments if a.teacher == "Cheikh Ndour"
+        ]
+        assert len(cheikh_sessions) > 0, (
+            "Cheikh Ndour should teach at least one session (Anglais 3ème)"
+        )

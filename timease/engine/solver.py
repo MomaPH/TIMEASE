@@ -57,7 +57,6 @@ from timease.engine.models import (
     Assignment,
     CurriculumEntry,
     SchoolData,
-    Teacher,
     TimetableResult,
 )
 
@@ -75,8 +74,9 @@ DEFAULT_SOLVE_TIMEOUT_SECONDS: int = 30
 
 class _SessionSpec(NamedTuple):
     """Derived scheduling parameters for one curriculum entry."""
-    sessions_per_week: int   # how many separate sessions to place
-    duration_slots: int      # length of each session in base-unit slots
+    sessions_per_week: int      # how many separate sessions to place
+    duration_slots: int         # length of each session in base-unit slots
+    remainder_duration_slots: int = 0  # last session may be shorter (0 = same as all)
 
 
 @dataclass
@@ -100,7 +100,15 @@ class _Session:
 def _compute_session_spec(
     entry: CurriculumEntry, base_unit_minutes: int
 ) -> _SessionSpec:
-    """Derive (sessions_per_week, duration_slots) for a curriculum entry."""
+    """Derive (sessions_per_week, duration_slots[, remainder_duration_slots]) for a
+    curriculum entry.
+
+    For auto-mode entries where total_minutes_per_week is not divisible by
+    min_session_minutes, first tries every multiple-of-base_unit duration in
+    [min_session_minutes, max_session_minutes] to find an exact divisor.
+    If none found, creates (n_full × d_full) + (1 × d_remainder) sessions so
+    that the scheduled total exactly matches total_minutes_per_week.
+    """
     if entry.mode == "manual":
         sessions = entry.sessions_per_week or 1
         minutes  = entry.minutes_per_session or base_unit_minutes
@@ -108,12 +116,34 @@ def _compute_session_spec(
             sessions_per_week=max(1, sessions),
             duration_slots=max(1, minutes // base_unit_minutes),
         )
-    session_minutes  = entry.min_session_minutes or min(60, entry.total_minutes_per_week)
-    duration_slots   = max(1, session_minutes // base_unit_minutes)
-    sessions_per_week = -(-entry.total_minutes_per_week // session_minutes)
+
+    total = entry.total_minutes_per_week
+    min_s = entry.min_session_minutes or min(60, total)
+    max_s = entry.max_session_minutes or total
+
+    # Clamp min_s to a valid multiple of base_unit.
+    min_s = max(base_unit_minutes, (min_s // base_unit_minutes) * base_unit_minutes) or base_unit_minutes
+
+    # Try each multiple-of-base_unit duration in [min_s, max_s] for an exact fit.
+    for d in range(min_s, max_s + 1, base_unit_minutes):
+        if total % d == 0:
+            return _SessionSpec(
+                sessions_per_week=max(1, total // d),
+                duration_slots=max(1, d // base_unit_minutes),
+            )
+
+    # No exact divisor — use min_s for full sessions plus one shorter remainder.
+    n_full, remainder = divmod(total, min_s)
+    dur_full = max(1, min_s // base_unit_minutes)
+    if remainder < base_unit_minutes:
+        # Remainder smaller than one slot — drop it (negligible rounding).
+        return _SessionSpec(sessions_per_week=max(1, n_full), duration_slots=dur_full)
+
+    dur_rem = max(1, remainder // base_unit_minutes)
     return _SessionSpec(
-        sessions_per_week=max(1, sessions_per_week),
-        duration_slots=duration_slots,
+        sessions_per_week=max(1, n_full + 1),
+        duration_slots=dur_full,
+        remainder_duration_slots=dur_rem,
     )
 
 
@@ -142,78 +172,6 @@ def _session_overlaps_unavailability(
     u_start = unavail.get("start") or "00:00"
     u_end   = unavail.get("end")   or "23:59"
     return session_start < u_end and u_start < session_end
-
-
-# ---------------------------------------------------------------------------
-# Teacher pre-assignment
-# ---------------------------------------------------------------------------
-
-def _pre_assign_teachers(
-    data: SchoolData,
-    curriculum_by_level: dict[str, list[CurriculumEntry]],
-    spec_for: dict[tuple[str, str], _SessionSpec],
-    teachers_by_subject: dict[str, list[Teacher]],
-    base_unit: int,
-) -> dict[tuple[str, str], str | None]:
-    """
-    Greedy (class, subject) → teacher assignment.
-
-    For each (class, subject) pair, pick the qualified teacher with the most
-    remaining capacity.  This eliminates all teacher-selection BoolVars from
-    the model.
-
-    Returns
-    -------
-    dict: (class_name, subject_name) → teacher_name, or None if unassignable.
-    """
-    remaining: dict[str, float] = {
-        t.name: float(t.max_hours_per_week * 60) for t in data.teachers
-    }
-    assignment: dict[tuple[str, str], str | None] = {}
-
-    # Build the full list of (class, entry) pairs to assign.
-    # Sorting strategy (most-constrained-first):
-    #   Primary:   fewest qualified teachers (scarcest subject first)
-    #   Secondary: most hours needed (harder to place first)
-    pairs: list[tuple] = []
-    for school_class in data.classes:
-        for entry in curriculum_by_level.get(school_class.level, []):
-            n_qualified = len(teachers_by_subject.get(entry.subject, []))
-            spec = spec_for.get((school_class.name, entry.subject))
-            hours = (spec.sessions_per_week * spec.duration_slots * base_unit) if spec else 0
-            pairs.append((n_qualified, -hours, school_class, entry))
-    pairs.sort(key=lambda p: (p[0], p[1]))  # fewest qualified, most hours first
-
-    for _, _, school_class, entry in pairs:
-        spec = spec_for.get((school_class.name, entry.subject))
-        if spec is None:
-            assignment[(school_class.name, entry.subject)] = None
-            continue
-
-        needed = spec.sessions_per_week * spec.duration_slots * base_unit
-
-        # Teacher selection: prefer the most specialized teacher that has capacity.
-        # "Most specialized" = fewest OTHER subjects taught.  This reserves
-        # flexible multi-subject teachers for subjects where they're truly needed.
-        best: Teacher | None = None
-        best_score: tuple = (float("inf"), float("inf"))
-        for t in teachers_by_subject.get(entry.subject, []):
-            rem = remaining.get(t.name, 0.0)
-            if rem < needed:
-                continue
-            # Score: fewer other subjects is better; more remaining capacity is better.
-            n_other = len(t.subjects) - 1
-            score = (n_other, -rem)
-            if score < best_score:
-                best, best_score = t, score
-
-        if best is not None:
-            assignment[(school_class.name, entry.subject)] = best.name
-            remaining[best.name] -= needed
-        else:
-            assignment[(school_class.name, entry.subject)] = None
-
-    return assignment
 
 
 # ---------------------------------------------------------------------------
@@ -278,13 +236,18 @@ class TimetableSolver:
         for entry in data.curriculum:
             curriculum_by_level[entry.level].append(entry)
 
-        teachers_by_subject: dict[str, list[Teacher]] = defaultdict(list)
-        for teacher in data.teachers:
-            for subject in teacher.subjects:
-                teachers_by_subject[subject].append(teacher)
-
         subject_map = {s.name: s for s in data.subjects}
         teacher_map = {t.name: t for t in data.teachers}
+
+        # Room types that are required by at least one subject — used to
+        # determine which rooms are "general purpose" vs "specialized".
+        # A room is eligible for a subject with no required_room_type only if
+        # it has NO specialized type (prevents lab rooms being used for Maths).
+        specialized_room_types: set[str] = {
+            s.required_room_type
+            for s in data.subjects
+            if s.required_room_type is not None
+        }
 
         spec_for: dict[tuple[str, str], _SessionSpec] = {}
         for school_class in data.classes:
@@ -294,11 +257,12 @@ class TimetableSolver:
                 )
 
         # ==================================================================
-        # Step 3 — Teacher pre-assignment
+        # Step 3 — Teacher assignment from TeacherAssignment list
         # ==================================================================
-        teacher_assignment = _pre_assign_teachers(
-            data, curriculum_by_level, spec_for, teachers_by_subject, base_unit
-        )
+        teacher_assignment: dict[tuple[str, str], str] = {
+            (ta.school_class, ta.subject): ta.teacher
+            for ta in data.teacher_assignments
+        }
 
         # ==================================================================
         # Step 4 — Pre-process domain-filtering hard constraints
@@ -381,7 +345,14 @@ class TimetableSolver:
                     conflicts.append({
                         "class":   school_class.name,
                         "subject": entry.subject,
-                        "reason":  "No qualified teacher with sufficient hours",
+                        "reason":  "No TeacherAssignment found for this class/subject pair",
+                    })
+                    continue
+                if teacher_name not in teacher_map:
+                    conflicts.append({
+                        "class":   school_class.name,
+                        "subject": entry.subject,
+                        "reason":  f"Teacher '{teacher_name}' not found in teachers list",
                     })
                     continue
 
@@ -398,11 +369,21 @@ class TimetableSolver:
                             if subject.required_room_type not in room.types:
                                 continue
                         else:
-                            if "Salle standard" not in room.types:
+                            # Accept any room that has no specialized type.
+                            # This prevents lab/specialist rooms from being
+                            # assigned to general subjects.
+                            if any(rt in specialized_room_types for rt in room.types):
                                 continue
                         eligible_room_idxs.append(r_idx)
 
                 for k in range(spec.sessions_per_week):
+                    # Last session may use a shorter duration (remainder split).
+                    is_last = (k == spec.sessions_per_week - 1)
+                    dur_slots_k = (
+                        spec.remainder_duration_slots
+                        if is_last and spec.remainder_duration_slots
+                        else spec.duration_slots
+                    )
                     domain: list[int] = []
 
                     for d_idx, day in enumerate(tc.days):
@@ -418,19 +399,19 @@ class TimetableSolver:
                             continue
 
                         n_day = len(day_slot_times[day])
-                        for s in _valid_start_slots(day_slot_times[day], spec.duration_slots):
+                        for s in _valid_start_slots(day_slot_times[day], dur_slots_k):
                             start_t = day_slot_times[day][s][0]
-                            end_t   = day_slot_times[day][s + spec.duration_slots - 1][1]
+                            end_t   = day_slot_times[day][s + dur_slots_k - 1][1]
 
                             # H1
                             if start_t < global_min_start:
                                 continue
                             # H3 partial (session-block level)
-                            if _is_slot_blocked(day, s, s + spec.duration_slots):
+                            if _is_slot_blocked(day, s, s + dur_slots_k):
                                 continue
                             # H7
                             if entry.subject in subject_not_last:
-                                if s + spec.duration_slots == n_day:
+                                if s + dur_slots_k == n_day:
                                     continue
                             # Teacher unavailability
                             if any(
@@ -442,13 +423,33 @@ class TimetableSolver:
 
                             domain.append(d_idx * n_slots_per_day + s)
 
+                    if not domain:
+                        # No valid time slot survived domain filtering (H1/H3/H5/H6
+                        # constraints + teacher unavailability).  Rather than adding
+                        # a new_int_var(-1,-1) that forces CP-SAT INFEASIBLE and
+                        # blocks ALL other sessions, we skip this session and mark it
+                        # as unscheduled.  The remaining sessions can still be placed,
+                        # yielding a partial timetable (partial=True in the result).
+                        #
+                        # Limitation: this only handles domain-filtering failures.
+                        # True mutual-exclusion infeasibility (all domains non-empty
+                        # but sessions can't coexist) requires an optional-interval
+                        # model rewrite — tracked as future work.
+                        conflicts.append({
+                            "class":   school_class.name,
+                            "subject": entry.subject,
+                            "session": k,
+                            "reason":  "No valid placement after domain filtering",
+                        })
+                        continue  # do NOT add to sessions / no-overlap groups
+
                     idx = len(sessions)
                     sess = _Session(
                         idx=idx,
                         class_name=school_class.name,
                         subject_name=entry.subject,
                         k=k,
-                        dur_slots=spec.duration_slots,
+                        dur_slots=dur_slots_k,
                         teacher_name=teacher_name,
                         needs_room=subject.needs_room,
                         eligible_room_idxs=eligible_room_idxs,
@@ -459,14 +460,6 @@ class TimetableSolver:
                     sessions_by_class[school_class.name].append(idx)
                     sessions_by_teacher[teacher_name].append(idx)
                     sessions_by_subject[entry.subject].append(idx)
-
-                    if not domain:
-                        conflicts.append({
-                            "class":   school_class.name,
-                            "subject": entry.subject,
-                            "session": k,
-                            "reason":  "No valid placement after domain filtering",
-                        })
 
         logger.info(
             "Built %d sessions for %d classes (%d pre-conflicts).",
@@ -491,18 +484,22 @@ class TimetableSolver:
         # ==================================================================
         model = cp_model.CpModel()
 
+        # Collect the sessions that were already excluded (empty domain) so we
+        # can report them as unscheduled in the final result.
+        domain_filtered_sessions: list[dict] = [
+            c for c in conflicts
+            if c.get("reason") == "No valid placement after domain filtering"
+        ]
+
         start_vars: dict[int, cp_model.IntVar] = {}
         for sess in sessions:
+            # Every session in `sessions` has a non-empty domain (empty-domain
+            # sessions were skipped above and recorded in conflicts).
             dom = session_domains[sess.idx]
-            if not dom:
-                # Force INFEASIBLE for this session
-                var = model.new_int_var(-1, -1,
-                    f"s|{sess.idx}|EMPTY|{sess.class_name}|{sess.subject_name}")
-            else:
-                var = model.new_int_var_from_domain(
-                    Domain.from_values(dom),
-                    f"s|{sess.idx}|{sess.class_name}|{sess.subject_name}|k{sess.k}",
-                )
+            var = model.new_int_var_from_domain(
+                Domain.from_values(dom),
+                f"s|{sess.idx}|{sess.class_name}|{sess.subject_name}|k{sess.k}",
+            )
             start_vars[sess.idx] = var
 
         # ==================================================================
@@ -678,6 +675,7 @@ class TimetableSolver:
                 solved=False,
                 solve_time_seconds=round(solve_time, 3),
                 conflicts=conflicts or [{"reason": solver.status_name(status)}],
+                unscheduled_sessions=domain_filtered_sessions,
                 soft_constraints_satisfied=[],
                 soft_constraints_violated=[],
             )
@@ -730,11 +728,16 @@ class TimetableSolver:
                 else:
                     soft_violated.append(detail["details_fr"])
 
+        # partial=True when some sessions were skipped due to domain filtering
+        # but the remaining sessions were successfully placed.
+        is_partial = len(domain_filtered_sessions) > 0
         return TimetableResult(
             assignments=assignments,
-            solved=True,
+            solved=not is_partial,
+            partial=is_partial,
             solve_time_seconds=round(solve_time, 3),
             conflicts=conflicts if conflicts else None,
+            unscheduled_sessions=domain_filtered_sessions,
             soft_constraints_satisfied=soft_satisfied,
             soft_constraints_violated=soft_violated,
             soft_constraint_details=soft_details,
