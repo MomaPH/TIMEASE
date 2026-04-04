@@ -1,10 +1,10 @@
 """
-Timetable solver for TIMEASE — Phase 2.
+Timetable solver for TIMEASE — Phase 3.
 
 Scope
 -----
-Assigns subjects AND teachers to (day, time slot) pairs for every class.
-Rooms are not yet assigned.
+Assigns subjects, teachers, AND rooms to (day, time slot) pairs for every
+class.  Soft preferences are not yet modelled.
 
 What CP-SAT is
 --------------
@@ -17,21 +17,26 @@ relaxation to find a feasible — or provably optimal — assignment.
 Key idea: you never write search loops.  You declare *what* must hold, and
 the solver figures out *how* to make it hold.
 
-Two-layer variable design
---------------------------
-Layer 1 — Session placement (from Phase 1):
+Three-layer variable design
+----------------------------
+Layer 1 — Session placement:
     x[class, subject, k, day, s] = 1  iff session k starts at slot s on day d
 
-Layer 2 — Teacher assignment (new in Phase 2):
+Layer 2 — Teacher assignment:
     t[class, subject, k, day, s, teacher] = 1
         iff that teacher teaches session k of that subject for that class
 
-The two layers are linked by:
-    sum_teacher( t[…, teacher] ) == x[class, subject, k, day, s]
+Layer 3 — Room assignment:
+    r[class, subject, k, day, s, room] = 1
+        iff that room is used for session k of that subject for that class
 
-This single equality enforces:
-  • If the session is scheduled (x=1): exactly one teacher is assigned.
-  • If it is not scheduled (x=0): no teacher is assigned.
+Layers 2 and 3 are each linked to Layer 1 by:
+    sum_teacher( t[…, teacher] ) == x[…]
+    sum_room(    r[…, room]    ) == x[…]   (only when subject.needs_room is True)
+
+These equalities enforce:
+  • If the session is scheduled (x=1): exactly one teacher AND one room.
+  • If it is not scheduled (x=0): neither teacher nor room is assigned.
 """
 
 from __future__ import annotations
@@ -188,7 +193,7 @@ class TimetableSolver:
     """
     CP-SAT based timetable solver for TIMEASE.
 
-    Phase 2 guarantees
+    Phase 3 guarantees
     ------------------
     1. Every class's weekly curriculum is scheduled (exact minutes).
     2. No class is ever in two places at the same time.
@@ -196,8 +201,13 @@ class TimetableSolver:
     4. No teacher is in two places at the same time.
     5. Teacher weekly hours do not exceed their declared maximum.
     6. Teachers are not assigned to slots they marked as unavailable.
+    7. Every session needing a room has exactly one assigned room.
+    8. Room capacity is sufficient for the class student count.
+    9. Subjects with required_room_type only use rooms of that type.
+    10. No room is used by two classes at the same time.
+    11. Subjects with needs_room=False receive room=None.
 
-    Not yet handled: room assignment, room capacity, soft preferences.
+    Not yet handled: soft preferences (morning slots, spread, balance).
     """
 
     def solve(self, data: SchoolData) -> TimetableResult:
@@ -252,6 +262,15 @@ class TimetableSolver:
         for teacher in data.teachers:
             for subject in teacher.subjects:
                 teachers_by_subject[subject].append(teacher)
+
+        # ==================================================================
+        # Step 2c — Index subjects and classes for room eligibility
+        #
+        # subject_map lets us look up needs_room and required_room_type in O(1).
+        # class_student_count lets us filter out rooms that are too small.
+        # ==================================================================
+        subject_map = {s.name: s for s in data.subjects}
+        class_student_count = {c.name: c.student_count for c in data.classes}
 
         # ==================================================================
         # Step 3 — Create the CP-SAT model
@@ -421,6 +440,102 @@ class TimetableSolver:
         )
 
         # ==================================================================
+        # Step 4c — Create Layer 3 variables: room assignment
+        #
+        # For every session placement that needs a room, and for every
+        # eligible room, create one BoolVar:
+        #
+        #   r[class, subject, k, day, s, room] = 1
+        #       iff that room hosts session k of this subject for this class.
+        #
+        # A room is eligible for a placement iff ALL of the following hold:
+        #   1. subject.needs_room is True  (EPS etc. skip room assignment)
+        #   2. room.capacity >= class.student_count
+        #   3. If subject.required_room_type is set, that type must appear
+        #      in room.types  (e.g. SVT needs "Laboratoire")
+        #
+        # Secondary indices mirror the teacher-layer indices:
+        #   room_vars_for_session[(cn, sn, k, day, s)]  → used in Step 5g
+        #   room_intervals_by_day[(room_name, day)]      → used in Step 5h
+        # ==================================================================
+
+        # (class_name, subject_name, k, day, s, room_name) → BoolVar
+        room_x: dict[tuple[str, str, int, str, int, str], cp_model.IntVar] = {}
+
+        room_vars_for_session: dict[
+            tuple[str, str, int, str, int], list[cp_model.IntVar]
+        ] = defaultdict(list)
+
+        room_intervals_by_day: dict[
+            tuple[str, str], list[cp_model.IntervalVar]
+        ] = defaultdict(list)
+
+        total_r_vars = 0
+        for (class_name, subject_name, k, day, s), x_var in x.items():
+            subject = subject_map[subject_name]
+
+            # Subjects that don't need a room (outdoor EPS, etc.) are skipped
+            # entirely — no room variable, no room constraint, room=None in output.
+            if not subject.needs_room:
+                continue
+
+            spec          = spec_for[(class_name, subject_name)]
+            student_count = class_student_count[class_name]
+            required_type = subject.required_room_type
+
+            for room in data.rooms:
+                # --- Capacity filter ------------------------------------------
+                # A room with fewer seats than students is never eligible.
+                if room.capacity < student_count:
+                    continue
+
+                # --- Room-type filter -----------------------------------------
+                # Two cases:
+                #
+                # required_type is set (e.g. "Laboratoire" for SVT):
+                #   The room must carry that type.  A room can carry multiple
+                #   types (e.g. ["Laboratoire", "Salle standard"]), so it can
+                #   still serve double duty.
+                #
+                # required_type is None (general subjects — Maths, Français…):
+                #   Only rooms that carry "Salle standard" are eligible.
+                #   This prevents specialty rooms (Laboratoire, EPS terrain)
+                #   from being allocated to regular classes just because their
+                #   large capacity makes them technically big enough.
+                if required_type is not None:
+                    if required_type not in room.types:
+                        continue
+                else:
+                    if "Salle standard" not in room.types:
+                        continue
+
+                # --- BoolVar --------------------------------------------------
+                r_var = model.new_bool_var(
+                    f"r|{class_name}|{subject_name}|k{k}|{day}|s{s}|{room.name}"
+                )
+                room_x[(class_name, subject_name, k, day, s, room.name)] = r_var
+                room_vars_for_session[(class_name, subject_name, k, day, s)].append(r_var)
+                total_r_vars += 1
+
+                # --- OptionalIntervalVar --------------------------------------
+                # Same per-day slot timeline as class and teacher intervals.
+                # is_present=r_var: the interval only "exists" when this room
+                # is chosen for this placement.
+                r_interval = model.new_optional_interval_var(
+                    start=s,
+                    size=spec.duration_slots,
+                    end=s + spec.duration_slots,
+                    is_present=r_var,
+                    name=f"riv|{room.name}|{class_name}|{subject_name}|k{k}|{day}|s{s}",
+                )
+                room_intervals_by_day[(room.name, day)].append(r_interval)
+
+        logger.info(
+            "Created %d room vars (%d placements have eligible rooms)",
+            total_r_vars, len(room_vars_for_session),
+        )
+
+        # ==================================================================
         # Step 5a — Constraint: each session is scheduled exactly once
         #
         # add_exactly_one(literals): exactly one BoolVar in the list is 1.
@@ -583,6 +698,64 @@ class TimetableSolver:
         )
 
         # ==================================================================
+        # Step 5g — Constraint: link session placement to room assignment
+        #
+        # For each placement that needs a room:
+        #
+        #   sum( r[…, room] for all eligible rooms ) == x[…]
+        #
+        # Exactly the same pattern as the teacher link (Step 5d):
+        #   x=1 → exactly one room is assigned to the session.
+        #   x=0 → no room is assigned (all room vars for this placement = 0).
+        #
+        # If no eligible room exists for a placement (all rooms too small or
+        # wrong type), that placement is disabled (x forced to 0).
+        # ==================================================================
+        room_disabled = 0
+        for key, x_var in x.items():
+            class_name, subject_name, k, day, s = key
+            subject = subject_map[subject_name]
+
+            if not subject.needs_room:
+                # No room required — room will remain None in the output.
+                continue
+
+            rvars = room_vars_for_session.get(key, [])
+            if not rvars:
+                model.add(x_var == 0)
+                room_disabled += 1
+                logger.debug(
+                    "No eligible room for %s / %s on %s slot %d — placement disabled",
+                    class_name, subject_name, day, s,
+                )
+            else:
+                model.add(sum(rvars) == x_var)
+
+        if room_disabled:
+            logger.warning(
+                "%d placements disabled: no room satisfies capacity + type requirements",
+                room_disabled,
+            )
+
+        # ==================================================================
+        # Step 5h — Constraint: each room hosts at most one class at a time
+        #
+        # One add_no_overlap per (room, day) over all optional interval vars
+        # for that room on that day.  The pattern is identical to Steps 5b
+        # (class no-overlap) and 5f (teacher no-overlap).
+        #
+        # A room that only ever appears in one placement per day needs no
+        # constraint — the `if len(ivs) > 1` guard handles this.
+        # ==================================================================
+        room_no_overlap_count = 0
+        for (room_name, day), ivs in room_intervals_by_day.items():
+            if len(ivs) > 1:
+                model.add_no_overlap(ivs)
+                room_no_overlap_count += 1
+
+        logger.info("Added %d room no-overlap constraints", room_no_overlap_count)
+
+        # ==================================================================
         # Step 6 — Solve
         #
         # Status codes:
@@ -596,8 +769,8 @@ class TimetableSolver:
         solver.parameters.log_search_progress = False
 
         logger.info(
-            "Launching CP-SAT (time limit: %ds, vars: %d session + %d teacher)...",
-            SOLVE_TIME_LIMIT_SECONDS, total_x_vars, total_t_vars,
+            "Launching CP-SAT (time limit: %ds, vars: %d session + %d teacher + %d room)...",
+            SOLVE_TIME_LIMIT_SECONDS, total_x_vars, total_t_vars, total_r_vars,
         )
         status = solver.solve(model)
         solve_time = time.perf_counter() - wall_start
@@ -629,12 +802,16 @@ class TimetableSolver:
                 soft_constraints_violated=[],
             )
 
-        # Build a quick reverse map: placement key → teacher name
-        # by scanning teacher_x for vars the solver set to 1.
+        # Build reverse maps: placement key → chosen teacher / chosen room.
         chosen_teacher: dict[tuple[str, str, int, str, int], str] = {}
         for (cn, sn, k, day, s, teacher_name), t_var in teacher_x.items():
             if solver.value(t_var) == 1:
                 chosen_teacher[(cn, sn, k, day, s)] = teacher_name
+
+        chosen_room: dict[tuple[str, str, int, str, int], str] = {}
+        for (cn, sn, k, day, s, room_name), r_var in room_x.items():
+            if solver.value(r_var) == 1:
+                chosen_room[(cn, sn, k, day, s)] = room_name
 
         assignments: list[Assignment] = []
 
@@ -642,16 +819,18 @@ class TimetableSolver:
             if solver.value(x_var) != 1:
                 continue
 
-            spec = spec_for[(class_name, subject_name)]
+            spec         = spec_for[(class_name, subject_name)]
             start_time, _ = day_slot_times[day][s]
             _, end_time   = day_slot_times[day][s + spec.duration_slots - 1]
             teacher_name  = chosen_teacher.get((class_name, subject_name, k, day, s), "")
+            # room is None for subjects with needs_room=False (EPS etc.)
+            room_name     = chosen_room.get((class_name, subject_name, k, day, s))
 
             assignments.append(Assignment(
                 school_class=class_name,
                 subject=subject_name,
                 teacher=teacher_name,
-                room=None,          # Phase 2: rooms not yet assigned
+                room=room_name,
                 day=day,
                 start_time=start_time,
                 end_time=end_time,

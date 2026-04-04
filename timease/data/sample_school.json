@@ -298,49 +298,56 @@
   "rooms": [
     {
       "name": "Salle 101",
-      "capacity": 40,
+      "capacity": 45,
       "types": [
         "Salle standard"
       ]
     },
     {
       "name": "Salle 102",
-      "capacity": 40,
+      "capacity": 45,
       "types": [
         "Salle standard"
       ]
     },
     {
       "name": "Salle 103",
-      "capacity": 40,
+      "capacity": 45,
       "types": [
         "Salle standard"
       ]
     },
     {
       "name": "Salle 104",
-      "capacity": 40,
+      "capacity": 45,
       "types": [
         "Salle standard"
       ]
     },
     {
       "name": "Salle 105",
-      "capacity": 40,
+      "capacity": 45,
       "types": [
         "Salle standard"
       ]
     },
     {
       "name": "Salle 106",
-      "capacity": 40,
+      "capacity": 45,
       "types": [
         "Salle standard"
       ]
     },
     {
       "name": "Salle 107",
-      "capacity": 30,
+      "capacity": 45,
+      "types": [
+        "Laboratoire"
+      ]
+    },
+    {
+      "name": "Salle 108",
+      "capacity": 45,
       "types": [
         "Laboratoire"
       ]

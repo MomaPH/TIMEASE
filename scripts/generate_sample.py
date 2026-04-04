@@ -164,13 +164,14 @@ def build_sample_school() -> SchoolData:
 
     # --- Rooms -------------------------------------------------------------
     rooms = [
-        Room("Salle 101", 40, ["Salle standard"]),
-        Room("Salle 102", 40, ["Salle standard"]),
-        Room("Salle 103", 40, ["Salle standard"]),
-        Room("Salle 104", 40, ["Salle standard"]),
-        Room("Salle 105", 40, ["Salle standard"]),
-        Room("Salle 106", 40, ["Salle standard"]),
-        Room("Salle 107", 30, ["Laboratoire"]),
+        Room("Salle 101", 45, ["Salle standard"]),
+        Room("Salle 102", 45, ["Salle standard"]),
+        Room("Salle 103", 45, ["Salle standard"]),
+        Room("Salle 104", 45, ["Salle standard"]),
+        Room("Salle 105", 45, ["Salle standard"]),
+        Room("Salle 106", 45, ["Salle standard"]),
+        Room("Salle 107", 45, ["Laboratoire"]),
+        Room("Salle 108", 45, ["Laboratoire"]),   # second lab — needed for 8 classes
         Room("Terrain de sport", 200, ["EPS"]),
     ]
 
