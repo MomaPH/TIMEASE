@@ -64,11 +64,9 @@ from timease.engine.models import (
 logger = logging.getLogger(__name__)
 
 # Hard wall-clock limit.
-# The compact model finds the first FEASIBLE timetable for a small school
-# (<300 lessons) in ~2 s, then keeps improving the soft objective until this
-# limit.  5 s gives a high-quality (near-optimal) solution for small schools.
-# Increase for medium/large schools (see TIMEASE docs for scaling guidelines).
-SOLVE_TIME_LIMIT_SECONDS = 5
+# Default solver timeout.  30 s is enough for most schools (~100–300 sessions).
+# Pass timeout_seconds= to TimetableSolver.solve() to override per call.
+DEFAULT_SOLVE_TIMEOUT_SECONDS: int = 30
 
 
 # ---------------------------------------------------------------------------
@@ -231,8 +229,23 @@ class TimetableSolver:
     Teachers pre-assigned before model build.
     """
 
-    def solve(self, data: SchoolData) -> TimetableResult:
-        """Build and solve the model; return a TimetableResult."""
+    def solve(
+        self,
+        data: SchoolData,
+        timeout_seconds: int = DEFAULT_SOLVE_TIMEOUT_SECONDS,
+    ) -> TimetableResult:
+        """Build and solve the model; return a TimetableResult.
+
+        Parameters
+        ----------
+        data:
+            The fully validated school data.
+        timeout_seconds:
+            Wall-clock limit for the CP-SAT solver.  The solver returns the
+            best feasible solution found within this budget.
+            Default: ``DEFAULT_SOLVE_TIMEOUT_SECONDS`` (30 s).
+            Use a shorter value (e.g. 5 s) for quick previews.
+        """
         wall_start = time.perf_counter()
 
         tc        = data.timeslot_config
@@ -460,6 +473,19 @@ class TimetableSolver:
             len(sessions), len(data.classes), len(conflicts),
         )
 
+        # Early-exit: if every session failed pre-assignment (no sessions built
+        # at all) there is nothing for CP-SAT to solve → return solved=False.
+        if not sessions and conflicts:
+            return TimetableResult(
+                assignments=[],
+                solved=False,
+                solve_time_seconds=round(time.perf_counter() - wall_start, 3),
+                conflicts=conflicts,
+                soft_constraints_satisfied=[],
+                soft_constraints_violated=[],
+                soft_constraint_details=[],
+            )
+
         # ==================================================================
         # Step 6 — Create CP-SAT model and start_vars
         # ==================================================================
@@ -624,14 +650,14 @@ class TimetableSolver:
         # Step 11 — Solve
         # ==================================================================
         solver = cp_model.CpSolver()
-        solver.parameters.max_time_in_seconds  = SOLVE_TIME_LIMIT_SECONDS
+        solver.parameters.max_time_in_seconds  = timeout_seconds
         solver.parameters.log_search_progress  = False
         n_workers = min(8, max(1, os.cpu_count() or 1))
         solver.parameters.num_search_workers   = n_workers
 
         logger.info(
             "Launching CP-SAT (limit: %ds, workers: %d)...",
-            SOLVE_TIME_LIMIT_SECONDS, n_workers,
+            timeout_seconds, n_workers,
         )
         status     = solver.solve(model)
         solve_time = time.perf_counter() - wall_start

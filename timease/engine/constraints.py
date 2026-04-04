@@ -31,6 +31,7 @@ H4  max_consecutive          — max consecutive teaching hours per class
 H8  min_break_between        — minimum gap between sessions of same subject
 H9  fixed_assignment         — force specific (class, subject, day, slot)
 H10 one_teacher_per_subject_per_class — auto-satisfied by pre-assignment (no-op)
+H11 min_sessions_per_day    — at least N sessions per class per configured day
 
 Soft preference categories (SoftConstraintBuilder)
 ---------------------------------------------------
@@ -196,6 +197,7 @@ class ConstraintBuilder:
             "min_break_between":                 self._h8_min_break_between,
             "fixed_assignment":                  self._h9_fixed_assignment,
             "one_teacher_per_subject_per_class": self._h10_no_op,
+            "min_sessions_per_day":              self._h11_min_sessions_per_day,
         }
 
     # ------------------------------------------------------------------
@@ -239,9 +241,6 @@ class ConstraintBuilder:
 
     def _h7_domain_only(self, c: Constraint, warnings: list[str]) -> None:
         logger.debug("[%s] subject_not_last_slot already applied via domain pre-filtering.", c.id)
-
-    def _h10_no_op(self, c: Constraint, warnings: list[str]) -> None:
-        logger.debug("[%s] one_teacher_per_subject_per_class auto-satisfied by pre-assignment.", c.id)
 
     # ------------------------------------------------------------------
     # H2 — start_time_exceptions
@@ -510,6 +509,48 @@ class ConstraintBuilder:
                     break  # only first unassigned session k
 
         logger.info("[%s] H9: fixed %d session(s) to %s %s %s.", c.id, fixed, class_name, day, slot_start)
+
+    # ------------------------------------------------------------------
+    # H10 — one_teacher_per_subject_per_class (no-op)
+    # ------------------------------------------------------------------
+
+    def _h10_no_op(self, c: Constraint, warnings: list[str]) -> None:
+        """Satisfied automatically by teacher pre-assignment — nothing to add."""
+
+    # ------------------------------------------------------------------
+    # H11 — min_sessions_per_day
+    # ------------------------------------------------------------------
+
+    def _h11_min_sessions_per_day(self, c: Constraint, warnings: list[str]) -> None:
+        """
+        Require at least ``min_sessions`` sessions per class on every
+        configured day.  Applies to all classes.
+
+        Parameters
+        ----------
+        min_sessions : int   (default 1)
+            Minimum number of sessions each class must have on each day.
+        """
+        min_n = int(c.parameters.get("min_sessions", 1))
+        if min_n <= 0:
+            warnings.append(
+                f"[{c.id}] H11: 'min_sessions' must be ≥ 1 (got {min_n}) — skipped."
+            )
+            return
+
+        added = 0
+        for cls_name, sess_idxs in self._sessions_by_class.items():
+            if not sess_idxs:
+                continue
+            for d_idx in range(self._n_days):
+                day_bvars = [self._on_day.get(i, d_idx) for i in sess_idxs]
+                self._model.add(sum(day_bvars) >= min_n)
+                added += 1
+
+        logger.info(
+            "[%s] H11: min %d session(s)/day enforced across %d (class × day) pairs.",
+            c.id, min_n, added,
+        )
 
 
 # ---------------------------------------------------------------------------
