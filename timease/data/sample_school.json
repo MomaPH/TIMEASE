@@ -823,7 +823,7 @@
     {
       "id": "S4",
       "type": "soft",
-      "category": "spread_across_week",
+      "category": "subject_spread",
       "description_fr": "Les matières doivent être réparties sur toute la semaine (pas deux fois le même jour).",
       "priority": 8,
       "parameters": {}
@@ -831,7 +831,7 @@
     {
       "id": "S5",
       "type": "soft",
-      "category": "morning_preference",
+      "category": "heavy_subjects_morning",
       "description_fr": "Les matières lourdes (Maths, Français) sont placées de préférence le matin.",
       "priority": 6,
       "parameters": {

@@ -17,6 +17,17 @@ from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
+# ---------------------------------------------------------------------------
+# Infrastructure safety constants — enforced regardless of subscription plan
+# ---------------------------------------------------------------------------
+
+MAX_FILE_SIZE_MB: int = 10
+MAX_SOLVE_TIMEOUT_SECONDS: int = 300
+_VALID_BASE_UNITS: frozenset[int] = frozenset({15, 30, 60})
+_MAX_CLASSES: int = 200
+_MAX_TEACHERS: int = 200
+_MAX_ROOMS: int = 100
+
 
 # ---------------------------------------------------------------------------
 # School identity
@@ -242,6 +253,115 @@ class TimetableResult:
     conflicts: list[dict] | None = None
     soft_constraints_satisfied: list[str] = field(default_factory=list)
     soft_constraints_violated: list[str] = field(default_factory=list)
+    soft_constraint_details: list[dict] = field(default_factory=list)
+
+    def verify(self, school_data: "SchoolData") -> list[str]:
+        """
+        Post-solve safety net: verifies the solver output against school_data.
+
+        Returns a list of violation messages in French.
+        An empty list means all checks passed.
+        """
+        violations: list[str] = []
+
+        def to_min(t: str) -> int:
+            h, m = t.split(":")
+            return int(h) * 60 + int(m)
+
+        def overlaps(s1: str, e1: str, s2: str, e2: str) -> bool:
+            return to_min(s1) < to_min(e2) and to_min(s2) < to_min(e1)
+
+        # Lookups
+        class_level = {c.name: c.level for c in school_data.classes}
+        class_students = {c.name: c.student_count for c in school_data.classes}
+        room_capacity = {r.name: r.capacity for r in school_data.rooms}
+        teacher_max_min = {
+            t.name: t.max_hours_per_week * 60 for t in school_data.teachers
+        }
+        curriculum_target: dict[tuple[str, str], int] = {
+            (e.level, e.subject): e.total_minutes_per_week
+            for e in school_data.curriculum
+        }
+
+        # --- No double-booking ---
+        def check_no_overlap(groups: dict) -> None:
+            for key, grp in groups.items():
+                for i, a1 in enumerate(grp):
+                    for a2 in grp[i + 1:]:
+                        if overlaps(a1.start_time, a1.end_time,
+                                    a2.start_time, a2.end_time):
+                            violations.append(
+                                f"Double réservation de '{key[0]}' "
+                                f"le {a1.day} : "
+                                f"{a1.start_time}–{a1.end_time} "
+                                f"et {a2.start_time}–{a2.end_time}."
+                            )
+
+        teacher_day: dict[tuple[str, str], list] = {}
+        room_day: dict[tuple[str, str], list] = {}
+        class_day: dict[tuple[str, str], list] = {}
+
+        for a in self.assignments:
+            teacher_day.setdefault((a.teacher, a.day), []).append(a)
+            class_day.setdefault((a.school_class, a.day), []).append(a)
+            if a.room:
+                room_day.setdefault((a.room, a.day), []).append(a)
+
+        check_no_overlap(teacher_day)
+        check_no_overlap(room_day)
+        check_no_overlap(class_day)
+
+        # --- Curriculum hours exactly matched ---
+        actual_min: dict[tuple[str, str], int] = defaultdict(int)
+        for a in self.assignments:
+            actual_min[(a.school_class, a.subject)] += (
+                to_min(a.end_time) - to_min(a.start_time)
+            )
+
+        for cls in school_data.classes:
+            level = class_level.get(cls.name)
+            if level is None:
+                continue
+            for entry in school_data.curriculum:
+                if entry.level != level:
+                    continue
+                expected = curriculum_target.get((level, entry.subject), 0)
+                actual = actual_min.get((cls.name, entry.subject), 0)
+                if actual != expected:
+                    violations.append(
+                        f"Curriculum non respecté pour '{cls.name}' / "
+                        f"'{entry.subject}' : {actual} min planifiées, "
+                        f"{expected} min attendues."
+                    )
+
+        # --- Teacher max hours respected ---
+        teacher_actual: dict[str, int] = defaultdict(int)
+        for a in self.assignments:
+            teacher_actual[a.teacher] += to_min(a.end_time) - to_min(a.start_time)
+
+        for name, actual in teacher_actual.items():
+            max_min = teacher_max_min.get(name)
+            if max_min is not None and actual > max_min:
+                violations.append(
+                    f"L'enseignant '{name}' dépasse son maximum hebdomadaire : "
+                    f"{actual // 60}h{actual % 60:02d} planifiées, "
+                    f"{max_min // 60}h maximum."
+                )
+
+        # --- Room capacity respected ---
+        for a in self.assignments:
+            if a.room is None:
+                continue
+            cap = room_capacity.get(a.room)
+            n_students = class_students.get(a.school_class)
+            if cap is not None and n_students is not None and n_students > cap:
+                violations.append(
+                    f"La salle '{a.room}' (capacité {cap}) est trop petite pour "
+                    f"la classe '{a.school_class}' ({n_students} élèves) "
+                    f"le {a.day} à {a.start_time}."
+                )
+
+        return violations
 
 
 # ---------------------------------------------------------------------------
@@ -279,10 +399,128 @@ class SchoolData:
         """
         errors: list[str] = []
 
+        # --- Individual entity validation ---
+        for teacher in self.teachers:
+            try:
+                teacher.validate()
+            except ValueError as exc:
+                errors.append(str(exc))
+
+        for cls in self.classes:
+            try:
+                cls.validate()
+            except ValueError as exc:
+                errors.append(str(exc))
+
+        for room in self.rooms:
+            try:
+                room.validate()
+            except ValueError as exc:
+                errors.append(str(exc))
+
+        for entry in self.curriculum:
+            try:
+                entry.validate()
+            except ValueError as exc:
+                errors.append(str(exc))
+
+        # --- Infrastructure safety ---
+        if self.timeslot_config.base_unit_minutes not in _VALID_BASE_UNITS:
+            errors.append(
+                f"L'unité de base doit être 15, 30 ou 60 minutes "
+                f"(valeur reçue : {self.timeslot_config.base_unit_minutes})."
+            )
+
+        for session in self.timeslot_config.sessions:
+            try:
+                start_dt = datetime.strptime(session.start_time, "%H:%M")
+                end_dt = datetime.strptime(session.end_time, "%H:%M")
+                if end_dt <= start_dt:
+                    errors.append(
+                        f"La session '{session.name}' a une heure de fin "
+                        f"({session.end_time}) inférieure ou égale à l'heure de début "
+                        f"({session.start_time})."
+                    )
+            except ValueError:
+                errors.append(
+                    f"La session '{session.name}' contient une heure invalide "
+                    f"(format attendu : HH:MM)."
+                )
+
+        if len(self.classes) > _MAX_CLASSES:
+            errors.append(
+                f"Le nombre de classes ({len(self.classes)}) dépasse le maximum "
+                f"autorisé ({_MAX_CLASSES})."
+            )
+        if len(self.teachers) > _MAX_TEACHERS:
+            errors.append(
+                f"Le nombre d'enseignants ({len(self.teachers)}) dépasse le maximum "
+                f"autorisé ({_MAX_TEACHERS})."
+            )
+        if len(self.rooms) > _MAX_ROOMS:
+            errors.append(
+                f"Le nombre de salles ({len(self.rooms)}) dépasse le maximum "
+                f"autorisé ({_MAX_ROOMS})."
+            )
+
+        # --- Data integrity: duplicate names ---
+        seen: set[str] = set()
+        for teacher in self.teachers:
+            if teacher.name in seen:
+                errors.append(f"Nom d'enseignant en double : '{teacher.name}'.")
+            seen.add(teacher.name)
+
+        seen = set()
+        for cls in self.classes:
+            if cls.name in seen:
+                errors.append(f"Nom de classe en double : '{cls.name}'.")
+            seen.add(cls.name)
+
+        seen = set()
+        for room in self.rooms:
+            if room.name in seen:
+                errors.append(f"Nom de salle en double : '{room.name}'.")
+            seen.add(room.name)
+
+        # --- Data integrity: constraints ---
+        for constraint in self.constraints:
+            if constraint.type not in ("hard", "soft"):
+                errors.append(
+                    f"La contrainte '{constraint.id}' a un type invalide "
+                    f"'{constraint.type}' (valeurs acceptées : 'hard', 'soft')."
+                )
+            if not (1 <= constraint.priority <= 10):
+                errors.append(
+                    f"La contrainte '{constraint.id}' a une priorité invalide "
+                    f"({constraint.priority}) — doit être comprise entre 1 et 10."
+                )
+
+        # --- Data integrity: curriculum mode consistency ---
+        for entry in self.curriculum:
+            if entry.mode == "auto":
+                min_s = entry.min_session_minutes
+                max_s = entry.max_session_minutes
+                if min_s is not None and max_s is not None and min_s > max_s:
+                    errors.append(
+                        f"Le curriculum '{entry.subject}' (niveau {entry.level}) "
+                        f"en mode auto a min_session_minutes ({min_s}) > "
+                        f"max_session_minutes ({max_s})."
+                    )
+            elif entry.mode == "manual":
+                spw = entry.sessions_per_week
+                mps = entry.minutes_per_session
+                if spw is not None and mps is not None:
+                    if spw * mps != entry.total_minutes_per_week:
+                        errors.append(
+                            f"Le curriculum '{entry.subject}' (niveau {entry.level}) "
+                            f"est incohérent : {spw} × {mps} min = {spw * mps} min "
+                            f"≠ total_minutes_per_week ({entry.total_minutes_per_week} min)."
+                        )
+
+        # --- Cross-entity validation ---
         subject_map = {s.name: s for s in self.subjects}
         subject_names = set(subject_map)
 
-        # 1. All subject names in curriculum must exist in the subjects list.
         for entry in self.curriculum:
             if entry.subject not in subject_names:
                 errors.append(
@@ -290,10 +528,9 @@ class SchoolData:
                     "est absente de la liste des matières."
                 )
 
-        # 2. Every curriculum subject must have at least one qualified teacher.
         for entry in self.curriculum:
             if entry.subject not in subject_names:
-                continue  # already reported above
+                continue
             qualified = [t for t in self.teachers if entry.subject in t.subjects]
             if not qualified:
                 errors.append(
@@ -301,8 +538,6 @@ class SchoolData:
                     f"(niveau {entry.level})."
                 )
 
-        # 3. Curriculum subjects that require a specific room type must have
-        #    at least one compatible room available.
         for entry in self.curriculum:
             if entry.subject not in subject_names:
                 continue
@@ -315,8 +550,6 @@ class SchoolData:
                         f"pour la matière '{entry.subject}'."
                     )
 
-        # 4. When only one teacher is qualified for a subject, that teacher's
-        #    weekly capacity must cover the full curriculum load for that subject.
         subject_total_minutes: dict[str, int] = defaultdict(int)
         for entry in self.curriculum:
             subject_total_minutes[entry.subject] += entry.total_minutes_per_week
@@ -334,6 +567,61 @@ class SchoolData:
                     )
 
         return errors
+
+    def validate_warnings(self) -> list[str]:
+        """
+        Non-blocking checks: returns informational warnings without preventing
+        timetable generation. Returns a list of warning messages in French.
+        """
+        warnings: list[str] = []
+
+        subject_map = {s.name: s for s in self.subjects}
+        class_by_level: dict[str, list[SchoolClass]] = {}
+        for cls in self.classes:
+            class_by_level.setdefault(cls.level, []).append(cls)
+
+        # --- Room capacity vs class size ---
+        for entry in self.curriculum:
+            subj = subject_map.get(entry.subject)
+            if subj is None or not subj.needs_room:
+                continue
+            room_type = subj.required_room_type or "Salle standard"
+            compatible = [r for r in self.rooms if room_type in r.types]
+            if not compatible:
+                continue  # error already reported in validate()
+            max_cap = max(r.capacity for r in compatible)
+            for cls in class_by_level.get(entry.level, []):
+                if cls.student_count > max_cap:
+                    warnings.append(
+                        f"La classe '{cls.name}' ({cls.student_count} élèves) "
+                        f"dépasse la capacité maximale des salles de type "
+                        f"'{room_type}' ({max_cap} places) "
+                        f"pour la matière '{entry.subject}'."
+                    )
+
+        # --- Teacher sole-subject load approaching capacity (> 80 %) ---
+        teacher_sole_minutes: dict[str, int] = defaultdict(int)
+        for entry in self.curriculum:
+            n_classes = len(class_by_level.get(entry.level, []))
+            qualified = [t for t in self.teachers if entry.subject in t.subjects]
+            if len(qualified) == 1:
+                teacher_sole_minutes[qualified[0].name] += (
+                    entry.total_minutes_per_week * n_classes
+                )
+
+        for teacher in self.teachers:
+            sole_min = teacher_sole_minutes.get(teacher.name, 0)
+            if sole_min == 0:
+                continue
+            threshold = int(teacher.max_hours_per_week * 60 * 0.8)
+            if sole_min > threshold:
+                warnings.append(
+                    f"L'enseignant '{teacher.name}' a une charge obligatoire de "
+                    f"{sole_min / 60:.1f}h/semaine sur les matières où il/elle est "
+                    f"le/la seul(e) qualifié(e) ({teacher.max_hours_per_week}h max)."
+                )
+
+        return warnings
 
     # ------------------------------------------------------------------
     # Serialisation
