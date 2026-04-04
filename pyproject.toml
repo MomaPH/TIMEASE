@@ -1,0 +1,15 @@
+[project]
+name = "timease"
+version = "0.1.0"
+description = "Générateur d'emploi du temps scolaire basé sur Google OR-Tools CP-SAT"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "ortools >= 9.9",
+    "reflex >= 0.8.0",
+    "openpyxl >= 3.1",
+    "reportlab >= 4.1",
+    "python-docx >= 1.1",
+    "anthropic >= 0.40",
+    "pytest >= 8.0",
+]

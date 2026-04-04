@@ -1,0 +1,7 @@
+__pycache__/
+.venv/
+*.pyc
+.reflex/
+node_modules/
+.env
+*.db
