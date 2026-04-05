@@ -7,6 +7,9 @@ clean REST API.  Sessions are kept in-memory (replace with a DB in Phase 4).
 
 from __future__ import annotations
 
+from dotenv import load_dotenv
+load_dotenv()
+
 import dataclasses
 import json
 import os

@@ -5,6 +5,9 @@ Uses the Anthropic Messages API with tool_use to extract school data
 from natural-language conversations and return structured JSON.
 """
 
+from dotenv import load_dotenv
+load_dotenv()
+
 import anthropic
 import os
 
