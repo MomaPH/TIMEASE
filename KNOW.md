@@ -1,6 +1,6 @@
 # TIMEASE — Technical Knowledge Base
 
-State as of 2026-04-04. Phase 0 — Foundation complete.
+State as of 2026-04-05. Phase 1 — Core feature complete.
 
 ---
 
@@ -15,24 +15,136 @@ TIMEASE/
 │   │   ├── constraints.py  # Hard constraint builder (H1–H11)
 │   │   ├── analysis.py  # Soft constraint analyzer (post-solve)
 │   │   ├── conflicts.py # Infeasibility diagnosis (ConflictAnalyzer)
-│   │   └── plans.py     # (exists, not detailed yet)
-│   ├── io/              # Empty stub — future Excel/PDF import-export
-│   ├── app/             # Empty stub — future Reflex web UI
+│   │   └── plans.py     # Session planning helpers
+│   ├── io/              # File import/export
+│   │   ├── file_parser.py   # Text extraction: xlsx, csv, docx, txt, pdf, json, md, yaml
+│   │   ├── excel_import.py  # Structured Excel template import
+│   │   ├── excel_export.py  # Excel timetable export
+│   │   ├── pdf_export.py    # PDF timetable export
+│   │   ├── word_export.py   # Premium Word export (cover page, headers/footers)
+│   │   └── md_export.py     # Premium Markdown export (YAML frontmatter, stats block)
+│   ├── api/
+│   │   ├── main.py      # FastAPI backend — REST API + SSE streaming
+│   │   └── ai_chat.py   # Anthropic AI chat handler (streaming + agentic loop)
 │   └── data/
-│       ├── sample_school.json       # Lycée Excellence de Dakar
-│       └── real_school_dakar.json   # Institut Islamique de Dakar
+│       ├── sample_school.json           # Lycée Excellence de Dakar (test data)
+│       ├── real_school_dakar.json       # Institut Islamique de Dakar
+│       ├── real_school_dakar_LOCKED.json  # Locked reference snapshot
+│       └── template.xlsx               # Excel import template
+├── frontend/            # Next.js 16 app (App Router, React 19, Tailwind v4)
+│   ├── app/
+│   │   ├── page.tsx             # Landing / home
+│   │   ├── workspace/page.tsx   # Main UI: AI chat + wizard form side-by-side
+│   │   ├── results/page.tsx     # Timetable viewer + export buttons
+│   │   ├── collaboration/page.tsx  # Teacher invitation links
+│   │   └── collab/[token]/page.tsx # Teacher availability portal (public)
+│   ├── components/
+│   │   ├── ChatMessage.tsx      # Markdown rendering, copy button, option chips
+│   │   ├── StepIndicator.tsx    # 9-step horizontal wizard bar
+│   │   ├── StepPanel.tsx        # Editable form for each wizard step
+│   │   ├── FileImportModal.tsx  # Post-upload import summary
+│   │   ├── TimetableGrid.tsx    # Timetable table with subject color fills
+│   │   ├── ClientLayout.tsx     # Root client layout wrapper
+│   │   ├── Sidebar.tsx          # Navigation sidebar
+│   │   └── Toast.tsx            # Toast notification system
+│   ├── hooks/
+│   │   └── useSession.ts        # Session state + localStorage persistence
+│   └── lib/
+│       ├── api.ts               # All fetch calls to backend (incl. SSE stream)
+│       └── types.ts             # TypeScript types (ChatMessage, SchoolData, Steps…)
 ├── scripts/
-│   └── solve_from_json.py  # CLI solver with ANSI grid display
-└── tests/               # pytest suite — 232 tests
+│   ├── solve_from_json.py   # CLI solver with ANSI grid display
+│   ├── solve_from_excel.py  # CLI solver from Excel template
+│   └── generate_sample.py   # Generate sample school data
+├── tests/               # pytest suite
+│   ├── test_models.py
+│   ├── test_validation.py
+│   ├── test_conflicts.py
+│   ├── test_solver.py
+│   ├── test_analysis.py
+│   ├── test_plans.py
+│   └── test_io.py
+├── run_api.py           # Entry point: uvicorn timease.api.main:app
+├── start.sh             # Starts both backend (port 8000) and frontend (port 3000)
+├── pyproject.toml       # uv project config
+├── CLAUDE.md            # Dev instructions for Claude Code
+└── KNOW.md              # This file
 ```
 
-**Dependency rule**: `engine/` imports nothing from `app/` or `io/`. `io/` may import `engine/`. `app/` may import both. This boundary is enforced and tested.
+**Dependency rule**: `engine/` imports nothing from `api/` or `io/`. `io/` may import `engine/`. `api/` may import both. This boundary is enforced and tested.
 
 ---
 
-## 2. Data Model
+## 2. Running the App
 
-All models are Python dataclasses defined in `timease/engine/models.py`.
+```bash
+# Install Python + Node deps
+uv sync
+cd frontend && npm install && cd ..
+
+# Start everything (backend on :8000, frontend on :3000)
+./start.sh
+
+# OR start separately
+uv run python run_api.py          # backend
+cd frontend && npm run dev         # frontend
+
+# Run tests
+uv run pytest
+
+# CLI solver
+uv run python scripts/solve_from_json.py timease/data/sample_school.json
+```
+
+---
+
+## 3. API Overview
+
+Base URL: `http://localhost:8000`
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/session` | Create new session → `{session_id}` |
+| GET | `/api/session/{sid}` | Get session state |
+| POST | `/api/session/{sid}/restore` | Re-hydrate session from localStorage data |
+| PUT | `/api/session/{sid}/school_data` | Replace school data |
+| PUT | `/api/session/{sid}/assignments` | Replace teacher assignments |
+| POST | `/api/session/{sid}/chat` | Non-streaming AI chat turn |
+| POST | `/api/session/{sid}/chat/stream` | SSE streaming AI chat turn |
+| POST | `/api/session/{sid}/upload` | Upload file (xlsx/csv/docx/pdf/json/md/yaml) |
+| POST | `/api/session/{sid}/solve` | Run CP-SAT solver |
+| GET | `/api/session/{sid}/export/{format}` | Export timetable (xlsx/pdf/docx/md) |
+| POST | `/api/session/{sid}/collab/generate` | Generate teacher invitation tokens |
+| GET | `/api/collab/{token}` | Get collab token data |
+| POST | `/api/collab/{token}/availability` | Teacher submits availability |
+
+### SSE streaming event format
+Events sent as `data: {json}\n\n`:
+- `{"type": "delta", "text": "..."}` — streamed text token
+- `{"type": "tool_start", "name": "..."}` — tool call starting
+- `{"type": "done", "data_saved": bool, "trigger_generation": bool, "options": [...], "set_step": int|null, "saved_types": [...], "ai_history": [...]}` — final event
+
+### Session state shape
+```python
+{
+  "school_data": {
+    "name": str, "city": str, "academic_year": str,
+    "days": list[str], "sessions": list[dict], "base_unit_minutes": int,
+    "classes": list[dict], "teachers": list[dict], "rooms": list[dict],
+    "subjects": list[dict], "curriculum": list[dict], "constraints": list[dict]
+  },
+  "teacher_assignments": list[{"teacher": str, "subject": str, "school_class": str}],
+  "timetable_result": dict | None,
+  "ai_history": list[dict],
+  "collab_links": list[dict]
+}
+```
+
+---
+
+## 4. Data Model
+
+All models are Python dataclasses in `timease/engine/models.py`.
 
 ### CurriculumEntry
 | Field | Type | Notes |
@@ -56,235 +168,151 @@ All models are Python dataclasses defined in `timease/engine/models.py`.
 ### TimetableResult
 | Field | Type | Notes |
 |-------|------|-------|
-| `assignments` | list[...] | Scheduled sessions |
+| `assignments` | list[Assignment] | Scheduled sessions |
 | `solved` | bool | True = full solution found |
-| `partial` | bool | True = some sessions skipped (domain filtering) |
-| `unscheduled_sessions` | list[...] | Sessions that couldn't be placed |
-| `conflicts` | list[...] | ConflictReport entries |
-| `soft_constraint_details` | list[...] | S1–S5 satisfaction data |
-
-### Constraint
-| Field | Type | Notes |
-|-------|------|-------|
-| `id` | str | e.g. "H1", "S3" |
-| `type` | str | `"hard"` or `"soft"` |
-| `category` | str | Constraint family name |
-| `parameters` | dict | Constraint-specific config |
+| `partial` | bool | True = some sessions skipped |
+| `unscheduled_sessions` | list[dict] | Sessions that couldn't be placed |
+| `conflicts` | list[dict] | Conflict reports |
+| `soft_constraint_details` | list[dict] | S1–S5 satisfaction data |
+| `warnings` | list[str] | Non-fatal validation warnings |
+| `solve_time_seconds` | float | |
 
 ---
 
-## 3. Solver Architecture
+## 5. Solver Architecture
 
-Defined in `timease/engine/solver.py`. This is the most critical component.
+Defined in `timease/engine/solver.py`.
 
 ### Variable model
-
 Each session gets **one IntVar** on a global timeline:
-
 ```
 slot_value = day_idx × n_slots_per_day + slot_within_day
 ```
-
-For a 196-session school this produces ~1,204 variables. A naive BoolVar grid (session × slot) would produce ~97,000. The compact model is what makes performance acceptable.
+For a 196-session school: ~1,204 variables (vs ~97,000 for a naive BoolVar grid).
 
 ### Build pipeline (in order)
+1. **Greedy teacher pre-assignment** — scores teachers on `(n_other_subjects, current_assigned_count, -remaining_capacity)`. Explicit `CurriculumEntry.teacher` bypasses greedy.
+2. **Domain pre-filtering** — applies H1, H3, H5, H6, H7 + teacher unavailability to shrink each session's valid slot set. Empty-domain sessions are skipped → `partial=True`.
+3. **CP-SAT model build** — `add_no_overlap` per class, per teacher, per room.
+4. **Room assignment** — `BoolVar` per `(session, eligible_room)` with `add_exactly_one`.
+5. **Solve** — feasibility only (no objective function).
+6. **Post-solve analysis** — soft constraints S1–S5 evaluated in Python against the solution.
 
-1. **Greedy teacher pre-assignment** — runs before CP-SAT model construction. For each `(class, subject)` pair, scores eligible teachers on `(n_other_subjects, current_assigned_count, -remaining_capacity)` and picks the best. If `CurriculumEntry.teacher` is set explicitly, that teacher is used directly and greedy is skipped for that entry.
-
-2. **Domain pre-filtering** — applies H1, H3, H5, H6, H7, and teacher unavailability to shrink each session's valid slot set before the model is built. Sessions with an empty domain after filtering are **skipped** (not added to the model) and recorded in `unscheduled_sessions`. This sets `partial=True`.
-
-3. **CP-SAT model build** — adds no-overlap constraints:
-   - One `add_no_overlap` per class (all days, global timeline)
-   - One `add_no_overlap` per teacher (all days, global timeline)
-   - One `add_no_overlap` per room (optional, if room tracking enabled)
-
-4. **Room assignment** — BoolVars per `(session, eligible_room)`, enforced with `add_exactly_one`.
-
-5. **Solve** — feasibility only. No CP-SAT objective function. The solver finds any valid assignment.
-
-6. **Post-solve analysis** — soft constraints S1–S5 are evaluated in Python against the solution. Satisfaction percentages are computed and attached to `TimetableResult`.
-
-### Performance (sample_school.json)
-- 196 sessions, 8 classes, 14 teachers
-- ~1,204 CP-SAT variables
-- Solves in ~15 seconds
+### Performance
+- `sample_school.json`: 196 sessions, 8 classes, 14 teachers → ~15 seconds
+- `real_school_dakar.json`: 97 sessions, 4 classes, 14 teachers → ~60 seconds (tight constraints)
 
 ---
 
-## 4. Hard Constraints (H1–H11)
-
-Defined in `timease/engine/constraints.py`.
+## 6. Hard Constraints (H1–H11)
 
 | ID | Category | Mechanism | What it enforces |
 |----|----------|-----------|-----------------|
-| H1 | `start_time` | Domain filtering | Minimum start hour for sessions |
-| H2 | `one_teacher_per_subject_per_class` | Greedy pre-assignment | Each (class, subject) pair has exactly one teacher |
-| H3 | `day_off` | Domain filtering | Block a full day or session-half (AM/PM) for a class |
-| H4 | `max_consecutive` | CP-SAT model | Max consecutive teaching hours per class |
-| H5 | `subject_on_days` | Domain filtering | Subject sessions only allowed on listed days |
-| H6 | `subject_not_on_days` | Domain filtering | Subject sessions excluded from listed days |
-| H7 | `subject_not_last_slot` | Domain filtering | Subject can't occupy the last slot of any day |
-| H8 | `teacher_day_off` | CP-SAT model | Teacher unavailable on specific day/session |
-| H9 | `fixed_assignment` | CP-SAT model | Pin a session to an exact day + time slot |
-| H10 | (no-op) | Pre-assignment | Automatically satisfied by greedy assignment |
-| H11 | `min_sessions_per_day` | CP-SAT model | Minimum sessions per class on configured days |
-
-H1, H3, H5, H6, H7 act as **domain filters** — they run before CP-SAT and reduce the search space. H4, H8, H9, H11 are expressed as CP-SAT constraints inside the model.
+| H1 | `start_time` | Domain filter | Minimum start hour |
+| H2 | `one_teacher_per_subject_per_class` | Greedy | One teacher per (class, subject) |
+| H3 | `day_off` | Domain filter | Block a full day or AM/PM half |
+| H4 | `max_consecutive` | CP-SAT | Max consecutive hours per class |
+| H5 | `subject_on_days` | Domain filter | Subject only on listed days |
+| H6 | `subject_not_on_days` | Domain filter | Subject excluded from listed days |
+| H7 | `subject_not_last_slot` | Domain filter | Subject can't be last slot of day |
+| H8 | `teacher_day_off` | CP-SAT | Teacher unavailable on day/session |
+| H9 | `fixed_assignment` | CP-SAT | Pin session to exact day + time |
+| H10 | (auto) | Pre-assignment | Satisfied by greedy |
+| H11 | `min_sessions_per_day` | CP-SAT | Min sessions per class on days |
 
 ---
 
-## 5. Soft Constraints (S1–S5)
+## 7. Soft Constraints (S1–S5)
 
-Defined in `timease/engine/analysis.py`. All are **post-solve Python analysis only** — they do not add any CP-SAT objective or penalty. The solver does not try to optimize them; it only measures them.
+Post-solve Python analysis only — no CP-SAT objective. Scores are percentages.
 
 | ID | Category | What it measures |
 |----|----------|-----------------|
-| S1 | `teacher_time_preference` | Whether teacher sessions fall in their preferred period (morning/afternoon) |
-| S2 | (not yet implemented) | — |
-| S3 | `balanced_daily_load` | Daily hour variance per class (lower = more balanced) |
-| S4 | `subject_spread` | Whether subject sessions are spread across different days |
-| S5 | `heavy_subjects_morning` | Whether cognitively heavy subjects are scheduled in the morning |
+| S1 | `teacher_time_preference` | Sessions in teacher's preferred period |
+| S3 | `balanced_daily_load` | Daily hour variance per class |
+| S4 | `subject_spread` | Subject sessions spread across days |
+| S5 | `heavy_subjects_morning` | Heavy subjects scheduled in morning |
 
-**Known S1/S5 conflict**: a teacher can have `afternoon` preference (S1) while also teaching a `heavy` subject (S5 wants morning). `validate_warnings()` detects and reports this conflict. The solver cannot resolve it automatically.
-
----
-
-## 6. ConflictAnalyzer
-
-Defined in `timease/engine/conflicts.py`. Runs automatically when the solver fails and the CLI is invoked. Returns `list[ConflictReport]`.
-
-### Three-step diagnosis
-
-**Step 1 — Quick checks** (O(n) Python, no re-solve):
-- Missing teacher for a subject
-- Missing room with required type/capacity
-- Teacher load exceeds `max_hours_per_week`
-- Total scheduled time exceeds available week slots
-
-**Step 2 — Constraint relaxation** (re-solve with 5s timeout per constraint):
-- Removes each hard constraint one at a time and re-solves
-- If the model becomes feasible without constraint C, C is flagged as a culprit
-- Source tagged as `"relaxation"` in the report
-
-**Step 3 — Fix suggestions**:
-- Each `ConflictReport` includes a list of `FixOption` objects
-- Each `FixOption` has French-language text and an `ease` score (1 = easy config change, 3 = requires hiring or major restructure)
+**Known S1/S5 conflict**: teacher prefers afternoon (S1) but teaches a heavy subject (S5 wants morning). Detected by `validate_warnings()`.
 
 ---
 
-## 7. Validation Warnings
+## 8. ConflictAnalyzer
 
-`validate_warnings()` runs before solving and returns non-fatal warnings. Key detections:
-
-| Warning | Condition |
-|---------|-----------|
-| Room too small | Room capacity < class size |
-| Teacher sole-subject overload | Teacher's only subject requires >80% of their `max_hours_per_week` |
-| Overshadowed teacher | Teacher whose every subject has a more-specialized competitor — greedy will never select them, they get 0 assignments |
-| S1/S5 conflict | Teacher prefers afternoon but is assigned to a morning-preferred (heavy) subject |
-
-Warnings don't block solving. They surface likely misconfiguration before the model runs.
+Runs automatically on INFEASIBLE result. Three-step diagnosis:
+1. **Quick checks** — missing teacher, missing room type, overloaded teacher, insufficient week slots.
+2. **Constraint relaxation** — removes each hard constraint one at a time, re-solves (5s timeout). If feasible without C → C is flagged.
+3. **Fix suggestions** — each report has French `FixOption` objects with `ease` score (1 = easy config change, 3 = requires hiring).
 
 ---
 
-## 8. Partial Solutions
+## 9. AI Chat System
 
-**Trigger**: domain pre-filtering (H1/H3/H5/H6 + unavailability) removes all valid slots for one or more sessions.
+Defined in `timease/api/ai_chat.py`. Model: `claude-haiku-4-5-20251001`.
 
-**Behavior**: those sessions are skipped from the CP-SAT model. The solver runs on the remaining sessions. If CP-SAT succeeds on the reduced set:
-- `solved = False`
-- `partial = True`
-- `assignments` contains all placed sessions
-- `unscheduled_sessions` lists the skipped sessions
+### Tools
+| Tool | Trigger |
+|------|---------|
+| `save_school_info` | After user confirms school info |
+| `save_teachers` | After user confirms teacher list |
+| `save_classes` | After user confirms class list |
+| `save_rooms` | After user confirms room list |
+| `save_subjects` | After user confirms subject list |
+| `save_assignments` | After user confirms teacher-subject-class assignments |
+| `save_curriculum` | After user confirms weekly hours |
+| `save_constraints` | After user confirms constraints |
+| `propose_options` | On every question with choices (rendered as chips in UI) |
+| `trigger_generation` | When all data ready + user requests generation |
+| `set_current_step` | After saving, to advance the wizard panel (0–8) |
 
-**Current limitation**: if the model is infeasible due to mutual exclusion (sessions have non-empty domains but can't coexist given no-overlap constraints), the solver returns `solved=False, partial=False` with empty assignments. This case is not yet handled gracefully. Fixing it would require an optional-interval model rewrite.
+### Agentic loop
+`stream_chat()` runs up to 4 API turns per user message. After each data save, the tool result instructs the AI to: (1) show a recap table, (2) call `set_current_step`, (3) call `propose_options`. Forces proactive follow-up.
 
----
-
-## 9. CLI
-
-```
-uv run python scripts/solve_from_json.py <school.json> [--timeout N] [--class NAME]
-```
-
-Defined in `scripts/solve_from_json.py`.
-
-**Features:**
-- ANSI-colored timetable grid with box-drawing characters
-- Visual column width is correct (strips ANSI codes before measuring string length for padding)
-- On failure, automatically runs ConflictAnalyzer and prints ★-rated fix suggestions
-- On success, prints soft constraint satisfaction % per constraint (S1–S5)
-- `--class NAME` filters the grid display to a single class
-- `--timeout N` overrides the CP-SAT solver timeout (seconds)
+### Validation flow
+All save tool descriptions require user confirmation before calling. AI shows summary table + `[✅ Confirmer] [✏️ Modifier]` chips first.
 
 ---
 
-## 10. Test Suite
+## 10. Frontend Architecture
 
-232 tests across 5 files. Run with `uv run pytest`.
+**Tech**: Next.js 16, React 19, Tailwind CSS v4, TypeScript.
 
-| File | Tests | Coverage focus |
-|------|-------|---------------|
-| `test_models.py` | — | Entity `validate()` methods, `SchoolData` fields, field types |
-| `test_validation.py` | — | Cross-entity validation, `validate_warnings()`, `verify()`, JSON round-trip, S1/S5 conflict detection, overshadowed teacher detection, ConflictAnalyzer relaxation path |
-| `test_conflicts.py` | 21 | ConflictAnalyzer — all three diagnosis steps, fix suggestions, ease scores |
-| `test_solver.py` | 25 | Double-booking prevention, room type matching, soft constraint measurement, H9 fixed assignment, H11 min sessions, solve performance |
-| `test_analysis.py`, `test_plans.py` | — | Soft constraint analysis, plans module |
+### localStorage persistence
+| Key | Content |
+|-----|---------|
+| `timease_session` | Session ID |
+| `timease_timetable_{sid}` | Last timetable result (survives backend restart) |
+| `timease_messages_{sid}` | Chat message history |
+| `timease_aihistory_{sid}` | AI conversation history (Anthropic format) |
 
----
+`useSession` restores all state on mount. Re-hydration via `POST /restore` is called before exports.
 
-## 11. Data Files
+### Wizard steps (0–8)
+`0` École → `1` Classes → `2` Enseignants → `3` Salles → `4` Matières → `5` Affectations → `6` Programme → `7` Contraintes → `8` Résumé/Générer
 
-### `timease/data/sample_school.json`
-- School: Lycée Excellence de Dakar
-- 8 classes, 14 teachers, Mon–Sat schedule
-- 196 sessions per week
-- Solves in ~15 seconds
-
-### `timease/data/real_school_dakar.json`
-- School: Institut Islamique de Dakar
-- 4 classes, 14 teachers, Mon–Fri schedule
-- 97 sessions per week
-- Explicit teacher assignments for Anglais:
-  - Cheikh Ndour → 3ème
-  - Mariama Ba → 5ème, 4ème
-  - Ndeye Toure → 6ème
-- Solves in ~60 seconds (tight: high Coran volume + teacher availability constraints)
+### Streaming
+`sendChatStream()` in `api.ts` uses `fetch` + `ReadableStream` to parse SSE. Tokens are appended to a placeholder message in real-time. `done` event finalizes with options/step/saved metadata.
 
 ---
 
-## 12. Known Limitations and Future Work
+## 11. Export Formats
+
+| Format | Notes |
+|--------|-------|
+| Excel (.xlsx) | openpyxl, one sheet per class/teacher |
+| PDF (.pdf) | reportlab, landscape A4 |
+| Word (.docx) | Premium: cover page (school name 28pt, accent band), Georgia headings, teal header rows with white text, lightened subject color fills, alternating row shading, per-page header + footer (page X/Y) |
+| Markdown (.md) | Premium: YAML frontmatter, stats blockquote table, emoji section dividers, subject legend, right-aligned time column |
+
+---
+
+## 12. Known Limitations
 
 | # | Area | Description |
 |---|------|-------------|
-| 1 | Web UI | `timease/app/` is an empty stub. No Reflex pages built yet. |
-| 2 | Export | `timease/io/` is an empty stub. No Excel, PDF, or Word output. |
-| 3 | Persistence | Results live only in memory during a CLI run. No database writes. |
-| 4 | Soft constraint optimization | S1–S5 are measured post-solve but not driven by a CP-SAT objective. The solver does not try to improve their scores. |
-| 5 | Partial solution completeness | Mutual-exclusion INFEASIBLE (non-empty domains but conflicting sessions) still returns empty assignments. Requires optional-interval model rewrite. |
-| 6 | Teacher granularity | `CurriculumEntry.teacher` is level-scoped. Can't assign different teachers to 6ème A vs 6ème B for the same subject without creating separate curriculum entries. |
-| 7 | Greedy irreversibility | Once the greedy phase pre-assigns a teacher, CP-SAT cannot reassign them. A suboptimal greedy choice cannot be corrected by the solver. |
-
----
-
-## 13. Commands
-
-```bash
-# Install dependencies
-uv sync
-
-# Run all tests
-uv run pytest
-
-# Run tests with verbose output
-uv run pytest -v --tb=short
-
-# Solve sample school (8 classes, ~15s)
-uv run python scripts/solve_from_json.py timease/data/sample_school.json
-
-# Solve real school with longer timeout (~60s needed)
-uv run python scripts/solve_from_json.py timease/data/real_school_dakar.json --timeout 90
-
-# Solve and display only one class
-uv run python scripts/solve_from_json.py timease/data/sample_school.json --class "6ème A"
-```
+| 1 | Soft constraint optimization | S1–S5 measured post-solve but not CP-SAT objectives. Solver doesn't optimize them. |
+| 2 | Partial solution completeness | Mutual-exclusion INFEASIBLE (non-empty domains but conflicting sessions) returns empty assignments. Requires optional-interval model rewrite. |
+| 3 | Teacher granularity | `CurriculumEntry.teacher` is level-scoped. Can't assign different teachers to 6ème A vs 6ème B for same subject without separate entries. |
+| 4 | Greedy irreversibility | CP-SAT can't reassign after greedy phase. Suboptimal greedy choice can't be corrected by solver. |
+| 5 | In-memory sessions | Backend sessions lost on restart. Frontend re-hydrates via `/restore` before exports. Phase 4 will add DB persistence. |
+| 6 | Collaboration | Teacher availability portal is functional but availability data not yet fed back into solver as constraints. |
