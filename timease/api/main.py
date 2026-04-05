@@ -202,6 +202,20 @@ def get_session(sid: str):
     return sessions[sid]
 
 
+@app.post("/api/session/{sid}/restore")
+def restore_session(sid: str, payload: dict):
+    """Re-hydrate a session from localStorage data (survives backend restart)."""
+    if sid not in sessions:
+        sessions[sid] = SessionData().model_dump()
+    if "school_data" in payload:
+        sessions[sid]["school_data"] = payload["school_data"]
+    if "teacher_assignments" in payload:
+        sessions[sid]["teacher_assignments"] = payload["teacher_assignments"]
+    if "timetable_result" in payload:
+        sessions[sid]["timetable_result"] = payload["timetable_result"]
+    return {"ok": True}
+
+
 @app.put("/api/session/{sid}/school_data")
 def put_school_data(sid: str, payload: dict):
     """Replace the entire school_data for direct edits from the UI."""

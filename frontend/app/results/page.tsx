@@ -5,7 +5,7 @@ import { FileDown, CalendarDays, Loader2 } from 'lucide-react'
 import TimetableGrid from '@/components/TimetableGrid'
 import { useSession } from '@/hooks/useSession'
 import { useToast } from '@/components/Toast'
-import { exportFile } from '@/lib/api'
+import { exportFile, restoreSession } from '@/lib/api'
 import type { TimetableAssignment } from '@/lib/types'
 
 type TabId = 'class' | 'teacher' | 'room' | 'subject'
@@ -37,7 +37,7 @@ function GridSkeleton() {
 }
 
 export default function ResultsPage() {
-  const { sessionId, timetable }  = useSession()
+  const { sessionId, timetable, schoolData, assignments: sessionAssignments } = useSession()
   const { toast }                 = useToast()
 
   const [activeTab, setActiveTab]     = useState<TabId>('class')
@@ -95,6 +95,13 @@ export default function ResultsPage() {
     if (!sessionId || downloading) return
     setDownloading(format)
     try {
+      // Re-hydrate the backend session from localStorage before exporting
+      // (the in-memory session is lost on backend restart)
+      await restoreSession(sessionId, {
+        school_data:         schoolData,
+        teacher_assignments: sessionAssignments,
+        timetable_result:    timetable,
+      })
       const blob = await exportFile(sessionId, format)
       const url  = URL.createObjectURL(blob)
       const a    = document.createElement('a')

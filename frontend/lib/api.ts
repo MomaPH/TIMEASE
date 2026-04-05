@@ -65,6 +65,19 @@ export async function solve(sid: string) {
   return res.json()
 }
 
+export async function restoreSession(
+  sid: string,
+  payload: { school_data?: any; teacher_assignments?: any[]; timetable_result?: any },
+) {
+  const res = await fetch(`${BASE}/api/session/${sid}/restore`, {
+    method:  'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body:    JSON.stringify(payload),
+  })
+  if (!res.ok) throw new Error(`Restore failed: ${res.status}`)
+  return res.json()
+}
+
 export async function exportFile(sid: string, format: string) {
   const res = await fetch(`${BASE}/api/session/${sid}/export/${format}`)
   if (!res.ok) throw new Error(`Export failed: ${res.status}`)
