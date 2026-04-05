@@ -6,6 +6,9 @@ node_modules/
 .env
 *.db
 
+# Next.js build output
+frontend/.next/
+
 # Generated exports (keep the folder, ignore the files)
 exports/*.xlsx
 exports/*.pdf

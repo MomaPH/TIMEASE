@@ -1,9 +1,0 @@
-{
-  "/_global-error/page": "/_global-error",
-  "/_not-found/page": "/_not-found",
-  "/collab/[token]/page": "/collab/[token]",
-  "/collaboration/page": "/collaboration",
-  "/page": "/",
-  "/results/page": "/results",
-  "/workspace/page": "/workspace"
-}
