@@ -15,7 +15,7 @@ import os
 TOOLS = [
     {
         "name": "save_school_info",
-        "description": "Enregistre les informations de base de l'école (nom, ville, année, jours, sessions, unité de base). Appelle cet outil dès que tu as suffisamment d'infos — tu peux compléter plus tard.",
+        "description": "Enregistre les informations de base de l'école. N'appelle cet outil QU'APRÈS que l'utilisateur ait confirmé (cliqué 'Confirmer' ou répondu 'oui'). Avant d'appeler, affiche toujours un résumé tableau et propose [✅ Confirmer] [✏️ Modifier].",
         "input_schema": {
             "type": "object",
             "properties": {
@@ -40,7 +40,7 @@ TOOLS = [
     },
     {
         "name": "save_teachers",
-        "description": "Enregistre des enseignants avec leurs matières et heures max.",
+        "description": "Enregistre des enseignants. N'appelle cet outil QU'APRÈS confirmation de l'utilisateur. Avant d'appeler, affiche un tableau récapitulatif et propose [✅ Confirmer] [✏️ Modifier] [➕ Ajouter d'autres].",
         "input_schema": {
             "type": "object",
             "properties": {
@@ -61,7 +61,7 @@ TOOLS = [
     },
     {
         "name": "save_classes",
-        "description": "Enregistre des classes scolaires.",
+        "description": "Enregistre des classes scolaires. N'appelle cet outil QU'APRÈS confirmation de l'utilisateur. Avant d'appeler, affiche un tableau récapitulatif et propose [✅ Confirmer] [✏️ Modifier].",
         "input_schema": {
             "type": "object",
             "properties": {
@@ -82,7 +82,7 @@ TOOLS = [
     },
     {
         "name": "save_rooms",
-        "description": "Enregistre des salles de classe.",
+        "description": "Enregistre des salles. N'appelle cet outil QU'APRÈS confirmation de l'utilisateur. Avant d'appeler, affiche un tableau récapitulatif et propose [✅ Confirmer] [✏️ Modifier].",
         "input_schema": {
             "type": "object",
             "properties": {
@@ -103,7 +103,7 @@ TOOLS = [
     },
     {
         "name": "save_subjects",
-        "description": "Enregistre des matières enseignées.",
+        "description": "Enregistre des matières. N'appelle cet outil QU'APRÈS confirmation de l'utilisateur. Avant d'appeler, affiche un tableau récapitulatif et propose [✅ Confirmer] [✏️ Modifier].",
         "input_schema": {
             "type": "object",
             "properties": {
@@ -126,7 +126,7 @@ TOOLS = [
     },
     {
         "name": "save_assignments",
-        "description": "Enregistre les affectations enseignant-matière-classe. IMPORTANT: utilise TOUJOURS 'school_class' (pas 'class') pour le nom de la classe.",
+        "description": "Enregistre les affectations enseignant-matière-classe. N'appelle cet outil QU'APRÈS confirmation. Affiche d'abord un tableau et propose [✅ Confirmer] [✏️ Modifier]. IMPORTANT: utilise TOUJOURS 'school_class' (jamais 'class').",
         "input_schema": {
             "type": "object",
             "properties": {
@@ -148,7 +148,7 @@ TOOLS = [
     },
     {
         "name": "save_curriculum",
-        "description": "Enregistre le programme (heures par semaine par niveau et matière).",
+        "description": "Enregistre le programme horaire. N'appelle cet outil QU'APRÈS confirmation. Affiche d'abord un tableau récapitulatif et propose [✅ Confirmer] [✏️ Modifier].",
         "input_schema": {
             "type": "object",
             "properties": {
@@ -171,7 +171,7 @@ TOOLS = [
     },
     {
         "name": "save_constraints",
-        "description": "Enregistre des contraintes de planification.",
+        "description": "Enregistre des contraintes de planification. N'appelle cet outil QU'APRÈS confirmation. Affiche d'abord un résumé et propose [✅ Confirmer] [✏️ Modifier].",
         "input_schema": {
             "type": "object",
             "properties": {
@@ -196,7 +196,7 @@ TOOLS = [
     },
     {
         "name": "propose_options",
-        "description": "Propose des choix cliquables à l'utilisateur quand tu as besoin d'une décision précise. Utilise cet outil APRÈS avoir posé ta question dans ton message texte. Maximum 5 options.",
+        "description": "Propose des boutons cliquables. Appelle cet outil dans CHAQUE message qui pose une question ou demande une décision. Toujours inclure au moins [✅ Confirmer] / [✏️ Modifier] pour les résumés, ou des choix spécifiques pour les questions.",
         "input_schema": {
             "type": "object",
             "properties": {
@@ -475,90 +475,121 @@ def stream_chat(
     history = list(ai_history)
     history.append({"role": "user", "content": full_msg})
 
-    # Buffer for assembling tool_use input JSON
-    tool_input_bufs: dict[int, dict] = {}  # index → {"id","name","json_buf"}
-    assistant_content: list[dict] = []
-
     import json as _json
 
-    try:
-        with client.messages.stream(
-            model="claude-haiku-4-5-20251001",
-            max_tokens=2048,
-            system=system_prompt,
-            tools=TOOLS,
-            messages=history,
-        ) as stream:
-            for event in stream:
-                etype = event.type
+    # ── Agentic loop: keep calling the API until AI returns text-only ──────────
+    # Max 4 iterations to prevent infinite loops
+    MAX_TURNS = 4
+    for _turn in range(MAX_TURNS):
+        tool_input_bufs: dict[int, dict] = {}
+        assistant_content: list[dict] = []
+        has_tool_calls = False
 
-                if etype == "content_block_start":
-                    block = event.content_block
-                    if block.type == "text":
-                        assistant_content.append({"type": "text", "text": ""})
-                    elif block.type == "tool_use":
-                        tool_input_bufs[event.index] = {
-                            "id":       block.id,
-                            "name":     block.name,
-                            "json_buf": "",
-                        }
-                        assistant_content.append({
-                            "type":  "tool_use",
-                            "id":    block.id,
-                            "name":  block.name,
-                            "input": {},
-                        })
+        try:
+            with client.messages.stream(
+                model="claude-haiku-4-5-20251001",
+                max_tokens=2048,
+                system=system_prompt,
+                tools=TOOLS,
+                messages=history,
+            ) as stream:
+                for event in stream:
+                    etype = event.type
 
-                elif etype == "content_block_delta":
-                    delta = event.delta
-                    if delta.type == "text_delta":
-                        for b in reversed(assistant_content):
-                            if b["type"] == "text":
-                                b["text"] += delta.text
-                                break
-                        yield {"type": "delta", "text": delta.text}
+                    if etype == "content_block_start":
+                        block = event.content_block
+                        if block.type == "text":
+                            assistant_content.append({"type": "text", "text": ""})
+                        elif block.type == "tool_use":
+                            has_tool_calls = True
+                            tool_input_bufs[event.index] = {
+                                "id":       block.id,
+                                "name":     block.name,
+                                "json_buf": "",
+                            }
+                            assistant_content.append({
+                                "type":  "tool_use",
+                                "id":    block.id,
+                                "name":  block.name,
+                                "input": {},
+                            })
 
-                    elif delta.type == "input_json_delta":
+                    elif etype == "content_block_delta":
+                        delta = event.delta
+                        if delta.type == "text_delta":
+                            for b in reversed(assistant_content):
+                                if b["type"] == "text":
+                                    b["text"] += delta.text
+                                    break
+                            yield {"type": "delta", "text": delta.text}
+
+                        elif delta.type == "input_json_delta":
+                            if event.index in tool_input_bufs:
+                                tool_input_bufs[event.index]["json_buf"] += delta.partial_json
+
+                    elif etype == "content_block_stop":
                         if event.index in tool_input_bufs:
-                            tool_input_bufs[event.index]["json_buf"] += delta.partial_json
+                            buf = tool_input_bufs.pop(event.index)
+                            try:
+                                parsed = _json.loads(buf["json_buf"]) if buf["json_buf"] else {}
+                            except Exception:
+                                parsed = {}
+                            for b in assistant_content:
+                                if b.get("type") == "tool_use" and b.get("id") == buf["id"]:
+                                    b["input"] = parsed
+                                    break
+                            yield {"type": "tool_call", "name": buf["name"], "input": parsed, "id": buf["id"]}
+        finally:
+            # Flush incomplete tool blocks (aborted stream)
+            for buf in tool_input_bufs.values():
+                try:
+                    parsed = _json.loads(buf["json_buf"]) if buf["json_buf"] else {}
+                except Exception:
+                    parsed = {}
+                for b in assistant_content:
+                    if b.get("type") == "tool_use" and b.get("id") == buf["id"]:
+                        b["input"] = parsed
+                        break
+                yield {"type": "tool_call", "name": buf["name"], "input": parsed, "id": buf["id"]}
 
-                elif etype == "content_block_stop":
-                    if event.index in tool_input_bufs:
-                        buf = tool_input_bufs.pop(event.index)
-                        try:
-                            parsed = _json.loads(buf["json_buf"]) if buf["json_buf"] else {}
-                        except Exception:
-                            parsed = {}
-                        for b in assistant_content:
-                            if b.get("type") == "tool_use" and b.get("id") == buf["id"]:
-                                b["input"] = parsed
-                                break
-                        yield {"type": "tool_call", "name": buf["name"], "input": parsed, "id": buf["id"]}
-    finally:
-        # Flush any tool blocks that never received content_block_stop (aborted streams)
-        for buf in tool_input_bufs.values():
-            try:
-                parsed = _json.loads(buf["json_buf"]) if buf["json_buf"] else {}
-            except Exception:
-                parsed = {}
-            for b in assistant_content:
-                if b.get("type") == "tool_use" and b.get("id") == buf["id"]:
-                    b["input"] = parsed
-                    break
-            yield {"type": "tool_call", "name": buf["name"], "input": parsed, "id": buf["id"]}
+        # Append this turn's assistant message to history
+        history.append({"role": "assistant", "content": assistant_content})
 
-    # Build updated history with tool_result turns
-    history.append({"role": "assistant", "content": assistant_content})
-    for b in assistant_content:
-        if b.get("type") == "tool_use":
-            history.append({
-                "role": "user",
-                "content": [{
+        if not has_tool_calls:
+            # Pure text response — conversation turn complete
+            break
+
+        # Append tool_result turns so AI sees the outcome and MUST follow up
+        tool_result_content = []
+        for b in assistant_content:
+            if b.get("type") == "tool_use":
+                # Rich instruction forces AI to generate summary + options next turn
+                tool_name = b["name"]
+                if tool_name in (
+                    "save_school_info", "save_teachers", "save_classes",
+                    "save_rooms", "save_subjects", "save_curriculum",
+                    "save_constraints", "save_assignments",
+                ):
+                    result_msg = (
+                        "✓ Données enregistrées.\n"
+                        "Maintenant tu DOIS obligatoirement :\n"
+                        "1. Afficher un tableau markdown récapitulatif de ce qui vient d'être enregistré.\n"
+                        "2. Appeler `set_current_step` avec l'index de la prochaine étape incomplète.\n"
+                        "3. Appeler `propose_options` avec les actions disponibles "
+                        "(ex: [➡️ Continuer] [✏️ Modifier] [➕ Ajouter d'autres]).\n"
+                        "Ne réponds PAS avec du texte seul — utilise les outils."
+                    )
+                else:
+                    result_msg = "OK."
+                tool_result_content.append({
                     "type":        "tool_result",
                     "tool_use_id": b["id"],
-                    "content":     "OK — données enregistrées.",
-                }],
-            })
+                    "content":     result_msg,
+                })
+
+        if tool_result_content:
+            history.append({"role": "user", "content": tool_result_content})
+        # Loop → AI will generate the follow-up with summary + options
 
     yield {"type": "end", "updated_history": history}
 
@@ -616,14 +647,28 @@ def process_chat(
             })
     history.append({"role": "assistant", "content": assistant_content})
 
+    _SAVE_TOOLS = {
+        "save_school_info", "save_teachers", "save_classes", "save_rooms",
+        "save_subjects", "save_curriculum", "save_constraints", "save_assignments",
+    }
     for block in response.content:
         if block.type == "tool_use":
+            if block.name in _SAVE_TOOLS:
+                result_msg = (
+                    "✓ Données enregistrées.\n"
+                    "Maintenant tu DOIS obligatoirement :\n"
+                    "1. Afficher un tableau markdown récapitulatif de ce qui vient d'être enregistré.\n"
+                    "2. Appeler `set_current_step` avec l'index de la prochaine étape incomplète.\n"
+                    "3. Appeler `propose_options` avec les actions disponibles."
+                )
+            else:
+                result_msg = "OK."
             history.append({
                 "role": "user",
                 "content": [{
                     "type":        "tool_result",
                     "tool_use_id": block.id,
-                    "content":     "OK — données enregistrées.",
+                    "content":     result_msg,
                 }],
             })
 

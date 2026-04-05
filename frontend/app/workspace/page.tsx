@@ -332,8 +332,8 @@ export default function WorkspacePage() {
               />
             ))}
 
-            {/* Typing indicator */}
-            {isLoading && (
+            {/* Typing indicator — only before first streaming token arrives */}
+            {isLoading && !messages.some(m => (m as any)._streamingId !== undefined) && (
               <div className="flex justify-start mb-3 animate-fade-in">
                 <div className="w-7 h-7 rounded-full bg-teal-100 dark:bg-teal-900/40 flex items-center justify-center mr-2 mt-0.5 flex-shrink-0">
                   <Bot size={14} className="text-teal-600 dark:text-teal-400" />
