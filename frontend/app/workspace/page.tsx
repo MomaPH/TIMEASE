@@ -1,242 +1,309 @@
 'use client'
-import { useState, useEffect, useRef } from 'react'
-import { Paperclip, Send, Loader2 } from 'lucide-react'
+import { useState, useEffect, useRef, useCallback } from 'react'
+import { Paperclip, Send, Loader2, Bot, MessageSquare, LayoutDashboard, RotateCcw } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import ChatMessage from '@/components/ChatMessage'
-import QuickReplies from '@/components/QuickReplies'
-import DataPanel from '@/components/DataPanel'
+import StepIndicator from '@/components/StepIndicator'
+import StepPanel from '@/components/StepPanel'
+import FileImportModal from '@/components/FileImportModal'
 import { useSession } from '@/hooks/useSession'
 import { useToast } from '@/components/Toast'
-import { sendChat, uploadFile, mergeData, solve } from '@/lib/api'
-import type { ChatMessage as ChatMessageType, ToolCall } from '@/lib/types'
+import { sendChat, uploadFile, solve } from '@/lib/api'
+import type { ChatMessage as ChatMessageType, SchoolData } from '@/lib/types'
+
+// ── Constants ─────────────────────────────────────────────────────────────────
 
 const WELCOME: ChatMessageType = {
   role: 'ai',
   content:
-    "Bienvenue sur TIMEASE ! Je suis votre assistant pour créer l'emploi du temps. On commence ? Comment s'appelle votre école ?",
-  quickReplies: ["Mon école s'appelle...", 'Voici mon fichier Excel', "J'ai besoin d'aide"],
+    "Bonjour ! Je suis TIMEASE, votre assistant pour créer des emplois du temps scolaires.\n\n" +
+    "Je peux vous guider étape par étape, analyser vos fichiers Excel ou répondre à toutes vos questions. " +
+    "Pour commencer : **quel est le nom de votre école ?**",
 }
 
-// ── Skeleton placeholders while session initialises ──────────────────────────
-function SkeletonPanel() {
-  return (
-    <div className="flex flex-col gap-3 p-5 animate-pulse">
-      <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-2/3" />
-      <div className="h-2 bg-gray-100 dark:bg-gray-800 rounded w-full mt-1" />
-      {[...Array(4)].map((_, i) => (
-        <div key={i} className="h-10 bg-gray-100 dark:bg-gray-800 rounded-lg" />
-      ))}
-    </div>
-  )
-}
+const msgs_key  = (sid: string) => `timease_messages_${sid}`
+const hist_key  = (sid: string) => `timease_aihistory_${sid}`
+
+// ── Workspace page ────────────────────────────────────────────────────────────
 
 export default function WorkspacePage() {
-  const router        = useRouter()
-  const { toast }     = useToast()
-  const { sessionId, schoolData, assignments, refreshSession } = useSession()
+  const router = useRouter()
+  const { toast } = useToast()
 
-  const [messages, setMessages]           = useState<ChatMessageType[]>([WELCOME])
-  const [input, setInput]                 = useState('')
-  const [isLoading, setIsLoading]         = useState(false)
-  const [pendingToolCalls, setPendingToolCalls] = useState<ToolCall[]>([])
-  const [isSolving, setIsSolving]         = useState(false)
+  const {
+    sessionId,
+    schoolData,
+    assignments,
+    setTimetable,
+    updateSchoolData,
+    updateAssignments,
+    refreshSession,
+    resetSession,
+  } = useSession()
+
+  // ── Step state ────────────────────────────────────────────────────────────
+  const [currentStep, setCurrentStep] = useState(0)
+  const [mobileView, setMobileView]   = useState<'chat' | 'form'>('chat')
+
+  // ── Chat state ────────────────────────────────────────────────────────────
+  const [messages,   setMessages]   = useState<ChatMessageType[]>([WELCOME])
+  const [aiHistory,  setAiHistory]  = useState<any[]>([])
+  const [input,      setInput]      = useState('')
+  const [isLoading,  setIsLoading]  = useState(false)
+  const [isSolving,  setIsSolving]  = useState(false)
+
+  // ── Import modal ──────────────────────────────────────────────────────────
+  const [importModal, setImportModal] = useState<{ open: boolean; data?: any }>({ open: false })
 
   const scrollRef = useRef<HTMLDivElement>(null)
   const fileRef   = useRef<HTMLInputElement>(null)
 
-  // Auto-scroll to newest message
+  // ── Restore messages and history from localStorage once sessionId is known
+  useEffect(() => {
+    if (!sessionId) return
+    const storedMsgs = localStorage.getItem(msgs_key(sessionId))
+    const storedHist = localStorage.getItem(hist_key(sessionId))
+    if (storedMsgs) {
+      try { setMessages(JSON.parse(storedMsgs)) } catch {}
+    }
+    if (storedHist) {
+      try { setAiHistory(JSON.parse(storedHist)) } catch {}
+    }
+  }, [sessionId])
+
+  // ── Auto-scroll ───────────────────────────────────────────────────────────
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight
     }
   }, [messages, isLoading])
 
-  // Latest AI message quick replies shown at bottom as chips
-  const lastAiReplies =
-    [...messages].reverse().find(m => m.role === 'ai')?.quickReplies ?? []
+  // ── Message helpers ───────────────────────────────────────────────────────
+  const addMessage = useCallback((msg: ChatMessageType) => {
+    setMessages(prev => {
+      const next = [...prev, msg]
+      if (sessionId) localStorage.setItem(msgs_key(sessionId), JSON.stringify(next))
+      return next
+    })
+  }, [sessionId])
 
-  // ── Helpers ────────────────────────────────────────────────────────────────
-  function appendAiResponse(res: any) {
-    if (res.tool_calls?.length) {
-      const summary = JSON.stringify(
-        Object.fromEntries(res.tool_calls.map((tc: ToolCall) => [tc.name, tc.data])),
-        null,
-        2,
-      )
-      setPendingToolCalls(res.tool_calls)
-      setMessages(prev => [
-        ...prev,
-        { role: 'confirm', content: summary, toolCalls: res.tool_calls },
-      ])
-    } else {
-      setMessages(prev => [
-        ...prev,
-        {
-          role: 'ai',
-          content:      res.message ?? res.message_fr ?? '',
-          quickReplies: res.quick_replies ?? [],
-        },
-      ])
-    }
-  }
+  const saveHistory = useCallback((history: any[]) => {
+    setAiHistory(history)
+    if (sessionId) localStorage.setItem(hist_key(sessionId), JSON.stringify(history))
+  }, [sessionId])
 
-  function addError(text: string) {
-    setMessages(prev => [...prev, { role: 'ai', content: text }])
-  }
-
-  // ── Send message ───────────────────────────────────────────────────────────
+  // ── Send message ──────────────────────────────────────────────────────────
   async function send(text?: string) {
     const msg = (text ?? input).trim()
     if (!msg || isLoading || !sessionId) return
 
-    setMessages(prev => [...prev, { role: 'user', content: msg }])
+    addMessage({ role: 'user', content: msg })
     setInput('')
     setIsLoading(true)
 
     try {
-      const res = await sendChat(sessionId, msg)
-      appendAiResponse(res)
+      const res = await sendChat(sessionId, msg, undefined, aiHistory)
+      saveHistory(res.ai_history || [])
+
+      if (res.message) {
+        addMessage({
+          role:       'ai',
+          content:    res.message,
+          dataSaved:  res.data_saved,
+          savedTypes: res.saved_types,
+          options:    res.options?.length ? res.options : undefined,
+        })
+      }
+
+      if (res.data_saved) {
+        refreshSession()
+      }
+
+      // AI decided all data is ready — auto-trigger generation
+      if (res.trigger_generation) {
+        handleGenerate()
+      }
     } catch {
+      addMessage({ role: 'ai', content: 'Impossible de contacter le serveur. Vérifiez que le backend est lancé.' })
       toast('Connexion au serveur perdue', 'error')
-      addError('Impossible de contacter le serveur. Vérifiez que le backend est lancé.')
     } finally {
       setIsLoading(false)
     }
   }
 
-  // ── File upload ────────────────────────────────────────────────────────────
+  // ── File upload ───────────────────────────────────────────────────────────
   async function handleUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
     if (!file || !sessionId) return
     e.target.value = ''
 
-    setMessages(prev => [...prev, { role: 'user', content: `📎 ${file.name}` }])
+    addMessage({ role: 'user', content: `📎 ${file.name}` })
     setIsLoading(true)
 
     try {
       const res = await uploadFile(sessionId, file)
 
       if (res.type === 'direct_import') {
-        const d      = res.school_data ?? {}
-        const parts  = ['Fichier importé !']
-        if (d.teachers?.length)  parts.push(`${d.teachers.length} enseignant(s)`)
-        if (d.classes?.length)   parts.push(`${d.classes.length} classe(s)`)
-        if (d.rooms?.length)     parts.push(`${d.rooms.length} salle(s)`)
-        if (d.curriculum?.length) parts.push(`${d.curriculum.length} entrée(s) de programme`)
-
-        setMessages(prev => [
-          ...prev,
-          {
-            role: 'ai',
-            content: parts.join(' · '),
-            quickReplies: ['Parfait !', 'Modifier les données', 'Générer maintenant'],
-          },
-        ])
-        toast('Fichier importé avec succès')
         refreshSession()
-      } else if (res.type === 'text_extract') {
-        const chatRes = await sendChat(sessionId, 'Analyse ce fichier', res.content)
-        appendAiResponse(chatRes)
+        setImportModal({ open: true, data: res })
         toast('Fichier importé avec succès')
+      } else if (res.type === 'text_extract') {
+        // Send extracted text to AI for processing
+        const chatRes = await sendChat(sessionId, 'Analyse ce fichier et enregistre les données.', res.content, aiHistory)
+        saveHistory(chatRes.ai_history || [])
+        if (chatRes.message) {
+          addMessage({
+            role:      'ai',
+            content:   chatRes.message,
+            dataSaved: chatRes.data_saved,
+            options:   chatRes.options?.length ? chatRes.options : undefined,
+          })
+        }
+        if (chatRes.data_saved) refreshSession()
+        if (chatRes.trigger_generation) handleGenerate()
+        toast('Fichier traité par l\'assistant')
       } else {
-        addError("Format de fichier non reconnu.")
+        addMessage({ role: 'ai', content: 'Je n\'ai pas pu lire ce fichier. Essayez un autre format (xlsx, pdf, docx, csv, txt).' })
       }
     } catch {
+      addMessage({ role: 'ai', content: 'Erreur lors du traitement du fichier.' })
       toast('Erreur lors de l\'upload', 'error')
-      addError('Impossible de traiter ce fichier.')
     } finally {
       setIsLoading(false)
     }
   }
 
-  // ── Confirm tool calls ─────────────────────────────────────────────────────
-  async function handleConfirm() {
-    if (!sessionId || !pendingToolCalls.length) return
-
-    try {
-      for (const tc of pendingToolCalls) {
-        await mergeData(sessionId, tc.name, tc.data)
-      }
-      setPendingToolCalls([])
-      setMessages(prev => [
-        ...prev,
-        {
-          role: 'ai',
-          content: 'Données enregistrées !',
-          quickReplies: ['Ajouter des enseignants', 'Configurer les classes', 'Continuer'],
-        },
-      ])
-      toast('Données enregistrées')
-      refreshSession()
-    } catch {
-      toast('Erreur lors de la sauvegarde', 'error')
-    }
+  // ── Direct data edits (from StepPanel forms) ──────────────────────────────
+  async function handleUpdateSchoolData(newData: SchoolData) {
+    await updateSchoolData(newData)
   }
 
-  function handleReject() {
-    setPendingToolCalls([])
-    setMessages(prev => [
-      ...prev,
-      { role: 'ai', content: "D'accord, corrigez-moi.", quickReplies: [] },
-    ])
+  async function handleUpdateAssignments(newAssignments: any[]) {
+    await updateAssignments(newAssignments)
   }
 
-  // ── Generate timetable ─────────────────────────────────────────────────────
+  // ── Generate timetable ────────────────────────────────────────────────────
   async function handleGenerate() {
     if (!sessionId || isSolving) return
     setIsSolving(true)
-    setMessages(prev => [
-      ...prev,
-      { role: 'ai', content: 'Résolution en cours… Cela peut prendre quelques secondes.' },
-    ])
+    setCurrentStep(8)
+
+    addMessage({
+      role:    'ai',
+      content: '⚙️ **Génération en cours…**\n\nLe solveur analyse vos contraintes. Cela peut prendre quelques secondes.',
+    })
 
     try {
       const res = await solve(sessionId)
-      if (res.status === 'OPTIMAL' || res.status === 'FEASIBLE') {
+
+      if (res.status === 'OPTIMAL' || res.status === 'FEASIBLE' || res.status === 'PARTIAL') {
+        setTimetable(res)
         toast('Emploi du temps généré !')
-        router.push('/results')
+
+        const partial = res.status === 'PARTIAL'
+        addMessage({
+          role:    'ai',
+          content: partial
+            ? `✅ **Emploi du temps partiellement généré** (${res.assignments?.length ?? 0} sessions placées).\n\nCertaines sessions n'ont pas pu être planifiées. Consultez les résultats pour les détails.`
+            : `✅ **Emploi du temps généré avec succès !** (${res.assignments?.length ?? 0} sessions planifiées)\n\nRedirection vers les résultats…`,
+        })
+
+        setTimeout(() => router.push('/results'), 1200)
       } else {
-        const reason = res.status ?? 'erreur inconnue'
-        addError(`Impossible de générer l'emploi du temps (${reason}). Vérifiez vos contraintes.`)
-        toast(`Échec de la résolution : ${reason}`, 'error')
+        const summary = res.conflict_summary || res.message || 'Aucune solution trouvée.'
+        addMessage({
+          role:    'ai',
+          content: `❌ **Génération impossible**\n\n${summary}\n\n---\nCorrigez les problèmes ci-dessus et relancez la génération.`,
+        })
+        toast('Impossible de générer l\'emploi du temps', 'error')
       }
     } catch {
-      toast('Connexion au serveur perdue', 'error')
-      addError('Erreur de connexion lors de la génération.')
+      addMessage({ role: 'ai', content: '❌ Erreur de connexion lors de la génération.' })
+      toast('Erreur de connexion', 'error')
     } finally {
       setIsSolving(false)
     }
   }
 
-  // ── Render ─────────────────────────────────────────────────────────────────
+  // ── Reset session ─────────────────────────────────────────────────────────
+  async function handleReset() {
+    if (!confirm('Réinitialiser la session ? Toutes les données seront perdues.')) return
+    await resetSession()
+    setMessages([WELCOME])
+    setAiHistory([])
+    setCurrentStep(0)
+    toast('Session réinitialisée')
+  }
+
+  // ── Next step ─────────────────────────────────────────────────────────────
+  function handleNext() {
+    setCurrentStep(s => Math.min(s + 1, 8))
+  }
+
+  // ── Render ────────────────────────────────────────────────────────────────
   return (
-    <div className="h-[calc(100vh-4rem)] flex flex-col">
-      <div className="mb-4 flex-shrink-0">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Espace de travail</h1>
-        <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
-          Configurez les données de votre école via le chat
-        </p>
+    <div className="flex flex-col" style={{ height: 'calc(100vh - 0px)' }}>
+
+      {/* ── Mobile top bar ── */}
+      <div className="md:hidden flex items-center justify-between px-4 py-2 border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 flex-shrink-0">
+        <h1 className="font-semibold text-sm text-gray-800 dark:text-gray-200">Espace de travail</h1>
+        <div className="flex gap-2">
+          <button
+            onClick={() => setMobileView('chat')}
+            className={`flex items-center gap-1 px-3 py-1.5 text-xs rounded-lg transition-colors ${mobileView === 'chat' ? 'bg-teal-600 text-white' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'}`}
+          >
+            <MessageSquare size={13} /> Chat
+          </button>
+          <button
+            onClick={() => setMobileView('form')}
+            className={`flex items-center gap-1 px-3 py-1.5 text-xs rounded-lg transition-colors ${mobileView === 'form' ? 'bg-teal-600 text-white' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'}`}
+          >
+            <LayoutDashboard size={13} /> Données
+          </button>
+        </div>
       </div>
 
-      <div className="flex gap-4 flex-1 min-h-0">
-        {/* ── Chat column (60%) ── */}
-        <div className="flex flex-col flex-[3] min-w-0 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl shadow-sm overflow-hidden">
+      {/* ── Main content ── */}
+      <div className="flex flex-1 min-h-0 overflow-hidden">
 
-          {/* Message area */}
-          <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 sm:px-5 py-5">
+        {/* ── Chat column ── */}
+        <div className={`flex flex-col bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 ${mobileView === 'form' ? 'hidden md:flex' : 'flex'} w-full md:w-[55%]`}>
+
+          {/* Desktop chat header */}
+          <div className="hidden md:flex items-center justify-between px-5 py-3 border-b border-gray-100 dark:border-gray-800 flex-shrink-0">
+            <div className="flex items-center gap-2">
+              <div className="w-7 h-7 rounded-full bg-teal-100 dark:bg-teal-900/40 flex items-center justify-center">
+                <Bot size={14} className="text-teal-600 dark:text-teal-400" />
+              </div>
+              <span className="text-sm font-semibold text-gray-800 dark:text-gray-200">TIMEASE Assistant</span>
+              <span className="text-xs text-gray-400 dark:text-gray-500">· claude-haiku</span>
+            </div>
+            <button
+              onClick={handleReset}
+              title="Nouvelle session"
+              className="flex items-center gap-1 text-xs text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+            >
+              <RotateCcw size={13} /> Réinitialiser
+            </button>
+          </div>
+
+          {/* Messages */}
+          <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 sm:px-5 py-4">
             {messages.map((msg, i) => (
               <ChatMessage
                 key={i}
                 message={msg}
-                onConfirm={msg.role === 'confirm' ? handleConfirm : undefined}
-                onReject={msg.role  === 'confirm' ? handleReject  : undefined}
+                onOptionSelect={(value) => send(value)}
               />
             ))}
 
             {/* Typing indicator */}
             {isLoading && (
               <div className="flex justify-start mb-3 animate-fade-in">
-                <div className="bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 px-4 py-3 rounded-2xl rounded-tl-sm flex gap-1.5 items-center">
+                <div className="w-7 h-7 rounded-full bg-teal-100 dark:bg-teal-900/40 flex items-center justify-center mr-2 mt-0.5 flex-shrink-0">
+                  <Bot size={14} className="text-teal-600 dark:text-teal-400" />
+                </div>
+                <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 px-4 py-3 rounded-2xl rounded-tl-sm flex gap-1.5 items-center shadow-sm">
                   {[0, 150, 300].map(delay => (
                     <span
                       key={delay}
@@ -249,22 +316,15 @@ export default function WorkspacePage() {
             )}
           </div>
 
-          {/* Bottom quick-reply chips */}
-          {lastAiReplies.length > 0 && !isLoading && (
-            <div className="px-4 sm:px-5 pb-2 pt-1 flex flex-wrap gap-2">
-              <QuickReplies replies={lastAiReplies} onSelect={send} />
-            </div>
-          )}
-
           {/* Input bar */}
-          <div className="flex items-center gap-2 px-3 sm:px-4 py-3 border-t border-gray-200 dark:border-gray-800">
+          <div className="flex items-center gap-2 px-3 sm:px-4 py-3 border-t border-gray-100 dark:border-gray-800 flex-shrink-0">
             <button
               onClick={() => fileRef.current?.click()}
-              title="Envoyer un fichier (.xlsx, .xls, .csv, .docx, .txt, .pdf)"
-              className="text-gray-400 hover:text-teal-600 dark:hover:text-teal-400 flex-shrink-0 transition-colors p-1"
-              disabled={isLoading}
+              title="Envoyer un fichier"
+              disabled={isLoading || !sessionId}
+              className="text-gray-400 hover:text-teal-600 dark:hover:text-teal-400 flex-shrink-0 transition-colors p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 disabled:opacity-50"
             >
-              <Paperclip size={18} />
+              <Paperclip size={17} />
             </button>
             <input
               type="file"
@@ -277,14 +337,14 @@ export default function WorkspacePage() {
               value={input}
               onChange={e => setInput(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && !e.shiftKey && send()}
-              placeholder="Décrivez votre école ou envoyez un fichier..."
-              disabled={isLoading}
-              className="flex-1 px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 disabled:opacity-60 transition-opacity"
+              placeholder={sessionId ? 'Message…' : 'Chargement…'}
+              disabled={isLoading || !sessionId}
+              className="flex-1 px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:bg-white dark:focus:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 disabled:opacity-60 transition-all"
             />
             <button
               onClick={() => send()}
-              disabled={isLoading || !input.trim()}
-              className="p-2 rounded-lg bg-teal-600 text-white hover:bg-teal-700 disabled:opacity-50 transition-colors flex-shrink-0"
+              disabled={isLoading || !input.trim() || !sessionId}
+              className="p-2 rounded-xl bg-teal-600 text-white hover:bg-teal-700 disabled:opacity-40 transition-colors flex-shrink-0"
             >
               {isLoading
                 ? <Loader2 size={16} className="animate-spin" />
@@ -294,23 +354,40 @@ export default function WorkspacePage() {
           </div>
         </div>
 
-        {/* ── Data panel (40%) — hidden on mobile, shown md+ ── */}
-        <div className="hidden md:flex flex-[2] bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl shadow-sm overflow-hidden flex-col">
-          {!sessionId
-            ? <SkeletonPanel />
-            : (
-              <div className="p-5 flex-1 flex flex-col overflow-hidden">
-                <DataPanel
-                  data={schoolData}
-                  assignments={assignments}
-                  onGenerate={handleGenerate}
-                  isSolving={isSolving}
-                />
-              </div>
-            )
-          }
+        {/* ── Right panel: Step indicator + form ── */}
+        <div className={`flex flex-col bg-gray-50 dark:bg-gray-900/50 ${mobileView === 'chat' ? 'hidden md:flex' : 'flex'} w-full md:w-[45%]`}>
+          <StepIndicator
+            currentStep={currentStep}
+            schoolData={schoolData}
+            assignments={assignments}
+            onStepClick={setCurrentStep}
+          />
+          <div className="flex-1 min-h-0">
+            <StepPanel
+              step={currentStep}
+              schoolData={schoolData}
+              assignments={assignments}
+              onUpdateSchoolData={handleUpdateSchoolData}
+              onUpdateAssignments={handleUpdateAssignments}
+              onNext={handleNext}
+              onGenerate={handleGenerate}
+              isSolving={isSolving}
+            />
+          </div>
         </div>
       </div>
+
+      {/* ── File import modal ── */}
+      {importModal.open && importModal.data && (
+        <FileImportModal
+          data={importModal.data}
+          onClose={() => setImportModal({ open: false })}
+          onContinue={(stepIdx) => {
+            setCurrentStep(stepIdx)
+            setMobileView('form')
+          }}
+        />
+      )}
     </div>
   )
 }

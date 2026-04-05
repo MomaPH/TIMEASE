@@ -8,15 +8,22 @@ export async function createSession(): Promise<string> {
 
 export async function getSession(sid: string) {
   const res = await fetch(`${BASE}/api/session/${sid}`)
+  if (!res.ok) throw new Error('Session not found')
   return res.json()
 }
 
-export async function sendChat(sid: string, message: string, fileContent?: string) {
+export async function sendChat(
+  sid: string,
+  message: string,
+  fileContent?: string,
+  aiHistory?: any[],
+) {
   const res = await fetch(`${BASE}/api/session/${sid}/chat`, {
-    method: 'POST',
+    method:  'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ message, file_content: fileContent }),
+    body:    JSON.stringify({ message, file_content: fileContent, ai_history: aiHistory }),
   })
+  if (!res.ok) throw new Error(`Chat failed: ${res.status}`)
   return res.json()
 }
 
@@ -24,28 +31,42 @@ export async function uploadFile(sid: string, file: File) {
   const form = new FormData()
   form.append('file', file)
   const res = await fetch(`${BASE}/api/session/${sid}/upload`, { method: 'POST', body: form })
+  if (!res.ok) throw new Error(`Upload failed: ${res.status}`)
   return res.json()
 }
 
-export async function mergeData(sid: string, type: string, data: any) {
-  const res = await fetch(`${BASE}/api/session/${sid}/merge`, {
-    method: 'POST',
+export async function updateSchoolData(sid: string, data: any) {
+  const res = await fetch(`${BASE}/api/session/${sid}/school_data`, {
+    method:  'PUT',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ type, data }),
+    body:    JSON.stringify(data),
   })
+  if (!res.ok) throw new Error(`Update failed: ${res.status}`)
+  return res.json()
+}
+
+export async function updateAssignments(sid: string, assignments: any[]) {
+  const res = await fetch(`${BASE}/api/session/${sid}/assignments`, {
+    method:  'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body:    JSON.stringify({ assignments }),
+  })
+  if (!res.ok) throw new Error(`Update failed: ${res.status}`)
   return res.json()
 }
 
 export async function solve(sid: string) {
   const res = await fetch(`${BASE}/api/session/${sid}/solve`, {
-    method: 'POST',
+    method:  'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ timeout: 120 }),
+    body:    JSON.stringify({ timeout: 120 }),
   })
+  if (!res.ok) throw new Error(`Solve failed: ${res.status}`)
   return res.json()
 }
 
 export async function exportFile(sid: string, format: string) {
   const res = await fetch(`${BASE}/api/session/${sid}/export/${format}`)
+  if (!res.ok) throw new Error(`Export failed: ${res.status}`)
   return res.blob()
 }

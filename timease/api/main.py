@@ -17,10 +17,6 @@ import tempfile
 import uuid
 from pathlib import Path
 
-from dotenv import load_dotenv
-
-load_dotenv()
-
 from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
@@ -32,7 +28,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:3000",
-        "http://localhost:3001",  # Next.js fallback port
+        "http://localhost:3001",
     ],
     allow_methods=["*"],
     allow_headers=["*"],
@@ -40,24 +36,19 @@ app.add_middleware(
 )
 
 # ── Model normalization helpers ────────────────────────────────────────────────
-# The AI and frontend may send field names that differ from the engine's dataclass
-# field names. These helpers remap aliases and drop unknown keys so that
-# direct **unpacking into dataclasses never raises TypeError.
 
 def _pick(d: dict, keys: list[str]) -> dict:
-    """Return only the keys that exist in the target dataclass."""
     return {k: v for k, v in d.items() if k in keys}
 
 
 def _norm_subject(d: dict) -> dict:
-    out = {
-        "name":       d.get("name", ""),
-        "short_name": d.get("short_name") or d.get("name", "")[:4].upper(),
-        "color":      d.get("color", "#0d9488"),
+    return {
+        "name":               d.get("name", ""),
+        "short_name":         d.get("short_name") or d.get("name", "")[:4].upper(),
+        "color":              d.get("color", "#0d9488"),
         "required_room_type": d.get("required_room_type") or d.get("room_type"),
-        "needs_room": d.get("needs_room", True),
+        "needs_room":         d.get("needs_room", True),
     }
-    return out
 
 
 def _norm_teacher(d: dict) -> dict:
@@ -100,9 +91,8 @@ def _norm_curriculum(d: dict) -> dict:
 
 
 def _norm_constraint(d: dict) -> dict:
-    import uuid as _uuid
     return {
-        "id":             d.get("id") or str(_uuid.uuid4())[:8],
+        "id":             d.get("id") or str(uuid.uuid4())[:8],
         "type":           d.get("type", "hard"),
         "category":       d.get("category", ""),
         "description_fr": d.get("description_fr") or d.get("description", ""),
@@ -124,55 +114,25 @@ class SessionData(BaseModel):
     collab_links: list[dict] = []
 
 
-# ── Session management ─────────────────────────────────────────────────────────
+# ── Merge helper (used by both /merge and chat auto-apply) ─────────────────────
 
+def _merge_tool_call(sid: str, tool_name: str, data: dict) -> None:
+    """Apply a single AI tool call to the session in-place."""
+    sd = sessions[sid]["school_data"]
 
-@app.post("/api/session")
-def create_session():
-    """Create a new empty session and return its ID."""
-    sid = uuid.uuid4().hex[:12]
-    sessions[sid] = SessionData().model_dump()
-    return {"session_id": sid}
-
-
-@app.get("/api/session/{sid}")
-def get_session(sid: str):
-    """Return the full session state."""
-    if sid not in sessions:
-        raise HTTPException(404, "Session not found")
-    return sessions[sid]
-
-
-# ── School data CRUD ───────────────────────────────────────────────────────────
-
-
-@app.post("/api/session/{sid}/merge")
-def merge_data(sid: str, payload: dict):
-    """
-    Merge AI-extracted data into the session.
-
-    payload: {"type": str, "data": dict}
-    """
-    if sid not in sessions:
-        raise HTTPException(404, "Session not found")
-
-    dtype = payload.get("type", "")
-    data  = payload.get("data", {})
-    sd    = sessions[sid]["school_data"]
-
-    if dtype in ("save_school_info", "school_info"):
+    if tool_name == "save_school_info":
         sd.update({k: v for k, v in data.items() if k != "type"})
 
-    elif dtype in ("save_teachers", "teachers"):
+    elif tool_name == "save_teachers":
         existing  = sd.get("teachers", [])
         new_items = data.get("teachers", [])
         sd["teachers"] = existing + [
-            {"name": t, "subjects": [], "max_hours_per_week": 30}
+            {"name": t, "subjects": [], "max_hours_per_week": 20}
             if isinstance(t, str) else t
             for t in new_items
         ]
 
-    elif dtype in ("save_classes", "classes"):
+    elif tool_name == "save_classes":
         existing  = sd.get("classes", [])
         new_items = data.get("classes", [])
         sd["classes"] = existing + [
@@ -181,75 +141,151 @@ def merge_data(sid: str, payload: dict):
             for c in new_items
         ]
 
-    elif dtype in ("save_rooms", "rooms"):
+    elif tool_name == "save_rooms":
         existing  = sd.get("rooms", [])
         new_items = data.get("rooms", [])
         sd["rooms"] = existing + [
-            {"name": r, "capacity": 0, "types": ["Standard"]}
+            {"name": r, "capacity": 30, "types": ["Standard"]}
             if isinstance(r, str) else r
             for r in new_items
         ]
 
-    elif dtype in ("save_subjects", "subjects"):
+    elif tool_name == "save_subjects":
         existing  = sd.get("subjects", [])
         new_items = data.get("subjects", [])
         sd["subjects"] = existing + new_items
 
-    elif dtype in ("save_curriculum", "curriculum"):
+    elif tool_name == "save_curriculum":
         existing  = sd.get("curriculum", [])
         new_items = data.get("curriculum", [])
         sd["curriculum"] = existing + new_items
 
-    elif dtype in ("save_constraints", "constraints"):
+    elif tool_name == "save_constraints":
         existing  = sd.get("constraints", [])
         new_items = data.get("constraints", [])
         sd["constraints"] = existing + new_items
 
-    elif dtype in ("save_assignments", "assignments"):
+    elif tool_name == "save_assignments":
         existing = sessions[sid]["teacher_assignments"]
-        sessions[sid]["teacher_assignments"] = (
-            existing + data.get("assignments", [])
-        )
+        raw = data.get("assignments", [])
+        normalized = []
+        for a in raw:
+            if isinstance(a, str):
+                continue
+            # Normalize field aliases the AI may send
+            entry = {
+                "teacher":      a.get("teacher", ""),
+                "subject":      a.get("subject", ""),
+                # Accept both "school_class" and "class"
+                "school_class": a.get("school_class") or a.get("class", ""),
+            }
+            if entry["teacher"] and entry["subject"] and entry["school_class"]:
+                normalized.append(entry)
+        sessions[sid]["teacher_assignments"] = existing + normalized
 
     sessions[sid]["school_data"] = sd
+
+
+# ── Session management ─────────────────────────────────────────────────────────
+
+@app.post("/api/session")
+def create_session():
+    sid = uuid.uuid4().hex[:12]
+    sessions[sid] = SessionData().model_dump()
+    return {"session_id": sid}
+
+
+@app.get("/api/session/{sid}")
+def get_session(sid: str):
+    if sid not in sessions:
+        raise HTTPException(404, "Session not found")
+    return sessions[sid]
+
+
+@app.put("/api/session/{sid}/school_data")
+def put_school_data(sid: str, payload: dict):
+    """Replace the entire school_data for direct edits from the UI."""
+    if sid not in sessions:
+        raise HTTPException(404, "Session not found")
+    sessions[sid]["school_data"] = payload
+    return {"ok": True}
+
+
+@app.put("/api/session/{sid}/assignments")
+def put_assignments(sid: str, payload: dict):
+    """Replace the teacher_assignments list."""
+    if sid not in sessions:
+        raise HTTPException(404, "Session not found")
+    sessions[sid]["teacher_assignments"] = payload.get("assignments", [])
+    return {"ok": True}
+
+
+# ── School data merge (kept for compatibility) ─────────────────────────────────
+
+@app.post("/api/session/{sid}/merge")
+def merge_data(sid: str, payload: dict):
+    if sid not in sessions:
+        raise HTTPException(404, "Session not found")
+    _merge_tool_call(sid, payload.get("type", ""), payload.get("data", {}))
     return {"ok": True}
 
 
 # ── AI chat ────────────────────────────────────────────────────────────────────
 
-
 @app.post("/api/session/{sid}/chat")
 async def chat(sid: str, payload: dict):
-    """Send one chat turn to Claude and return the structured response."""
+    """Send one chat turn to Claude, auto-apply tool calls, return message."""
     if sid not in sessions:
         raise HTTPException(404, "Session not found")
 
     from timease.api.ai_chat import process_chat
+
+    # Frontend may send its locally-stored ai_history (survives backend restart)
+    provided_history = payload.get("ai_history")
+    ai_history = (
+        provided_history
+        if provided_history is not None
+        else sessions[sid]["ai_history"]
+    )
 
     result = process_chat(
         user_message=payload.get("message", ""),
         file_content=payload.get("file_content"),
         school_data=sessions[sid]["school_data"],
         teacher_assignments=sessions[sid]["teacher_assignments"],
-        ai_history=sessions[sid]["ai_history"],
+        ai_history=ai_history,
     )
+
+    # Auto-apply data tool calls; handle special tools separately
+    saved_types: list[str] = []
+    trigger_generation = False
+    proposed_options: list[dict] = []
+
+    for tc in result["tool_calls"]:
+        if tc["name"] == "trigger_generation":
+            trigger_generation = True
+        elif tc["name"] == "propose_options":
+            proposed_options = tc["data"].get("options", [])
+        else:
+            _merge_tool_call(sid, tc["name"], tc["data"])
+            saved_types.append(tc["name"])
 
     sessions[sid]["ai_history"] = result["updated_history"]
 
     return {
         "message":            result["message"],
-        "tool_calls":         result["tool_calls"],
-        "quick_replies":      result["quick_replies"],
-        "needs_confirmation": result["needs_confirmation"],
+        "data_saved":         len(saved_types) > 0,
+        "trigger_generation": trigger_generation,
+        "options":            proposed_options,
+        "saved_types": saved_types,
+        "ai_history":  result["updated_history"],
     }
 
 
 # ── File upload ────────────────────────────────────────────────────────────────
 
-
 @app.post("/api/session/{sid}/upload")
 async def upload_file(sid: str, file: UploadFile = File(...)):
-    """Accept a file, attempt direct import or fall back to text extraction."""
     if sid not in sessions:
         raise HTTPException(404, "Session not found")
 
@@ -259,21 +295,15 @@ async def upload_file(sid: str, file: UploadFile = File(...)):
         tmp.write(await file.read())
         tmp_path = tmp.name
 
-    # Try direct TIMEASE template import for .xlsx only (openpyxl doesn't read .xls)
     if suffix == ".xlsx":
         try:
             from timease.io.excel_import import read_template
-
             school_data_obj, errors = read_template(tmp_path)
             if school_data_obj and not errors:
                 sd_dict = dataclasses.asdict(school_data_obj)
                 sessions[sid]["school_data"] = sd_dict
                 sessions[sid]["teacher_assignments"] = [
-                    {
-                        "teacher":      ta.teacher,
-                        "subject":      ta.subject,
-                        "school_class": ta.school_class,
-                    }
+                    {"teacher": ta.teacher, "subject": ta.subject, "school_class": ta.school_class}
                     for ta in school_data_obj.teacher_assignments
                 ]
                 os.unlink(tmp_path)
@@ -281,13 +311,12 @@ async def upload_file(sid: str, file: UploadFile = File(...)):
                     "type":        "direct_import",
                     "success":     True,
                     "school_data": sessions[sid]["school_data"],
+                    "teacher_assignments": sessions[sid]["teacher_assignments"],
                 }
         except Exception:
             pass
 
-    # Fallback: extract text for AI
     from timease.io.file_parser import extract_content
-
     text, ftype = extract_content(tmp_path)
     os.unlink(tmp_path)
     return {"type": "text_extract", "content": text, "file_type": ftype}
@@ -295,10 +324,19 @@ async def upload_file(sid: str, file: UploadFile = File(...)):
 
 # ── Solve ──────────────────────────────────────────────────────────────────────
 
+def _format_conflicts_fr(reports: list) -> str:
+    """Format ConflictReport list as French markdown for the AI chat."""
+    lines: list[str] = []
+    for r in reports:
+        lines.append(f"**{r.description_fr}**")
+        for opt in r.fix_options[:2]:
+            lines.append(f"→ {opt.fix_fr}")
+        lines.append("")
+    return "\n".join(lines).strip()
+
 
 @app.post("/api/session/{sid}/solve")
 def solve(sid: str, payload: dict = {}):
-    """Run the CP-SAT solver and store the result."""
     if sid not in sessions:
         raise HTTPException(404, "Session not found")
 
@@ -307,17 +345,8 @@ def solve(sid: str, payload: dict = {}):
     ta      = sessions[sid]["teacher_assignments"]
 
     from timease.engine.models import (
-        Constraint,
-        CurriculumEntry,
-        Room,
-        School,
-        SchoolClass,
-        SchoolData,
-        SessionConfig,
-        Subject,
-        Teacher,
-        TeacherAssignment,
-        TimeslotConfig,
+        Constraint, CurriculumEntry, Room, School, SchoolClass,
+        SchoolData, SessionConfig, Subject, Teacher, TeacherAssignment, TimeslotConfig,
     )
     from timease.engine.solver import TimetableSolver
 
@@ -329,14 +358,13 @@ def solve(sid: str, payload: dict = {}):
                 city=sd.get("city", ""),
             ),
             timeslot_config=TimeslotConfig(
-                days=sd.get("days", [
-                    "lundi", "mardi", "mercredi", "jeudi", "vendredi",
-                ]),
+                days=sd.get("days", ["lundi", "mardi", "mercredi", "jeudi", "vendredi"]),
                 base_unit_minutes=int(sd.get("base_unit_minutes", 30)),
                 sessions=[
                     SessionConfig(**_pick(s, ["name", "start_time", "end_time"]))
                     for s in sd.get("sessions", [
-                        {"name": "Matin", "start_time": "08:00", "end_time": "13:00"},
+                        {"name": "Matin",      "start_time": "08:00", "end_time": "12:00"},
+                        {"name": "Après-midi", "start_time": "14:00", "end_time": "17:00"},
                     ])
                 ],
             ),
@@ -346,16 +374,22 @@ def solve(sid: str, payload: dict = {}):
             rooms=[Room(**_norm_room(r)) for r in sd.get("rooms", [])],
             curriculum=[CurriculumEntry(**_norm_curriculum(e)) for e in sd.get("curriculum", [])],
             constraints=[Constraint(**_norm_constraint(c)) for c in sd.get("constraints", [])],
-            teacher_assignments=[TeacherAssignment(**_pick(a, ["teacher", "subject", "school_class"])) for a in ta],
+            teacher_assignments=[
+                TeacherAssignment(**_pick(a, ["teacher", "subject", "school_class"]))
+                for a in ta
+            ],
         )
 
         validation_errors = school_obj.validate()
         if validation_errors:
-            return {"status": "INFEASIBLE", "solved": False, "errors": validation_errors}
+            conflict_summary = "**Erreurs de validation :**\n" + "\n".join(
+                f"- {e}" for e in validation_errors
+            )
+            return {"status": "INFEASIBLE", "solved": False, "conflict_summary": conflict_summary, "errors": validation_errors}
 
         result = TimetableSolver().solve(school_obj, timeout_seconds=timeout)
 
-        if result.solved:
+        if result.solved or result.partial:
             subj_colors = {s.name: s.color for s in school_obj.subjects}
             timetable = {
                 "assignments": [
@@ -371,41 +405,60 @@ def solve(sid: str, payload: dict = {}):
                     }
                     for a in result.assignments
                 ],
-                "solve_time": result.solve_time_seconds,
-                "days": sd.get("days", []),
+                "solve_time":               result.solve_time_seconds,
+                "days":                     sd.get("days", []),
+                "soft_results":             result.soft_constraint_details,
+                "warnings":                 result.warnings,
+                "unscheduled":              result.unscheduled_sessions,
             }
             sessions[sid]["timetable_result"] = timetable
-            return {"status": "OPTIMAL", "solved": True, **timetable}
+            status = "OPTIMAL" if result.solved and not result.partial else "PARTIAL"
+            return {"status": status, "solved": True, **timetable}
 
-        return {"status": "INFEASIBLE", "solved": False, "message": "Aucune solution trouvée"}
+        # Infeasible — run conflict analyzer
+        conflict_summary = ""
+        try:
+            from timease.engine.conflicts import ConflictAnalyzer
+            analyzer = ConflictAnalyzer(school_obj)
+            reports  = analyzer.analyze()
+            conflict_summary = _format_conflicts_fr(reports)
+        except Exception:
+            pass
+
+        if not conflict_summary:
+            if result.conflicts:
+                lines = []
+                for c in result.conflicts[:5]:
+                    reason = c.get("reason", "")
+                    cls    = c.get("class", "")
+                    subj   = c.get("subject", "")
+                    if cls and subj:
+                        lines.append(f"- **{cls} / {subj}** : {reason}")
+                    else:
+                        lines.append(f"- {reason}")
+                conflict_summary = "**Sessions impossibles à planifier :**\n" + "\n".join(lines)
+            else:
+                conflict_summary = "Aucune solution trouvée avec les données actuelles."
+
+        return {
+            "status":           "INFEASIBLE",
+            "solved":           False,
+            "conflict_summary": conflict_summary,
+        }
 
     except Exception as exc:
-        return {"status": "ERROR", "solved": False, "errors": [str(exc)]}
+        return {"status": "ERROR", "solved": False, "errors": [str(exc)], "conflict_summary": str(exc)}
 
 
 # ── Export ─────────────────────────────────────────────────────────────────────
 
-
 def _rebuild_school_obj(sd: dict, ta: list[dict]):
     from timease.engine.models import (
-        Constraint,
-        CurriculumEntry,
-        Room,
-        School,
-        SchoolClass,
-        SchoolData,
-        SessionConfig,
-        Subject,
-        Teacher,
-        TeacherAssignment,
-        TimeslotConfig,
+        Constraint, CurriculumEntry, Room, School, SchoolClass,
+        SchoolData, SessionConfig, Subject, Teacher, TeacherAssignment, TimeslotConfig,
     )
     return SchoolData(
-        school=School(
-            name=sd.get("name", ""),
-            academic_year=sd.get("academic_year", ""),
-            city=sd.get("city", ""),
-        ),
+        school=School(name=sd.get("name", ""), academic_year=sd.get("academic_year", ""), city=sd.get("city", "")),
         timeslot_config=TimeslotConfig(
             days=sd.get("days", []),
             base_unit_minutes=int(sd.get("base_unit_minutes", 30)),
@@ -423,7 +476,6 @@ def _rebuild_school_obj(sd: dict, ta: list[dict]):
 
 @app.get("/api/session/{sid}/export/{format}")
 def export(sid: str, format: str):
-    """Export the solved timetable in the requested format."""
     if sid not in sessions:
         raise HTTPException(404, "Session not found")
     if not sessions[sid]["timetable_result"]:
@@ -434,12 +486,11 @@ def export(sid: str, format: str):
     raw = sessions[sid]["timetable_result"]["assignments"]
 
     from timease.engine.models import Assignment, TimetableResult
-
     school_obj = _rebuild_school_obj(sd, ta)
-    _assignment_keys = {"school_class", "subject", "teacher", "day", "start_time", "end_time", "room"}
+    _asgn_keys = {"school_class", "subject", "teacher", "day", "start_time", "end_time", "room"}
     result = TimetableResult(
         solved=True,
-        assignments=[Assignment(**{k: v for k, v in a.items() if k in _assignment_keys}) for a in raw],
+        assignments=[Assignment(**{k: v for k, v in a.items() if k in _asgn_keys}) for a in raw],
         solve_time_seconds=sessions[sid]["timetable_result"].get("solve_time", 0),
     )
 
@@ -471,7 +522,6 @@ _COLLAB_DIR = Path("collab")
 
 @app.post("/api/session/{sid}/collab/generate")
 def generate_collab_links(sid: str):
-    """Generate a token for each teacher's availability form."""
     if sid not in sessions:
         raise HTTPException(404, "Session not found")
 
@@ -507,10 +557,8 @@ def get_collab(token: str):
 
 @app.post("/api/collab/{token}/availability")
 def submit_availability(token: str, payload: dict):
-    """Submit a teacher's availability."""
     p = _COLLAB_DIR / f"{token}.json"
     if not p.exists():
-        # Silently accept if token doesn't exist yet (stub mode)
         return {"ok": True}
     data = json.loads(p.read_text())
     data["availability"] = payload.get("availability", {})
