@@ -5,6 +5,10 @@ import os
 import pathlib
 import uuid
 
+from dotenv import load_dotenv
+
+load_dotenv()
+
 import reflex as rx
 from pydantic import BaseModel
 

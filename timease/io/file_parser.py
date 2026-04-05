@@ -31,14 +31,18 @@ def extract_content(file_path: str) -> tuple[str, str]:
     path = Path(file_path)
     suffix = path.suffix.lower()
 
-    if suffix in (".xlsx", ".xls", ".xlsm"):
-        return _extract_excel(path)
+    if suffix in (".xlsx", ".xlsm"):
+        return _extract_excel_openpyxl(path)
+    if suffix == ".xls":
+        return _extract_excel_xlrd(path)
     if suffix == ".csv":
         return _extract_csv(path)
     if suffix in (".docx", ".doc"):
         return _extract_docx(path)
     if suffix == ".txt":
         return _extract_txt(path)
+    if suffix == ".pdf":
+        return _extract_pdf(path)
 
     return "Format non supporté", "unknown"
 
@@ -47,8 +51,8 @@ def extract_content(file_path: str) -> tuple[str, str]:
 # Excel
 # ---------------------------------------------------------------------------
 
-def _extract_excel(path: Path) -> tuple[str, str]:
-    """Read all sheets of an Excel workbook into a human-readable string."""
+def _extract_excel_openpyxl(path: Path) -> tuple[str, str]:
+    """Read .xlsx / .xlsm workbooks via openpyxl."""
     try:
         from openpyxl import load_workbook
     except ImportError:
@@ -65,15 +69,12 @@ def _extract_excel(path: Path) -> tuple[str, str]:
         ws = wb[sheet_name]
         lines: list[str] = [f"Feuille '{sheet_name}':"]
 
-        # Collect header row (row 1)
         headers: list[str] = []
         for cell in ws[1]:
             val = cell.value
             headers.append(str(val).strip() if val is not None else "")
 
-        # Data rows
         for row_idx, row in enumerate(ws.iter_rows(min_row=2, values_only=True), start=2):
-            # Skip fully empty rows
             if all(v is None for v in row):
                 continue
             pairs: list[str] = []
@@ -92,6 +93,68 @@ def _extract_excel(path: Path) -> tuple[str, str]:
         sections.append("\n".join(lines))
 
     return "\n\n".join(sections), "excel"
+
+
+def _extract_excel_xlrd(path: Path) -> tuple[str, str]:
+    """Read legacy .xls workbooks via xlrd."""
+    try:
+        import xlrd
+    except ImportError:
+        return "xlrd requis pour lire les fichiers .xls. Convertissez en .xlsx si possible.", "excel"
+
+    try:
+        wb = xlrd.open_workbook(str(path))
+    except Exception as exc:
+        logger.error("Cannot open .xls file %s: %s", path, exc)
+        return f"Erreur à l'ouverture du fichier .xls : {exc}", "excel"
+
+    sections: list[str] = []
+    for sheet in wb.sheets():
+        if sheet.nrows == 0:
+            continue
+        lines: list[str] = [f"Feuille '{sheet.name}':"]
+        headers = [str(sheet.cell_value(0, c)).strip() for c in range(sheet.ncols)]
+
+        for row_idx in range(1, sheet.nrows):
+            pairs: list[str] = []
+            for col_idx in range(sheet.ncols):
+                val = sheet.cell_value(row_idx, col_idx)
+                if val == "" or val is None:
+                    continue
+                header = headers[col_idx] if col_idx < len(headers) and headers[col_idx] else f"Col{col_idx + 1}"
+                pairs.append(f"{header}={val}")
+            if pairs:
+                lines.append(f"Ligne {row_idx + 1}: " + ", ".join(pairs))
+
+        sections.append("\n".join(lines))
+
+    return "\n\n".join(sections), "excel"
+
+
+def _extract_pdf(path: Path) -> tuple[str, str]:
+    """Extract text from a PDF using pypdf."""
+    try:
+        from pypdf import PdfReader
+    except ImportError:
+        return "pypdf requis pour lire les fichiers PDF.", "pdf"
+
+    try:
+        reader = PdfReader(str(path))
+    except Exception as exc:
+        logger.error("Cannot open PDF %s: %s", path, exc)
+        return f"Erreur à l'ouverture du PDF : {exc}", "pdf"
+
+    pages: list[str] = []
+    for i, page in enumerate(reader.pages, start=1):
+        text = page.extract_text() or ""
+        text = text.strip()
+        if text:
+            pages.append(f"Page {i}:\n{text}")
+
+    if not pages:
+        return "Le PDF ne contient pas de texte extractible (document scanné ?).", "pdf"
+
+    return "\n\n".join(pages), "pdf"
 
 
 # ---------------------------------------------------------------------------

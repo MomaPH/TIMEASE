@@ -1,0 +1,3 @@
+module.exports=[2090,(a,b,c)=>{let{createClientModuleProxy:d}=a.r(98182);a.n(d("[project]/Desktop/TIMEASE/frontend/node_modules/next/dist/client/components/builtin/global-error.js <module evaluation>"))},7764,(a,b,c)=>{let{createClientModuleProxy:d}=a.r(98182);a.n(d("[project]/Desktop/TIMEASE/frontend/node_modules/next/dist/client/components/builtin/global-error.js"))},40140,a=>{"use strict";a.i(2090);var b=a.i(7764);a.n(b)},31456,a=>{a.n(a.i(40140))}];
+
+//# sourceMappingURL=0h~l_next_dist_client_components_builtin_global-error_02wz_f6.js.map

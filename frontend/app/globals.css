@@ -1,0 +1,51 @@
+@import "tailwindcss";
+
+/* ── Custom keyframes ─────────────────────────────────────────────────────── */
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fade-in-fast {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes bounce-dot {
+  0%, 80%, 100% { transform: translateY(0); }
+  40%           { transform: translateY(-5px); }
+}
+
+/* ── Animation utility classes ────────────────────────────────────────────── */
+.animate-slide-up {
+  animation: slide-up 0.25s ease-out both;
+}
+
+.animate-fade-in {
+  animation: fade-in 0.28s ease-out both;
+}
+
+.animate-fade-in-fast {
+  animation: fade-in-fast 0.18s ease-out both;
+}
+
+/* Staggered quick-reply chips */
+.animate-fade-in:nth-child(1) { animation-delay: 0ms; }
+.animate-fade-in:nth-child(2) { animation-delay: 40ms; }
+.animate-fade-in:nth-child(3) { animation-delay: 80ms; }
+.animate-fade-in:nth-child(4) { animation-delay: 120ms; }
+
+/* ── Scrollbar ────────────────────────────────────────────────────────────── */
+::-webkit-scrollbar        { width: 5px; height: 5px; }
+::-webkit-scrollbar-track  { background: transparent; }
+::-webkit-scrollbar-thumb  { background: #d1d5db; border-radius: 3px; }
+.dark ::-webkit-scrollbar-thumb { background: #374151; }
+
+/* ── Base ─────────────────────────────────────────────────────────────────── */
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
