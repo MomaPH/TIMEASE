@@ -5,7 +5,11 @@ import { useSession } from '@/hooks/useSession'
 import { useToast } from '@/components/Toast'
 import { generateCollabLinks } from '@/lib/api'
 
-const BASE_URL = typeof window !== 'undefined' ? window.location.origin : ''
+// Computed client-side only — safe because this component renders after hydration
+function getBaseUrl() {
+  if (typeof window === 'undefined') return ''
+  return window.location.origin
+}
 
 export default function CollaborationPage() {
   const { sessionId, schoolData } = useSession()
@@ -36,7 +40,7 @@ export default function CollaborationPage() {
   }
 
   async function copyLink(token: string, idx: number) {
-    const url = `${BASE_URL}/collab/${token}`
+    const url = `${getBaseUrl()}/collab/${token}`
     try {
       await navigator.clipboard.writeText(url)
       setCopiedIdx(idx)
@@ -115,7 +119,7 @@ export default function CollaborationPage() {
                       <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{name}</p>
                       {linkData ? (
                         <p className="text-xs text-gray-400 dark:text-gray-500 font-mono truncate max-w-[240px]">
-                          {`${BASE_URL}/collab/${linkData.token}`}
+                          {`${getBaseUrl()}/collab/${linkData.token}`}
                         </p>
                       ) : (
                         <p className="text-xs text-gray-400 dark:text-gray-500 italic">Aucun lien généré</p>

@@ -344,6 +344,7 @@ export default function WorkspacePage() {
               onClick={() => fileRef.current?.click()}
               title="Envoyer un fichier"
               disabled={isLoading || !sessionId}
+              suppressHydrationWarning
               className="text-gray-400 hover:text-teal-600 dark:hover:text-teal-400 flex-shrink-0 transition-colors p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 disabled:opacity-50"
             >
               <Paperclip size={17} />
@@ -361,11 +362,13 @@ export default function WorkspacePage() {
               onKeyDown={e => e.key === 'Enter' && !e.shiftKey && send()}
               placeholder={sessionId ? 'Message…' : 'Chargement…'}
               disabled={isLoading || !sessionId}
+              suppressHydrationWarning
               className="flex-1 px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:bg-white dark:focus:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 disabled:opacity-60 transition-all"
             />
             <button
               onClick={() => send()}
               disabled={isLoading || !input.trim() || !sessionId}
+              suppressHydrationWarning
               className="p-2 rounded-xl bg-teal-600 text-white hover:bg-teal-700 disabled:opacity-40 transition-colors flex-shrink-0"
             >
               {isLoading
