@@ -27,6 +27,54 @@ export async function sendChat(
   return res.json()
 }
 
+export async function sendChatStream(
+  sid: string,
+  message: string,
+  fileContent: string | undefined,
+  aiHistory: any[],
+  onDelta: (text: string) => void,
+  onToolStart: (name: string) => void,
+): Promise<{
+  data_saved: boolean
+  trigger_generation: boolean
+  options: { label: string; value: string }[]
+  set_step: number | null
+  saved_types: string[]
+  ai_history: any[]
+}> {
+  const res = await fetch(`${BASE}/api/session/${sid}/chat/stream`, {
+    method:  'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body:    JSON.stringify({ message, file_content: fileContent, ai_history: aiHistory }),
+  })
+  if (!res.ok) throw new Error(`Chat stream failed: ${res.status}`)
+  if (!res.body)  throw new Error('No response body')
+
+  const reader  = res.body.getReader()
+  const decoder = new TextDecoder()
+  let   buf     = ''
+
+  while (true) {
+    const { done, value } = await reader.read()
+    if (done) break
+    buf += decoder.decode(value, { stream: true })
+    const lines = buf.split('\n')
+    buf = lines.pop() ?? ''  // keep incomplete last line
+    for (const line of lines) {
+      if (!line.startsWith('data: ')) continue
+      const json = line.slice(6).trim()
+      if (!json) continue
+      try {
+        const evt = JSON.parse(json)
+        if (evt.type === 'delta')      onDelta(evt.text ?? '')
+        if (evt.type === 'tool_start') onToolStart(evt.name ?? '')
+        if (evt.type === 'done')       return evt
+      } catch { /* ignore malformed */ }
+    }
+  }
+  throw new Error('Stream ended without done event')
+}
+
 export async function uploadFile(sid: string, file: File) {
   const form = new FormData()
   form.append('file', file)
@@ -82,4 +130,10 @@ export async function exportFile(sid: string, format: string) {
   const res = await fetch(`${BASE}/api/session/${sid}/export/${format}`)
   if (!res.ok) throw new Error(`Export failed: ${res.status}`)
   return res.blob()
+}
+
+export async function generateCollabLinks(sid: string) {
+  const res = await fetch(`${BASE}/api/session/${sid}/collab/generate`, { method: 'POST' })
+  if (!res.ok) throw new Error(`Collab generate failed: ${res.status}`)
+  return res.json() as Promise<{ links: { teacher: string; token: string; status: string }[] }>
 }

@@ -8,7 +8,7 @@ import StepPanel from '@/components/StepPanel'
 import FileImportModal from '@/components/FileImportModal'
 import { useSession } from '@/hooks/useSession'
 import { useToast } from '@/components/Toast'
-import { sendChat, uploadFile, solve } from '@/lib/api'
+import { sendChatStream, uploadFile, solve } from '@/lib/api'
 import type { ChatMessage as ChatMessageType, SchoolData } from '@/lib/types'
 
 // ── Constants ─────────────────────────────────────────────────────────────────
@@ -92,6 +92,59 @@ export default function WorkspacePage() {
     if (sessionId) localStorage.setItem(hist_key(sessionId), JSON.stringify(history))
   }, [sessionId])
 
+  // ── Streaming send helper ─────────────────────────────────────────────────
+  async function _streamSend(msg: string, fileContent?: string) {
+    // Append a placeholder AI message that we'll fill in as tokens arrive
+    const streamingId = Date.now().toString()
+    setMessages(prev => {
+      const next = [...prev, { role: 'ai' as const, content: '', _streamingId: streamingId } as any]
+      if (sessionId) localStorage.setItem(msgs_key(sessionId), JSON.stringify(next))
+      return next
+    })
+
+    const res = await sendChatStream(
+      sessionId!,
+      msg,
+      fileContent,
+      aiHistory,
+      // onDelta: append text to the streaming message
+      (text) => {
+        setMessages(prev => {
+          const next = prev.map(m =>
+            (m as any)._streamingId === streamingId
+              ? { ...m, content: m.content + text }
+              : m,
+          )
+          if (sessionId) localStorage.setItem(msgs_key(sessionId), JSON.stringify(next))
+          return next
+        })
+      },
+      // onToolStart: no UI change needed
+      (_name) => {},
+    )
+
+    // Finalize the streaming message with metadata
+    saveHistory(res.ai_history || [])
+    setMessages(prev => {
+      const next = prev.map(m => {
+        if ((m as any)._streamingId !== streamingId) return m
+        const { _streamingId: _, ...rest } = m as any
+        return {
+          ...rest,
+          dataSaved:  res.data_saved,
+          savedTypes: res.saved_types,
+          options:    res.options?.length ? res.options : undefined,
+        }
+      })
+      if (sessionId) localStorage.setItem(msgs_key(sessionId), JSON.stringify(next))
+      return next
+    })
+
+    if (res.data_saved)              refreshSession()
+    if (typeof res.set_step === 'number') setCurrentStep(res.set_step)
+    if (res.trigger_generation)      handleGenerate()
+  }
+
   // ── Send message ──────────────────────────────────────────────────────────
   async function send(text?: string) {
     const msg = (text ?? input).trim()
@@ -102,27 +155,7 @@ export default function WorkspacePage() {
     setIsLoading(true)
 
     try {
-      const res = await sendChat(sessionId, msg, undefined, aiHistory)
-      saveHistory(res.ai_history || [])
-
-      if (res.message) {
-        addMessage({
-          role:       'ai',
-          content:    res.message,
-          dataSaved:  res.data_saved,
-          savedTypes: res.saved_types,
-          options:    res.options?.length ? res.options : undefined,
-        })
-      }
-
-      if (res.data_saved) {
-        refreshSession()
-      }
-
-      // AI decided all data is ready — auto-trigger generation
-      if (res.trigger_generation) {
-        handleGenerate()
-      }
+      await _streamSend(msg)
     } catch {
       addMessage({ role: 'ai', content: 'Impossible de contacter le serveur. Vérifiez que le backend est lancé.' })
       toast('Connexion au serveur perdue', 'error')
@@ -148,19 +181,8 @@ export default function WorkspacePage() {
         setImportModal({ open: true, data: res })
         toast('Fichier importé avec succès')
       } else if (res.type === 'text_extract') {
-        // Send extracted text to AI for processing
-        const chatRes = await sendChat(sessionId, 'Analyse ce fichier et enregistre les données.', res.content, aiHistory)
-        saveHistory(chatRes.ai_history || [])
-        if (chatRes.message) {
-          addMessage({
-            role:      'ai',
-            content:   chatRes.message,
-            dataSaved: chatRes.data_saved,
-            options:   chatRes.options?.length ? chatRes.options : undefined,
-          })
-        }
-        if (chatRes.data_saved) refreshSession()
-        if (chatRes.trigger_generation) handleGenerate()
+        // Send extracted text to AI for processing via streaming
+        await _streamSend('Analyse ce fichier et enregistre les données.', res.content)
         toast('Fichier traité par l\'assistant')
       } else {
         addMessage({ role: 'ai', content: 'Je n\'ai pas pu lire ce fichier. Essayez un autre format (xlsx, pdf, docx, csv, txt).' })

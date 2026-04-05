@@ -19,7 +19,7 @@ from pathlib import Path
 
 from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, StreamingResponse
 from pydantic import BaseModel
 
 app = FastAPI(title="TIMEASE API", version="1.0.0")
@@ -116,72 +116,104 @@ class SessionData(BaseModel):
 
 # ── Merge helper (used by both /merge and chat auto-apply) ─────────────────────
 
+def _upsert(existing: list, new_items: list, key: str) -> list:
+    """Upsert new_items into existing by a single string key field."""
+    index = {item[key]: i for i, item in enumerate(existing) if key in item}
+    result = list(existing)
+    for item in new_items:
+        k = item.get(key)
+        if k and k in index:
+            result[index[k]] = item          # replace existing entry
+        else:
+            result.append(item)              # new entry
+            if k:
+                index[k] = len(result) - 1
+    return result
+
+
+def _upsert_composite(existing: list, new_items: list, keys: list[str]) -> list:
+    """Upsert new_items into existing by a composite key (tuple of fields)."""
+    def mk(item: dict) -> tuple:
+        return tuple(item.get(k, "") for k in keys)
+    index = {mk(item): i for i, item in enumerate(existing)}
+    result = list(existing)
+    for item in new_items:
+        k = mk(item)
+        if k in index:
+            result[index[k]] = item
+        else:
+            result.append(item)
+            index[k] = len(result) - 1
+    return result
+
+
 def _merge_tool_call(sid: str, tool_name: str, data: dict) -> None:
-    """Apply a single AI tool call to the session in-place."""
+    """Apply a single AI tool call to the session in-place (upsert — no duplicates)."""
     sd = sessions[sid]["school_data"]
 
     if tool_name == "save_school_info":
         sd.update({k: v for k, v in data.items() if k != "type"})
 
     elif tool_name == "save_teachers":
-        existing  = sd.get("teachers", [])
-        new_items = data.get("teachers", [])
-        sd["teachers"] = existing + [
+        raw = data.get("teachers", [])
+        items = [
             {"name": t, "subjects": [], "max_hours_per_week": 20}
             if isinstance(t, str) else t
-            for t in new_items
+            for t in raw
         ]
+        sd["teachers"] = _upsert(sd.get("teachers", []), items, "name")
 
     elif tool_name == "save_classes":
-        existing  = sd.get("classes", [])
-        new_items = data.get("classes", [])
-        sd["classes"] = existing + [
+        raw = data.get("classes", [])
+        items = [
             {"name": c, "level": c, "student_count": 0}
             if isinstance(c, str) else c
-            for c in new_items
+            for c in raw
         ]
+        sd["classes"] = _upsert(sd.get("classes", []), items, "name")
 
     elif tool_name == "save_rooms":
-        existing  = sd.get("rooms", [])
-        new_items = data.get("rooms", [])
-        sd["rooms"] = existing + [
+        raw = data.get("rooms", [])
+        items = [
             {"name": r, "capacity": 30, "types": ["Standard"]}
             if isinstance(r, str) else r
-            for r in new_items
+            for r in raw
         ]
+        sd["rooms"] = _upsert(sd.get("rooms", []), items, "name")
 
     elif tool_name == "save_subjects":
-        existing  = sd.get("subjects", [])
-        new_items = data.get("subjects", [])
-        sd["subjects"] = existing + new_items
+        sd["subjects"] = _upsert(
+            sd.get("subjects", []), data.get("subjects", []), "name"
+        )
 
     elif tool_name == "save_curriculum":
-        existing  = sd.get("curriculum", [])
-        new_items = data.get("curriculum", [])
-        sd["curriculum"] = existing + new_items
+        sd["curriculum"] = _upsert_composite(
+            sd.get("curriculum", []), data.get("curriculum", []), ["level", "subject"]
+        )
 
     elif tool_name == "save_constraints":
-        existing  = sd.get("constraints", [])
-        new_items = data.get("constraints", [])
-        sd["constraints"] = existing + new_items
+        sd["constraints"] = _upsert(
+            sd.get("constraints", []), data.get("constraints", []), "id"
+        )
 
     elif tool_name == "save_assignments":
-        existing = sessions[sid]["teacher_assignments"]
         raw = data.get("assignments", [])
         normalized = []
         for a in raw:
             if isinstance(a, str):
                 continue
-            # Normalize field aliases the AI may send
             entry = {
                 "teacher":      a.get("teacher", ""),
                 "subject":      a.get("subject", ""),
-                # Accept both "school_class" and "class"
                 "school_class": a.get("school_class") or a.get("class", ""),
             }
             if entry["teacher"] and entry["subject"] and entry["school_class"]:
                 normalized.append(entry)
-        sessions[sid]["teacher_assignments"] = existing + normalized
+        sessions[sid]["teacher_assignments"] = _upsert_composite(
+            sessions[sid]["teacher_assignments"],
+            normalized,
+            ["teacher", "subject", "school_class"],
+        )
 
     sessions[sid]["school_data"] = sd
 
@@ -274,12 +306,15 @@ async def chat(sid: str, payload: dict):
     saved_types: list[str] = []
     trigger_generation = False
     proposed_options: list[dict] = []
+    set_step: int | None = None
 
     for tc in result["tool_calls"]:
         if tc["name"] == "trigger_generation":
             trigger_generation = True
         elif tc["name"] == "propose_options":
             proposed_options = tc["data"].get("options", [])
+        elif tc["name"] == "set_current_step":
+            set_step = tc["data"].get("step")
         else:
             _merge_tool_call(sid, tc["name"], tc["data"])
             saved_types.append(tc["name"])
@@ -291,9 +326,91 @@ async def chat(sid: str, payload: dict):
         "data_saved":         len(saved_types) > 0,
         "trigger_generation": trigger_generation,
         "options":            proposed_options,
-        "saved_types": saved_types,
-        "ai_history":  result["updated_history"],
+        "set_step":           set_step,
+        "saved_types":        saved_types,
+        "ai_history":         result["updated_history"],
     }
+
+
+# ── AI chat (streaming SSE) ────────────────────────────────────────────────────
+
+@app.post("/api/session/{sid}/chat/stream")
+async def chat_stream(sid: str, payload: dict):
+    """Send one chat turn to Claude; stream the response as SSE events."""
+    if sid not in sessions:
+        raise HTTPException(404, "Session not found")
+
+    from timease.api.ai_chat import stream_chat
+
+    provided_history = payload.get("ai_history")
+    ai_history = (
+        provided_history
+        if provided_history is not None
+        else sessions[sid]["ai_history"]
+    )
+
+    def _generate():
+        tool_calls_buf: list[dict] = []
+        updated_history: list[dict] = []
+
+        for event in stream_chat(
+            user_message=payload.get("message", ""),
+            file_content=payload.get("file_content"),
+            school_data=sessions[sid]["school_data"],
+            teacher_assignments=sessions[sid]["teacher_assignments"],
+            ai_history=ai_history,
+        ):
+            if event["type"] == "delta":
+                yield f"data: {json.dumps({'type': 'delta', 'text': event['text']})}\n\n"
+
+            elif event["type"] == "tool_call":
+                tool_calls_buf.append(event)
+                yield f"data: {json.dumps({'type': 'tool_start', 'name': event['name']})}\n\n"
+
+            elif event["type"] == "end":
+                updated_history = event["updated_history"]
+
+                # Apply tool calls to session
+                set_step: int | None = None
+                trigger_generation = False
+                proposed_options: list[dict] = []
+                saved_types: list[str] = []
+
+                for tc in tool_calls_buf:
+                    name = tc["name"]
+                    data = tc["input"]
+                    if name == "trigger_generation":
+                        trigger_generation = True
+                    elif name == "propose_options":
+                        proposed_options = data.get("options", [])
+                    elif name == "set_current_step":
+                        set_step = data.get("step")
+                    else:
+                        _merge_tool_call(sid, name, data)
+                        saved_types.append(name)
+
+                sessions[sid]["ai_history"] = updated_history
+
+                done_payload = {
+                    "type":               "done",
+                    "data_saved":         len(saved_types) > 0,
+                    "trigger_generation": trigger_generation,
+                    "options":            proposed_options,
+                    "set_step":           set_step,
+                    "saved_types":        saved_types,
+                    "ai_history":         updated_history,
+                }
+                yield f"data: {json.dumps(done_payload)}\n\n"
+
+    return StreamingResponse(
+        _generate(),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control":    "no-cache",
+            "X-Accel-Buffering": "no",
+            "Connection":       "keep-alive",
+        },
+    )
 
 
 # ── File upload ────────────────────────────────────────────────────────────────
