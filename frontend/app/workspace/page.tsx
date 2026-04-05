@@ -236,10 +236,20 @@ export default function WorkspacePage() {
         toast('Emploi du temps généré !')
 
         const partial = res.status === 'PARTIAL'
+        const unscheduled: any[] = res.unscheduled ?? []
+        let partialDetail = ''
+        if (unscheduled.length > 0) {
+          const lines = unscheduled.slice(0, 5).map((u: any) => {
+            const id = [u.school_class, u.subject, u.teacher].filter(Boolean).join(' · ')
+            return `- **${id}**${u.reason ? ` — ${u.reason}` : ''}`
+          })
+          if (unscheduled.length > 5) lines.push(`- _…et ${unscheduled.length - 5} autres_`)
+          partialDetail = '\n\n**Sessions non planifiées :**\n' + lines.join('\n')
+        }
         addMessage({
           role:    'ai',
           content: partial
-            ? `✅ **Emploi du temps partiellement généré** (${res.assignments?.length ?? 0} sessions placées).\n\nCertaines sessions n'ont pas pu être planifiées. Consultez les résultats pour les détails.`
+            ? `⚠️ **Emploi du temps partiellement généré** — ${res.assignments?.length ?? 0} sessions placées, ${unscheduled.length} non planifiée(s).${partialDetail}\n\nConsultez la page Résultats pour les détails.`
             : `✅ **Emploi du temps généré avec succès !** (${res.assignments?.length ?? 0} sessions planifiées)\n\nRedirection vers les résultats…`,
         })
 

@@ -90,6 +90,11 @@ export default function ResultsPage() {
   const softResults: { description: string; satisfied: boolean; score: number }[] =
     timetable?.soft_results ?? []
 
+  const unscheduled: { school_class?: string; subject?: string; teacher?: string; reason?: string }[] =
+    timetable?.unscheduled ?? []
+
+  const isPartial = !!(unscheduled.length > 0 || (timetable && !timetable.solved && assignments.length > 0))
+
   // ── Export ─────────────────────────────────────────────────────────────────
   async function handleExport(format: string) {
     if (!sessionId || downloading) return
@@ -263,45 +268,74 @@ export default function ResultsPage() {
         </>
       )}
 
-      {/* Soft constraints satisfaction panel */}
-      {softResults.length > 0 && (
-        <div className="mt-6 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl shadow-sm p-5">
-          <h2 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4">
+      {/* ── Constraints panel ── */}
+      <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+
+        {/* Hard constraints */}
+        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl shadow-sm p-5">
+          <h2 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
+            Contraintes dures
+          </h2>
+          {unscheduled.length === 0 ? (
+            <div className="flex items-center gap-2 text-sm text-teal-600 dark:text-teal-400">
+              <span className="w-2 h-2 rounded-full bg-teal-500 flex-shrink-0" />
+              Toutes les sessions ont été planifiées
+            </div>
+          ) : (
+            <div className="space-y-2">
+              <div className="flex items-center gap-2 text-sm text-amber-600 dark:text-amber-400 mb-2">
+                <span className="w-2 h-2 rounded-full bg-amber-400 flex-shrink-0" />
+                {unscheduled.length} session(s) non planifiée(s)
+              </div>
+              {unscheduled.map((u, i) => (
+                <div key={i} className="text-xs bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg px-3 py-2">
+                  <span className="font-medium text-amber-800 dark:text-amber-300">
+                    {[u.school_class, u.subject, u.teacher].filter(Boolean).join(' · ')}
+                  </span>
+                  {u.reason && (
+                    <span className="text-amber-600 dark:text-amber-400 ml-1">— {u.reason}</span>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Soft constraints */}
+        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl shadow-sm p-5">
+          <h2 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
             Contraintes souples
           </h2>
-          <div className="space-y-3">
-            {softResults.map((s, i) => (
-              <div key={i} className="flex items-center gap-3">
-                <div
-                  className={`w-2 h-2 rounded-full flex-shrink-0 ${
-                    s.satisfied ? 'bg-teal-500' : 'bg-amber-400'
-                  }`}
-                />
-                <span className="flex-1 text-sm text-gray-700 dark:text-gray-300 leading-snug">
-                  {s.description}
-                </span>
-                <div className="flex items-center gap-2 flex-shrink-0">
-                  <div className="w-20 h-1.5 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
-                    <div
-                      className={`h-full rounded-full transition-all duration-700 ${
-                        s.satisfied ? 'bg-teal-500' : 'bg-amber-400'
-                      }`}
-                      style={{ width: `${s.score}%` }}
-                    />
-                  </div>
-                  <span
-                    className={`text-xs font-semibold w-8 text-right tabular-nums ${
-                      s.satisfied ? 'text-teal-600 dark:text-teal-400' : 'text-amber-600 dark:text-amber-400'
-                    }`}
-                  >
-                    {s.score}%
+          {softResults.length === 0 ? (
+            <div className="flex items-center gap-2 text-sm text-gray-400 dark:text-gray-500">
+              <span className="w-2 h-2 rounded-full bg-gray-300 dark:bg-gray-600 flex-shrink-0" />
+              Aucune contrainte souple configurée
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {softResults.map((s, i) => (
+                <div key={i} className="flex items-center gap-3">
+                  <div className={`w-2 h-2 rounded-full flex-shrink-0 ${s.satisfied ? 'bg-teal-500' : 'bg-amber-400'}`} />
+                  <span className="flex-1 text-sm text-gray-700 dark:text-gray-300 leading-snug">
+                    {s.description}
                   </span>
+                  <div className="flex items-center gap-2 flex-shrink-0">
+                    <div className="w-20 h-1.5 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
+                      <div
+                        className={`h-full rounded-full transition-all duration-700 ${s.satisfied ? 'bg-teal-500' : 'bg-amber-400'}`}
+                        style={{ width: `${s.score}%` }}
+                      />
+                    </div>
+                    <span className={`text-xs font-semibold w-8 text-right tabular-nums ${s.satisfied ? 'text-teal-600 dark:text-teal-400' : 'text-amber-600 dark:text-amber-400'}`}>
+                      {s.score}%
+                    </span>
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
-      )}
+      </div>
     </div>
   )
 }
