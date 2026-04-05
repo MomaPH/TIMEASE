@@ -495,8 +495,6 @@ def _add_timetable(
         if end_ri > ri_a:
             merged = table.cell(ri_a, ci_a).merge(table.cell(end_ri, ci_a))
             _write_cell(merged, lines, bold=False, font_size=8, font_color=text_color)
-            # First line bold
-            _write_cell(merged, [lines[0]] + lines[1:], bold=False, font_size=8, font_color=text_color)
             _shade_cell(merged, cell_bg)
         else:
             cell = table.rows[ri_a].cells[ci_a]

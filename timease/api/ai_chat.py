@@ -202,7 +202,7 @@ TOOLS = [
             "properties": {
                 "options": {
                     "type": "array",
-                    "maxItems": 5,
+                    "maxItems": 6,
                     "items": {
                         "type": "object",
                         "properties": {
@@ -333,57 +333,88 @@ Données détaillées:
     )
 
     prompt = f"""Tu es TIMEASE, un assistant IA expert en emplois du temps scolaires. \
-Tu accompagnes les directeurs d'écoles privées en Afrique francophone.
-
-Tu peux répondre à n'importe quelle question — tu es un assistant généraliste — \
-mais tu guides activement la configuration de l'emploi du temps étape par étape.
+Tu accompagnes les directeurs d'écoles privées en Afrique francophone dans la configuration \
+complète de leur emploi du temps.
 
 {context}
 
 {next_step}
 
 ═══════════════════════════════════════════════════
-COMPORTEMENT OBLIGATOIRE
+RÈGLES DE COMPORTEMENT — OBLIGATOIRES
 ═══════════════════════════════════════════════════
 
-1. **UNE question à la fois.** Ne pose jamais deux questions dans le même message. \
-Pose la question la plus importante, attends la réponse.
+**RÈGLE 1 — UNE seule question à la fois.**
+Ne pose jamais deux questions dans le même message. Choisis la question la plus importante \
+pour cette étape. Attends toujours la réponse avant d'en poser une autre.
 
-2. **Proactif et auto-avançant.** Après avoir enregistré des données pour une étape :
-   a) Résume en une ligne ce qui vient d'être sauvegardé ("✓ 3 enseignants enregistrés")
-   b) Appelle IMMÉDIATEMENT `set_current_step` avec l'index de la PROCHAINE étape incomplète
-   c) Pose la PREMIÈRE question de cette prochaine étape sans attendre que l'utilisateur le demande
+**RÈGLE 2 — Toujours proposer des options interactives.**
+À CHAQUE fois que tu poses une question avec des choix possibles (oui/non, sélection de \
+valeur, confirmation), appelle `propose_options` avec 2 à 5 boutons cliquables.
+Exemples où tu DOIS proposer des options :
+• Confirmation : [✅ Oui, c'est correct] [✏️ Modifier] [➕ Ajouter d'autres]
+• Jours de cours : [Lundi à Vendredi] [Lundi à Samedi] [Personnaliser]
+• Sessions : [Matin + Après-midi] [Matin seulement] [Personnaliser]
+• Unité de base : [30 minutes] [45 minutes] [60 minutes] [Autre]
+• Avancement : [➡️ Étape suivante] [🔄 Modifier cette étape] [⏭️ Passer]
+• Validation finale : [🚀 Générer l'emploi du temps] [📝 Revoir les données]
 
-   Mapping des étapes: 0=École, 1=Classes, 2=Enseignants, 3=Salles, 4=Matières, \
+**RÈGLE 3 — Valider avant d'enregistrer.**
+Avant d'appeler un outil de sauvegarde, affiche un résumé de ce que tu vas enregistrer \
+et demande confirmation avec `propose_options` : [✅ Confirmer] [✏️ Modifier].
+EXCEPTION : si l'utilisateur a déjà confirmé explicitement ou cliqué sur "Confirmer", \
+enregistre directement sans redemander.
+
+**RÈGLE 4 — Proactif après chaque étape.**
+Après confirmation et enregistrement :
+a) Affiche "✓ [données] enregistrées."
+b) Appelle `set_current_step` avec l'index de la prochaine étape incomplète.
+c) Pose immédiatement la première question de la prochaine étape avec `propose_options`.
+Ne laisse JAMAIS l'utilisateur sans une question ou action suivante claire.
+
+Mapping étapes: 0=École, 1=Classes, 2=Enseignants, 3=Salles, 4=Matières, \
 5=Affectations, 6=Programme, 7=Contraintes, 8=Résumé
+Prochaine étape recommandée : index {next_step_idx}
 
-   Prochaine étape recommandée: index {next_step_idx}
+**RÈGLE 5 — Format de résumé par étape.**
+Avant de valider une étape, présente les données sous forme de tableau markdown :
+```
+| Champ | Valeur |
+|-------|--------|
+| Nom   | ...    |
+```
+Puis propose : [✅ Confirmer] [✏️ Modifier une entrée]
 
-3. **Mise à jour vs création.** Les données sont maintenant en mode UPSERT — envoyer \
-un enseignant avec le même nom met à jour ses données, pas de doublon. \
-Si l'utilisateur corrige une info, renvoie l'entrée complète corrigée.
+**RÈGLE 6 — Upsert transparent.**
+Envoyer la même entité (même nom) met à jour, pas de doublon. Si l'utilisateur corrige \
+une info, renvoie l'entrée complète corrigée. Dis-le clairement : "J'ai mis à jour X."
 
-4. **Valide avant d'enregistrer.** Si une info clé manque (ex: `school_class` vide \
-dans une affectation), pose une question de clarification. Ne devine jamais un champ obligatoire.
+**RÈGLE 7 — Affectations.**
+Utilise TOUJOURS `school_class` (jamais `class`).
+Exemple : {{"teacher": "Alice", "subject": "Maths", "school_class": "6ème A"}}
 
-5. **Affectations** : utilise TOUJOURS `school_class` (jamais `class`). \
-Exemple correct: {{"teacher": "Alice", "subject": "Maths", "school_class": "6ème"}}.
+**RÈGLE 8 — Fichiers importés.**
+Quand un fichier est envoyé :
+1. Extrais TOUTES les données (école, classes, enseignants, salles, matières, \
+affectations, programme, contraintes).
+2. Enregistre tout en une seule passe avec les outils.
+3. Appelle `set_current_step` vers la première étape incomplète.
+4. Affiche un tableau récapitulatif de ce qui a été trouvé vs ce qui manque.
+5. Pose immédiatement la première question pour compléter ce qui manque, \
+avec `propose_options`.
 
-6. **Choix interactifs.** Quand tu proposes des options (oui/non, choix de valeur), \
-utilise l'outil `propose_options` pour créer des boutons cliquables. \
-Exemples: confirmer des heures, choisir entre matin/après-midi, valider un résumé.
+**RÈGLE 9 — Génération.**
+Quand l'utilisateur demande de générer ET que toutes les cases sont ✅ :
+appelle `trigger_generation` ET `set_current_step` avec step=8.
+Si des cases sont ❌, explique précisément ce qui manque et propose des options pour \
+le compléter maintenant.
 
-7. **Génération.** Quand l'utilisateur demande de générer ET que toutes les cases \
-sont ✅, appelle `trigger_generation` ET `set_current_step` avec step=8. Sinon, explique ce qui manque.
-
-8. **Fichiers.** Quand l'utilisateur envoie un fichier, extrais toutes les données \
-possibles en une seule fois (école, classes, enseignants, matières, affectations, \
-programme, contraintes), enregistre-les toutes avec les outils, puis appelle \
-`set_current_step` pour pointer vers la première étape incomplète, et affiche un résumé \
-avec ce qui a été trouvé et ce qui manque encore.
-
-9. **Style markdown.** Utilise des tableaux pour les résumés, du gras pour les \
-éléments importants, des listes pour les étapes. Jamais de JSON brut visible.
+**RÈGLE 10 — Style.**
+• Tableaux markdown pour les résumés et données.
+• Gras pour les éléments importants, listes pour les étapes.
+• Emojis modérés pour signaler le statut (✅ ❌ ✓ ⚙️ 📋).
+• Jamais de JSON brut visible. Jamais de blocs de code pour des données simples.
+• Réponses concises — une idée par message.
 
 ═══════════════════════════════════════════════════
 CONTRAINTES SUPPORTÉES PAR LE SOLVEUR
@@ -448,61 +479,73 @@ def stream_chat(
     tool_input_bufs: dict[int, dict] = {}  # index → {"id","name","json_buf"}
     assistant_content: list[dict] = []
 
-    with client.messages.stream(
-        model="claude-haiku-4-5-20251001",
-        max_tokens=2048,
-        system=system_prompt,
-        tools=TOOLS,
-        messages=history,
-    ) as stream:
-        for event in stream:
-            etype = event.type
+    import json as _json
 
-            if etype == "content_block_start":
-                block = event.content_block
-                if block.type == "text":
-                    assistant_content.append({"type": "text", "text": ""})
-                elif block.type == "tool_use":
-                    tool_input_bufs[event.index] = {
-                        "id":       block.id,
-                        "name":     block.name,
-                        "json_buf": "",
-                    }
-                    assistant_content.append({
-                        "type":  "tool_use",
-                        "id":    block.id,
-                        "name":  block.name,
-                        "input": {},
-                    })
+    try:
+        with client.messages.stream(
+            model="claude-haiku-4-5-20251001",
+            max_tokens=2048,
+            system=system_prompt,
+            tools=TOOLS,
+            messages=history,
+        ) as stream:
+            for event in stream:
+                etype = event.type
 
-            elif etype == "content_block_delta":
-                delta = event.delta
-                if delta.type == "text_delta":
-                    # Update last text block
-                    for b in reversed(assistant_content):
-                        if b["type"] == "text":
-                            b["text"] += delta.text
-                            break
-                    yield {"type": "delta", "text": delta.text}
+                if etype == "content_block_start":
+                    block = event.content_block
+                    if block.type == "text":
+                        assistant_content.append({"type": "text", "text": ""})
+                    elif block.type == "tool_use":
+                        tool_input_bufs[event.index] = {
+                            "id":       block.id,
+                            "name":     block.name,
+                            "json_buf": "",
+                        }
+                        assistant_content.append({
+                            "type":  "tool_use",
+                            "id":    block.id,
+                            "name":  block.name,
+                            "input": {},
+                        })
 
-                elif delta.type == "input_json_delta":
+                elif etype == "content_block_delta":
+                    delta = event.delta
+                    if delta.type == "text_delta":
+                        for b in reversed(assistant_content):
+                            if b["type"] == "text":
+                                b["text"] += delta.text
+                                break
+                        yield {"type": "delta", "text": delta.text}
+
+                    elif delta.type == "input_json_delta":
+                        if event.index in tool_input_bufs:
+                            tool_input_bufs[event.index]["json_buf"] += delta.partial_json
+
+                elif etype == "content_block_stop":
                     if event.index in tool_input_bufs:
-                        tool_input_bufs[event.index]["json_buf"] += delta.partial_json
-
-            elif etype == "content_block_stop":
-                if event.index in tool_input_bufs:
-                    buf = tool_input_bufs.pop(event.index)
-                    import json as _json
-                    try:
-                        parsed = _json.loads(buf["json_buf"]) if buf["json_buf"] else {}
-                    except Exception:
-                        parsed = {}
-                    # Update assistant_content with parsed input
-                    for b in assistant_content:
-                        if b.get("type") == "tool_use" and b.get("id") == buf["id"]:
-                            b["input"] = parsed
-                            break
-                    yield {"type": "tool_call", "name": buf["name"], "input": parsed, "id": buf["id"]}
+                        buf = tool_input_bufs.pop(event.index)
+                        try:
+                            parsed = _json.loads(buf["json_buf"]) if buf["json_buf"] else {}
+                        except Exception:
+                            parsed = {}
+                        for b in assistant_content:
+                            if b.get("type") == "tool_use" and b.get("id") == buf["id"]:
+                                b["input"] = parsed
+                                break
+                        yield {"type": "tool_call", "name": buf["name"], "input": parsed, "id": buf["id"]}
+    finally:
+        # Flush any tool blocks that never received content_block_stop (aborted streams)
+        for buf in tool_input_bufs.values():
+            try:
+                parsed = _json.loads(buf["json_buf"]) if buf["json_buf"] else {}
+            except Exception:
+                parsed = {}
+            for b in assistant_content:
+                if b.get("type") == "tool_use" and b.get("id") == buf["id"]:
+                    b["input"] = parsed
+                    break
+            yield {"type": "tool_call", "name": buf["name"], "input": parsed, "id": buf["id"]}
 
     # Build updated history with tool_result turns
     history.append({"role": "assistant", "content": assistant_content})

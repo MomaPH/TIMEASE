@@ -43,6 +43,12 @@ def extract_content(file_path: str) -> tuple[str, str]:
         return _extract_txt(path)
     if suffix == ".pdf":
         return _extract_pdf(path)
+    if suffix == ".json":
+        return _extract_json(path)
+    if suffix in (".md", ".markdown"):
+        return _extract_md(path)
+    if suffix == ".yaml" or suffix == ".yml":
+        return _extract_yaml(path)
 
     return "Format non supporté", "unknown"
 
@@ -234,6 +240,77 @@ def _extract_txt(path: Path) -> tuple[str, str]:
     if content is None:
         return f"Impossible de lire le fichier : {path.name}", "txt"
     return content, "txt"
+
+
+# ---------------------------------------------------------------------------
+# JSON
+# ---------------------------------------------------------------------------
+
+def _extract_json(path: Path) -> tuple[str, str]:
+    """Read a JSON file and render it as readable key=value text for the AI."""
+    import json
+
+    raw = _read_text(path)
+    if raw is None:
+        return f"Impossible de lire le fichier : {path.name}", "json"
+
+    try:
+        data = json.loads(raw)
+    except json.JSONDecodeError as exc:
+        return f"JSON invalide : {exc}", "json"
+
+    def _render(obj: object, indent: int = 0) -> list[str]:
+        prefix = "  " * indent
+        lines: list[str] = []
+        if isinstance(obj, dict):
+            for k, v in obj.items():
+                if isinstance(v, (dict, list)):
+                    lines.append(f"{prefix}{k}:")
+                    lines.extend(_render(v, indent + 1))
+                else:
+                    lines.append(f"{prefix}{k} = {v}")
+        elif isinstance(obj, list):
+            for i, item in enumerate(obj):
+                if isinstance(item, (dict, list)):
+                    lines.append(f"{prefix}[{i}]:")
+                    lines.extend(_render(item, indent + 1))
+                else:
+                    lines.append(f"{prefix}- {item}")
+        else:
+            lines.append(f"{prefix}{obj}")
+        return lines
+
+    content = "\n".join(_render(data))
+    return f"Fichier JSON '{path.name}':\n{content}", "json"
+
+
+# ---------------------------------------------------------------------------
+# Markdown / YAML
+# ---------------------------------------------------------------------------
+
+def _extract_md(path: Path) -> tuple[str, str]:
+    """Read a Markdown file as plain text (the AI handles markdown natively)."""
+    content = _read_text(path)
+    if content is None:
+        return f"Impossible de lire le fichier : {path.name}", "md"
+    return f"Fichier Markdown '{path.name}':\n{content}", "md"
+
+
+def _extract_yaml(path: Path) -> tuple[str, str]:
+    """Read a YAML file and render it as readable key=value text."""
+    raw = _read_text(path)
+    if raw is None:
+        return f"Impossible de lire le fichier : {path.name}", "yaml"
+    try:
+        import yaml  # type: ignore[import]
+        data = yaml.safe_load(raw)
+    except Exception:
+        # yaml not installed or invalid — fall back to raw text
+        return f"Fichier YAML '{path.name}':\n{raw}", "yaml"
+
+    import json
+    content = json.dumps(data, ensure_ascii=False, indent=2)
+    return f"Fichier YAML '{path.name}':\n{content}", "yaml"
 
 
 # ---------------------------------------------------------------------------

@@ -72,6 +72,16 @@ export async function sendChatStream(
       } catch { /* ignore malformed */ }
     }
   }
+  // Process any buffered final line that didn't end with newline
+  if (buf.startsWith('data: ')) {
+    const json = buf.slice(6).trim()
+    if (json) {
+      try {
+        const evt = JSON.parse(json)
+        if (evt.type === 'done') return evt
+      } catch { /* ignore */ }
+    }
+  }
   throw new Error('Stream ended without done event')
 }
 

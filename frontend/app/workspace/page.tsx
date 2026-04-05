@@ -102,26 +102,39 @@ export default function WorkspacePage() {
       return next
     })
 
-    const res = await sendChatStream(
-      sessionId!,
-      msg,
-      fileContent,
-      aiHistory,
-      // onDelta: append text to the streaming message
-      (text) => {
-        setMessages(prev => {
-          const next = prev.map(m =>
-            (m as any)._streamingId === streamingId
-              ? { ...m, content: m.content + text }
-              : m,
-          )
-          if (sessionId) localStorage.setItem(msgs_key(sessionId), JSON.stringify(next))
-          return next
-        })
-      },
-      // onToolStart: no UI change needed
-      (_name) => {},
-    )
+    const removeStreamingMsg = () => {
+      setMessages(prev => {
+        const next = prev.filter(m => (m as any)._streamingId !== streamingId)
+        if (sessionId) localStorage.setItem(msgs_key(sessionId), JSON.stringify(next))
+        return next
+      })
+    }
+
+    let res: Awaited<ReturnType<typeof sendChatStream>>
+    try {
+      res = await sendChatStream(
+        sessionId!,
+        msg,
+        fileContent,
+        aiHistory,
+        // onDelta: append text to the streaming message
+        (text) => {
+          setMessages(prev => {
+            const next = prev.map(m =>
+              (m as any)._streamingId === streamingId
+                ? { ...m, content: m.content + text }
+                : m,
+            )
+            if (sessionId) localStorage.setItem(msgs_key(sessionId), JSON.stringify(next))
+            return next
+          })
+        },
+        (_name) => {},
+      )
+    } catch (err) {
+      removeStreamingMsg()
+      throw err
+    }
 
     // Finalize the streaming message with metadata
     saveHistory(res.ai_history || [])
@@ -353,7 +366,7 @@ export default function WorkspacePage() {
               type="file"
               ref={fileRef}
               className="hidden"
-              accept=".xlsx,.xls,.csv,.docx,.txt,.pdf"
+              accept=".xlsx,.xls,.csv,.docx,.txt,.pdf,.json,.md,.markdown,.yaml,.yml"
               onChange={handleUpload}
             />
             <input
