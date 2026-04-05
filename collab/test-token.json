@@ -1,0 +1,11 @@
+{
+  "token": "test-token",
+  "teacher_name": "M. Diallo (Démo)",
+  "school_name": "École Saint-Joseph",
+  "status": "pending",
+  "availability": {},
+  "preferences": "",
+  "has_timetable": false,
+  "timetable_assignments": [],
+  "preference_feedback": []
+}

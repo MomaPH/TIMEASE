@@ -3,26 +3,25 @@
 import reflex as rx
 
 from timease.app.components.layout import page_layout
+from timease.app.style import *
 
 
 def _feature_card(icon: str, title: str, description: str) -> rx.Component:
-    """One feature highlight card."""
     return rx.box(
         rx.vstack(
-            rx.text(icon, font_size="2em"),
-            rx.text(title, font_weight="700", font_size="1.05em", color="#0F6E56"),
-            rx.text(description, color="#4a5568", font_size="0.9em", text_align="center"),
+            rx.icon(icon, size=28, color=rx.color("teal", 9)),
+            rx.text(title, font_weight="600", size="3", color=rx.color("gray", 12)),
+            rx.text(description, color=rx.color("gray", 9), size="2", text_align="center"),
             align="center",
             spacing="2",
         ),
-        padding="1.5em",
+        padding="24px",
         border_radius="12px",
-        background="white",
-        border="1px solid #e2e8f0",
+        background=rx.color("gray", 2),
+        border="1px solid var(--gray-4)",
         flex="1",
         min_width="200px",
         text_align="center",
-        box_shadow="0 1px 4px rgba(0,0,0,0.06)",
     )
 
 
@@ -30,78 +29,57 @@ def index() -> rx.Component:
     """Landing page at route /."""
     return page_layout(
         rx.vstack(
-            # Hero section
+            # Hero
             rx.vstack(
                 rx.heading(
                     "TIMEASE",
                     size="9",
-                    color="#0F6E56",
+                    color=rx.color("teal", 9),
                     font_weight="800",
                     letter_spacing="-0.02em",
                 ),
                 rx.text(
                     "Générez vos emplois du temps en quelques minutes",
-                    font_size="1.3em",
-                    color="#4a5568",
+                    size="4",
+                    color=rx.color("gray", 11),
                     text_align="center",
                     max_width="520px",
                 ),
                 rx.text(
-                    "Conçu pour les écoles privées francophones. "
-                    "Simple, rapide, et intelligent.",
-                    font_size="0.95em",
-                    color="#718096",
+                    "Conçu pour les écoles privées francophones. Simple, rapide, intelligent.",
+                    size="2",
+                    color=rx.color("gray", 9),
                     text_align="center",
                     max_width="420px",
                 ),
                 align="center",
                 spacing="3",
-                padding_bottom="1em",
+                padding_bottom="16px",
             ),
             # Feature cards
             rx.hstack(
-                _feature_card(
-                    "🤖",
-                    "Configuration par IA",
-                    "Décrivez votre école en langage naturel. "
-                    "L'IA configure automatiquement vos données.",
-                ),
-                _feature_card(
-                    "👥",
-                    "Collaboration enseignants",
-                    "Partagez un lien sécurisé avec chaque enseignant "
-                    "pour recueillir leurs disponibilités.",
-                ),
-                _feature_card(
-                    "📄",
-                    "Export multi-format",
-                    "Exportez vos emplois du temps en PDF, Word, Excel "
-                    "ou Markdown en un clic.",
-                ),
-                spacing="4",
-                wrap="wrap",
+                _feature_card("bot", "Configuration par IA", "Décrivez votre école en langage naturel. L'IA configure automatiquement vos données."),
+                _feature_card("users", "Collaboration enseignants", "Partagez un lien sécurisé avec chaque enseignant pour recueillir leurs disponibilités."),
+                _feature_card("file_down", "Export multi-format", "Exportez vos emplois du temps en PDF, Word, Excel ou Markdown en un clic."),
+                gap="16px",
+                flex_wrap="wrap",
                 width="100%",
                 justify="center",
             ),
-            # CTA button
+            # CTA
             rx.link(
                 rx.button(
                     "Commencer gratuitement",
+                    color_scheme="teal",
                     size="3",
-                    background="#0F6E56",
-                    color="white",
-                    border_radius="8px",
-                    padding="0.75em 2em",
-                    font_weight="600",
                     cursor="pointer",
-                    _hover={"background": "#0a5a46"},
                 ),
                 href="/configuration",
                 text_decoration="none",
             ),
             align="center",
             spacing="6",
-            padding_top="4em",
+            padding_top="48px",
             width="100%",
         )
     )

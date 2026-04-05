@@ -1,21 +1,19 @@
-"""Page layout wrapper that includes the sidebar."""
+"""Page layout wrapper — sidebar on left, content on right."""
 
 import reflex as rx
 
 from timease.app.components.sidebar import sidebar
+from timease.app.style import *
 
 
 def page_layout(*content: rx.Component) -> rx.Component:
-    """Wrap page content with the fixed sidebar on the left."""
+    """Wrap page content with the fixed sidebar."""
     return rx.hstack(
         sidebar(),
         rx.box(
             *content,
-            margin_left="240px",
-            padding="2em",
-            min_height="100vh",
+            style=page_container,
             width="100%",
-            background="#f8fafc",
             flex="1",
         ),
         align="start",
