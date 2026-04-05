@@ -11,6 +11,39 @@ import { useToast } from '@/components/Toast'
 import { sendChatStream, uploadFile, solve } from '@/lib/api'
 import type { ChatMessage as ChatMessageType, SchoolData } from '@/lib/types'
 
+// ── Thinking words (cycling while AI is loading) ──────────────────────────────
+const THINKING_WORDS = [
+  'Réflexion', 'Inspiration', 'Analyse', 'Curiosité', 'Élaboration',
+  'Imagination', 'Perspicacité', 'Contemplation', 'Créativité', 'Ingéniosité',
+  'Illumination', 'Discernement', 'Intuition', 'Précision', 'Sagacité',
+  'Concentration', 'Synthèse', 'Clairvoyance', 'Perspicacité', 'Équilibre',
+]
+
+function ThinkingWord() {
+  const [idx, setIdx] = useState(() => Math.floor(Math.random() * THINKING_WORDS.length))
+  const [visible, setVisible] = useState(true)
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setVisible(false)
+      setTimeout(() => {
+        setIdx(i => (i + 1) % THINKING_WORDS.length)
+        setVisible(true)
+      }, 300)
+    }, 1800)
+    return () => clearInterval(interval)
+  }, [])
+
+  return (
+    <span
+      className="text-sm text-teal-600 dark:text-teal-400 font-medium italic transition-opacity duration-300"
+      style={{ opacity: visible ? 1 : 0 }}
+    >
+      {THINKING_WORDS[idx]}…
+    </span>
+  )
+}
+
 // ── Constants ─────────────────────────────────────────────────────────────────
 
 const WELCOME: ChatMessageType = {
@@ -342,20 +375,14 @@ export default function WorkspacePage() {
               />
             ))}
 
-            {/* Typing indicator — only before first streaming token arrives */}
+            {/* Thinking indicator — only before first streaming token arrives */}
             {isLoading && !messages.some(m => (m as any)._streamingId !== undefined) && (
               <div className="flex justify-start mb-3 animate-fade-in">
                 <div className="w-7 h-7 rounded-full bg-teal-100 dark:bg-teal-900/40 flex items-center justify-center mr-2 mt-0.5 flex-shrink-0">
                   <Bot size={14} className="text-teal-600 dark:text-teal-400" />
                 </div>
-                <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 px-4 py-3 rounded-2xl rounded-tl-sm flex gap-1.5 items-center shadow-sm">
-                  {[0, 150, 300].map(delay => (
-                    <span
-                      key={delay}
-                      className="w-1.5 h-1.5 bg-gray-400 dark:bg-gray-500 rounded-full animate-bounce"
-                      style={{ animationDelay: `${delay}ms` }}
-                    />
-                  ))}
+                <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 px-4 py-3 rounded-2xl rounded-tl-sm shadow-sm">
+                  <ThinkingWord />
                 </div>
               </div>
             )}
