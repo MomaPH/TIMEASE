@@ -8,9 +8,17 @@ node_modules/
 
 # Next.js build output
 frontend/.next/
+frontend/tsconfig.tsbuildinfo
 
 # Generated exports (keep the folder, ignore the files)
 exports/*.xlsx
 exports/*.pdf
 exports/*.docx
 exports/*.md
+
+# Runtime-generated collaboration tokens
+collab/
+
+# Test / editor caches
+.pytest_cache/
+timease/.claude/
