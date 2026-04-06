@@ -19,6 +19,9 @@ exports/*.md
 # Runtime-generated collaboration tokens
 collab/
 
+# Development logs
+logs/
+
 # Test / editor caches
 .pytest_cache/
 timease/.claude/

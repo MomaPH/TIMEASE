@@ -20,9 +20,9 @@ Usage::
     analyzer = ConflictAnalyzer(school_data)
     reports  = analyzer.analyze()
     for r in reports:
-        print(r.description_fr)
+        logger.info(r.description_fr)
         for opt in r.fix_options:
-            print(" →", opt.fix_fr)
+            logger.info(" → %s", opt.fix_fr)
 """
 
 from __future__ import annotations

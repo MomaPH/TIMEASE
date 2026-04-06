@@ -1,8 +1,10 @@
 'use client'
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { Plus, Pencil, Trash2, Check, X, ChevronRight, Loader2, ArrowRight } from 'lucide-react'
 import type { SchoolData } from '@/lib/types'
 import { getChecklistItems, getChecklistStatus } from '@/lib/types'
+import { validateHourBarriers, type ValidationError } from '@/lib/validation'
+import ValidationErrorPanel from './ValidationErrorPanel'
 
 // ── Shared helpers ────────────────────────────────────────────────────────────
 
@@ -599,7 +601,13 @@ function CurriculumStep({ data, onUpdate }: { data: SchoolData; onUpdate: (d: Sc
   const items = data.curriculum || []
   const levels  = [...new Set((data.classes || []).map((c: any) => c.level || c.name))].filter(Boolean) as string[]
   const subjects = (data.subjects || []).map((s: any) => s.name).filter(Boolean) as string[]
-  const def = { level: levels[0] || '', subject: subjects[0] || '', total_minutes_per_week: 120, mode: 'auto' }
+  const def = {
+    level: levels[0] || '',
+    subject: subjects[0] || '',
+    sessions_per_week: 2,
+    minutes_per_session: 60,
+    total_minutes_per_week: 120,
+  }
 
   function form(f: any, setF: (v: any) => void) {
     return (
@@ -630,18 +638,58 @@ function CurriculumStep({ data, onUpdate }: { data: SchoolData; onUpdate: (d: Sc
             )}
           </div>
         </div>
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-3 gap-2">
           <div className="space-y-1">
-            <label className="text-xs text-gray-500">Minutes / semaine</label>
-            <Input type="number" value={String(f.total_minutes_per_week)} onChange={v => setF({ ...f, total_minutes_per_week: Number(v) })} placeholder="120" />
+            <label className="text-xs text-gray-500">Sessions / semaine</label>
+            <Input
+              type="number"
+              value={String(f.sessions_per_week ?? 2)}
+              onChange={v => {
+                const sessions = Math.max(1, Number(v) || 1)
+                const minutes = Math.max(1, Number(f.minutes_per_session) || 60)
+                setF({
+                  ...f,
+                  sessions_per_week: sessions,
+                  total_minutes_per_week: sessions * minutes,
+                })
+              }}
+              placeholder="2"
+            />
           </div>
           <div className="space-y-1">
-            <label className="text-xs text-gray-500">Mode</label>
-            <select value={f.mode} onChange={e => setF({ ...f, mode: e.target.value })}
-              className="w-full px-2 py-1.5 text-xs border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-1 focus:ring-teal-500">
-              <option value="auto">Auto</option>
-              <option value="manual">Manuel</option>
-            </select>
+            <label className="text-xs text-gray-500">Minutes / session</label>
+            <Input
+              type="number"
+              value={String(f.minutes_per_session ?? 60)}
+              onChange={v => {
+                const minutes = Math.max(1, Number(v) || 1)
+                const sessions = Math.max(1, Number(f.sessions_per_week) || 2)
+                setF({
+                  ...f,
+                  minutes_per_session: minutes,
+                  total_minutes_per_week: sessions * minutes,
+                })
+              }}
+              placeholder="60"
+            />
+          </div>
+          <div className="space-y-1">
+            <label className="text-xs text-gray-500">Total / semaine</label>
+            <Input
+              type="number"
+              value={String(f.total_minutes_per_week ?? 120)}
+              onChange={v => {
+                const total = Math.max(1, Number(v) || 1)
+                const sessions = Math.max(1, Number(f.sessions_per_week) || 1)
+                const minutes = Math.max(1, Math.floor(total / sessions))
+                setF({
+                  ...f,
+                  total_minutes_per_week: total,
+                  minutes_per_session: minutes,
+                })
+              }}
+              placeholder="120"
+            />
           </div>
         </div>
       </div>
@@ -656,7 +704,9 @@ function CurriculumStep({ data, onUpdate }: { data: SchoolData; onUpdate: (d: Sc
       renderRow={item => [
         <span className="font-medium text-xs">{item.level}</span>,
         <span className="text-gray-700 dark:text-gray-300 text-xs">{item.subject}</span>,
-        <span className="ml-auto text-xs text-gray-500">{item.total_minutes_per_week} min</span>,
+        <span className="ml-auto text-xs text-gray-500">
+          {(item.sessions_per_week ?? '?')}×{(item.minutes_per_session ?? '?')} = {item.total_minutes_per_week} min
+        </span>,
       ]}
       renderForm={form}
       onAdd={item => onUpdate({ ...data, curriculum: [...items, item] })}
@@ -768,14 +818,20 @@ function SummaryStep({
   assignments,
   onGenerate,
   isSolving,
+  onAskAI,
 }: {
   data: SchoolData
   assignments: any[]
   onGenerate: () => void
   isSolving: boolean
+  onAskAI?: (errorContext: string) => void
 }) {
   const checklist = getChecklistItems(data, assignments)
   const ready     = getChecklistStatus(data, assignments)
+
+  // Validate hour barriers
+  const validationErrors = useMemo(() => validateHourBarriers(data), [data])
+  const hasErrors = validationErrors.some(e => e.severity === 'error')
 
   const stats = [
     { label: 'Classes',       count: data.classes?.length    ?? 0 },
@@ -786,6 +842,18 @@ function SummaryStep({
     { label: 'Programme',     count: data.curriculum?.length ?? 0 },
     { label: 'Contraintes',   count: data.constraints?.length ?? 0 },
   ]
+
+  const handleAskAI = () => {
+    if (!onAskAI) return
+
+    // Format error context for AI
+    const errorSummary = validationErrors
+      .filter(e => e.severity === 'error')
+      .map(e => `${e.message}: ${e.details || ''}`)
+      .join('\n\n')
+
+    onAskAI(`J'ai des erreurs de validation :\n\n${errorSummary}\n\nComment puis-je les résoudre ?`)
+  }
 
   return (
     <div className="space-y-5">
@@ -816,6 +884,14 @@ function SummaryStep({
         ))}
       </div>
 
+      {/* Validation errors */}
+      {validationErrors.length > 0 && (
+        <ValidationErrorPanel
+          errors={validationErrors}
+          onAskAI={onAskAI ? handleAskAI : undefined}
+        />
+      )}
+
       {/* Readiness checklist */}
       <div className="space-y-1.5">
         <h4 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
@@ -836,9 +912,9 @@ function SummaryStep({
       {/* Generate button */}
       <button
         onClick={onGenerate}
-        disabled={!ready || isSolving}
+        disabled={!ready || isSolving || hasErrors}
         className={`w-full py-3 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition-all ${
-          ready && !isSolving
+          ready && !isSolving && !hasErrors
             ? 'bg-teal-600 hover:bg-teal-700 text-white shadow-md hover:shadow-lg'
             : 'bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-600 cursor-not-allowed'
         }`}
@@ -856,9 +932,15 @@ function SummaryStep({
         )}
       </button>
 
-      {!ready && !isSolving && (
+      {!ready && !isSolving && !hasErrors && (
         <p className="text-xs text-center text-gray-400 dark:text-gray-500">
           Complétez les éléments manquants ci-dessus pour activer la génération.
+        </p>
+      )}
+
+      {hasErrors && (
+        <p className="text-xs text-center text-red-600 dark:text-red-400">
+          Corrigez les erreurs ci-dessus avant de générer l'emploi du temps.
         </p>
       )}
     </div>
@@ -876,6 +958,7 @@ interface Props {
   onNext: () => void
   onGenerate: () => void
   isSolving: boolean
+  onAskAI?: (errorContext: string) => void
 }
 
 const STEP_TITLES = [
@@ -899,6 +982,7 @@ export default function StepPanel({
   onNext,
   onGenerate,
   isSolving,
+  onAskAI,
 }: Props) {
   const isLast = step === 8
 
@@ -933,6 +1017,7 @@ export default function StepPanel({
             assignments={assignments}
             onGenerate={onGenerate}
             isSolving={isSolving}
+            onAskAI={onAskAI}
           />
         )}
       </div>

@@ -19,3 +19,27 @@ dependencies = [
     "xlrd>=2.0",
     "pypdf>=4.0",
 ]
+
+[project.optional-dependencies]
+dev = [
+    "mypy>=1.8",
+    "pre-commit>=3.6",
+]
+
+[tool.mypy]
+python_version = "3.12"
+warn_return_any = true
+warn_unused_configs = true
+ignore_missing_imports = true
+# Note: Strict mode disabled temporarily - API layer needs type annotations
+# TODO: Enable strict mode after adding proper type hints to timease/api/
+# strict = true
+disallow_untyped_defs = false
+warn_redundant_casts = true
+warn_unused_ignores = true
+
+[dependency-groups]
+dev = [
+    "mypy>=1.20.0",
+    "pre-commit>=4.5.1",
+]

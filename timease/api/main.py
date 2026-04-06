@@ -57,7 +57,6 @@ def _norm_teacher(d: dict) -> dict:
         "subjects":           d.get("subjects", []),
         "max_hours_per_week": int(d.get("max_hours_per_week", 20)),
         "unavailable_slots":  d.get("unavailable_slots", []),
-        "preference_weight":  float(d.get("preference_weight", 1.0)),
     }
 
 
@@ -78,15 +77,30 @@ def _norm_room(d: dict) -> dict:
 
 
 def _norm_curriculum(d: dict) -> dict:
+    level = d.get("level", "")
+    subject = d.get("subject", "")
+    total = int(d.get("total_minutes_per_week", 60) or 60)
+    # Phase 2 compatibility:
+    # - drop legacy "mode", "min_session_minutes", "max_session_minutes"
+    # - always provide strict manual split fields required by CurriculumEntry
+    sessions = d.get("sessions_per_week")
+    minutes = d.get("minutes_per_session")
+    if sessions is None or minutes is None:
+        # Deterministic fallback for old payloads and imported legacy data.
+        # Prefer 1 session if not specified, with full weekly volume.
+        sessions_i = 1
+        minutes_i = max(1, total)
+    else:
+        sessions_i = max(1, int(sessions))
+        minutes_i = max(1, int(minutes))
+    total_i = sessions_i * minutes_i
+
     return {
-        "level":                  d.get("level", ""),
-        "subject":                d.get("subject", ""),
-        "total_minutes_per_week": int(d.get("total_minutes_per_week", 60)),
-        "mode":                   d.get("mode", "auto"),
-        "sessions_per_week":      d.get("sessions_per_week"),
-        "minutes_per_session":    d.get("minutes_per_session"),
-        "min_session_minutes":    d.get("min_session_minutes"),
-        "max_session_minutes":    d.get("max_session_minutes"),
+        "level": level,
+        "subject": subject,
+        "total_minutes_per_week": max(1, total_i),
+        "sessions_per_week": sessions_i,
+        "minutes_per_session": minutes_i,
     }
 
 
@@ -190,8 +204,11 @@ def _merge_tool_call(sid: str, tool_name: str, data: dict) -> None:
         )
 
     elif tool_name == "save_curriculum":
+        normalized_curriculum = [
+            _norm_curriculum(entry) for entry in data.get("curriculum", [])
+        ]
         sd["curriculum"] = _upsert_composite(
-            sd.get("curriculum", []), data.get("curriculum", []), ["level", "subject"]
+            sd.get("curriculum", []), normalized_curriculum, ["level", "subject"]
         )
 
     elif tool_name == "save_constraints":

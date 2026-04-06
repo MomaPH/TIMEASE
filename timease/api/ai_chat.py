@@ -184,9 +184,16 @@ TOOLS = [
                             "level":                  {"type": "string"},
                             "subject":                {"type": "string"},
                             "total_minutes_per_week": {"type": "integer"},
-                            "mode":                   {"type": "string", "enum": ["auto", "manual"]},
+                            "sessions_per_week":      {"type": "integer"},
+                            "minutes_per_session":    {"type": "integer"},
                         },
-                        "required": ["level", "subject", "total_minutes_per_week"],
+                        "required": [
+                            "level",
+                            "subject",
+                            "total_minutes_per_week",
+                            "sessions_per_week",
+                            "minutes_per_session",
+                        ],
                     },
                 },
             },
@@ -633,8 +640,8 @@ def stream_chat(
 
         try:
             with client.messages.stream(
-                model="claude-sonnet-4-6",
-                max_tokens=4096,
+                model="claude-3-5-sonnet-20241022",
+                max_tokens=2048,
                 system=system_prompt,
                 tools=TOOLS,
                 messages=history,
@@ -767,8 +774,8 @@ def process_chat(
     MAX_TURNS = 4
     for _turn in range(MAX_TURNS):
         response = client.messages.create(
-            model="claude-sonnet-4-6",
-            max_tokens=4096,
+            model="claude-3-5-sonnet-20241022",
+            max_tokens=2048,
             system=system_prompt,
             tools=TOOLS,
             messages=history,

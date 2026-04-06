@@ -1,0 +1,36 @@
+# TIMEASE pre-commit configuration
+# Install: pip install pre-commit && pre-commit install
+# Run manually: pre-commit run --all-files
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-added-large-files
+        args: ['--maxkb=1000']
+      - id: check-json
+      - id: check-toml
+      - id: check-merge-conflict
+      - id: detect-private-key
+
+  - repo: local
+    hooks:
+      # Disabled temporarily - API layer needs type annotations
+      # - id: mypy
+      #   name: mypy (strict type checking)
+      #   entry: bash -c 'cd /home/pamora/Desktop/TIMEASE && uv run mypy timease/'
+      #   language: system
+      #   types: [python]
+      #   pass_filenames: false
+      #   always_run: true
+
+      - id: pytest
+        name: pytest (run tests)
+        entry: bash -c 'cd /home/pamora/Desktop/TIMEASE && uv run pytest tests/ -q'
+        language: system
+        types: [python]
+        pass_filenames: false
+        stages: [manual, push]
