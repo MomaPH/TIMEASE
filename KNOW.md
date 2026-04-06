@@ -248,7 +248,7 @@ Runs automatically on INFEASIBLE result. Three-step diagnosis:
 
 ## 9. AI Chat System
 
-Defined in `timease/api/ai_chat.py`. Model: `claude-haiku-4-5-20251001`.
+Defined in `timease/api/ai_chat.py`. Model: `claude-sonnet-4-6`.
 
 ### Tools
 | Tool | Trigger |
@@ -264,6 +264,13 @@ Defined in `timease/api/ai_chat.py`. Model: `claude-haiku-4-5-20251001`.
 | `propose_options` | On every question with choices (rendered as chips in UI) |
 | `trigger_generation` | When all data ready + user requests generation |
 | `set_current_step` | After saving, to advance the wizard panel (0–8) |
+
+### Conflict diagnosis flow
+When `POST /api/session/{sid}/solve` returns INFEASIBLE:
+1. `ConflictAnalyzer` runs and produces `ConflictReport` list — each report has `step_to_fix: int` (wizard step index), `severity`, and ranked `FixOption` objects.
+2. Structured reports are stored as `last_conflict_reports` in the session.
+3. On the next AI chat turn, `_build_system_prompt` injects the conflict reports as a `RÉSULTAT DU DERNIER ESSAI` block, guiding the AI to explain each conflict and call `set_current_step` to navigate the user to the right fix step.
+4. `unscheduled_sessions` are also grouped by inferred cause (`missing_teacher`, `room_unavailable`, `no_valid_slot`, `constraint_conflict`) and returned as `unscheduled_groups` in the solve response.
 
 ### Agentic loop
 `stream_chat()` runs up to 4 API turns per user message. After each data save, the tool result instructs the AI to: (1) show a recap table, (2) call `set_current_step`, (3) call `propose_options`. Forces proactive follow-up.

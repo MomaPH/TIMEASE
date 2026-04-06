@@ -112,6 +112,9 @@ class SessionData(BaseModel):
     timetable_result: dict = {}
     ai_history: list[dict] = []
     collab_links: list[dict] = []
+    last_conflict_reports: list[dict] = []
+    last_solve_issues: dict = {}
+    pending_changes: list[dict] = []
 
 
 # ── Merge helper (used by both /merge and chat auto-apply) ─────────────────────
@@ -218,6 +221,114 @@ def _merge_tool_call(sid: str, tool_name: str, data: dict) -> None:
     sessions[sid]["school_data"] = sd
 
 
+# ── Staging layer — preview + commit ──────────────────────────────────────────
+
+_SAVE_TOOLS = {
+    "save_school_info", "save_teachers", "save_classes", "save_rooms",
+    "save_subjects", "save_curriculum", "save_constraints", "save_assignments",
+}
+
+_TOOL_LABELS = {
+    "save_school_info":  "Infos école",
+    "save_teachers":     "Enseignants",
+    "save_classes":      "Classes",
+    "save_rooms":        "Salles",
+    "save_subjects":     "Matières",
+    "save_curriculum":   "Programme horaire",
+    "save_constraints":  "Contraintes",
+    "save_assignments":  "Affectations enseignants",
+}
+
+
+def _make_preview(tool_name: str, data: dict) -> str:
+    """Generate a markdown table preview of what a save tool will write."""
+    if tool_name == "save_school_info":
+        rows = [(k, str(v)) for k, v in data.items() if v]
+        header = "| Champ | Valeur |\n|-------|--------|\n"
+        return header + "\n".join(f"| {k} | {v} |" for k, v in rows)
+
+    if tool_name == "save_teachers":
+        items = data.get("teachers", [])
+        header = "| Nom | Matières | H/sem |\n|-----|----------|-------|\n"
+        rows = [
+            f"| {t.get('name','?')} | {', '.join(t.get('subjects',[]))} | {t.get('max_hours_per_week','?')} |"
+            for t in items
+        ]
+        return header + "\n".join(rows)
+
+    if tool_name == "save_classes":
+        items = data.get("classes", [])
+        header = "| Nom | Niveau | Effectif |\n|-----|--------|----------|\n"
+        rows = [
+            f"| {c.get('name','?')} | {c.get('level','?')} | {c.get('student_count','?')} |"
+            for c in items
+        ]
+        return header + "\n".join(rows)
+
+    if tool_name == "save_rooms":
+        items = data.get("rooms", [])
+        header = "| Nom | Capacité | Types |\n|-----|----------|-------|\n"
+        rows = [
+            f"| {r.get('name','?')} | {r.get('capacity','?')} | {', '.join(r.get('types',[]))} |"
+            for r in items
+        ]
+        return header + "\n".join(rows)
+
+    if tool_name == "save_subjects":
+        items = data.get("subjects", [])
+        header = "| Nom | Abrév. | Salle requise |\n|-----|--------|---------------|\n"
+        rows = [
+            f"| {s.get('name','?')} | {s.get('short_name','?')} | {s.get('required_room_type') or '—'} |"
+            for s in items
+        ]
+        return header + "\n".join(rows)
+
+    if tool_name == "save_curriculum":
+        items = data.get("curriculum", [])
+        header = "| Niveau | Matière | Min/sem |\n|--------|---------|----------|\n"
+        rows = [
+            f"| {e.get('level','?')} | {e.get('subject','?')} | {e.get('total_minutes_per_week','?')} |"
+            for e in items
+        ]
+        return header + "\n".join(rows)
+
+    if tool_name == "save_constraints":
+        items = data.get("constraints", [])
+        header = "| ID | Type | Description |\n|----|------|-------------|\n"
+        rows = [
+            f"| {c.get('id','?')} | {c.get('type','?')} | {c.get('description_fr','?')} |"
+            for c in items
+        ]
+        return header + "\n".join(rows)
+
+    if tool_name == "save_assignments":
+        items = data.get("assignments", [])
+        header = "| Enseignant | Matière | Classe |\n|------------|---------|--------|\n"
+        rows = [
+            f"| {a.get('teacher','?')} | {a.get('subject','?')} | {a.get('school_class','?')} |"
+            for a in items
+        ]
+        return header + "\n".join(rows)
+
+    return "(aperçu non disponible)"
+
+
+def _pending_label(tool_name: str, data: dict) -> str:
+    """Short human label: e.g. '3 enseignants', '2 classes'."""
+    counts = {
+        "save_teachers":    len(data.get("teachers", [])),
+        "save_classes":     len(data.get("classes", [])),
+        "save_rooms":       len(data.get("rooms", [])),
+        "save_subjects":    len(data.get("subjects", [])),
+        "save_curriculum":  len(data.get("curriculum", [])),
+        "save_constraints": len(data.get("constraints", [])),
+        "save_assignments": len(data.get("assignments", [])),
+    }
+    base = _TOOL_LABELS.get(tool_name, tool_name)
+    n = counts.get(tool_name)
+    return f"{n} {base.lower()}" if n is not None else base
+
+
 # ── Session management ─────────────────────────────────────────────────────────
 
 @app.post("/api/session")
@@ -245,6 +356,8 @@ def restore_session(sid: str, payload: dict):
         sessions[sid]["teacher_assignments"] = payload["teacher_assignments"]
     if "timetable_result" in payload:
         sessions[sid]["timetable_result"] = payload["timetable_result"]
+    if "last_conflict_reports" in payload:
+        sessions[sid]["last_conflict_reports"] = payload["last_conflict_reports"]
     return {"ok": True}
 
 
@@ -264,6 +377,23 @@ def put_assignments(sid: str, payload: dict):
         raise HTTPException(404, "Session not found")
     sessions[sid]["teacher_assignments"] = payload.get("assignments", [])
     return {"ok": True}
+
+
+# ── Staging: apply or discard pending changes ─────────────────────────────────
+
+@app.post("/api/session/{sid}/apply_pending")
+def apply_pending(sid: str, payload: dict):
+    """Commit or discard all staged AI tool calls."""
+    if sid not in sessions:
+        raise HTTPException(404, "Session not found")
+    changes = sessions[sid].get("pending_changes", [])
+    applied = 0
+    if payload.get("apply", False):
+        for change in changes:
+            _merge_tool_call(sid, change["tool"], change["input"])
+            applied += 1
+    sessions[sid]["pending_changes"] = []
+    return {"ok": True, "applied": applied}
 
 
 # ── School data merge (kept for compatibility) ─────────────────────────────────
@@ -300,30 +430,48 @@ async def chat(sid: str, payload: dict):
         school_data=sessions[sid]["school_data"],
         teacher_assignments=sessions[sid]["teacher_assignments"],
         ai_history=ai_history,
+        conflict_reports=sessions[sid].get("last_conflict_reports") or None,
+        solve_issues=sessions[sid].get("last_solve_issues") or None,
     )
 
-    # Auto-apply data tool calls; handle special tools separately
+    # Stage save tool calls; apply metadata tools immediately
     saved_types: list[str] = []
+    pending: list[dict] = []
     trigger_generation = False
     proposed_options: list[dict] = []
     set_step: int | None = None
 
     for tc in result["tool_calls"]:
-        if tc["name"] == "trigger_generation":
+        name = tc["name"]
+        data = tc["data"]
+        if name == "trigger_generation":
             trigger_generation = True
-        elif tc["name"] == "propose_options":
-            proposed_options = tc["data"].get("options", [])
-        elif tc["name"] == "set_current_step":
-            set_step = tc["data"].get("step")
+        elif name == "propose_options":
+            proposed_options = data.get("options", [])
+        elif name == "set_current_step":
+            set_step = data.get("step")
+        elif name in _SAVE_TOOLS:
+            pending.append({
+                "tool":    name,
+                "input":   data,
+                "preview": _make_preview(name, data),
+                "label":   _pending_label(name, data),
+            })
+            saved_types.append(name)
         else:
-            _merge_tool_call(sid, tc["name"], tc["data"])
-            saved_types.append(tc["name"])
+            _merge_tool_call(sid, name, data)
+
+    if pending:
+        sessions[sid]["pending_changes"] = (
+            sessions[sid].get("pending_changes", []) + pending
+        )
 
     sessions[sid]["ai_history"] = result["updated_history"]
 
     return {
         "message":            result["message"],
-        "data_saved":         len(saved_types) > 0,
+        "data_saved":         False,   # not yet — pending review
+        "pending_changes":    pending,
         "trigger_generation": trigger_generation,
         "options":            proposed_options,
         "set_step":           set_step,
@@ -359,6 +507,8 @@ async def chat_stream(sid: str, payload: dict):
             school_data=sessions[sid]["school_data"],
             teacher_assignments=sessions[sid]["teacher_assignments"],
             ai_history=ai_history,
+            conflict_reports=sessions[sid].get("last_conflict_reports") or None,
+            solve_issues=sessions[sid].get("last_solve_issues") or None,
         ):
             if event["type"] == "delta":
                 yield f"data: {json.dumps({'type': 'delta', 'text': event['text']})}\n\n"
@@ -376,6 +526,7 @@ async def chat_stream(sid: str, payload: dict):
                 proposed_options: list[dict] = []
                 saved_types: list[str] = []
 
+                pending: list[dict] = []
                 for tc in tool_calls_buf:
                     name = tc["name"]
                     data = tc["input"]
@@ -385,15 +536,28 @@ async def chat_stream(sid: str, payload: dict):
                         proposed_options = data.get("options", [])
                     elif name == "set_current_step":
                         set_step = data.get("step")
+                    elif name in _SAVE_TOOLS:
+                        pending.append({
+                            "tool":    name,
+                            "input":   data,
+                            "preview": _make_preview(name, data),
+                            "label":   _pending_label(name, data),
+                        })
+                        saved_types.append(name)
                     else:
                         _merge_tool_call(sid, name, data)
-                        saved_types.append(name)
+
+                if pending:
+                    sessions[sid]["pending_changes"] = (
+                        sessions[sid].get("pending_changes", []) + pending
+                    )
 
                 sessions[sid]["ai_history"] = updated_history
 
                 done_payload = {
                     "type":               "done",
-                    "data_saved":         len(saved_types) > 0,
+                    "data_saved":         False,   # not yet — pending review
+                    "pending_changes":    pending,
                     "trigger_generation": trigger_generation,
                     "options":            proposed_options,
                     "set_step":           set_step,
@@ -466,6 +630,37 @@ def _format_conflicts_fr(reports: list) -> str:
     return "\n".join(lines).strip()
 
 
+def _group_unscheduled(unscheduled: list[dict]) -> list[dict]:
+    """Group unscheduled sessions by inferred cause category."""
+    from collections import defaultdict
+    groups: dict[str, list[dict]] = defaultdict(list)
+    for u in unscheduled:
+        reason = u.get("reason", "").lower()
+        if "enseignant" in reason or "teacher" in reason or "qualification" in reason:
+            cat = "missing_teacher"
+        elif "salle" in reason or "room" in reason or "capacité" in reason:
+            cat = "room_unavailable"
+        elif "créneau" in reason or "slot" in reason or "domaine" in reason or "domain" in reason:
+            cat = "no_valid_slot"
+        elif "contrainte" in reason or "constraint" in reason:
+            cat = "constraint_conflict"
+        else:
+            cat = "other"
+        groups[cat].append(u)
+
+    label_map = {
+        "missing_teacher":   "Enseignant manquant ou non qualifié",
+        "room_unavailable":  "Salle indisponible ou trop petite",
+        "no_valid_slot":     "Aucun créneau disponible",
+        "constraint_conflict": "Conflit de contraintes",
+        "other":             "Autres",
+    }
+    return [
+        {"cause": cat, "label": label_map.get(cat, cat), "sessions": items}
+        for cat, items in groups.items()
+    ]
+
+
 @app.post("/api/session/{sid}/solve")
 def solve(sid: str, payload: dict = {}):
     if sid not in sessions:
@@ -522,6 +717,7 @@ def solve(sid: str, payload: dict = {}):
 
         if result.solved or result.partial:
             subj_colors = {s.name: s.color for s in school_obj.subjects}
+            unscheduled_grouped = _group_unscheduled(result.unscheduled_sessions)
             timetable = {
                 "assignments": [
                     {
@@ -536,25 +732,41 @@ def solve(sid: str, payload: dict = {}):
                     }
                     for a in result.assignments
                 ],
-                "solve_time":               result.solve_time_seconds,
-                "days":                     sd.get("days", []),
-                "soft_results":             result.soft_constraint_details,
-                "warnings":                 result.warnings,
-                "unscheduled":              result.unscheduled_sessions,
+                "solve_time":    result.solve_time_seconds,
+                "days":          sd.get("days", []),
+                "soft_results":  result.soft_constraint_details,
+                "warnings":      result.warnings,
+                "unscheduled":   result.unscheduled_sessions,
+                "unscheduled_groups": unscheduled_grouped,
             }
             sessions[sid]["timetable_result"] = timetable
+            sessions[sid]["last_conflict_reports"] = []
             status = "OPTIMAL" if result.solved and not result.partial else "PARTIAL"
+            if status == "PARTIAL":
+                sessions[sid]["last_solve_issues"] = {
+                    "total_assigned":    len(result.assignments),
+                    "total_unscheduled": len(result.unscheduled_sessions),
+                    "unscheduled":       [u for u in result.unscheduled_sessions if u.get("subject")],
+                    "groups":            unscheduled_grouped,
+                }
+            else:
+                sessions[sid]["last_solve_issues"] = {}
             return {"status": status, "solved": True, **timetable}
 
         # Infeasible — run conflict analyzer
         conflict_summary = ""
+        structured_reports: list[dict] = []
         try:
             from timease.engine.conflicts import ConflictAnalyzer
+            import dataclasses as _dc
             analyzer = ConflictAnalyzer(school_obj)
             reports  = analyzer.analyze()
             conflict_summary = _format_conflicts_fr(reports)
+            structured_reports = [_dc.asdict(r) for r in reports]
         except Exception:
             pass
+
+        sessions[sid]["last_conflict_reports"] = structured_reports
 
         if not conflict_summary:
             if result.conflicts:
@@ -572,9 +784,10 @@ def solve(sid: str, payload: dict = {}):
                 conflict_summary = "Aucune solution trouvée avec les données actuelles."
 
         return {
-            "status":           "INFEASIBLE",
-            "solved":           False,
-            "conflict_summary": conflict_summary,
+            "status":            "INFEASIBLE",
+            "solved":            False,
+            "conflict_summary":  conflict_summary,
+            "conflict_reports":  structured_reports,
         }
 
     except Exception as exc:

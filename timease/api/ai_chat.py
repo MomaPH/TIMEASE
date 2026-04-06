@@ -255,6 +255,8 @@ TOOLS = [
 def _build_system_prompt(
     school_data: dict,
     teacher_assignments: list[dict],
+    conflict_reports: list[dict] | None = None,
+    solve_issues: dict | None = None,
 ) -> str:
     """Build a context-aware system prompt reflecting current session state."""
 
@@ -442,6 +444,79 @@ Souples (type: "soft", priority 1–10):
 • light_last_day — peu de cours le dernier jour
 • teacher_day_off — préférence congé (params: teacher, preferred_day_off)
 """
+
+    # ── Partial solve context (injected after a partial result) ──────────────
+    if solve_issues and solve_issues.get("total_unscheduled", 0) > 0:
+        unscheduled = solve_issues.get("unscheduled", [])
+        groups = solve_issues.get("groups", [])
+        step_names = {
+            0: "École", 1: "Classes", 2: "Enseignants", 3: "Salles",
+            4: "Matières", 5: "Affectations", 6: "Programme", 7: "Contraintes",
+        }
+        cause_steps = {
+            "missing_teacher": 2, "room_unavailable": 3,
+            "no_valid_slot": 7, "constraint_conflict": 7,
+        }
+        issues_lines = [
+            "\n═══════════════════════════════════════════════════",
+            "RÉSULTAT PARTIEL — DERNIÈRE GÉNÉRATION",
+            "═══════════════════════════════════════════════════",
+            f"{solve_issues.get('total_assigned', 0)} sessions planifiées, "
+            f"{solve_issues.get('total_unscheduled', 0)} non planifiée(s).\n",
+            "Sessions non planifiées :",
+        ]
+        for u in unscheduled[:10]:
+            parts = [u.get("school_class", ""), u.get("subject", ""), u.get("teacher", "")]
+            label = " · ".join(p for p in parts if p)
+            reason = u.get("reason", "raison inconnue")
+            issues_lines.append(f"  • {label} — {reason}")
+        if groups:
+            issues_lines.append("\nCauses identifiées :")
+            for g in groups:
+                step = cause_steps.get(g["cause"])
+                step_label = f" → corriger étape {step} ({step_names.get(step, '')})" if step else ""
+                issues_lines.append(f"  • {g['label']} ({len(g['sessions'])} session(s)){step_label}")
+        issues_lines += [
+            "\nCOMPORTEMENT REQUIS :",
+            "• Explique CHAQUE session non planifiée en français simple (pas de jargon technique).",
+            "• Traduis 'No valid placement after domain filtering' par : "
+            "'Aucun créneau valide trouvé — toutes les disponibilités ont été éliminées par les contraintes.'",
+            "• Identifie la cause probable (enseignant, salle, contrainte horaire).",
+            "• Propose des corrections concrètes avec `propose_options`.",
+            "• Utilise `set_current_step` vers l'étape à corriger.",
+        ]
+        prompt += "\n".join(issues_lines)
+
+    # ── Conflict context (injected after a failed solve) ─────────────────────
+    if conflict_reports:
+        step_names = {
+            0: "École", 1: "Classes", 2: "Enseignants", 3: "Salles",
+            4: "Matières", 5: "Affectations", 6: "Programme", 7: "Contraintes",
+        }
+        conflict_lines = [
+            "\n═══════════════════════════════════════════════════",
+            "RÉSULTAT DU DERNIER ESSAI DE GÉNÉRATION — ÉCHEC",
+            "═══════════════════════════════════════════════════",
+            "Le solveur n'a PAS trouvé de planning. Voici les conflits détectés :\n",
+        ]
+        for i, r in enumerate(conflict_reports, 1):
+            sev = "🔴 BLOQUANT" if r.get("severity") in ("error", "impossible") else "🟡 AVERTISSEMENT"
+            step = r.get("step_to_fix")
+            step_label = f" → corriger à l'étape {step} ({step_names.get(step, '')})" if step is not None else ""
+            conflict_lines.append(f"{i}. {sev} — {r['description_fr']}{step_label}")
+            for opt in r.get("fix_options", [])[:2]:
+                conflict_lines.append(f"   Fix suggéré : {opt['fix_fr']}")
+            conflict_lines.append("")
+        conflict_lines += [
+            "COMPORTEMENT REQUIS en réponse à ce contexte :",
+            "• Explique clairement chaque conflit à l'utilisateur en français simple.",
+            "• Pour chaque conflit, indique quelle étape corriger et comment.",
+            "• Propose des options concrètes avec `propose_options` pour chaque fix suggéré.",
+            "• Utilise `set_current_step` pour guider l'utilisateur vers l'étape à corriger.",
+            "• Si plusieurs conflits, commence par le plus bloquant (🔴 en premier).",
+        ]
+        prompt += "\n".join(conflict_lines)
+
     return prompt
 
 
@@ -454,6 +529,8 @@ def stream_chat(
     school_data: dict,
     teacher_assignments: list[dict],
     ai_history: list[dict],
+    conflict_reports: list[dict] | None = None,
+    solve_issues: dict | None = None,
 ) -> Generator[dict, None, None]:
     """Stream Claude's response, yielding structured event dicts.
 
@@ -463,7 +540,7 @@ def stream_chat(
         {"type": "end",       "updated_history": [...]}   — final event
     """
     client = anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY", ""))
-    system_prompt = _build_system_prompt(school_data, teacher_assignments)
+    system_prompt = _build_system_prompt(school_data, teacher_assignments, conflict_reports, solve_issues)
 
     full_msg = user_message
     if file_content:
@@ -487,7 +564,7 @@ def stream_chat(
 
         try:
             with client.messages.stream(
-                model="claude-haiku-4-5-20251001",
+                model="claude-sonnet-4-6",
                 max_tokens=2048,
                 system=system_prompt,
                 tools=TOOLS,
@@ -571,13 +648,11 @@ def stream_chat(
                     "save_constraints", "save_assignments",
                 ):
                     result_msg = (
-                        "✓ Données enregistrées.\n"
-                        "Maintenant tu DOIS obligatoirement :\n"
-                        "1. Afficher un tableau markdown récapitulatif de ce qui vient d'être enregistré.\n"
-                        "2. Appeler `set_current_step` avec l'index de la prochaine étape incomplète.\n"
-                        "3. Appeler `propose_options` avec les actions disponibles "
-                        "(ex: [➡️ Continuer] [✏️ Modifier] [➕ Ajouter d'autres]).\n"
-                        "Ne réponds PAS avec du texte seul — utilise les outils."
+                        "Modifications envoyées pour validation par l'utilisateur.\n"
+                        "Maintenant tu DOIS :\n"
+                        "1. Afficher un tableau markdown récapitulatif de ce qui sera enregistré après confirmation.\n"
+                        "2. Appeler `propose_options` avec [✅ Confirmer] [✏️ Modifier] et les prochaines actions.\n"
+                        "NE dis PAS que les données sont déjà enregistrées — elles attendent validation."
                     )
                 else:
                     result_msg = "OK."
@@ -600,11 +675,13 @@ def process_chat(
     school_data: dict,
     teacher_assignments: list[dict],
     ai_history: list[dict],
+    conflict_reports: list[dict] | None = None,
+    solve_issues: dict | None = None,
 ) -> dict:
     """Send one user turn to Claude and return the structured response."""
     client = anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY", ""))
 
-    system_prompt = _build_system_prompt(school_data, teacher_assignments)
+    system_prompt = _build_system_prompt(school_data, teacher_assignments, conflict_reports, solve_issues)
 
     full_msg = user_message
     if file_content:
@@ -617,7 +694,7 @@ def process_chat(
     history.append({"role": "user", "content": full_msg})
 
     response = client.messages.create(
-        model="claude-haiku-4-5-20251001",
+        model="claude-sonnet-4-6",
         max_tokens=2048,
         system=system_prompt,
         tools=TOOLS,

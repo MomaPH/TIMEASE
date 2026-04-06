@@ -1,7 +1,7 @@
 'use client'
 import { useState, useMemo } from 'react'
 import Link from 'next/link'
-import { FileDown, CalendarDays, Loader2 } from 'lucide-react'
+import { FileDown, CalendarDays, Loader2, AlertTriangle, ArrowRight } from 'lucide-react'
 import TimetableGrid from '@/components/TimetableGrid'
 import { useSession } from '@/hooks/useSession'
 import { useToast } from '@/components/Toast'
@@ -91,7 +91,19 @@ export default function ResultsPage() {
     timetable?.soft_results ?? []
 
   const unscheduled: { school_class?: string; subject?: string; teacher?: string; reason?: string }[] =
-    timetable?.unscheduled ?? []
+    (timetable?.unscheduled ?? []).filter((u: any) => u.subject)
+
+  const unscheduledGroups: { cause: string; label: string; sessions: any[]; step?: number }[] =
+    useMemo(() => {
+      const causeStep: Record<string, number> = {
+        missing_teacher: 2, room_unavailable: 3,
+        no_valid_slot: 7,   constraint_conflict: 7,
+      }
+      return (timetable?.unscheduled_groups ?? []).map((g: any) => ({
+        ...g,
+        step: causeStep[g.cause] ?? undefined,
+      }))
+    }, [timetable])
 
   const isPartial = !!(unscheduled.length > 0 || (timetable && !timetable.solved && assignments.length > 0))
 
@@ -271,10 +283,10 @@ export default function ResultsPage() {
       {/* ── Constraints panel ── */}
       <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
 
-        {/* Hard constraints */}
+        {/* Hard constraints / unscheduled */}
         <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl shadow-sm p-5">
           <h2 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
-            Contraintes dures
+            Sessions planifiées
           </h2>
           {unscheduled.length === 0 ? (
             <div className="flex items-center gap-2 text-sm text-teal-600 dark:text-teal-400">
@@ -282,19 +294,54 @@ export default function ResultsPage() {
               Toutes les sessions ont été planifiées
             </div>
           ) : (
-            <div className="space-y-2">
-              <div className="flex items-center gap-2 text-sm text-amber-600 dark:text-amber-400 mb-2">
-                <span className="w-2 h-2 rounded-full bg-amber-400 flex-shrink-0" />
+            <div className="space-y-3">
+              <div className="flex items-center gap-2 text-sm text-amber-600 dark:text-amber-400">
+                <AlertTriangle size={14} className="flex-shrink-0" />
                 {unscheduled.length} session(s) non planifiée(s)
               </div>
-              {unscheduled.map((u, i) => (
+
+              {/* Group cards with Corriger button */}
+              {unscheduledGroups.map((g, gi) => (
+                <div key={gi} className="border border-amber-200 dark:border-amber-800 rounded-xl overflow-hidden">
+                  <div className="flex items-center justify-between px-3 py-2 bg-amber-50 dark:bg-amber-950/30">
+                    <span className="text-xs font-semibold text-amber-800 dark:text-amber-300">
+                      {g.label} — {g.sessions.filter((s: any) => s.subject).length} session(s)
+                    </span>
+                    {g.step !== undefined && (
+                      <Link
+                        href={`/workspace?step=${g.step}`}
+                        className="flex items-center gap-1 text-xs font-medium text-teal-600 dark:text-teal-400 hover:text-teal-700 transition-colors"
+                      >
+                        Corriger <ArrowRight size={12} />
+                      </Link>
+                    )}
+                  </div>
+                  <div className="divide-y divide-amber-100 dark:divide-amber-900/40">
+                    {g.sessions.filter((s: any) => s.subject).map((u: any, i: number) => (
+                      <div key={i} className="px-3 py-2 text-xs">
+                        <span className="font-medium text-gray-800 dark:text-gray-200">
+                          {[u.school_class, u.subject].filter(Boolean).join(' · ')}
+                        </span>
+                        {u.reason && (
+                          <span className="text-gray-500 dark:text-gray-400 ml-1">
+                            — {u.reason === 'No valid placement after domain filtering'
+                              ? 'Aucun créneau valide (contraintes trop restrictives)'
+                              : u.reason}
+                          </span>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+
+              {/* Fallback: flat list if no groups */}
+              {unscheduledGroups.length === 0 && unscheduled.map((u, i) => (
                 <div key={i} className="text-xs bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg px-3 py-2">
                   <span className="font-medium text-amber-800 dark:text-amber-300">
-                    {[u.school_class, u.subject, u.teacher].filter(Boolean).join(' · ')}
+                    {[u.school_class, u.subject].filter(Boolean).join(' · ')}
                   </span>
-                  {u.reason && (
-                    <span className="text-amber-600 dark:text-amber-400 ml-1">— {u.reason}</span>
-                  )}
+                  {u.reason && <span className="text-amber-600 dark:text-amber-400 ml-1">— {u.reason}</span>}
                 </div>
               ))}
             </div>

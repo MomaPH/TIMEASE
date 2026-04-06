@@ -1,3 +1,5 @@
+import type { PendingChange } from './types'
+
 const BASE = 'http://localhost:8000'
 
 export async function createSession(): Promise<string> {
@@ -41,6 +43,7 @@ export async function sendChatStream(
   set_step: number | null
   saved_types: string[]
   ai_history: any[]
+  pending_changes: PendingChange[] | undefined
 }> {
   const res = await fetch(`${BASE}/api/session/${sid}/chat/stream`, {
     method:  'POST',
@@ -140,6 +143,16 @@ export async function exportFile(sid: string, format: string) {
   const res = await fetch(`${BASE}/api/session/${sid}/export/${format}`)
   if (!res.ok) throw new Error(`Export failed: ${res.status}`)
   return res.blob()
+}
+
+export async function applyPending(sid: string, apply: boolean) {
+  const res = await fetch(`${BASE}/api/session/${sid}/apply_pending`, {
+    method:  'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body:    JSON.stringify({ apply }),
+  })
+  if (!res.ok) throw new Error(`Apply pending failed: ${res.status}`)
+  return res.json() as Promise<{ ok: boolean; applied: number }>
 }
 
 export async function generateCollabLinks(sid: string) {

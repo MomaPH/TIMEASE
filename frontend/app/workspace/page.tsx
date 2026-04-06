@@ -1,15 +1,15 @@
 'use client'
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { Paperclip, Send, Loader2, Bot, MessageSquare, LayoutDashboard, RotateCcw } from 'lucide-react'
-import { useRouter } from 'next/navigation'
+import { Paperclip, Send, Loader2, Bot, MessageSquare, LayoutDashboard, RotateCcw, CheckCircle, XCircle, ChevronDown, ChevronUp } from 'lucide-react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import ChatMessage from '@/components/ChatMessage'
 import StepIndicator from '@/components/StepIndicator'
 import StepPanel from '@/components/StepPanel'
 import FileImportModal from '@/components/FileImportModal'
 import { useSession } from '@/hooks/useSession'
 import { useToast } from '@/components/Toast'
-import { sendChatStream, uploadFile, solve } from '@/lib/api'
-import type { ChatMessage as ChatMessageType, SchoolData } from '@/lib/types'
+import { sendChatStream, uploadFile, solve, applyPending } from '@/lib/api'
+import type { ChatMessage as ChatMessageType, PendingChange, SchoolData } from '@/lib/types'
 
 // ── Thinking words (cycling while AI is loading) ──────────────────────────────
 const THINKING_WORDS = [
@@ -60,8 +60,9 @@ const hist_key  = (sid: string) => `timease_aihistory_${sid}`
 // ── Workspace page ────────────────────────────────────────────────────────────
 
 export default function WorkspacePage() {
-  const router = useRouter()
-  const { toast } = useToast()
+  const router       = useRouter()
+  const searchParams = useSearchParams()
+  const { toast }    = useToast()
 
   const {
     sessionId,
@@ -79,11 +80,14 @@ export default function WorkspacePage() {
   const [mobileView, setMobileView]   = useState<'chat' | 'form'>('chat')
 
   // ── Chat state ────────────────────────────────────────────────────────────
-  const [messages,   setMessages]   = useState<ChatMessageType[]>([WELCOME])
-  const [aiHistory,  setAiHistory]  = useState<any[]>([])
-  const [input,      setInput]      = useState('')
-  const [isLoading,  setIsLoading]  = useState(false)
-  const [isSolving,  setIsSolving]  = useState(false)
+  const [messages,         setMessages]         = useState<ChatMessageType[]>([WELCOME])
+  const [aiHistory,        setAiHistory]        = useState<any[]>([])
+  const [input,            setInput]            = useState('')
+  const [isLoading,        setIsLoading]        = useState(false)
+  const [isSolving,        setIsSolving]        = useState(false)
+  const [pendingChanges,   setPendingChanges]   = useState<PendingChange[]>([])
+  const [expandedPreviews, setExpandedPreviews] = useState<Set<number>>(new Set())
+  const transientIdRef = useRef<string | null>(null)
 
   // ── Import modal ──────────────────────────────────────────────────────────
   const [importModal, setImportModal] = useState<{ open: boolean; data?: any }>({ open: false })
@@ -91,18 +95,19 @@ export default function WorkspacePage() {
   const scrollRef = useRef<HTMLDivElement>(null)
   const fileRef   = useRef<HTMLInputElement>(null)
 
-  // ── Restore messages and history from localStorage once sessionId is known
+  // ── Restore messages + history; honour ?step= param ─────────────────────
   useEffect(() => {
     if (!sessionId) return
     const storedMsgs = localStorage.getItem(msgs_key(sessionId))
     const storedHist = localStorage.getItem(hist_key(sessionId))
-    if (storedMsgs) {
-      try { setMessages(JSON.parse(storedMsgs)) } catch {}
+    if (storedMsgs) { try { setMessages(JSON.parse(storedMsgs)) } catch {} }
+    if (storedHist)  { try { setAiHistory(JSON.parse(storedHist)) } catch {} }
+    const stepParam = searchParams.get('step')
+    if (stepParam !== null) {
+      const idx = parseInt(stepParam, 10)
+      if (!isNaN(idx) && idx >= 0 && idx <= 8) setCurrentStep(idx)
     }
-    if (storedHist) {
-      try { setAiHistory(JSON.parse(storedHist)) } catch {}
-    }
-  }, [sessionId])
+  }, [sessionId]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── Auto-scroll ───────────────────────────────────────────────────────────
   useEffect(() => {
@@ -124,6 +129,30 @@ export default function WorkspacePage() {
     setAiHistory(history)
     if (sessionId) localStorage.setItem(hist_key(sessionId), JSON.stringify(history))
   }, [sessionId])
+
+  // ── Transient (fugace) message helpers ────────────────────────────────────
+  // A transient message is a temporary placeholder that gets replaced in-place
+  // by the actual result, so it never accumulates in the history.
+  function addTransientMessage(content: string): string {
+    const id = `t_${Date.now()}`
+    transientIdRef.current = id
+    setMessages(prev => [...prev, { role: 'ai' as const, content, _transientId: id } as any])
+    return id
+  }
+
+  function replaceTransientMessage(id: string, msg: ChatMessageType) {
+    transientIdRef.current = null
+    setMessages(prev => {
+      const next = prev.map(m => (m as any)._transientId === id ? msg : m)
+      if (sessionId) localStorage.setItem(msgs_key(sessionId), JSON.stringify(next))
+      return next
+    })
+  }
+
+  function removeTransientMessage(id: string) {
+    transientIdRef.current = null
+    setMessages(prev => prev.filter(m => (m as any)._transientId !== id))
+  }
 
   // ── Streaming send helper ─────────────────────────────────────────────────
   async function _streamSend(msg: string, fileContent?: string) {
@@ -186,9 +215,46 @@ export default function WorkspacePage() {
       return next
     })
 
-    if (res.data_saved)              refreshSession()
+    if (res.pending_changes?.length) {
+      setPendingChanges(res.pending_changes)
+      setExpandedPreviews(new Set())
+    }
+    if (res.data_saved)                  refreshSession()
     if (typeof res.set_step === 'number') setCurrentStep(res.set_step)
-    if (res.trigger_generation)      handleGenerate()
+    if (res.trigger_generation)          handleGenerate()
+  }
+
+  // ── Staging: apply or reject pending AI changes ───────────────────────────
+  async function handleApply() {
+    if (!sessionId || !pendingChanges.length) return
+    const count = pendingChanges.length
+    try {
+      await applyPending(sessionId, true)
+      setPendingChanges([])
+      await refreshSession()   // await so form is populated before message appears
+      addMessage({ role: 'ai', content: `✅ **${count} modification(s) appliquée(s).** Les données ont été enregistrées.` })
+    } catch {
+      toast('Erreur lors de l\'application des modifications', 'error')
+    }
+  }
+
+  async function handleReject() {
+    if (!sessionId || !pendingChanges.length) return
+    try {
+      await applyPending(sessionId, false)
+      setPendingChanges([])
+      addMessage({ role: 'ai', content: '↩️ Modifications refusées. Aucune donnée n\'a été modifiée.' })
+    } catch {
+      toast('Erreur lors de l\'annulation', 'error')
+    }
+  }
+
+  function togglePreview(idx: number) {
+    setExpandedPreviews(prev => {
+      const next = new Set(prev)
+      next.has(idx) ? next.delete(idx) : next.add(idx)
+      return next
+    })
   }
 
   // ── Send message ──────────────────────────────────────────────────────────
@@ -250,16 +316,29 @@ export default function WorkspacePage() {
     await updateAssignments(newAssignments)
   }
 
+  // ── Auto-trigger: send a silent AI message (no user bubble) ─────────────
+  async function autoTrigger(prompt: string) {
+    if (!sessionId) return
+    setIsLoading(true)
+    try {
+      await _streamSend(prompt)
+    } catch {
+      // silent — don't show error for auto-triggers
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
   // ── Generate timetable ────────────────────────────────────────────────────
   async function handleGenerate() {
     if (!sessionId || isSolving) return
     setIsSolving(true)
     setCurrentStep(8)
 
-    addMessage({
-      role:    'ai',
-      content: '⚙️ **Génération en cours…**\n\nLe solveur analyse vos contraintes. Cela peut prendre quelques secondes.',
-    })
+    // Fugace "en cours" message — replaced in-place by the result
+    const tid = addTransientMessage(
+      '⚙️ **Génération en cours…**\n\nLe solveur analyse vos contraintes. Cela peut prendre quelques secondes.',
+    )
 
     try {
       const res = await solve(sessionId)
@@ -269,33 +348,53 @@ export default function WorkspacePage() {
         toast('Emploi du temps généré !')
 
         const partial = res.status === 'PARTIAL'
-        const unscheduled: any[] = res.unscheduled ?? []
+        // Filter entries with no subject to avoid "B" phantom artifacts
+        const unscheduled: any[] = (res.unscheduled ?? []).filter((u: any) => u.subject)
         let partialDetail = ''
         if (unscheduled.length > 0) {
           const lines = unscheduled.slice(0, 5).map((u: any) => {
-            const id = [u.school_class, u.subject, u.teacher].filter(Boolean).join(' · ')
+            const id = [u.school_class, u.subject].filter(Boolean).join(' · ')
             return `- **${id}**${u.reason ? ` — ${u.reason}` : ''}`
           })
           if (unscheduled.length > 5) lines.push(`- _…et ${unscheduled.length - 5} autres_`)
           partialDetail = '\n\n**Sessions non planifiées :**\n' + lines.join('\n')
         }
-        addMessage({
+
+        replaceTransientMessage(tid, {
           role:    'ai',
           content: partial
-            ? `⚠️ **Emploi du temps partiellement généré** — ${res.assignments?.length ?? 0} sessions placées, ${unscheduled.length} non planifiée(s).${partialDetail}\n\nConsultez la page Résultats pour les détails.`
-            : `✅ **Emploi du temps généré avec succès !** (${res.assignments?.length ?? 0} sessions planifiées)\n\nRedirection vers les résultats…`,
+            ? `⚠️ **Emploi du temps partiellement généré** — ${res.assignments?.length ?? 0} sessions placées, ${unscheduled.length} non planifiée(s).${partialDetail}`
+            : `✅ **${res.assignments?.length ?? 0} sessions planifiées.**`,
         })
 
-        setTimeout(() => router.push('/results'), 1200)
+        if (partial) {
+          // Auto-trigger AI diagnosis — no user bubble, AI analyses and proposes fixes
+          setIsSolving(false)
+          await autoTrigger(
+            'Analyse les sessions non planifiées de la dernière génération et explique pourquoi ' +
+            'chacune n\'a pas pu être planifiée en termes simples. Propose des solutions concrètes ' +
+            'avec des options cliquables et indique l\'étape à corriger.',
+          )
+        } else {
+          setTimeout(() => router.push('/results'), 1200)
+        }
       } else {
         const summary = res.conflict_summary || res.message || 'Aucune solution trouvée.'
-        addMessage({
+        replaceTransientMessage(tid, {
           role:    'ai',
-          content: `❌ **Génération impossible**\n\n${summary}\n\n---\nCorrigez les problèmes ci-dessus et relancez la génération.`,
+          content: `❌ **Génération impossible**\n\n${summary}`,
         })
         toast('Impossible de générer l\'emploi du temps', 'error')
+        // Auto-trigger AI conflict diagnosis
+        setIsSolving(false)
+        await autoTrigger(
+          'Explique les conflits détectés lors de la dernière tentative de génération en français simple ' +
+          'et propose des corrections concrètes avec des options cliquables.',
+        )
+        return
       }
     } catch {
+      removeTransientMessage(tid)
       addMessage({ role: 'ai', content: '❌ Erreur de connexion lors de la génération.' })
       toast('Erreur de connexion', 'error')
     } finally {
@@ -354,7 +453,7 @@ export default function WorkspacePage() {
                 <Bot size={14} className="text-teal-600 dark:text-teal-400" />
               </div>
               <span className="text-sm font-semibold text-gray-800 dark:text-gray-200">TIMEASE Assistant</span>
-              <span className="text-xs text-gray-400 dark:text-gray-500">· claude-haiku</span>
+              <span className="text-xs text-gray-400 dark:text-gray-500">· claude-sonnet</span>
             </div>
             <button
               onClick={handleReset}
@@ -386,46 +485,141 @@ export default function WorkspacePage() {
                 </div>
               </div>
             )}
+
+            {/* ── Staging card ── */}
+            {pendingChanges.length > 0 && (
+              <div className="mb-3 animate-fade-in">
+                <div className="rounded-2xl border-2 border-amber-300 dark:border-amber-600 bg-amber-50 dark:bg-amber-950/30 overflow-hidden shadow-sm">
+                  <div className="px-4 py-3 flex items-center gap-2 border-b border-amber-200 dark:border-amber-700">
+                    <div className="w-2 h-2 rounded-full bg-amber-400 flex-shrink-0" />
+                    <span className="text-sm font-semibold text-amber-800 dark:text-amber-300">
+                      Révision requise — {pendingChanges.length} modification{pendingChanges.length > 1 ? 's' : ''} en attente
+                    </span>
+                  </div>
+
+                  <div className="divide-y divide-amber-100 dark:divide-amber-900">
+                    {pendingChanges.map((change, idx) => (
+                      <div key={idx} className="px-4 py-2.5">
+                        <button
+                          onClick={() => togglePreview(idx)}
+                          className="w-full flex items-center justify-between text-left gap-2 group"
+                        >
+                          <span className="text-sm font-medium text-amber-900 dark:text-amber-200">
+                            {change.label}
+                          </span>
+                          {expandedPreviews.has(idx)
+                            ? <ChevronUp size={14} className="text-amber-500 flex-shrink-0" />
+                            : <ChevronDown size={14} className="text-amber-500 flex-shrink-0" />
+                          }
+                        </button>
+                        {expandedPreviews.has(idx) && (
+                          <div className="mt-2 text-xs text-amber-800 dark:text-amber-300 overflow-x-auto">
+                            <table className="w-full border-collapse min-w-max">
+                              {(() => {
+                                const rows = change.preview.split('\n').map((row, ri) => {
+                                  const cells = row.split('|').filter((_, ci) => ci > 0 && ci < row.split('|').length - 1)
+                                  if (!cells.length || row.match(/^[\s|:-]+$/)) return null
+                                  return { ri, cells }
+                                }).filter(Boolean) as { ri: number; cells: string[] }[]
+                                const [header, ...body] = rows
+                                return (
+                                  <>
+                                    {header && (
+                                      <thead>
+                                        <tr className="border-b border-amber-300 dark:border-amber-700">
+                                          {header.cells.map((cell, ci) => (
+                                            <th key={ci} className="px-2 py-1 text-left whitespace-nowrap font-semibold">{cell.trim()}</th>
+                                          ))}
+                                        </tr>
+                                      </thead>
+                                    )}
+                                    <tbody>
+                                      {body.map(({ ri, cells }) => (
+                                        <tr key={ri} className="border-b border-amber-100 dark:border-amber-900/50 last:border-0">
+                                          {cells.map((cell, ci) => (
+                                            <td key={ci} className="px-2 py-1 text-left whitespace-nowrap">{cell.trim()}</td>
+                                          ))}
+                                        </tr>
+                                      ))}
+                                    </tbody>
+                                  </>
+                                )
+                              })()}
+                            </table>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="px-4 py-3 flex gap-2 border-t border-amber-200 dark:border-amber-700 bg-amber-50/80 dark:bg-amber-950/20">
+                    <button
+                      onClick={handleApply}
+                      className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-teal-600 hover:bg-teal-700 text-white text-sm font-medium rounded-xl transition-colors"
+                    >
+                      <CheckCircle size={14} /> Appliquer
+                    </button>
+                    <button
+                      onClick={handleReject}
+                      className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 text-sm font-medium rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                    >
+                      <XCircle size={14} /> Refuser
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Input bar */}
-          <div className="flex items-center gap-2 px-3 sm:px-4 py-3 border-t border-gray-100 dark:border-gray-800 flex-shrink-0">
-            <button
-              onClick={() => fileRef.current?.click()}
-              title="Envoyer un fichier"
-              disabled={isLoading || !sessionId}
-              suppressHydrationWarning
-              className="text-gray-400 hover:text-teal-600 dark:hover:text-teal-400 flex-shrink-0 transition-colors p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 disabled:opacity-50"
-            >
-              <Paperclip size={17} />
-            </button>
-            <input
-              type="file"
-              ref={fileRef}
-              className="hidden"
-              accept=".xlsx,.xls,.csv,.docx,.txt,.pdf,.json,.md,.markdown,.yaml,.yml"
-              onChange={handleUpload}
-            />
-            <input
-              value={input}
-              onChange={e => setInput(e.target.value)}
-              onKeyDown={e => e.key === 'Enter' && !e.shiftKey && send()}
-              placeholder={sessionId ? 'Message…' : 'Chargement…'}
-              disabled={isLoading || !sessionId}
-              suppressHydrationWarning
-              className="flex-1 px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:bg-white dark:focus:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 disabled:opacity-60 transition-all"
-            />
-            <button
-              onClick={() => send()}
-              disabled={isLoading || !input.trim() || !sessionId}
-              suppressHydrationWarning
-              className="p-2 rounded-xl bg-teal-600 text-white hover:bg-teal-700 disabled:opacity-40 transition-colors flex-shrink-0"
-            >
-              {isLoading
-                ? <Loader2 size={16} className="animate-spin" />
-                : <Send size={16} />
-              }
-            </button>
+          <div className="flex-shrink-0 border-t border-gray-100 dark:border-gray-800">
+            {pendingChanges.length > 0 && (
+              <div className="px-4 py-1.5 text-xs text-center text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/20">
+                Révisez les modifications ci-dessus avant de continuer
+              </div>
+            )}
+            <div className="flex items-center gap-2 px-3 sm:px-4 py-3">
+              <button
+                onClick={() => fileRef.current?.click()}
+                title="Envoyer un fichier"
+                disabled={isLoading || !sessionId || pendingChanges.length > 0}
+                suppressHydrationWarning
+                className="text-gray-400 hover:text-teal-600 dark:hover:text-teal-400 flex-shrink-0 transition-colors p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 disabled:opacity-50"
+              >
+                <Paperclip size={17} />
+              </button>
+              <input
+                type="file"
+                ref={fileRef}
+                className="hidden"
+                accept=".xlsx,.xls,.csv,.docx,.txt,.pdf,.json,.md,.markdown,.yaml,.yml"
+                onChange={handleUpload}
+              />
+              <input
+                value={input}
+                onChange={e => setInput(e.target.value)}
+                onKeyDown={e => e.key === 'Enter' && !e.shiftKey && send()}
+                placeholder={
+                  pendingChanges.length > 0
+                    ? 'Révisez les modifications avant de continuer…'
+                    : sessionId ? 'Message…' : 'Chargement…'
+                }
+                disabled={isLoading || !sessionId || pendingChanges.length > 0}
+                suppressHydrationWarning
+                className="flex-1 px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:bg-white dark:focus:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 disabled:opacity-60 transition-all"
+              />
+              <button
+                onClick={() => send()}
+                disabled={isLoading || !input.trim() || !sessionId || pendingChanges.length > 0}
+                suppressHydrationWarning
+                className="p-2 rounded-xl bg-teal-600 text-white hover:bg-teal-700 disabled:opacity-40 transition-colors flex-shrink-0"
+              >
+                {isLoading
+                  ? <Loader2 size={16} className="animate-spin" />
+                  : <Send size={16} />
+                }
+              </button>
+            </div>
           </div>
         </div>
 

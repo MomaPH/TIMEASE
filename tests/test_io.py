@@ -231,39 +231,39 @@ def test_file_parser_unknown_format(tmp_path: Path) -> None:
 
 
 # ---------------------------------------------------------------------------
-# AI setup structure test  (no API call)
+# AI chat structure test  (no API call)
 # ---------------------------------------------------------------------------
 
-def test_ai_setup_class_structure() -> None:
-    """SetupAssistant and SetupResponse have the expected structure and fields."""
-    from timease.app.ai_setup import SYSTEM_PROMPT, SetupAssistant, SetupResponse
+def test_ai_chat_structure() -> None:
+    """_build_system_prompt and stream_chat/process_chat exist with correct signatures."""
+    from timease.api.ai_chat import _build_system_prompt, stream_chat, process_chat, TOOLS
 
-    # SYSTEM_PROMPT content
-    assert "TIMEASE"     in SYSTEM_PROMPT
-    assert "assignments" in SYSTEM_PROMPT
-    assert "teachers"    in SYSTEM_PROMPT
-    assert "extracted"   in SYSTEM_PROMPT
+    # TOOLS list contains expected save tools
+    tool_names = {t["name"] for t in TOOLS}
+    assert "save_school_info"  in tool_names
+    assert "save_teachers"     in tool_names
+    assert "save_classes"      in tool_names
+    assert "propose_options"   in tool_names
+    assert "trigger_generation" in tool_names
+    assert "set_current_step"  in tool_names
 
-    # SetupResponse is a dataclass with the six expected fields
-    fields = {f.name for f in dataclasses.fields(SetupResponse)}
-    assert fields == {
-        "message_fr",
-        "extracted_data",
-        "data_type",
-        "needs_confirmation",
-        "suggestions",
-        "progress",
-    }, f"Unexpected fields: {fields}"
+    # _build_system_prompt builds a non-empty string
+    prompt = _build_system_prompt({}, [])
+    assert "TIMEASE" in prompt
+    assert len(prompt) > 100
 
-    # SetupAssistant constructor requires api_key
-    sig = inspect.signature(SetupAssistant.__init__)
-    assert "api_key" in sig.parameters, (
-        f"SetupAssistant.__init__ missing 'api_key' parameter: {list(sig.parameters)}"
-    )
+    # Conflict context is injected when reports provided
+    report = {"description_fr": "Test conflict", "severity": "error", "step_to_fix": 2, "fix_options": []}
+    prompt_with_conflict = _build_system_prompt({}, [], conflict_reports=[report])
+    assert "Test conflict" in prompt_with_conflict
+    assert "GÉNÉRATION" in prompt_with_conflict.upper()
 
-    # process_message method exists and has the right signature
-    assert callable(getattr(SetupAssistant, "process_message", None))
-    pm_sig = inspect.signature(SetupAssistant.process_message)
-    assert "user_message"   in pm_sig.parameters
-    assert "current_data"   in pm_sig.parameters
-    assert "file_content"   in pm_sig.parameters
+    # stream_chat and process_chat have expected parameters
+    stream_sig = inspect.signature(stream_chat)
+    assert "user_message"      in stream_sig.parameters
+    assert "school_data"       in stream_sig.parameters
+    assert "conflict_reports"  in stream_sig.parameters
+
+    proc_sig = inspect.signature(process_chat)
+    assert "user_message"      in proc_sig.parameters
+    assert "conflict_reports"  in proc_sig.parameters

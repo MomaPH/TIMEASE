@@ -78,10 +78,10 @@ export function useSession() {
     }
   }, [sessionId])
 
-  const refreshSession = useCallback(() => {
+  const refreshSession = useCallback((): Promise<void> => {
     const sid = sessionId || localStorage.getItem(SESSION_KEY)
-    if (!sid) return
-    getSession(sid)
+    if (!sid) return Promise.resolve()
+    return getSession(sid)
       .then(data => {
         setSchoolData(data.school_data || {})
         setAssignments(data.teacher_assignments || [])

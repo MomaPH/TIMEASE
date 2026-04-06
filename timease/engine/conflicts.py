@@ -77,6 +77,9 @@ class ConflictReport:
     severity: str = "error"
     """Severity level: ``"error"`` (blocks scheduling) or ``"warning"`` (degraded quality)."""
 
+    step_to_fix: int | None = None
+    """Wizard step to navigate to in order to fix this conflict (0–8), or None if unknown."""
+
 
 # ---------------------------------------------------------------------------
 # Analyzer
@@ -154,6 +157,7 @@ class ConflictAnalyzer:
                         f"Toutes les sessions de cette matière sont impossibles."
                     ),
                     source="quick_check",
+                    step_to_fix=2,
                     fix_options=[
                         FixOption(
                             fix_fr=(
@@ -199,6 +203,7 @@ class ConflictAnalyzer:
                     f"(nécessaire pour : {subj_str})."
                 ),
                 source="quick_check",
+                step_to_fix=3,
                 fix_options=[
                     FixOption(
                         fix_fr=f"Ajouter au moins 1 salle de type '{rtype}'.",
@@ -266,6 +271,7 @@ class ConflictAnalyzer:
                 ),
                 source="quick_check",
                 severity="warning",
+                step_to_fix=3,
                 fix_options=[
                     FixOption(
                         fix_fr=(
@@ -349,6 +355,7 @@ class ConflictAnalyzer:
                         f"(manque : {gap:.0f}h)."
                     ),
                     source="quick_check",
+                    step_to_fix=2,
                     fix_options=[
                         FixOption(
                             fix_fr=(
@@ -407,6 +414,7 @@ class ConflictAnalyzer:
                         f"(excédent : {excess:.0f}h)."
                     ),
                     source="quick_check",
+                    step_to_fix=6,
                     fix_options=[
                         FixOption(
                             fix_fr=(
@@ -486,6 +494,7 @@ class ConflictAnalyzer:
                     "de contraintes ou d'une pénurie de ressources complexe."
                 ),
                 source="relaxation",
+                step_to_fix=2,
                 fix_options=[
                     FixOption(
                         fix_fr=(
@@ -513,6 +522,7 @@ class ConflictAnalyzer:
                     f"exactement à {hour}, ce qui bloque le planning."
                 ),
                 source="relaxation",
+                step_to_fix=7,
                 fix_options=[
                     FixOption(
                         fix_fr=f"Supprimer l'obligation de commencer à {hour}.",
@@ -543,6 +553,7 @@ class ConflictAnalyzer:
                     f"ce qui empêche de placer toutes les sessions dans les créneaux disponibles."
                 ),
                 source="relaxation",
+                step_to_fix=7,
                 fix_options=[
                     FixOption(
                         fix_fr=f"Augmenter la limite à {max_h + 1}h consécutives.",
@@ -572,6 +583,7 @@ class ConflictAnalyzer:
                     f"aux mêmes créneaux pour la même matière."
                 ),
                 source="relaxation",
+                step_to_fix=5,
                 fix_options=[
                     FixOption(
                         fix_fr=(
@@ -594,6 +606,7 @@ class ConflictAnalyzer:
                     f"empêche de caser toutes les sessions."
                 ),
                 source="relaxation",
+                step_to_fix=7,
                 fix_options=[
                     FixOption(
                         fix_fr=f"Autoriser les cours le {day} {session}.",
@@ -619,6 +632,7 @@ class ConflictAnalyzer:
                     f"rend le planning infaisable avec les ressources actuelles."
                 ),
                 source="relaxation",
+                step_to_fix=7,
                 fix_options=[
                     FixOption(
                         fix_fr=f"Assouplir ou supprimer le congé de {teacher} le {day}.",
@@ -642,6 +656,7 @@ class ConflictAnalyzer:
                 f"est une cause d'infaisabilité. La supprimer permet de trouver un planning."
             ),
             source="relaxation",
+            step_to_fix=7,
             fix_options=[
                 FixOption(
                     fix_fr=f"Supprimer ou assouplir la contrainte '{c.id}'.",

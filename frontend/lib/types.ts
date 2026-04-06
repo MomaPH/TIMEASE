@@ -6,6 +6,13 @@ export interface ChatMessage {
   options?: { label: string; value: string }[]
 }
 
+export interface PendingChange {
+  tool: string
+  input: Record<string, any>
+  preview: string   // markdown table
+  label: string     // human label e.g. "3 enseignants"
+}
+
 export interface SchoolData {
   name?: string
   city?: string
