@@ -1,5 +1,5 @@
 """
-Timetable solver for TIMEASE — compact IntVar model.
+Timetable solver for TIMEASE — Phase 2 logic (Human-in-the-Loop).
 
 Model design
 ------------
@@ -26,17 +26,12 @@ No-overlap constraints use a global timeline:
   • One add_no_overlap per teacher — covers ALL days at once
   • One add_no_overlap per room    — optional intervals keyed on room BoolVars
 
-Pre-assignment
---------------
-Each (class, subject) pair is greedily assigned to one teacher before model
-construction.  This eliminates all teacher-selection BoolVars and reduces the
-variable count by ~50× compared to the original three-layer BoolVar grid.
-
-Variable count (sample school, 196 sessions)
---------------------------------------------
-  start_vars  :   196 IntVars  (one per session)
-  room BoolVars: ~1008          (eligible rooms per session)
-  Total        : ~1204          (vs ~97 000 in the old model → 80× reduction)
+Manual assignment
+-----------------
+Each (class, subject) pair must be explicitly assigned to a teacher by the 
+administrator via a TeacherAssignment record. This eliminates teacher-selection
+complexity from the CP-SAT engine, ensuring high performance (near-instant 
+feasibility checks) and absolute adherence to administrative contracts.
 """
 
 from __future__ import annotations
@@ -100,50 +95,14 @@ class _Session:
 def _compute_session_spec(
     entry: CurriculumEntry, base_unit_minutes: int
 ) -> _SessionSpec:
-    """Derive (sessions_per_week, duration_slots[, remainder_duration_slots]) for a
-    curriculum entry.
-
-    For auto-mode entries where total_minutes_per_week is not divisible by
-    min_session_minutes, first tries every multiple-of-base_unit duration in
-    [min_session_minutes, max_session_minutes] to find an exact divisor.
-    If none found, creates (n_full × d_full) + (1 × d_remainder) sessions so
-    that the scheduled total exactly matches total_minutes_per_week.
+    """Derive (sessions_per_week, duration_slots) for a curriculum entry.
+    All entries are 100% manual.
     """
-    if entry.mode == "manual":
-        sessions = entry.sessions_per_week or 1
-        minutes  = entry.minutes_per_session or base_unit_minutes
-        return _SessionSpec(
-            sessions_per_week=max(1, sessions),
-            duration_slots=max(1, minutes // base_unit_minutes),
-        )
-
-    total = entry.total_minutes_per_week
-    min_s = entry.min_session_minutes or min(60, total)
-    max_s = entry.max_session_minutes or total
-
-    # Clamp min_s to a valid multiple of base_unit.
-    min_s = max(base_unit_minutes, (min_s // base_unit_minutes) * base_unit_minutes) or base_unit_minutes
-
-    # Try each multiple-of-base_unit duration in [min_s, max_s] for an exact fit.
-    for d in range(min_s, max_s + 1, base_unit_minutes):
-        if total % d == 0:
-            return _SessionSpec(
-                sessions_per_week=max(1, total // d),
-                duration_slots=max(1, d // base_unit_minutes),
-            )
-
-    # No exact divisor — use min_s for full sessions plus one shorter remainder.
-    n_full, remainder = divmod(total, min_s)
-    dur_full = max(1, min_s // base_unit_minutes)
-    if remainder < base_unit_minutes:
-        # Remainder smaller than one slot — drop it (negligible rounding).
-        return _SessionSpec(sessions_per_week=max(1, n_full), duration_slots=dur_full)
-
-    dur_rem = max(1, remainder // base_unit_minutes)
+    sessions = entry.sessions_per_week
+    minutes  = entry.minutes_per_session
     return _SessionSpec(
-        sessions_per_week=max(1, n_full + 1),
-        duration_slots=dur_full,
-        remainder_duration_slots=dur_rem,
+        sessions_per_week=max(1, sessions),
+        duration_slots=max(1, minutes // base_unit_minutes),
     )
 
 

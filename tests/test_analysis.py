@@ -58,10 +58,8 @@ def minimal_sd() -> SchoolData:
             Room("Salle 2", 40, ["Salle standard"]),
         ],
         curriculum=[
-            CurriculumEntry("6ème", "Maths",    300, mode="auto",
-                            min_session_minutes=60, max_session_minutes=120),
-            CurriculumEntry("6ème", "Français", 300, mode="auto",
-                            min_session_minutes=60, max_session_minutes=120),
+            CurriculumEntry("6ème", "Maths",    300, sessions_per_week=5, minutes_per_session=60),
+            CurriculumEntry("6ème", "Français", 300, sessions_per_week=5, minutes_per_session=60),
         ],
         constraints=[],
     )

@@ -119,8 +119,8 @@ class TestNoTeacherForSubject:
     ) -> None:
         entry = CurriculumEntry(
             level="6ème", subject="Mathématiques",
-            total_minutes_per_week=120, mode="auto",
-            min_session_minutes=60, max_session_minutes=60,
+            total_minutes_per_week=120, 
+            sessions_per_week=2, minutes_per_session=60,
         )
         sd = _make_sd(
             base_tc, base_school,
@@ -139,8 +139,8 @@ class TestNoTeacherForSubject:
     ) -> None:
         entry = CurriculumEntry(
             level="6ème", subject="Mathématiques",
-            total_minutes_per_week=120, mode="auto",
-            min_session_minutes=60, max_session_minutes=60,
+            total_minutes_per_week=120, 
+            sessions_per_week=2, minutes_per_session=60,
         )
         sd = _make_sd(
             base_tc, base_school,
@@ -163,8 +163,8 @@ class TestNoTeacherForSubject:
     ) -> None:
         entry = CurriculumEntry(
             level="6ème", subject="Mathématiques",
-            total_minutes_per_week=60, mode="auto",
-            min_session_minutes=60, max_session_minutes=60,
+            total_minutes_per_week=60, 
+            sessions_per_week=2, minutes_per_session=60,
         )
         sd = _make_sd(
             base_tc, base_school,
@@ -189,10 +189,10 @@ class TestNoTeacherForSubject:
             SchoolClass("5ème", "5ème", 30),
         ]
         curriculum = [
-            CurriculumEntry("6ème", "Mathématiques", 60, "auto",
-                            min_session_minutes=60, max_session_minutes=60),
-            CurriculumEntry("5ème", "Mathématiques", 60, "auto",
-                            min_session_minutes=60, max_session_minutes=60),
+            CurriculumEntry("6ème", "Mathématiques", 60,
+                            sessions_per_week=1, minutes_per_session=60),
+            CurriculumEntry("5ème", "Mathématiques", 60,
+                            sessions_per_week=1, minutes_per_session=60),
         ]
         sd = _make_sd(
             base_tc, base_school,
@@ -215,8 +215,8 @@ class TestRoomTypeMissing:
     ) -> None:
         entry = CurriculumEntry(
             level="6ème", subject="SVT",
-            total_minutes_per_week=120, mode="auto",
-            min_session_minutes=60, max_session_minutes=60,
+            total_minutes_per_week=120, 
+            sessions_per_week=2, minutes_per_session=60,
         )
         teacher = Teacher("Prof SVT", ["SVT"], max_hours_per_week=10)
         sd = _make_sd(
@@ -236,8 +236,8 @@ class TestRoomTypeMissing:
     ) -> None:
         entry = CurriculumEntry(
             level="6ème", subject="SVT",
-            total_minutes_per_week=60, mode="auto",
-            min_session_minutes=60, max_session_minutes=60,
+            total_minutes_per_week=60, 
+            sessions_per_week=2, minutes_per_session=60,
         )
         teacher = Teacher("Prof SVT", ["SVT"], max_hours_per_week=10)
         sd = _make_sd(
@@ -258,8 +258,8 @@ class TestRoomTypeMissing:
     ) -> None:
         entry = CurriculumEntry(
             level="6ème", subject="SVT",
-            total_minutes_per_week=60, mode="auto",
-            min_session_minutes=60, max_session_minutes=60,
+            total_minutes_per_week=60, 
+            sessions_per_week=2, minutes_per_session=60,
         )
         teacher = Teacher("Prof SVT", ["SVT"], max_hours_per_week=10)
         sd = _make_sd(
@@ -293,8 +293,8 @@ class TestSoleTeacherOverload:
         cls = SchoolClass("6ème", "6ème", 28)
         entry = CurriculumEntry(
             level="6ème", subject="Mathématiques",
-            total_minutes_per_week=240, mode="auto",  # 4h
-            min_session_minutes=60, max_session_minutes=60,
+            total_minutes_per_week=240, # 4h
+            sessions_per_week=2, minutes_per_session=60,
         )
         sd = _make_sd(
             base_tc, base_school,
@@ -312,8 +312,8 @@ class TestSoleTeacherOverload:
         cls = SchoolClass("6ème", "6ème", 28)
         entry = CurriculumEntry(
             level="6ème", subject="Mathématiques",
-            total_minutes_per_week=240, mode="auto",
-            min_session_minutes=60, max_session_minutes=60,
+            total_minutes_per_week=240, 
+            sessions_per_week=2, minutes_per_session=60,
         )
         sd = _make_sd(
             base_tc, base_school,
@@ -335,8 +335,8 @@ class TestSoleTeacherOverload:
         cls = SchoolClass("6ème", "6ème", 28)
         entry = CurriculumEntry(
             level="6ème", subject="Mathématiques",
-            total_minutes_per_week=240, mode="auto",
-            min_session_minutes=60, max_session_minutes=60,
+            total_minutes_per_week=240, 
+            sessions_per_week=2, minutes_per_session=60,
         )
         sd = _make_sd(
             base_tc, base_school,
@@ -356,8 +356,8 @@ class TestSoleTeacherOverload:
         cls = SchoolClass("6ème", "6ème", 28)
         entry = CurriculumEntry(
             level="6ème", subject="Mathématiques",
-            total_minutes_per_week=240, mode="auto",
-            min_session_minutes=60, max_session_minutes=60,
+            total_minutes_per_week=240, 
+            sessions_per_week=2, minutes_per_session=60,
         )
         sd = _make_sd(
             base_tc, base_school,
@@ -386,8 +386,8 @@ class TestClassHoursExceedSchedule:
         cls = SchoolClass("6ème", "6ème", 28)
         entry = CurriculumEntry(
             level="6ème", subject="Mathématiques",
-            total_minutes_per_week=1500, mode="auto",  # 25h
-            min_session_minutes=60, max_session_minutes=60,
+            total_minutes_per_week=1500, # 25h
+            sessions_per_week=2, minutes_per_session=60,
         )
         sd = _make_sd(
             base_tc, base_school,
@@ -405,8 +405,8 @@ class TestClassHoursExceedSchedule:
         cls = SchoolClass("6ème", "6ème", 28)
         entry = CurriculumEntry(
             level="6ème", subject="Mathématiques",
-            total_minutes_per_week=600, mode="auto",  # 10h, well within 20h
-            min_session_minutes=60, max_session_minutes=60,
+            total_minutes_per_week=600, # 10h, well within 20h
+            sessions_per_week=2, minutes_per_session=60,
         )
         sd = _make_sd(
             base_tc, base_school,
@@ -424,8 +424,8 @@ class TestClassHoursExceedSchedule:
         cls = SchoolClass("6ème", "6ème", 28)
         entry = CurriculumEntry(
             level="6ème", subject="Mathématiques",
-            total_minutes_per_week=1500, mode="auto",
-            min_session_minutes=60, max_session_minutes=60,
+            total_minutes_per_week=1500, 
+            sessions_per_week=2, minutes_per_session=60,
         )
         sd = _make_sd(
             base_tc, base_school,
@@ -471,8 +471,8 @@ class TestAnalyzeStagePriority:
         """When quick checks find issues, relaxation should not run (no solver call)."""
         entry = CurriculumEntry(
             level="6ème", subject="Mathématiques",
-            total_minutes_per_week=60, mode="auto",
-            min_session_minutes=60, max_session_minutes=60,
+            total_minutes_per_week=60, 
+            sessions_per_week=2, minutes_per_session=60,
         )
         sd = _make_sd(
             base_tc, base_school,
@@ -493,8 +493,8 @@ class TestAnalyzeStagePriority:
     ) -> None:
         entry = CurriculumEntry(
             level="6ème", subject="Mathématiques",
-            total_minutes_per_week=60, mode="auto",
-            min_session_minutes=60, max_session_minutes=60,
+            total_minutes_per_week=60, 
+            sessions_per_week=2, minutes_per_session=60,
         )
         sd = _make_sd(
             base_tc, base_school,

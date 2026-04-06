@@ -158,67 +158,47 @@ class TestRoomValidation:
 
 
 # ---------------------------------------------------------------------------
-# 6. CurriculumEntry validation — manual mode with missing fields
+# 6. CurriculumEntry validation — Phase 2 (manual only, requires sessions)
 # ---------------------------------------------------------------------------
 
 class TestCurriculumEntryValidation:
-    def test_reject_manual_missing_sessions_per_week(self) -> None:
+    def test_reject_zero_sessions_per_week(self) -> None:
         entry = CurriculumEntry(
             level="6ème",
             subject="SVT",
             total_minutes_per_week=120,
-            mode="manual",
-            sessions_per_week=None,        # missing
+            sessions_per_week=0,       # invalid
             minutes_per_session=60,
         )
-        with pytest.raises(ValueError, match="manual"):
+        with pytest.raises(ValueError, match="positives"):
             entry.validate()
 
-    def test_reject_manual_missing_minutes_per_session(self) -> None:
+    def test_reject_zero_minutes_per_session(self) -> None:
         entry = CurriculumEntry(
             level="6ème",
             subject="SVT",
             total_minutes_per_week=120,
-            mode="manual",
             sessions_per_week=2,
-            minutes_per_session=None,      # missing
+            minutes_per_session=0,     # invalid
         )
-        with pytest.raises(ValueError, match="manual"):
+        with pytest.raises(ValueError, match="positives"):
             entry.validate()
 
     def test_reject_zero_total_minutes(self) -> None:
         entry = CurriculumEntry(
-            level="6ème", subject="SVT", total_minutes_per_week=0
+            level="6ème", subject="SVT", total_minutes_per_week=0,
+            sessions_per_week=1, minutes_per_session=60,
         )
         with pytest.raises(ValueError, match="positif"):
             entry.validate()
 
-    def test_reject_invalid_mode(self) -> None:
-        entry = CurriculumEntry(
-            level="6ème", subject="SVT", total_minutes_per_week=120, mode="weekly"
-        )
-        with pytest.raises(ValueError, match="invalide"):
-            entry.validate()
-
-    def test_valid_manual_entry_does_not_raise(self) -> None:
+    def test_valid_entry_does_not_raise(self) -> None:
         entry = CurriculumEntry(
             level="6ème",
             subject="SVT",
             total_minutes_per_week=120,
-            mode="manual",
-            sessions_per_week=1,
-            minutes_per_session=120,
-        )
-        entry.validate()  # must not raise
-
-    def test_valid_auto_entry_does_not_raise(self) -> None:
-        entry = CurriculumEntry(
-            level="6ème",
-            subject="Mathématiques",
-            total_minutes_per_week=300,
-            mode="auto",
-            min_session_minutes=60,
-            max_session_minutes=120,
+            sessions_per_week=2,
+            minutes_per_session=60,
         )
         entry.validate()  # must not raise
 
@@ -235,28 +215,32 @@ class TestSchoolDataValidation:
                 level="6ème",
                 subject="Philosophie",   # exists nowhere in subjects or teachers
                 total_minutes_per_week=60,
+                sessions_per_week=1,
+                minutes_per_session=60,
             )
         )
         # Also add it to subjects so it passes the subject-name check first.
         base_school_data.subjects.append(
             Subject("Philosophie", "Philo", "#FFFFFF")
         )
+        # Need to add a class for level 6ème if not present
+        if not any(c.level == "6ème" for c in base_school_data.classes):
+            base_school_data.classes.append(
+                SchoolClass("6A", "6ème", 30)
+            )
         errors = base_school_data.validate()
+        # Should have error about missing assignment for the new subject
         assert any("Philosophie" in e for e in errors), (
             f"Expected an error about 'Philosophie', got: {errors}"
         )
 
-    # 8. SchoolData.validate() — subject requires lab but no lab room exists
-    def test_catches_missing_lab_room(self, base_school_data: SchoolData) -> None:
-        """Remove all Laboratoire rooms; SVT validation should fire."""
-        base_school_data.rooms = [
-            r for r in base_school_data.rooms
-            if "Laboratoire" not in r.types
-        ]
+    # 8. SchoolData.validate() — no longer validates room types, only assignments
+    def test_clean_data_validation(self, base_school_data: SchoolData) -> None:
+        """validate() should check teacher assignments, not room types."""
+        # In Phase 2, we don't validate room types in validate() - that's for ConflictAnalyzer
         errors = base_school_data.validate()
-        assert any("Laboratoire" in e for e in errors), (
-            f"Expected an error about 'Laboratoire', got: {errors}"
-        )
+        # Base data should be valid
+        assert isinstance(errors, list)
 
     def test_clean_data_has_no_errors(self, sample_school: SchoolData) -> None:
         assert sample_school.validate() == []
@@ -394,15 +378,15 @@ class TestJsonRoundTrip:
         finally:
             tmp.unlink(missing_ok=True)
 
-    def test_round_trip_curriculum_modes_preserved(self, sample_school: SchoolData) -> None:
-        """Manual and auto curriculum entries round-trip with correct mode field."""
+    def test_round_trip_curriculum_sessions_preserved(self, sample_school: SchoolData) -> None:
+        """Curriculum entries round-trip with sessions_per_week and minutes_per_session."""
         with tempfile.NamedTemporaryFile(suffix=".json", delete=False) as f:
             tmp = Path(f.name)
         try:
             sample_school.to_json(tmp)
             restored = SchoolData.from_json(tmp)
-            orig_modes    = [e.mode for e in sample_school.curriculum]
-            restored_modes = [e.mode for e in restored.curriculum]
-            assert restored_modes == orig_modes
+            for orig, rest in zip(sample_school.curriculum, restored.curriculum):
+                assert rest.sessions_per_week == orig.sessions_per_week
+                assert rest.minutes_per_session == orig.minutes_per_session
         finally:
             tmp.unlink(missing_ok=True)

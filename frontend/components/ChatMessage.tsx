@@ -6,7 +6,7 @@ import { Check, Copy, Bot } from 'lucide-react'
 import type { ChatMessage as ChatMessageType } from '@/lib/types'
 
 interface Props {
-  message: ChatMessageType
+  message: ChatMessageType & { _streamingId?: string }
   onOptionSelect?: (value: string) => void
 }
 
@@ -119,6 +119,10 @@ export default function ChatMessage({ message, onOptionSelect }: Props) {
           >
             {message.content}
           </ReactMarkdown>
+          {/* Streaming cursor */}
+          {(message as any)._streamingId && (
+            <span className="inline-block w-[3px] h-[1.1em] bg-teal-500 dark:bg-teal-400 ml-0.5 align-middle animate-cursor-blink" />
+          )}
         </div>
 
         {/* Interactive option chips */}

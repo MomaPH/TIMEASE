@@ -1,6 +1,6 @@
 # TIMEASE — Technical Knowledge Base
 
-State as of 2026-04-05. Phase 1 — Core feature complete.
+State as of 2026-04-06. Transitioning to Phase 2 (Human-in-the-Loop optimizations).
 
 ---
 
@@ -321,5 +321,37 @@ All save tool descriptions require user confirmation before calling. AI shows su
 | 2 | Partial solution completeness | Mutual-exclusion INFEASIBLE (non-empty domains but conflicting sessions) returns empty assignments. Requires optional-interval model rewrite. |
 | 3 | Teacher granularity | `CurriculumEntry.teacher` is level-scoped. Can't assign different teachers to 6ème A vs 6ème B for same subject without separate entries. |
 | 4 | Greedy irreversibility | CP-SAT can't reassign after greedy phase. Suboptimal greedy choice can't be corrected by solver. |
-| 5 | In-memory sessions | Backend sessions lost on restart. Frontend re-hydrates via `/restore` before exports. Phase 4 will add DB persistence. |
-| 6 | Collaboration | Teacher availability portal is functional but availability data not yet fed back into solver as constraints. |
+| 5 | In-memory sessions | Backend sessions lost on restart. Phase 2 introduces Postgres RLS. |
+| 6 | Collaboration | Teacher availability portal pending Admin Approval staging flow (Phase 2). |
+
+---
+
+## 13. Phase 2 Roadmap & Architectural Shifts
+
+> [!IMPORTANT]
+> The overriding philosophy of Phase 2 is **Absolute Human Authority**. Algorithmic abstractions must not override human administration.
+
+### A. Deprecating Greedy / Auto Assignment
+In real schools, teachers negotiate classes during contract phases. Therefore, `CurriculumEntry.mode="auto"` and the Python Greedy Pre-Assignment engine are deprecated. The engine assumes 100% rigid manual assignments, dropping the computationally heavy routing loop and simply plotting human choices against time slots natively.
+
+### B. Scaled Asynchronous Solving (Celery & Render PaaS)
+Large models exceed HTTP 60s timeouts.
+- **Worker Queues:** CP-SAT tasks are decoupled using Celery and Redis (`@celery.task`).
+- **Cloud Split:** Because serverless environments (Vercel) kill background workers, Next.js remains on Vercel while FastAPI+Celery+Postgres deploys to a "Background Worker" native PaaS (e.g., Render.com in the EU region) ensuring stable, long-running processing while preserving legal DP compliance for Senegal under the CDP.
+
+### C. Advanced CP-SAT Optimization
+- S1–S5 Soft Constraints are moving from post-solve grading to native CP-SAT `model.Maximize()`.
+- To avoid infinite loops where the solver tries to prove ultimate optimality over 10 hours, a strict parameter `solver.parameters.max_time_in_seconds = 30` is enforced.
+
+### D. Multi-Tenancy & Data Privacy
+- **Row-Level Security (RLS):** Database queries are locked down at the Postgres level (`ALTER TABLE sessions ENABLE ROW LEVEL SECURITY;`), ensuring structural mathematical isolation between rival schools.
+- **Admin Collaboration Staging:** Availabilities requested by teachers route to a Staging DB for explicit school-administrator approval before converting to CP-SAT constraints.
+
+### E. API Cost Optimization & Mypyc Compilation
+- **Frontend Deterrence:** React structurally prevents execution if total requested class hours outweigh the physical school week, reducing LLM calls for silly human math errors.
+- **Deterministic Fixes:** When `INFEASIBLE` occurs, native React UI handles it. The LLM is only triggered via an *"Ask AI"* opt-in button.
+- **C-Extension (mypyc):** The pure Python `ConflictAnalyzer` iteratively trials constraints. To circumvent scaling bottlenecks, `conflicts.py` is strictly typed and compiled into native C-extensions using `mypyc`.
+
+### F. Premium AI Concierge (UX layer)
+- AI is elevated via transparent `AgentActionPill` micro-animations during tool execution.
+- LLM outputs awaiting confirmation (`[✅ Confirmer]`) render as **inline-editable tables**, ensuring users can hand-correct AI math hallucinations without typing prompts or burning contextual tokens. 

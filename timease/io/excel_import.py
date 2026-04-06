@@ -457,7 +457,7 @@ def _parse_teachers(wb: Any, errors: list[str]) -> list[Teacher]:
             weight = 1.0
         teachers.append(Teacher(
             name=nom, subjects=matieres, max_hours_per_week=max_h,
-            unavailable_slots=unavail, preference_weight=weight,
+            unavailable_slots=unavail,
         ))
     return teachers
 
@@ -554,15 +554,16 @@ def _parse_curriculum(wb: Any, errors: list[str]) -> list[CurriculumEntry]:
             )
             continue
         mode_raw = _cell_str(ws.cell(row=r, column=4)).lower()
-        mode = "manual" if mode_raw in ("manuel", "manual") else "auto"
         sp_w = _parse_duration(ws.cell(row=r, column=5).value)
         mps = _parse_duration(ws.cell(row=r, column=6).value)
-        min_m = _parse_duration(ws.cell(row=r, column=7).value)
-        max_m = _parse_duration(ws.cell(row=r, column=8).value)
+        # Phase 2: min/max session minutes no longer used
+        # Derive sessions_per_week and minutes_per_session from total if not provided
+        if sp_w is None or mps is None:
+            sp_w = sp_w or 1
+            mps = mps or total
         entries.append(CurriculumEntry(
-            level=niveau, subject=mat, total_minutes_per_week=total, mode=mode,
+            level=niveau, subject=mat, total_minutes_per_week=total,
             sessions_per_week=sp_w, minutes_per_session=mps,
-            min_session_minutes=min_m, max_session_minutes=max_m,
         ))
     return entries
 

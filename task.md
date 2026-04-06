@@ -1,0 +1,27 @@
+# TIMEASE Phase 2 Implementation Progress
+
+- `[x]` **Phase 2.1: Code Abstraction Removal (Deprecating Auto Mode)**
+  - `[x]` Strip "auto mode" tracking out of `models.py`.
+  - `[x]` Deprecate variable session splits using `min_session_minutes` and `max_session_minutes` from `solver.py`.
+  - `[x]` Implement a legacy JSON save migration script in `models.from_json` to seamlessly convert old `"auto"` states to pure manual states.
+  - `[x]` Regression verify tests.
+  - `[x]` Fix `SchoolData.validate()` to be comprehensive (entity, infrastructure, assignments).
+  - `[x]` Fix `SchoolData.from_json()` and `to_json()` placement in correct class.
+  - `[x]` Update all test files to use Phase 2 CurriculumEntry format.
+- `[x]` **Phase 2.2: Advanced Solver Optimization (Time limits)**
+  - `[x]` Pass soft constraint metrics directly into `model.Maximize()`.
+  - `[x]` Introduce `solver.parameters.max_time_in_seconds = 30`.
+- `[ ]` **Phase 2.3: The Premium AI Experience (Agentic Concierge)**
+  - `[x]` Create `<AgentActionPill />` micro-animations.
+  - `[ ]` Implement inline editable recap arrays in `ChatMessage.tsx`.
+  - `[x]` Build the streaming polish cursor `▍`.
+- `[ ]` **Phase 2.4: UI Gatekeeping & Detaching the LLM**
+  - `[ ]` Add real-time hour barriers to `StepPanel.tsx`.
+  - `[ ]` Add deterministic failure states natively rendered in React.
+- `[ ]` **Phase 2.5: Compiling Diagnosis Bottlenecks (mypyc)**
+  - `[ ]` Lock logic loops in `timease/engine/conflicts.py` with strict typing.
+  - `[ ]` Implement C-compilation via `mypyc`.
+- `[ ]` **Phase 2.6: Asynchronous Queue & Security**
+  - `[ ]` Implement Celery/Redis for `POST /solve`.
+  - `[ ]` Construct Postgres schema with RLS multi-tenancy.
+  - `[ ]` Create Staging approvals for Teacher Collaboration availability.

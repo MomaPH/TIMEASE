@@ -18,7 +18,38 @@ from pathlib import Path
 logger = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
-# Infrastructure safety constants — enforced regardless of subscription plan
+# Manual Assignment Validator
+# ---------------------------------------------------------------------------
+
+@dataclass
+class ManualAssignmentValidator:
+    @classmethod
+    def validate(cls, school: SchoolData) -> None:
+        """Phase 2: Validate manual assignments meet hard constraints"""
+        if not school.teacher_assignments:
+            raise ValueError("Les affectations des enseignants doivent être fournies manuellement")
+            
+        # Check H2: One teacher per (class, subject)
+        class_subject_teachers = defaultdict(set)
+        for assignment in school.teacher_assignments:
+            key = (assignment.school_class, assignment.subject)
+            class_subject_teachers[key].add(assignment.teacher)
+            
+        for key, teachers in class_subject_teachers.items():
+            if len(teachers) > 1:
+                raise ValueError(f"Plusieurs enseignants affectés à {key[0]} - {key[1]}: {', '.join(teachers)}")
+        
+        # Check H10: Teacher qualifications
+        teacher_map = {t.name: t for t in school.teachers}
+        for assignment in school.teacher_assignments:
+            teacher = teacher_map.get(assignment.teacher)
+            if not teacher:
+                raise ValueError(f"Enseignant introuvable: {assignment.teacher}")
+            if assignment.subject not in teacher.subjects:
+                raise ValueError(f"{teacher.name} n'est pas qualifié pour enseigner {assignment.subject}")
+
+# ---------------------------------------------------------------------------
+# Serialisation
 # ---------------------------------------------------------------------------
 
 MAX_FILE_SIZE_MB: int = 10
@@ -27,6 +58,12 @@ _VALID_BASE_UNITS: frozenset[int] = frozenset({15, 30, 60})
 _MAX_CLASSES: int = 200
 _MAX_TEACHERS: int = 200
 _MAX_ROOMS: int = 100
+
+
+def _time_to_min(t: str) -> int:
+    """Convert 'HH:MM' to minutes since midnight."""
+    h, m = t.split(":")
+    return int(h) * 60 + int(m)
 
 
 # ---------------------------------------------------------------------------
@@ -118,8 +155,6 @@ class Teacher:
     unavailable_slots: list[dict] = field(default_factory=list)
     # Each dict: {day: str, start: str|None, end: str|None, session: str|None}
     # session defaults to "all" when omitted
-    preference_weight: float = 1.0  # higher → more senior / preferred
-
     def validate(self) -> None:
         """Raise ValueError if the teacher data is internally inconsistent."""
         if not self.subjects:
@@ -169,23 +204,17 @@ class Room:
 class CurriculumEntry:
     """
     Weekly teaching load for a subject at a given level.
-
-    Two scheduling modes:
-    - "manual": the caller fixes exactly how many sessions per week and their
-      duration.
-    - "auto": the solver decides session splits within the given bounds.
+    
+    In Phase 2, this strictly requires exact manual specification of 
+    how many sessions per week and their duration.
     """
 
     level: str                          # e.g. "6ème"
     subject: str                        # must match Subject.name
     total_minutes_per_week: int
-    mode: str = "auto"                  # "manual" | "auto"
-    # --- manual mode ---
-    sessions_per_week: int | None = None
-    minutes_per_session: int | None = None
-    # --- auto mode ---
-    min_session_minutes: int | None = None
-    max_session_minutes: int | None = None
+    sessions_per_week: int
+    minutes_per_session: int
+
     def validate(self) -> None:
         """Raise ValueError if the entry is internally inconsistent."""
         if self.total_minutes_per_week <= 0:
@@ -193,18 +222,11 @@ class CurriculumEntry:
                 f"Le volume horaire de '{self.subject}' (niveau {self.level}) "
                 "doit être positif."
             )
-        if self.mode == "manual":
-            if self.sessions_per_week is None or self.minutes_per_session is None:
-                raise ValueError(
-                    f"Le curriculum '{self.subject}' (niveau {self.level}) est en mode "
-                    "'manual' : sessions_per_week et minutes_per_session sont requis."
-                )
-        elif self.mode != "auto":
+        if self.sessions_per_week <= 0 or self.minutes_per_session <= 0:
             raise ValueError(
-                f"Le mode '{self.mode}' est invalide pour '{self.subject}' "
-                f"(niveau {self.level}). Valeurs acceptées : 'manual', 'auto'."
+                f"Le curriculum '{self.subject}' (niveau {self.level}) "
+                "doit définir sessions_per_week et minutes_per_session avec des valeurs positives."
             )
-
 
 @dataclass
 class TeacherAssignment:
@@ -213,7 +235,6 @@ class TeacherAssignment:
     teacher: str        # must match Teacher.name
     subject: str        # must match Subject.name
     school_class: str   # must match SchoolClass.name
-
 
 # ---------------------------------------------------------------------------
 # Constraints
@@ -232,6 +253,323 @@ class Constraint:
     description_fr: str # human-readable description in French
     priority: int = 5   # 1–10, meaningful only for soft constraints
     parameters: dict = field(default_factory=dict)
+
+
+# ---------------------------------------------------------------------------
+# School Data Container
+# ---------------------------------------------------------------------------
+
+@dataclass
+class SchoolData:
+    """Conteneur principal pour toutes les données de l'école."""
+    
+    school: School
+    timeslot_config: TimeslotConfig
+    subjects: list[Subject]
+    teachers: list[Teacher]
+    classes: list[SchoolClass]
+    rooms: list[Room]
+    curriculum: list[CurriculumEntry]
+    constraints: list[Constraint]
+    teacher_assignments: list[TeacherAssignment] = field(default_factory=list)
+
+    def validate_all(self) -> None:
+        """Valide l'intégrité de toutes les données de l'école."""
+        for teacher in self.teachers:
+            teacher.validate()
+        for cls in self.classes:
+            cls.validate()
+        for room in self.rooms:
+            room.validate()
+        for entry in self.curriculum:
+            entry.validate()
+
+    def validate(self) -> list[str]:
+        """
+        Comprehensive validation of school data.
+        
+        Returns an empty list if all validations pass.
+        Checks:
+        - Entity validation (teachers, classes, rooms, curriculum entries)
+        - Infrastructure safety (base unit, session times)
+        - Ceiling limits
+        - Duplicate names
+        - Constraint validation
+        - Teacher assignment validation
+        """
+        errors: list[str] = []
+        
+        # --- Entity validation ---
+        for teacher in self.teachers:
+            try:
+                teacher.validate()
+            except ValueError as e:
+                errors.append(str(e))
+        
+        for cls in self.classes:
+            try:
+                cls.validate()
+            except ValueError as e:
+                errors.append(str(e))
+        
+        for room in self.rooms:
+            try:
+                room.validate()
+            except ValueError as e:
+                errors.append(str(e))
+        
+        for entry in self.curriculum:
+            try:
+                entry.validate()
+            except ValueError as e:
+                errors.append(str(e))
+        
+        # --- Infrastructure: base_unit_minutes ---
+        if self.timeslot_config.base_unit_minutes not in _VALID_BASE_UNITS:
+            errors.append(
+                f"L'unité de base {self.timeslot_config.base_unit_minutes} min "
+                f"n'est pas valide. Valeurs acceptées : {sorted(_VALID_BASE_UNITS)}."
+            )
+        
+        # --- Infrastructure: session times ---
+        for sess in self.timeslot_config.sessions:
+            start_min = _time_to_min(sess.start_time)
+            end_min = _time_to_min(sess.end_time)
+            if end_min <= start_min:
+                errors.append(
+                    f"Session '{sess.name}' : l'heure de fin ({sess.end_time}) "
+                    f"doit être après l'heure de début ({sess.start_time})."
+                )
+        
+        # --- Ceiling limits ---
+        if len(self.classes) > _MAX_CLASSES:
+            errors.append(
+                f"Trop de classes : {len(self.classes)} (max : {_MAX_CLASSES})."
+            )
+        if len(self.teachers) > _MAX_TEACHERS:
+            errors.append(
+                f"Trop d'enseignants : {len(self.teachers)} (max : {_MAX_TEACHERS})."
+            )
+        if len(self.rooms) > _MAX_ROOMS:
+            errors.append(
+                f"Trop de salles : {len(self.rooms)} (max : {_MAX_ROOMS})."
+            )
+        
+        # --- Duplicate names ---
+        teacher_names = [t.name for t in self.teachers]
+        if len(teacher_names) != len(set(teacher_names)):
+            errors.append("Nom d'enseignant en double détecté.")
+        
+        class_names = [c.name for c in self.classes]
+        if len(class_names) != len(set(class_names)):
+            errors.append("Nom de classe en double détecté.")
+        
+        room_names = [r.name for r in self.rooms]
+        if len(room_names) != len(set(room_names)):
+            errors.append("Nom de salle en double détecté.")
+        
+        # --- Constraint validation ---
+        for c in self.constraints:
+            if c.type not in ("hard", "soft"):
+                errors.append(
+                    f"Contrainte '{c.id}' : type '{c.type}' invalide "
+                    f"(doit être 'hard' ou 'soft')."
+                )
+            if c.priority < 1 or c.priority > 10:
+                errors.append(
+                    f"Contrainte '{c.id}' : priorité {c.priority} invalide "
+                    f"(doit être entre 1 et 10)."
+                )
+        
+        # --- Teacher assignment validation ---
+        teacher_map = {t.name: t for t in self.teachers}
+        
+        # Build curriculum requirements: which (class, subject) pairs need teachers
+        required_pairs: set[tuple[str, str]] = set()
+        for cls in self.classes:
+            for entry in self.curriculum:
+                if entry.level == cls.level:
+                    required_pairs.add((cls.name, entry.subject))
+        
+        assigned_pairs: dict[tuple[str, str], list[str]] = defaultdict(list)
+        
+        for ta in self.teacher_assignments:
+            key = (ta.school_class, ta.subject)
+            assigned_pairs[key].append(ta.teacher)
+            
+            # Check unknown teacher
+            if ta.teacher not in teacher_map:
+                errors.append(
+                    f"Enseignant inconnu : '{ta.teacher}' "
+                    f"(affectation {ta.school_class} / {ta.subject})."
+                )
+                continue
+                
+            # Check teacher qualification
+            teacher = teacher_map[ta.teacher]
+            if ta.subject not in teacher.subjects:
+                errors.append(
+                    f"L'enseignant '{ta.teacher}' n'est pas qualifié pour "
+                    f"enseigner '{ta.subject}' ({ta.school_class})."
+                )
+        
+        # Check for duplicates
+        for (cls_name, subj), teachers in assigned_pairs.items():
+            if len(teachers) > 1:
+                errors.append(
+                    f"Double affectation pour {cls_name} / {subj} : "
+                    f"{', '.join(teachers)}."
+                )
+        
+        # Check for missing assignments
+        for cls_name, subj in required_pairs:
+            if (cls_name, subj) not in assigned_pairs:
+                errors.append(
+                    f"Affectation manquante : aucun enseignant pour "
+                    f"{cls_name} / {subj}."
+                )
+        
+        return errors
+
+    # ------------------------------------------------------------------
+    # Serialisation
+    # ------------------------------------------------------------------
+
+    def to_json(self, path: str | Path) -> None:
+        """Serialise the full dataset to a UTF-8 JSON file."""
+        path = Path(path)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        data = dataclasses.asdict(self)
+        path.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
+        logger.info("SchoolData saved to %s", path)
+
+    @classmethod
+    def from_json(cls, path: str | Path) -> "SchoolData":
+        """Load and reconstruct a SchoolData instance from a JSON file."""
+        path = Path(path)
+        data = json.loads(path.read_text(encoding="utf-8"))
+
+        # Legacy migration for Phase 2: Convert any "auto" mode curriculums to "manual"
+        curriculum = []
+        base_unit = data["timeslot_config"]["base_unit_minutes"]
+        for e in data["curriculum"]:
+            e.pop("mode", None)
+            min_s = e.pop("min_session_minutes", None)
+            max_s = e.pop("max_session_minutes", None)
+            
+            if e.get("sessions_per_week") is None or e.get("minutes_per_session") is None:
+                total = e["total_minutes_per_week"]
+                min_s = min_s or min(60, total)
+                min_s = max(base_unit, (min_s // base_unit) * base_unit) or base_unit
+                # fallback
+                sessions, minutes = 1, total
+                for d in range(min_s, (max_s or total) + 1, base_unit):
+                    if total % d == 0:
+                        sessions = max(1, total // d)
+                        minutes = max(1, d)
+                        break
+                e["sessions_per_week"] = sessions
+                e["minutes_per_session"] = minutes
+                
+            curriculum.append(CurriculumEntry(**e))
+
+        return cls(
+            school=School(**data["school"]),
+            timeslot_config=TimeslotConfig(
+                days=data["timeslot_config"]["days"],
+                base_unit_minutes=data["timeslot_config"]["base_unit_minutes"],
+                sessions=[
+                    SessionConfig(**s)
+                    for s in data["timeslot_config"]["sessions"]
+                ],
+            ),
+            subjects=[Subject(**s) for s in data["subjects"]],
+            teachers=[
+                Teacher(**{k: v for k, v in t.items() if k != "preference_weight"}) 
+                for t in data["teachers"]
+            ],
+            classes=[SchoolClass(**c) for c in data["classes"]],
+            rooms=[Room(**r) for r in data["rooms"]],
+            curriculum=curriculum,
+            constraints=[Constraint(**c) for c in data["constraints"]],
+            teacher_assignments=[
+                TeacherAssignment(**ta)
+                for ta in data.get("teacher_assignments", [])
+            ],
+        )
+
+    def validate_warnings(self) -> list[str]:
+        """
+        Non-blocking checks: returns informational warnings without preventing
+        timetable generation. Returns a list of warning messages in French.
+        """
+        warnings: list[str] = []
+
+        subject_map = {s.name: s for s in self.subjects}
+        class_by_level: dict[str, list[SchoolClass]] = defaultdict(list)
+        for cls in self.classes:
+            class_by_level.setdefault(cls.level, []).append(cls)
+
+        # --- Room capacity vs class size ---
+        for entry in self.curriculum:
+            subj = subject_map.get(entry.subject)
+            if subj is None or not subj.needs_room:
+                continue
+            room_type = subj.required_room_type or "Salle standard"
+            compatible = [r for r in self.rooms if room_type in r.types]
+            if not compatible:
+                continue  # error already reported in validate()
+            max_cap = max(r.capacity for r in compatible)
+            for cls in class_by_level.get(entry.level, []):
+                if cls.student_count > max_cap:
+                    warnings.append(
+                        f"La classe '{cls.name}' ({cls.student_count} élèves) "
+                        f"dépasse la capacité maximale des salles de type "
+                        f"'{room_type}' ({max_cap} places) "
+                        f"pour la matière '{entry.subject}'."
+                    )
+
+        # --- Teacher with zero assignments ---
+        assigned_teachers = {ta.teacher for ta in self.teacher_assignments}
+        for teacher in self.teachers:
+            if teacher.name not in assigned_teachers:
+                warnings.append(
+                    f"L'enseignant '{teacher.name}' est enregistré mais n'a aucun cours "
+                    f"assigné. Est-ce intentionnel ?"
+                )
+
+        # --- Conflicting soft constraints: afternoon preference vs morning subjects ---
+        # Detect teacher with teacher_time_preference=Après-midi who also teaches
+        # subjects listed in heavy_subjects_morning.  These constraints compete
+        # directly and one will always be sacrificed.
+        morning_subjects: set[str] = set()
+        afternoon_pref_teachers: set[str] = set()
+        for c in self.constraints:
+            if c.type != "soft":
+                continue
+            if c.category == "heavy_subjects_morning":
+                morning_subjects.update(c.parameters.get("subjects", []))
+            elif c.category == "teacher_time_preference":
+                pref = c.parameters.get("preferred_session", "")
+                if "après" in pref.lower() or "apres" in pref.lower():
+                    t_name = c.parameters.get("teacher", "")
+                    if t_name:
+                        afternoon_pref_teachers.add(t_name)
+
+        for t_name in afternoon_pref_teachers:
+            teacher = next((t for t in self.teachers if t.name == t_name), None)
+            if teacher is None:
+                continue
+            conflicts_with_morning = [s for s in teacher.subjects if s in morning_subjects]
+            if conflicts_with_morning:
+                warnings.append(
+                    f"L'enseignant '{t_name}' préfère l'après-midi (teacher_time_preference) "
+                    f"mais enseigne des matières prioritairement le matin "
+                    f"(heavy_subjects_morning) : {conflicts_with_morning}. "
+                    f"Ces contraintes sont incompatibles — l'une sera sacrifiée."
+                )
+
+        return warnings
 
 
 # ---------------------------------------------------------------------------
@@ -376,374 +714,3 @@ class TimetableResult:
                 )
 
         return violations
-
-
-# ---------------------------------------------------------------------------
-# Top-level containers
-# ---------------------------------------------------------------------------
-
-@dataclass
-class SchoolData:
-    """
-    Complete input dataset for one timetable generation run.
-
-    This is the single object passed to the solver and serialised to/from
-    JSON for persistence and CLI usage.
-    """
-
-    school: School
-    timeslot_config: TimeslotConfig
-    subjects: list[Subject]
-    teachers: list[Teacher]
-    classes: list[SchoolClass]
-    rooms: list[Room]
-    curriculum: list[CurriculumEntry]
-    constraints: list[Constraint]
-    teacher_assignments: list[TeacherAssignment] = field(default_factory=list)
-
-    # ------------------------------------------------------------------
-    # Validation
-    # ------------------------------------------------------------------
-
-    def validate(self) -> list[str]:
-        """
-        Cross-entity validation of the full dataset.
-
-        Returns a list of error messages in French.  An empty list means the
-        data is consistent and ready for the solver.
-        """
-        errors: list[str] = []
-
-        # --- Individual entity validation ---
-        for teacher in self.teachers:
-            try:
-                teacher.validate()
-            except ValueError as exc:
-                errors.append(str(exc))
-
-        for cls in self.classes:
-            try:
-                cls.validate()
-            except ValueError as exc:
-                errors.append(str(exc))
-
-        for room in self.rooms:
-            try:
-                room.validate()
-            except ValueError as exc:
-                errors.append(str(exc))
-
-        for entry in self.curriculum:
-            try:
-                entry.validate()
-            except ValueError as exc:
-                errors.append(str(exc))
-
-        # --- Infrastructure safety ---
-        if self.timeslot_config.base_unit_minutes not in _VALID_BASE_UNITS:
-            errors.append(
-                f"L'unité de base doit être 15, 30 ou 60 minutes "
-                f"(valeur reçue : {self.timeslot_config.base_unit_minutes})."
-            )
-
-        for session in self.timeslot_config.sessions:
-            try:
-                start_dt = datetime.strptime(session.start_time, "%H:%M")
-                end_dt = datetime.strptime(session.end_time, "%H:%M")
-                if end_dt <= start_dt:
-                    errors.append(
-                        f"La session '{session.name}' a une heure de fin "
-                        f"({session.end_time}) inférieure ou égale à l'heure de début "
-                        f"({session.start_time})."
-                    )
-            except ValueError:
-                errors.append(
-                    f"La session '{session.name}' contient une heure invalide "
-                    f"(format attendu : HH:MM)."
-                )
-
-        if len(self.classes) > _MAX_CLASSES:
-            errors.append(
-                f"Le nombre de classes ({len(self.classes)}) dépasse le maximum "
-                f"autorisé ({_MAX_CLASSES})."
-            )
-        if len(self.teachers) > _MAX_TEACHERS:
-            errors.append(
-                f"Le nombre d'enseignants ({len(self.teachers)}) dépasse le maximum "
-                f"autorisé ({_MAX_TEACHERS})."
-            )
-        if len(self.rooms) > _MAX_ROOMS:
-            errors.append(
-                f"Le nombre de salles ({len(self.rooms)}) dépasse le maximum "
-                f"autorisé ({_MAX_ROOMS})."
-            )
-
-        # --- Data integrity: duplicate names ---
-        seen: set[str] = set()
-        for teacher in self.teachers:
-            if teacher.name in seen:
-                errors.append(f"Nom d'enseignant en double : '{teacher.name}'.")
-            seen.add(teacher.name)
-
-        seen = set()
-        for cls in self.classes:
-            if cls.name in seen:
-                errors.append(f"Nom de classe en double : '{cls.name}'.")
-            seen.add(cls.name)
-
-        seen = set()
-        for room in self.rooms:
-            if room.name in seen:
-                errors.append(f"Nom de salle en double : '{room.name}'.")
-            seen.add(room.name)
-
-        # --- Data integrity: constraints ---
-        for constraint in self.constraints:
-            if constraint.type not in ("hard", "soft"):
-                errors.append(
-                    f"La contrainte '{constraint.id}' a un type invalide "
-                    f"'{constraint.type}' (valeurs acceptées : 'hard', 'soft')."
-                )
-            if constraint.type == "soft" and not (1 <= constraint.priority <= 10):
-                errors.append(
-                    f"La contrainte '{constraint.id}' a une priorité invalide "
-                    f"({constraint.priority}) — doit être comprise entre 1 et 10."
-                )
-
-        # --- Data integrity: curriculum mode consistency ---
-        for entry in self.curriculum:
-            if entry.mode == "auto":
-                min_s = entry.min_session_minutes
-                max_s = entry.max_session_minutes
-                if min_s is not None and max_s is not None and min_s > max_s:
-                    errors.append(
-                        f"Le curriculum '{entry.subject}' (niveau {entry.level}) "
-                        f"en mode auto a min_session_minutes ({min_s}) > "
-                        f"max_session_minutes ({max_s})."
-                    )
-            elif entry.mode == "manual":
-                spw = entry.sessions_per_week
-                mps = entry.minutes_per_session
-                if spw is not None and mps is not None:
-                    if spw * mps != entry.total_minutes_per_week:
-                        errors.append(
-                            f"Le curriculum '{entry.subject}' (niveau {entry.level}) "
-                            f"est incohérent : {spw} × {mps} min = {spw * mps} min "
-                            f"≠ total_minutes_per_week ({entry.total_minutes_per_week} min)."
-                        )
-
-        # --- Cross-entity validation ---
-        subject_map = {s.name: s for s in self.subjects}
-        subject_names = set(subject_map)
-
-        for entry in self.curriculum:
-            if entry.subject not in subject_names:
-                errors.append(
-                    f"La matière '{entry.subject}' (niveau {entry.level}) "
-                    "est absente de la liste des matières."
-                )
-
-        for entry in self.curriculum:
-            if entry.subject not in subject_names:
-                continue
-            required_type = subject_map[entry.subject].required_room_type
-            if required_type is not None:
-                compatible = [r for r in self.rooms if required_type in r.types]
-                if not compatible:
-                    errors.append(
-                        f"Aucune salle de type '{required_type}' disponible "
-                        f"pour la matière '{entry.subject}'."
-                    )
-
-        # --- TeacherAssignment validation ---
-        teacher_names = {t.name for t in self.teachers}
-        class_names   = {c.name for c in self.classes}
-        subject_names_set = {s.name for s in self.subjects}
-        teacher_map_val = {t.name: t for t in self.teachers}
-
-        # Check for unknown references in TeacherAssignment
-        seen_assignments: set[tuple[str, str]] = set()
-        for ta in self.teacher_assignments:
-            if ta.teacher not in teacher_names:
-                errors.append(
-                    f"TeacherAssignment: l'enseignant '{ta.teacher}' est inconnu."
-                )
-            if ta.subject not in subject_names_set:
-                errors.append(
-                    f"TeacherAssignment: la matière '{ta.subject}' est inconnue."
-                )
-            if ta.school_class not in class_names:
-                errors.append(
-                    f"TeacherAssignment: la classe '{ta.school_class}' est inconnue."
-                )
-            # Check qualification
-            t = teacher_map_val.get(ta.teacher)
-            if t is not None and ta.subject in subject_names_set:
-                if ta.subject not in t.subjects:
-                    errors.append(
-                        f"TeacherAssignment: l'enseignant '{ta.teacher}' n'est pas "
-                        f"qualifié pour '{ta.subject}'."
-                    )
-            # Duplicate check
-            key = (ta.school_class, ta.subject)
-            if key in seen_assignments:
-                errors.append(
-                    f"TeacherAssignment en double pour la classe '{ta.school_class}' "
-                    f"et la matière '{ta.subject}'."
-                )
-            seen_assignments.add(key)
-
-        # Check that every (class, subject) pair has an assignment
-        class_level_map = {c.name: c.level for c in self.classes}
-        curriculum_by_level: dict[str, list] = defaultdict(list)
-        for entry in self.curriculum:
-            curriculum_by_level[entry.level].append(entry)
-
-        for cls in self.classes:
-            level_entries = curriculum_by_level.get(cls.level, [])
-            for entry in level_entries:
-                if entry.subject not in subject_names_set:
-                    continue  # already reported above
-                if (cls.name, entry.subject) not in seen_assignments:
-                    errors.append(
-                        f"Aucune TeacherAssignment pour la classe '{cls.name}' "
-                        f"et la matière '{entry.subject}'."
-                    )
-
-        # Check teacher capacity
-        curriculum_minutes_map: dict[tuple[str, str], int] = {
-            (e.level, e.subject): e.total_minutes_per_week
-            for e in self.curriculum
-        }
-        teacher_assigned_minutes: dict[str, int] = defaultdict(int)
-        for ta in self.teacher_assignments:
-            level = class_level_map.get(ta.school_class)
-            if level is None:
-                continue
-            minutes = curriculum_minutes_map.get((level, ta.subject), 0)
-            teacher_assigned_minutes[ta.teacher] += minutes
-
-        for teacher in self.teachers:
-            assigned = teacher_assigned_minutes.get(teacher.name, 0)
-            max_min = teacher.max_hours_per_week * 60
-            if assigned > max_min:
-                errors.append(
-                    f"L'enseignant '{teacher.name}' a {assigned} min assignées "
-                    f"({assigned // 60}h{assigned % 60:02d}) mais son maximum est "
-                    f"{teacher.max_hours_per_week}h/semaine."
-                )
-
-        return errors
-
-    def validate_warnings(self) -> list[str]:
-        """
-        Non-blocking checks: returns informational warnings without preventing
-        timetable generation. Returns a list of warning messages in French.
-        """
-        warnings: list[str] = []
-
-        subject_map = {s.name: s for s in self.subjects}
-        class_by_level: dict[str, list[SchoolClass]] = {}
-        for cls in self.classes:
-            class_by_level.setdefault(cls.level, []).append(cls)
-
-        # --- Room capacity vs class size ---
-        for entry in self.curriculum:
-            subj = subject_map.get(entry.subject)
-            if subj is None or not subj.needs_room:
-                continue
-            room_type = subj.required_room_type or "Salle standard"
-            compatible = [r for r in self.rooms if room_type in r.types]
-            if not compatible:
-                continue  # error already reported in validate()
-            max_cap = max(r.capacity for r in compatible)
-            for cls in class_by_level.get(entry.level, []):
-                if cls.student_count > max_cap:
-                    warnings.append(
-                        f"La classe '{cls.name}' ({cls.student_count} élèves) "
-                        f"dépasse la capacité maximale des salles de type "
-                        f"'{room_type}' ({max_cap} places) "
-                        f"pour la matière '{entry.subject}'."
-                    )
-
-        # --- Teacher with zero assignments ---
-        assigned_teachers = {ta.teacher for ta in self.teacher_assignments}
-        for teacher in self.teachers:
-            if teacher.name not in assigned_teachers:
-                warnings.append(
-                    f"L'enseignant '{teacher.name}' est enregistré mais n'a aucun cours "
-                    f"assigné. Est-ce intentionnel ?"
-                )
-
-        # --- Conflicting soft constraints: afternoon preference vs morning subjects ---
-        # Detect teacher with teacher_time_preference=Après-midi who also teaches
-        # subjects listed in heavy_subjects_morning.  These constraints compete
-        # directly and one will always be sacrificed.
-        morning_subjects: set[str] = set()
-        afternoon_pref_teachers: set[str] = set()
-        for c in self.constraints:
-            if c.type != "soft":
-                continue
-            if c.category == "heavy_subjects_morning":
-                morning_subjects.update(c.parameters.get("subjects", []))
-            elif c.category == "teacher_time_preference":
-                pref = c.parameters.get("preferred_session", "")
-                if "après" in pref.lower() or "apres" in pref.lower():
-                    t_name = c.parameters.get("teacher", "")
-                    if t_name:
-                        afternoon_pref_teachers.add(t_name)
-
-        for t_name in afternoon_pref_teachers:
-            teacher = next((t for t in self.teachers if t.name == t_name), None)
-            if teacher is None:
-                continue
-            conflicts_with_morning = [s for s in teacher.subjects if s in morning_subjects]
-            if conflicts_with_morning:
-                warnings.append(
-                    f"L'enseignant '{t_name}' préfère l'après-midi (teacher_time_preference) "
-                    f"mais enseigne des matières prioritairement le matin "
-                    f"(heavy_subjects_morning) : {conflicts_with_morning}. "
-                    f"Ces contraintes sont incompatibles — l'une sera sacrifiée."
-                )
-
-        return warnings
-
-    # ------------------------------------------------------------------
-    # Serialisation
-    # ------------------------------------------------------------------
-
-    def to_json(self, path: str | Path) -> None:
-        """Serialise the full dataset to a UTF-8 JSON file."""
-        path = Path(path)
-        path.parent.mkdir(parents=True, exist_ok=True)
-        data = dataclasses.asdict(self)
-        path.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
-        logger.info("SchoolData saved to %s", path)
-
-    @classmethod
-    def from_json(cls, path: str | Path) -> "SchoolData":
-        """Load and reconstruct a SchoolData instance from a JSON file."""
-        path = Path(path)
-        data = json.loads(path.read_text(encoding="utf-8"))
-
-        return cls(
-            school=School(**data["school"]),
-            timeslot_config=TimeslotConfig(
-                days=data["timeslot_config"]["days"],
-                base_unit_minutes=data["timeslot_config"]["base_unit_minutes"],
-                sessions=[
-                    SessionConfig(**s)
-                    for s in data["timeslot_config"]["sessions"]
-                ],
-            ),
-            subjects=[Subject(**s) for s in data["subjects"]],
-            teachers=[Teacher(**t) for t in data["teachers"]],
-            classes=[SchoolClass(**c) for c in data["classes"]],
-            rooms=[Room(**r) for r in data["rooms"]],
-            curriculum=[CurriculumEntry(**e) for e in data["curriculum"]],
-            constraints=[Constraint(**c) for c in data["constraints"]],
-            teacher_assignments=[
-                TeacherAssignment(**ta)
-                for ta in data.get("teacher_assignments", [])
-            ],
-        )

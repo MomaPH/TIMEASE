@@ -14,12 +14,7 @@ Solo developer using Claude Code. This is my first app project.
 - Anthropic Claude API (conversational AI setup feature)
 - pytest for testing
 
-## Architecture (CRITICAL — respect these boundaries)
-- timease/engine/ — Solver engine. ZERO dependency on app/ or io/. Must be testable standalone.
-- timease/io/ — File import/export. Depends on engine/ only.
-- timease/app/ — Reflex web UI. Depends on engine/ and io/.
-- tests/ — pytest. Run: uv run pytest
-- scripts/ — CLI utilities.
+
 
 ## Rules
 - All UI text and user-facing messages in French.
@@ -27,17 +22,20 @@ Solo developer using Claude Code. This is my first app project.
 - Docstrings in English for code, French for user messages.
 - Every new feature gets at least one test.
 - Never use print() in library code — use logging module.
-- timease/engine/ must NEVER import from timease/app/.
-- Use dataclasses or Pydantic for data models.
-- When creating Reflex components, keep them in single files.
 
-## Commands
-- Install deps: uv sync
-- Run tests: uv run pytest
-- Run app: cd timease/app && reflex run
-- Run CLI solver: uv run python scripts/solve_from_json.py timease/data/sample_school.json
 
 ## Current status
 Phase 0 — Foundation. Building data models and sample data.
-Phase 1- Contraints implementation, export/imports, conflict reporting and analyzer, AI layer.
+Phase 1 — Constraints implementation, export/imports, conflict reporting and analyzer, AI layer.
+Phase 2 (Active) — Stripping Greedy logic, Mypyc compliation, Celery async solving, Postgres RLS, and Premium AI UX scaling.
 
+## Phase 2 Rules
+- Assume 100% human-in-the-loop manual assignments. No algorithmic teacher routing (Auto mode deprecated).
+- Never break Celery worker queues or Next.js SSE streams when updating the solver route.
+- All new Python heavy logic loops must be strictly typed to support `mypyc` compilation.
+- Do not let the UI ping Anthropic APIs for basic structural mathematical errors.
+
+## Session Continuity
+- **Read `CONTEXT.md` first** when resuming work — it contains current state and next steps.
+- **Update `CONTEXT.md`** at end of each session with progress, blockers, and next actions.
+- **Check `task.md`** for Phase 2 checklist status.

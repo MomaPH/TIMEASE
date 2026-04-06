@@ -558,18 +558,39 @@ Prochaine étape recommandée : index {next_step_idx}
 MAX_HISTORY_PAIRS = 20  # keep first 2 + last 38 messages (≈ 20 user/assistant pairs)
 
 
+def _is_tool_result_msg(msg: dict) -> bool:
+    """Check if a message is a user turn containing tool_result blocks."""
+    content = msg.get("content")
+    if not isinstance(content, list):
+        return False
+    return any(
+        isinstance(b, dict) and b.get("type") == "tool_result"
+        for b in content
+    )
+
+
 def _truncate_history(history: list[dict]) -> list[dict]:
     """Trim history to stay within context limits.
 
     Keeps the first 2 messages (initial greeting exchange) and the most
     recent messages, up to ``MAX_HISTORY_PAIRS * 2`` total messages.
+    Never cuts between a tool_use assistant message and its tool_result
+    user message — the tail always starts at a plain user message.
     """
     max_msgs = MAX_HISTORY_PAIRS * 2
     if len(history) <= max_msgs:
         return history
-    # Always preserve the first exchange so the AI remembers the greeting context
     head = history[:2]
-    tail = history[-(max_msgs - 2):]
+    # Find a safe cut point: walk forward from the naive cut until we
+    # hit a plain user message (not a tool_result). This ensures we
+    # never orphan a tool_result from its preceding tool_use.
+    cut = len(history) - (max_msgs - 2)
+    while cut < len(history):
+        msg = history[cut]
+        if msg.get("role") == "user" and not _is_tool_result_msg(msg):
+            break
+        cut += 1
+    tail = history[cut:]
     return head + tail
 
 

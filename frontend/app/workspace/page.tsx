@@ -1,8 +1,9 @@
 'use client'
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef, useCallback, Suspense } from 'react'
 import { Paperclip, Send, Loader2, Bot, MessageSquare, LayoutDashboard, RotateCcw, CheckCircle, XCircle, ChevronDown, ChevronUp } from 'lucide-react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import ChatMessage from '@/components/ChatMessage'
+import AgentActionPill from '@/components/AgentActionPill'
 import StepIndicator from '@/components/StepIndicator'
 import StepPanel from '@/components/StepPanel'
 import FileImportModal from '@/components/FileImportModal'
@@ -59,7 +60,7 @@ const hist_key  = (sid: string) => `timease_aihistory_${sid}`
 
 // ── Workspace page ────────────────────────────────────────────────────────────
 
-export default function WorkspacePage() {
+function WorkspaceContent() {
   const router       = useRouter()
   const searchParams = useSearchParams()
   const { toast }    = useToast()
@@ -86,6 +87,7 @@ export default function WorkspacePage() {
   const [isLoading,        setIsLoading]        = useState(false)
   const [isSolving,        setIsSolving]        = useState(false)
   const [pendingChanges,   setPendingChanges]   = useState<PendingChange[]>([])
+  const [activeTool,       setActiveTool]       = useState<string | null>(null)
   const [expandedPreviews, setExpandedPreviews] = useState<Set<number>>(new Set())
   const transientIdRef = useRef<string | null>(null)
 
@@ -191,12 +193,17 @@ export default function WorkspacePage() {
             return next
           })
         },
-        (_name) => {},
+        // onToolStart: show active tool pill
+        (name) => setActiveTool(name),
       )
     } catch (err) {
       removeStreamingMsg()
+      setActiveTool(null)
       throw err
     }
+
+    // Clear tool pill when streaming completes
+    setActiveTool(null)
 
     // Finalize the streaming message with metadata
     saveHistory(res.ai_history || [])
@@ -474,6 +481,11 @@ export default function WorkspacePage() {
               />
             ))}
 
+            {/* Active tool pill */}
+            {activeTool && (
+              <AgentActionPill toolName={activeTool} />
+            )}
+
             {/* Thinking indicator — only before first streaming token arrives */}
             {isLoading && !messages.some(m => (m as any)._streamingId !== undefined) && (
               <div className="flex justify-start mb-3 animate-fade-in">
@@ -658,5 +670,18 @@ export default function WorkspacePage() {
         />
       )}
     </div>
+  )
+}
+
+// Wrap with Suspense for useSearchParams
+export default function WorkspacePage() {
+  return (
+    <Suspense fallback={
+      <div className="flex items-center justify-center h-screen bg-gray-50 dark:bg-gray-900">
+        <Loader2 className="w-8 h-8 animate-spin text-teal-600" />
+      </div>
+    }>
+      <WorkspaceContent />
+    </Suspense>
   )
 }

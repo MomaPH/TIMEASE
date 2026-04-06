@@ -88,18 +88,18 @@ def _make_school(constraints: list[Constraint] | None = None) -> SchoolData:
     ]
     curriculum = [
         # 6ème: 3 subjects
-        CurriculumEntry("6ème", "Mathématiques", 120, "manual",
+        CurriculumEntry("6ème", "Mathématiques", 120, 
                         sessions_per_week=2, minutes_per_session=60),
-        CurriculumEntry("6ème", "Français",      120, "manual",
+        CurriculumEntry("6ème", "Français",      120, 
                         sessions_per_week=2, minutes_per_session=60),
-        CurriculumEntry("6ème", "SVT",            60, "manual",
+        CurriculumEntry("6ème", "SVT",            60, 
                         sessions_per_week=1, minutes_per_session=60),
         # 5ème: 3 subjects
-        CurriculumEntry("5ème", "Mathématiques", 120, "manual",
+        CurriculumEntry("5ème", "Mathématiques", 120, 
                         sessions_per_week=2, minutes_per_session=60),
-        CurriculumEntry("5ème", "Français",       60, "manual",
+        CurriculumEntry("5ème", "Français",       60, 
                         sessions_per_week=1, minutes_per_session=60),
-        CurriculumEntry("5ème", "SVT",             60, "manual",
+        CurriculumEntry("5ème", "SVT",             60, 
                         sessions_per_week=1, minutes_per_session=60),
     ]
     teacher_assignments = [
@@ -378,7 +378,7 @@ class TestImpossibleScenario:
         # 20 slots/week × 60 min = 1200 min available; demand 2000 min
         sd = _make_school()
         overloaded = [
-            CurriculumEntry("6ème", "Mathématiques", 2000, "manual",
+            CurriculumEntry("6ème", "Mathématiques", 2000, 
                             sessions_per_week=33, minutes_per_session=60),
         ]
         sd = type(sd)(
@@ -421,7 +421,7 @@ class TestSoftConstraintsMatter:
         classes  = [SchoolClass("6ème", "6ème", 28)]
         rooms    = [Room("Salle 1", 35, ["Salle standard"])]
         curriculum = [
-            CurriculumEntry("6ème", "Mathématiques", 360, "manual",
+            CurriculumEntry("6ème", "Mathématiques", 360, 
                             sessions_per_week=6, minutes_per_session=60),
         ]
         soft = Constraint(
@@ -556,7 +556,7 @@ class TestMinSessionsPerDay:
         # but H11 requires ≥1 session on each of 5 days → bump Français to 2 sessions.
         new_curriculum = [
             e if not (e.level == "5ème" and e.subject == "Français")
-            else CurriculumEntry("5ème", "Français", 120, "manual",
+            else CurriculumEntry("5ème", "Français", 120, 
                                  sessions_per_week=2, minutes_per_session=60)
             for e in sd.curriculum
         ]
