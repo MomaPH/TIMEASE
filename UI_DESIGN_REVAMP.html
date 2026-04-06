@@ -3,1675 +3,1927 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TIMEASE UI Design Revamp — 2026 Cutting Edge</title>
-
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-
-    <!-- Three.js for 3D effects -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-
-    <!-- GSAP for advanced animations -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
-
-    <!-- Lottie for micro-animations -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
-
+    <title>TIMEASE — UI Design System</title>
     <style>
+        /* ═══════════════════════════════════════════════════════════════
+           TIMEASE DESIGN SYSTEM
+           Inspired by Linear, Stripe, Vercel, Apple
+           Self-contained — No external dependencies
+           ═══════════════════════════════════════════════════════════════ */
+
         :root {
-            /* Design Tokens */
-            --color-primary-50: #eef2ff;
-            --color-primary-100: #e0e7ff;
-            --color-primary-200: #c7d2fe;
-            --color-primary-300: #a5b4fc;
-            --color-primary-400: #818cf8;
-            --color-primary-500: #667eea;
-            --color-primary-600: #5a67d8;
-            --color-primary-700: #4c51bf;
-            --color-primary-800: #434190;
-            --color-primary-900: #3c366b;
+            /* Refined color palette — Less is more */
+            --white: #ffffff;
+            --black: #000000;
 
-            --color-secondary-500: #764ba2;
+            --gray-50: #fafafa;
+            --gray-100: #f4f4f5;
+            --gray-200: #e4e4e7;
+            --gray-300: #d4d4d8;
+            --gray-400: #a1a1aa;
+            --gray-500: #71717a;
+            --gray-600: #52525b;
+            --gray-700: #3f3f46;
+            --gray-800: #27272a;
+            --gray-900: #18181b;
+            --gray-950: #09090b;
 
-            --color-success: #10b981;
-            --color-warning: #f59e0b;
-            --color-error: #ef4444;
-            --color-info: #3b82f6;
+            /* Brand — Single accent, used sparingly */
+            --accent: #6366f1;
+            --accent-light: #818cf8;
+            --accent-dark: #4f46e5;
+            --accent-subtle: rgba(99, 102, 241, 0.08);
+            --accent-border: rgba(99, 102, 241, 0.2);
 
-            --color-gray-50: #f9fafb;
-            --color-gray-100: #f3f4f6;
-            --color-gray-200: #e5e7eb;
-            --color-gray-300: #d1d5db;
-            --color-gray-400: #9ca3af;
-            --color-gray-500: #6b7280;
-            --color-gray-600: #4b5563;
-            --color-gray-700: #374151;
-            --color-gray-800: #1f2937;
-            --color-gray-900: #111827;
+            /* Semantic */
+            --success: #22c55e;
+            --warning: #eab308;
+            --error: #ef4444;
 
-            --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+            /* Typography */
+            --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", sans-serif;
+            --font-mono: "SF Mono", "Fira Code", "Fira Mono", "Roboto Mono", monospace;
 
-            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
-            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
-            --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+            /* Spacing scale */
+            --space-1: 0.25rem;
+            --space-2: 0.5rem;
+            --space-3: 0.75rem;
+            --space-4: 1rem;
+            --space-5: 1.5rem;
+            --space-6: 2rem;
+            --space-8: 3rem;
+            --space-10: 4rem;
+            --space-12: 6rem;
 
-            --radius-sm: 0.375rem;
-            --radius-md: 0.5rem;
-            --radius-lg: 0.75rem;
-            --radius-xl: 1rem;
-            --radius-2xl: 1.5rem;
+            /* Radii */
+            --radius-sm: 6px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --radius-xl: 16px;
 
-            --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
-            --transition-base: 200ms cubic-bezier(0.4, 0, 0.2, 1);
-            --transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
-            --transition-spring: 500ms cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            /* Shadows — Subtle, layered */
+            --shadow-xs: 0 1px 2px rgba(0,0,0,0.04);
+            --shadow-sm: 0 2px 4px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.06);
+            --shadow-md: 0 4px 8px rgba(0,0,0,0.04), 0 2px 4px rgba(0,0,0,0.06);
+            --shadow-lg: 0 12px 24px rgba(0,0,0,0.06), 0 4px 8px rgba(0,0,0,0.04);
+            --shadow-xl: 0 24px 48px rgba(0,0,0,0.08), 0 12px 24px rgba(0,0,0,0.04);
+
+            /* Transitions */
+            --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+            --duration-fast: 150ms;
+            --duration-base: 250ms;
         }
 
-        * {
+        /* ─────────────────────────────────────────────────────────────────
+           RESET & BASE
+           ───────────────────────────────────────────────────────────────── */
+
+        *, *::before, *::after {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
         html {
-            scroll-behavior: smooth;
+            font-size: 16px;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
         }
 
         body {
             font-family: var(--font-sans);
-            line-height: 1.6;
-            color: var(--color-gray-900);
-            background: linear-gradient(135deg, var(--color-primary-500) 0%, var(--color-secondary-500) 100%);
-            padding: 2rem;
+            background: var(--gray-50);
+            color: var(--gray-900);
+            line-height: 1.5;
             min-height: 100vh;
         }
 
-        /* Animated background */
-        .bg-animation {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            opacity: 0.5;
+        ::selection {
+            background: var(--accent);
+            color: var(--white);
         }
 
-        .container {
-            max-width: 1400px;
+        /* ─────────────────────────────────────────────────────────────────
+           DOCUMENT STRUCTURE
+           ───────────────────────────────────────────────────────────────── */
+
+        .document {
+            max-width: 1200px;
             margin: 0 auto;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-radius: var(--radius-2xl);
-            padding: 3rem;
-            box-shadow: var(--shadow-2xl);
-            position: relative;
-            overflow: hidden;
+            padding: var(--space-8) var(--space-6);
         }
 
-        .container::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, var(--color-primary-500), var(--color-secondary-500), var(--color-primary-500));
-            background-size: 200% 100%;
-            animation: gradient-shift 3s ease infinite;
+        .document-header {
+            margin-bottom: var(--space-12);
         }
 
-        @keyframes gradient-shift {
-            0%, 100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
+        .document-header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            color: var(--gray-900);
+            margin-bottom: var(--space-3);
         }
 
-        h1 {
-            font-size: clamp(2rem, 5vw, 3.5rem);
-            font-weight: 900;
-            background: linear-gradient(135deg, var(--color-primary-500) 0%, var(--color-secondary-500) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 1rem;
-            letter-spacing: -0.02em;
-        }
-
-        .subtitle {
-            font-size: 1.25rem;
-            color: var(--color-gray-500);
-            margin-bottom: 3rem;
-            font-weight: 400;
-        }
-
-        .badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.5rem 1rem;
-            background: linear-gradient(135deg, var(--color-primary-100) 0%, var(--color-primary-50) 100%);
-            border: 1px solid var(--color-primary-200);
-            border-radius: 9999px;
-            font-size: 0.875rem;
-            font-weight: 600;
-            color: var(--color-primary-700);
-            margin-right: 0.5rem;
-            margin-bottom: 0.5rem;
+        .document-header p {
+            font-size: 1.125rem;
+            color: var(--gray-500);
+            max-width: 600px;
         }
 
         .section {
-            margin-bottom: 5rem;
-            opacity: 0;
-            transform: translateY(20px);
-            animation: fadeInUp 0.6s ease forwards;
+            margin-bottom: var(--space-12);
         }
 
-        @keyframes fadeInUp {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        .section-header {
+            margin-bottom: var(--space-6);
         }
 
-        .section:nth-child(1) { animation-delay: 0.1s; }
-        .section:nth-child(2) { animation-delay: 0.2s; }
-        .section:nth-child(3) { animation-delay: 0.3s; }
-        .section:nth-child(4) { animation-delay: 0.4s; }
+        .section-header h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            color: var(--gray-900);
+            margin-bottom: var(--space-2);
+        }
 
-        h2 {
-            font-size: 2rem;
-            font-weight: 800;
-            margin-bottom: 1.5rem;
-            color: var(--color-gray-800);
+        .section-header p {
+            color: var(--gray-500);
+            font-size: 0.9375rem;
+        }
+
+        /* ─────────────────────────────────────────────────────────────────
+           MOCKUP FRAME — Like a real app window
+           ───────────────────────────────────────────────────────────────── */
+
+        .mockup-frame {
+            background: var(--white);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-xl), 0 0 0 1px rgba(0,0,0,0.03);
+            overflow: hidden;
+            margin-bottom: var(--space-8);
+        }
+
+        .mockup-toolbar {
+            height: 52px;
+            background: var(--gray-50);
+            border-bottom: 1px solid var(--gray-200);
             display: flex;
             align-items: center;
-            gap: 0.75rem;
+            padding: 0 var(--space-4);
+            gap: var(--space-2);
         }
 
-        h3 {
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin: 2.5rem 0 1rem;
-            color: var(--color-gray-700);
+        .toolbar-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--gray-300);
         }
 
-        h4 {
+        .toolbar-dot:nth-child(1) { background: #ff5f57; }
+        .toolbar-dot:nth-child(2) { background: #febc2e; }
+        .toolbar-dot:nth-child(3) { background: #28c840; }
+
+        .toolbar-title {
+            flex: 1;
+            text-align: center;
+            font-size: 0.8125rem;
+            font-weight: 500;
+            color: var(--gray-500);
+        }
+
+        .mockup-content {
+            background: var(--white);
+        }
+
+        /* ─────────────────────────────────────────────────────────────────
+           APP LAYOUT — Sidebar + Main
+           ───────────────────────────────────────────────────────────────── */
+
+        .app-layout {
+            display: grid;
+            grid-template-columns: 240px 1fr;
+            min-height: 600px;
+        }
+
+        .app-sidebar {
+            background: var(--gray-950);
+            padding: var(--space-4);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-brand {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            padding: var(--space-3);
+            margin-bottom: var(--space-4);
+        }
+
+        .brand-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .brand-icon svg {
+            width: 18px;
+            height: 18px;
+            fill: var(--white);
+        }
+
+        .brand-name {
+            font-size: 0.9375rem;
+            font-weight: 600;
+            color: var(--white);
+        }
+
+        .sidebar-nav {
+            flex: 1;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            padding: var(--space-2) var(--space-3);
+            border-radius: var(--radius-md);
+            color: var(--gray-400);
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all var(--duration-fast) var(--ease-out);
+            margin-bottom: 2px;
+        }
+
+        .nav-item:hover {
+            color: var(--white);
+            background: rgba(255,255,255,0.06);
+        }
+
+        .nav-item.active {
+            color: var(--white);
+            background: rgba(255,255,255,0.1);
+        }
+
+        .nav-item svg {
+            width: 18px;
+            height: 18px;
+            opacity: 0.7;
+        }
+
+        .nav-item.active svg {
+            opacity: 1;
+        }
+
+        .nav-section-title {
+            font-size: 0.6875rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--gray-500);
+            padding: var(--space-4) var(--space-3) var(--space-2);
+        }
+
+        .app-main {
+            background: var(--white);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .app-header {
+            height: 64px;
+            border-bottom: 1px solid var(--gray-100);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 var(--space-6);
+        }
+
+        .app-header h1 {
             font-size: 1.125rem;
             font-weight: 600;
-            margin: 1.5rem 0 0.75rem;
-            color: var(--color-gray-600);
+            color: var(--gray-900);
         }
 
-        p {
-            margin-bottom: 1rem;
-            color: var(--color-gray-600);
-            line-height: 1.8;
+        .header-actions {
+            display: flex;
+            gap: var(--space-2);
         }
 
-        ul {
-            margin-left: 1.5rem;
-            margin-bottom: 1.5rem;
+        /* ─────────────────────────────────────────────────────────────────
+           BUTTONS
+           ───────────────────────────────────────────────────────────────── */
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-2);
+            padding: 0 var(--space-4);
+            height: 36px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            border-radius: var(--radius-md);
+            border: none;
+            cursor: pointer;
+            transition: all var(--duration-fast) var(--ease-out);
         }
 
-        li {
-            margin-bottom: 0.5rem;
-            color: var(--color-gray-600);
+        .btn svg {
+            width: 16px;
+            height: 16px;
         }
 
-        li::marker {
-            color: var(--color-primary-500);
+        .btn-primary {
+            background: var(--gray-900);
+            color: var(--white);
         }
 
-        code {
-            font-family: var(--font-mono);
-            background: var(--color-gray-100);
-            padding: 0.125rem 0.375rem;
-            border-radius: var(--radius-sm);
-            font-size: 0.875em;
-            color: var(--color-primary-700);
+        .btn-primary:hover {
+            background: var(--black);
         }
 
-        .principle {
-            background: linear-gradient(135deg, var(--color-gray-50) 0%, white 100%);
-            padding: 1.5rem;
-            border-radius: var(--radius-xl);
-            margin-bottom: 1rem;
-            border-left: 4px solid var(--color-primary-500);
-            box-shadow: var(--shadow-sm);
-            transition: all var(--transition-base);
+        .btn-secondary {
+            background: var(--white);
+            color: var(--gray-700);
+            box-shadow: inset 0 0 0 1px var(--gray-200);
         }
 
-        .principle:hover {
-            transform: translateX(4px);
+        .btn-secondary:hover {
+            background: var(--gray-50);
+            box-shadow: inset 0 0 0 1px var(--gray-300);
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: var(--gray-600);
+        }
+
+        .btn-ghost:hover {
+            background: var(--gray-100);
+            color: var(--gray-900);
+        }
+
+        /* ─────────────────────────────────────────────────────────────────
+           EXPORT CENTER — Clean, Professional
+           ───────────────────────────────────────────────────────────────── */
+
+        .export-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1px;
+            background: var(--gray-100);
+            border: 1px solid var(--gray-100);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+        }
+
+        .export-item {
+            background: var(--white);
+            padding: var(--space-5);
+            cursor: pointer;
+            transition: all var(--duration-base) var(--ease-out);
+            position: relative;
+        }
+
+        .export-item:hover {
+            background: var(--gray-50);
+        }
+
+        .export-item::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border: 2px solid transparent;
+            border-radius: var(--radius-lg);
+            pointer-events: none;
+            transition: border-color var(--duration-fast);
+        }
+
+        .export-item:hover::after {
+            border-color: var(--accent);
+        }
+
+        .export-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: var(--space-4);
+            position: relative;
+        }
+
+        .export-icon svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        /* Document icons — Realistic file representations */
+        .export-icon.pdf {
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+        }
+        .export-icon.pdf svg { fill: #dc2626; }
+
+        .export-icon.xlsx {
+            background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+        }
+        .export-icon.xlsx svg { fill: #16a34a; }
+
+        .export-icon.docx {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+        }
+        .export-icon.docx svg { fill: #2563eb; }
+
+        .export-icon.image {
+            background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%);
+        }
+        .export-icon.image svg { fill: #9333ea; }
+
+        .export-icon.csv {
+            background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+        }
+        .export-icon.csv svg { fill: #0284c7; }
+
+        .export-icon.json {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+        }
+        .export-icon.json svg { fill: #d97706; }
+
+        .export-icon.ical {
+            background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%);
+        }
+        .export-icon.ical svg { fill: #db2777; }
+
+        .export-icon.html {
+            background: linear-gradient(135deg, #ede9fe 0%, #ddd6fe 100%);
+        }
+        .export-icon.html svg { fill: #7c3aed; }
+
+        .export-icon.api {
+            background: linear-gradient(135deg, var(--gray-100) 0%, var(--gray-200) 100%);
+        }
+        .export-icon.api svg { fill: var(--gray-700); }
+
+        .export-title {
+            font-size: 0.9375rem;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: var(--space-1);
+        }
+
+        .export-desc {
+            font-size: 0.8125rem;
+            color: var(--gray-500);
+            line-height: 1.5;
+        }
+
+        .export-meta {
+            display: flex;
+            gap: var(--space-2);
+            margin-top: var(--space-3);
+        }
+
+        .export-tag {
+            font-size: 0.6875rem;
+            font-weight: 500;
+            padding: var(--space-1) var(--space-2);
+            background: var(--gray-100);
+            border-radius: 4px;
+            color: var(--gray-600);
+        }
+
+        /* ─────────────────────────────────────────────────────────────────
+           FILE PREVIEW — Realistic document thumbnails
+           ───────────────────────────────────────────────────────────────── */
+
+        .preview-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: var(--space-4);
+            padding: var(--space-6);
+        }
+
+        .preview-card {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            transition: all var(--duration-base) var(--ease-out);
+            cursor: pointer;
+        }
+
+        .preview-card:hover {
+            border-color: var(--gray-300);
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-2px);
+        }
+
+        .preview-thumbnail {
+            aspect-ratio: 3/4;
+            background: var(--gray-50);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* PDF Preview — Looks like a real PDF document */
+        .preview-pdf {
+            padding: var(--space-4);
+            background: var(--white);
+        }
+
+        .preview-pdf-header {
+            height: 20px;
+            background: var(--gray-900);
+            border-radius: 4px 4px 0 0;
+            margin-bottom: var(--space-3);
+        }
+
+        .preview-pdf-title {
+            height: 12px;
+            width: 60%;
+            background: var(--gray-200);
+            border-radius: 2px;
+            margin-bottom: var(--space-2);
+        }
+
+        .preview-pdf-table {
+            border: 1px solid var(--gray-200);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .preview-pdf-row {
+            display: flex;
+            border-bottom: 1px solid var(--gray-100);
+        }
+
+        .preview-pdf-row:last-child {
+            border-bottom: none;
+        }
+
+        .preview-pdf-cell {
+            flex: 1;
+            height: 16px;
+            padding: 3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .preview-pdf-cell-content {
+            width: 80%;
+            height: 6px;
+            background: var(--gray-200);
+            border-radius: 2px;
+        }
+
+        .preview-pdf-cell:not(:last-child) {
+            border-right: 1px solid var(--gray-100);
+        }
+
+        .preview-pdf-row:first-child {
+            background: var(--gray-50);
+        }
+
+        .preview-pdf-row:first-child .preview-pdf-cell-content {
+            background: var(--gray-400);
+        }
+
+        /* Excel Preview */
+        .preview-excel {
+            padding: var(--space-3);
+        }
+
+        .preview-excel-tabs {
+            display: flex;
+            gap: 2px;
+            margin-bottom: var(--space-2);
+        }
+
+        .preview-excel-tab {
+            height: 14px;
+            padding: 0 var(--space-2);
+            background: var(--gray-100);
+            border-radius: 3px 3px 0 0;
+            font-size: 6px;
+            display: flex;
+            align-items: center;
+            color: var(--gray-500);
+        }
+
+        .preview-excel-tab.active {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-bottom: 1px solid var(--white);
+            margin-bottom: -1px;
+        }
+
+        .preview-excel-grid {
+            border: 1px solid var(--gray-200);
+            border-radius: 0 4px 4px 4px;
+            overflow: hidden;
+        }
+
+        .preview-excel-row {
+            display: flex;
+        }
+
+        .preview-excel-cell {
+            width: 28px;
+            height: 14px;
+            border-right: 1px solid var(--gray-100);
+            border-bottom: 1px solid var(--gray-100);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 5px;
+            color: var(--gray-400);
+        }
+
+        .preview-excel-cell.header {
+            background: var(--gray-50);
+            font-weight: 600;
+            color: var(--gray-600);
+        }
+
+        .preview-excel-cell.accent {
+            background: var(--accent-subtle);
+        }
+
+        /* Image Preview */
+        .preview-image {
+            background: linear-gradient(135deg, var(--accent-subtle) 0%, rgba(147, 51, 234, 0.05) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: var(--space-4);
+        }
+
+        .preview-image-content {
+            width: 100%;
+            aspect-ratio: 16/10;
+            background: var(--white);
+            border-radius: var(--radius-md);
             box-shadow: var(--shadow-md);
+            overflow: hidden;
+            position: relative;
         }
 
-        .principle strong {
-            color: var(--color-primary-600);
-            display: block;
-            margin-bottom: 0.5rem;
-            font-size: 1.1rem;
+        .preview-image-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 1px;
+            padding: var(--space-2);
+            background: var(--gray-50);
         }
 
-        /* Tech Stack Grid */
+        .preview-image-slot {
+            aspect-ratio: 1;
+            background: var(--accent);
+            opacity: 0.2;
+            border-radius: 2px;
+        }
+
+        .preview-image-slot.filled {
+            opacity: 0.6;
+        }
+
+        /* JSON Preview */
+        .preview-json {
+            background: var(--gray-900);
+            padding: var(--space-3);
+            font-family: var(--font-mono);
+            font-size: 7px;
+            line-height: 1.6;
+            color: var(--gray-300);
+        }
+
+        .preview-json .key { color: #93c5fd; }
+        .preview-json .string { color: #86efac; }
+        .preview-json .number { color: #fcd34d; }
+        .preview-json .bracket { color: var(--gray-500); }
+
+        .preview-info {
+            padding: var(--space-3);
+            border-top: 1px solid var(--gray-100);
+        }
+
+        .preview-name {
+            font-size: 0.8125rem;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .preview-details {
+            font-size: 0.6875rem;
+            color: var(--gray-500);
+        }
+
+        /* ─────────────────────────────────────────────────────────────────
+           DASHBOARD CARDS — Clean stat displays
+           ───────────────────────────────────────────────────────────────── */
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: var(--space-4);
+            padding: var(--space-6);
+        }
+
+        .stat-card {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius-lg);
+            padding: var(--space-5);
+        }
+
+        .stat-label {
+            font-size: 0.8125rem;
+            font-weight: 500;
+            color: var(--gray-500);
+            margin-bottom: var(--space-2);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--gray-900);
+            letter-spacing: -0.02em;
+            margin-bottom: var(--space-2);
+        }
+
+        .stat-trend {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .stat-trend.up {
+            color: var(--success);
+            background: rgba(34, 197, 94, 0.1);
+        }
+
+        .stat-trend.down {
+            color: var(--error);
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        /* ─────────────────────────────────────────────────────────────────
+           TIMETABLE — Clean calendar grid
+           ───────────────────────────────────────────────────────────────── */
+
+        .timetable {
+            padding: var(--space-6);
+        }
+
+        .timetable-grid {
+            display: grid;
+            grid-template-columns: 60px repeat(5, 1fr);
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+        }
+
+        .timetable-header {
+            background: var(--gray-50);
+            padding: var(--space-3);
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--gray-600);
+            text-align: center;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .timetable-time {
+            background: var(--gray-50);
+            padding: var(--space-3);
+            font-size: 0.6875rem;
+            font-weight: 500;
+            color: var(--gray-500);
+            text-align: center;
+            border-right: 1px solid var(--gray-200);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .timetable-cell {
+            padding: 4px;
+            min-height: 64px;
+            border-right: 1px solid var(--gray-100);
+            border-bottom: 1px solid var(--gray-100);
+        }
+
+        .timetable-cell:nth-child(6n) {
+            border-right: none;
+        }
+
+        .timetable-event {
+            height: 100%;
+            border-radius: var(--radius-sm);
+            padding: var(--space-2);
+            font-size: 0.6875rem;
+            cursor: pointer;
+            transition: all var(--duration-fast);
+        }
+
+        .timetable-event:hover {
+            transform: scale(1.02);
+        }
+
+        .timetable-event.math {
+            background: rgba(99, 102, 241, 0.1);
+            border-left: 3px solid var(--accent);
+        }
+
+        .timetable-event.french {
+            background: rgba(236, 72, 153, 0.1);
+            border-left: 3px solid #ec4899;
+        }
+
+        .timetable-event.science {
+            background: rgba(34, 197, 94, 0.1);
+            border-left: 3px solid var(--success);
+        }
+
+        .timetable-event.history {
+            background: rgba(249, 115, 22, 0.1);
+            border-left: 3px solid #f97316;
+        }
+
+        .timetable-event-title {
+            font-weight: 600;
+            color: var(--gray-800);
+            margin-bottom: 2px;
+        }
+
+        .timetable-event-meta {
+            color: var(--gray-500);
+        }
+
+        /* ─────────────────────────────────────────────────────────────────
+           COLOR PALETTE DISPLAY
+           ───────────────────────────────────────────────────────────────── */
+
+        .palette-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: var(--space-3);
+            margin: var(--space-5) 0;
+        }
+
+        .palette-item {
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .palette-swatch {
+            height: 80px;
+        }
+
+        .palette-info {
+            background: var(--white);
+            padding: var(--space-3);
+        }
+
+        .palette-name {
+            font-size: 0.8125rem;
+            font-weight: 600;
+            color: var(--gray-900);
+        }
+
+        .palette-value {
+            font-size: 0.6875rem;
+            font-family: var(--font-mono);
+            color: var(--gray-500);
+        }
+
+        /* ─────────────────────────────────────────────────────────────────
+           TECH STACK GRID
+           ───────────────────────────────────────────────────────────────── */
+
         .tech-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 1.5rem;
-            margin: 2rem 0;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: var(--space-4);
+            margin: var(--space-5) 0;
         }
 
         .tech-card {
-            background: white;
-            border-radius: var(--radius-xl);
-            padding: 1.5rem;
-            border: 1px solid var(--color-gray-200);
-            transition: all var(--transition-spring);
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .tech-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, var(--color-primary-500) 0%, var(--color-secondary-500) 100%);
-            opacity: 0;
-            transition: opacity var(--transition-base);
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius-lg);
+            padding: var(--space-5);
+            transition: all var(--duration-base) var(--ease-out);
         }
 
         .tech-card:hover {
-            transform: translateY(-4px) scale(1.02);
-            box-shadow: var(--shadow-xl);
-            border-color: var(--color-primary-300);
-        }
-
-        .tech-card:hover::before {
-            opacity: 0.05;
-        }
-
-        .tech-card-header {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: 1rem;
-            position: relative;
-        }
-
-        .tech-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: var(--radius-lg);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            background: linear-gradient(135deg, var(--color-primary-100) 0%, var(--color-primary-50) 100%);
-        }
-
-        .tech-card-title {
-            font-size: 1.125rem;
-            font-weight: 700;
-            color: var(--color-gray-800);
-        }
-
-        .tech-card-subtitle {
-            font-size: 0.875rem;
-            color: var(--color-gray-500);
-        }
-
-        .tech-card-content {
-            position: relative;
-        }
-
-        /* Export Formats Section */
-        .export-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 1.5rem;
-            margin: 2rem 0;
-        }
-
-        .export-card {
-            background: white;
-            border-radius: var(--radius-xl);
-            overflow: hidden;
-            border: 1px solid var(--color-gray-200);
-            transition: all var(--transition-spring);
-        }
-
-        .export-card:hover {
-            transform: translateY(-4px);
-            box-shadow: var(--shadow-xl);
-        }
-
-        .export-card-preview {
-            height: 160px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 4rem;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .export-card-preview.pdf {
-            background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
-        }
-
-        .export-card-preview.excel {
-            background: linear-gradient(135deg, #16a34a 0%, #166534 100%);
-        }
-
-        .export-card-preview.word {
-            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
-        }
-
-        .export-card-preview.image {
-            background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%);
-        }
-
-        .export-card-preview.csv {
-            background: linear-gradient(135deg, #0891b2 0%, #0e7490 100%);
-        }
-
-        .export-card-preview.json {
-            background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%);
-        }
-
-        .export-card-preview.ical {
-            background: linear-gradient(135deg, #db2777 0%, #be185d 100%);
-        }
-
-        .export-card-preview.html {
-            background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);
-        }
-
-        .export-card-preview.print {
-            background: linear-gradient(135deg, #374151 0%, #1f2937 100%);
-        }
-
-        .export-card-preview.api {
-            background: linear-gradient(135deg, #059669 0%, #047857 100%);
-        }
-
-        .export-card-body {
-            padding: 1.5rem;
-        }
-
-        .export-card-title {
-            font-size: 1.125rem;
-            font-weight: 700;
-            color: var(--color-gray-800);
-            margin-bottom: 0.5rem;
-        }
-
-        .export-card-description {
-            font-size: 0.875rem;
-            color: var(--color-gray-600);
-            line-height: 1.6;
-        }
-
-        .export-features {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-            margin-top: 1rem;
-        }
-
-        .export-feature {
-            font-size: 0.75rem;
-            padding: 0.25rem 0.5rem;
-            background: var(--color-gray-100);
-            border-radius: 9999px;
-            color: var(--color-gray-600);
-        }
-
-        /* Mockup Styles */
-        .mockup-container {
-            background: var(--color-gray-50);
-            border-radius: var(--radius-xl);
-            padding: 2rem;
-            margin: 2rem 0;
-            border: 1px solid var(--color-gray-200);
-        }
-
-        .mockup-label {
-            background: linear-gradient(135deg, var(--color-primary-500) 0%, var(--color-secondary-500) 100%);
-            color: white;
-            padding: 0.5rem 1rem;
-            border-radius: var(--radius-lg);
-            display: inline-block;
-            font-weight: 600;
-            margin-bottom: 1.5rem;
-            font-size: 0.875rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        .mockup {
-            background: white;
-            border-radius: var(--radius-xl);
-            box-shadow: var(--shadow-lg);
-            overflow: hidden;
-        }
-
-        /* Export Preview Mockup */
-        .export-preview {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1.5rem;
-            padding: 1.5rem;
-            background: var(--color-gray-100);
-        }
-
-        .export-preview-item {
-            background: white;
-            border-radius: var(--radius-lg);
-            padding: 1rem;
+            border-color: var(--gray-300);
             box-shadow: var(--shadow-md);
         }
 
-        .export-preview-header {
+        .tech-header {
             display: flex;
             align-items: center;
-            gap: 0.75rem;
-            margin-bottom: 1rem;
-            padding-bottom: 1rem;
-            border-bottom: 1px solid var(--color-gray-200);
+            gap: var(--space-3);
+            margin-bottom: var(--space-3);
         }
 
-        .export-preview-icon {
+        .tech-logo {
             width: 40px;
             height: 40px;
             border-radius: var(--radius-md);
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
-            font-size: 1.25rem;
-        }
-
-        .export-preview-title {
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
-
-        .export-preview-content {
-            font-size: 0.75rem;
-            color: var(--color-gray-600);
-            font-family: var(--font-mono);
-            background: var(--color-gray-50);
-            padding: 0.75rem;
-            border-radius: var(--radius-md);
-            overflow: hidden;
-            white-space: pre-wrap;
-            max-height: 120px;
-        }
-
-        /* Dashboard Mockup */
-        .dashboard-header {
-            background: linear-gradient(135deg, var(--color-primary-500) 0%, var(--color-secondary-500) 100%);
-            color: white;
-            padding: 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .dashboard-header h1 {
-            background: none;
-            -webkit-text-fill-color: white;
-            font-size: 1.75rem;
-            margin: 0;
-        }
-
-        .header-actions {
-            display: flex;
-            gap: 1rem;
-        }
-
-        .btn {
-            padding: 0.75rem 1.5rem;
-            border-radius: var(--radius-lg);
-            border: none;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all var(--transition-base);
-            font-size: 0.9rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .btn-primary {
-            background: white;
-            color: var(--color-primary-600);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-lg);
-        }
-
-        .btn-ghost {
-            background: rgba(255,255,255,0.15);
-            color: white;
-            border: 1px solid rgba(255,255,255,0.3);
-            backdrop-filter: blur(10px);
-        }
-
-        .btn-ghost:hover {
-            background: rgba(255,255,255,0.25);
-        }
-
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 1.5rem;
-            padding: 2rem;
-        }
-
-        .card {
-            background: white;
-            border-radius: var(--radius-xl);
-            padding: 1.5rem;
-            border: 1px solid var(--color-gray-200);
-            transition: all var(--transition-spring);
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .card::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 3px;
-            background: linear-gradient(90deg, var(--color-primary-500), var(--color-secondary-500));
-            transform: scaleX(0);
-            transform-origin: left;
-            transition: transform var(--transition-base);
-        }
-
-        .card:hover {
-            transform: translateY(-4px);
-            box-shadow: var(--shadow-xl);
-            border-color: var(--color-primary-300);
-        }
-
-        .card:hover::after {
-            transform: scaleX(1);
-        }
-
-        .card-icon {
-            width: 48px;
-            height: 48px;
-            background: linear-gradient(135deg, var(--color-primary-500) 0%, var(--color-secondary-500) 100%);
-            border-radius: var(--radius-lg);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
-        }
-
-        .card-title {
-            font-size: 1.125rem;
             font-weight: 700;
-            color: var(--color-gray-800);
-            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
         }
 
-        .card-description {
-            color: var(--color-gray-600);
-            font-size: 0.9rem;
+        .tech-logo.ts {
+            background: #3178c6;
+            color: white;
+        }
+
+        .tech-logo.py {
+            background: linear-gradient(135deg, #3776ab 50%, #ffd43b 50%);
+            color: white;
+        }
+
+        .tech-logo.rs {
+            background: var(--gray-900);
+            color: white;
+        }
+
+        .tech-logo.go {
+            background: #00add8;
+            color: white;
+        }
+
+        .tech-logo.sql {
+            background: #336791;
+            color: white;
+        }
+
+        .tech-name {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--gray-900);
+        }
+
+        .tech-role {
+            font-size: 0.8125rem;
+            color: var(--gray-500);
+        }
+
+        .tech-content {
+            font-size: 0.875rem;
+            color: var(--gray-600);
             line-height: 1.6;
         }
 
-        .card-meta {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 1rem;
-            padding-top: 1rem;
-            border-top: 1px solid var(--color-gray-200);
-            font-size: 0.85rem;
-            color: var(--color-gray-500);
+        .tech-content ul {
+            list-style: none;
+            margin: var(--space-3) 0 0 0;
         }
 
-        .status-dot {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.25rem;
+        .tech-content li {
+            position: relative;
+            padding-left: var(--space-4);
+            margin-bottom: var(--space-1);
         }
 
-        .status-dot::before {
-            content: '';
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            animation: pulse 2s infinite;
+        .tech-content li::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: var(--accent);
         }
 
-        .status-dot.active::before { background: var(--color-success); }
-        .status-dot.warning::before { background: var(--color-warning); }
-        .status-dot.error::before { background: var(--color-error); }
+        /* ─────────────────────────────────────────────────────────────────
+           TYPOGRAPHY
+           ───────────────────────────────────────────────────────────────── */
 
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
-        /* Language Tags */
-        .lang-grid {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1rem;
-            margin: 1.5rem 0;
-        }
-
-        .lang-tag {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            padding: 0.75rem 1.25rem;
-            background: white;
-            border: 2px solid var(--color-gray-200);
-            border-radius: var(--radius-xl);
-            transition: all var(--transition-base);
-            cursor: pointer;
-        }
-
-        .lang-tag:hover {
-            border-color: var(--color-primary-400);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
-        }
-
-        .lang-tag img {
-            width: 24px;
-            height: 24px;
-            border-radius: 4px;
-        }
-
-        .lang-tag-name {
+        h3 {
+            font-size: 1.125rem;
             font-weight: 600;
-            color: var(--color-gray-800);
+            color: var(--gray-900);
+            margin: var(--space-6) 0 var(--space-3);
         }
 
-        .lang-tag-use {
-            font-size: 0.75rem;
-            color: var(--color-gray-500);
-        }
-
-        /* Comparison Table */
-        .comparison-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 2rem 0;
-            font-size: 0.95rem;
-            border-radius: var(--radius-xl);
-            overflow: hidden;
-            box-shadow: var(--shadow-md);
-        }
-
-        .comparison-table th {
-            background: linear-gradient(135deg, var(--color-gray-100) 0%, var(--color-gray-50) 100%);
-            padding: 1rem 1.25rem;
-            text-align: left;
-            font-weight: 700;
-            color: var(--color-gray-700);
-            border-bottom: 2px solid var(--color-gray-200);
-        }
-
-        .comparison-table td {
-            padding: 1rem 1.25rem;
-            border-bottom: 1px solid var(--color-gray-100);
-            background: white;
-        }
-
-        .comparison-table tr:hover td {
-            background: var(--color-primary-50);
-        }
-
-        .status-badge {
-            padding: 0.25rem 0.75rem;
-            border-radius: 9999px;
-            font-size: 0.75rem;
+        .text-label {
+            font-size: 0.6875rem;
             font-weight: 600;
-            display: inline-block;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--gray-500);
+            margin-bottom: var(--space-2);
         }
 
-        .status-old {
-            background: #fef2f2;
-            color: #dc2626;
+        /* ─────────────────────────────────────────────────────────────────
+           PRINCIPLES LIST
+           ───────────────────────────────────────────────────────────────── */
+
+        .principles-list {
+            display: grid;
+            gap: var(--space-3);
         }
 
-        .status-new {
-            background: #ecfdf5;
-            color: #059669;
-        }
-
-        .status-premium {
-            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-            color: #92400e;
-        }
-
-        /* Code Block */
-        .code-block {
-            background: var(--color-gray-900);
+        .principle-item {
+            display: flex;
+            gap: var(--space-4);
+            padding: var(--space-4);
+            background: var(--white);
+            border: 1px solid var(--gray-200);
             border-radius: var(--radius-lg);
-            padding: 1.5rem;
-            margin: 1rem 0;
-            overflow-x: auto;
+            transition: all var(--duration-base);
         }
 
-        .code-block pre {
-            margin: 0;
-            color: #e5e7eb;
-            font-family: var(--font-mono);
-            font-size: 0.875rem;
-            line-height: 1.7;
+        .principle-item:hover {
+            border-color: var(--accent-border);
+            background: var(--accent-subtle);
         }
 
-        .code-block .comment { color: #6b7280; }
-        .code-block .keyword { color: #c084fc; }
-        .code-block .string { color: #34d399; }
-        .code-block .function { color: #60a5fa; }
-        .code-block .number { color: #fbbf24; }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            body {
-                padding: 1rem;
-            }
-
-            .container {
-                padding: 1.5rem;
-            }
-
-            .dashboard-header {
-                flex-direction: column;
-                gap: 1rem;
-                text-align: center;
-            }
-
-            .export-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .export-preview {
-                grid-template-columns: 1fr;
-            }
-
-            .tech-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        /* Print styles */
-        @media print {
-            body {
-                background: white;
-                padding: 0;
-            }
-
-            .container {
-                box-shadow: none;
-                border-radius: 0;
-            }
-        }
-
-        /* Dark mode support */
-        @media (prefers-color-scheme: dark) {
-            :root {
-                --color-gray-50: #1f2937;
-                --color-gray-100: #374151;
-                --color-gray-200: #4b5563;
-                --color-gray-600: #d1d5db;
-                --color-gray-700: #e5e7eb;
-                --color-gray-800: #f3f4f6;
-                --color-gray-900: #f9fafb;
-            }
-        }
-
-        /* Floating action button */
-        .fab {
-            position: fixed;
-            bottom: 2rem;
-            right: 2rem;
-            width: 56px;
-            height: 56px;
+        .principle-number {
+            width: 28px;
+            height: 28px;
+            background: var(--gray-900);
+            color: var(--white);
             border-radius: 50%;
-            background: linear-gradient(135deg, var(--color-primary-500) 0%, var(--color-secondary-500) 100%);
-            color: white;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            box-shadow: var(--shadow-xl);
-            transition: all var(--transition-spring);
             display: flex;
             align-items: center;
             justify-content: center;
-            z-index: 100;
+            font-size: 0.75rem;
+            font-weight: 600;
+            flex-shrink: 0;
         }
 
-        .fab:hover {
-            transform: scale(1.1) rotate(90deg);
+        .principle-content h4 {
+            font-size: 0.9375rem;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: var(--space-1);
         }
 
-        /* Scroll progress */
-        .scroll-progress {
-            position: fixed;
-            top: 0;
-            left: 0;
-            height: 3px;
-            background: linear-gradient(90deg, var(--color-primary-500), var(--color-secondary-500));
-            z-index: 1000;
-            transition: width 0.1s;
+        .principle-content p {
+            font-size: 0.875rem;
+            color: var(--gray-600);
+            margin: 0;
+        }
+
+        /* ─────────────────────────────────────────────────────────────────
+           FOOTER
+           ───────────────────────────────────────────────────────────────── */
+
+        .document-footer {
+            margin-top: var(--space-12);
+            padding-top: var(--space-6);
+            border-top: 1px solid var(--gray-200);
+            text-align: center;
+        }
+
+        .document-footer p {
+            font-size: 0.875rem;
+            color: var(--gray-500);
+        }
+
+        /* ─────────────────────────────────────────────────────────────────
+           RESPONSIVE
+           ───────────────────────────────────────────────────────────────── */
+
+        @media (max-width: 1024px) {
+            .app-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .app-sidebar {
+                display: none;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .export-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .preview-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 640px) {
+            .document {
+                padding: var(--space-4);
+            }
+
+            .document-header h1 {
+                font-size: 2rem;
+            }
+
+            .stats-grid,
+            .export-grid,
+            .preview-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .timetable-grid {
+                grid-template-columns: 40px repeat(5, 1fr);
+                font-size: 0.625rem;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="scroll-progress" id="scrollProgress"></div>
-
-    <div class="container">
-        <header style="margin-bottom: 3rem;">
-            <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem;">
-                <span class="badge">🚀 2026 Design</span>
-                <span class="badge">📱 Mobile-First</span>
-                <span class="badge">🌍 Multi-Export</span>
-                <span class="badge">🤖 AI-Native</span>
-            </div>
-            <h1>🎨 TIMEASE UI Design Revamp</h1>
-            <p class="subtitle">Architecture cutting-edge • Multi-language Tech Stack • Exports universels • UX de classe mondiale</p>
+    <div class="document">
+        <!-- ════════════════════════════════════════════════════════════════
+             DOCUMENT HEADER
+             ════════════════════════════════════════════════════════════════ -->
+        <header class="document-header">
+            <h1>TIMEASE</h1>
+            <p>Design System & UI Specifications. Une interface épurée, professionnelle,
+               construite pour l'efficacité et la clarté.</p>
         </header>
 
-        <!-- SECTION: Multi-Language Tech Stack -->
-        <div class="section">
-            <h2>🛠️ Tech Stack Multi-Language</h2>
-            <p>Chaque langage est choisi pour ses forces spécifiques. Ensemble, ils créent une application performante, maintenable et évolutive.</p>
+        <!-- ════════════════════════════════════════════════════════════════
+             SECTION: DESIGN PRINCIPLES
+             ════════════════════════════════════════════════════════════════ -->
+        <section class="section">
+            <div class="section-header">
+                <h2>Principes de Design</h2>
+                <p>Chaque décision visuelle est intentionnelle.</p>
+            </div>
+
+            <div class="principles-list">
+                <div class="principle-item">
+                    <div class="principle-number">1</div>
+                    <div class="principle-content">
+                        <h4>Clarté avant tout</h4>
+                        <p>Réduire le bruit visuel. Chaque élément gagne sa place.
+                           Espacement généreux, hiérarchie typographique stricte,
+                           couleurs utilisées avec parcimonie.</p>
+                    </div>
+                </div>
+
+                <div class="principle-item">
+                    <div class="principle-number">2</div>
+                    <div class="principle-content">
+                        <h4>Professionnel, pas flashy</h4>
+                        <p>Inspiré des outils que les professionnels adorent: Linear, Notion, Stripe.
+                           Pas de gradients criards ni d'animations gratuites.
+                           Subtilité et sophistication.</p>
+                    </div>
+                </div>
+
+                <div class="principle-item">
+                    <div class="principle-number">3</div>
+                    <div class="principle-content">
+                        <h4>Performance perçue</h4>
+                        <p>Transitions rapides (150-250ms), feedback immédiat,
+                           états de chargement élégants. L'interface doit sembler
+                           instantanée.</p>
+                    </div>
+                </div>
+
+                <div class="principle-item">
+                    <div class="principle-number">4</div>
+                    <div class="principle-content">
+                        <h4>Accessibilité native</h4>
+                        <p>Contraste 4.5:1 minimum, focus visible, navigation clavier complète.
+                           Pas un ajout tardif—intégré dès la conception.</p>
+                    </div>
+                </div>
+
+                <div class="principle-item">
+                    <div class="principle-number">5</div>
+                    <div class="principle-content">
+                        <h4>Densité d'information maîtrisée</h4>
+                        <p>Afficher beaucoup sans submerger. Grilles compactes,
+                           typographie lisible, regroupement logique.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ════════════════════════════════════════════════════════════════
+             SECTION: COLOR PALETTE
+             ════════════════════════════════════════════════════════════════ -->
+        <section class="section">
+            <div class="section-header">
+                <h2>Palette de Couleurs</h2>
+                <p>Palette neutre avec un seul accent. La couleur est un signal, pas une décoration.</p>
+            </div>
+
+            <h3>Neutres</h3>
+            <div class="palette-grid">
+                <div class="palette-item">
+                    <div class="palette-swatch" style="background: var(--gray-950);"></div>
+                    <div class="palette-info">
+                        <div class="palette-name">Gray 950</div>
+                        <div class="palette-value">#09090b</div>
+                    </div>
+                </div>
+                <div class="palette-item">
+                    <div class="palette-swatch" style="background: var(--gray-900);"></div>
+                    <div class="palette-info">
+                        <div class="palette-name">Gray 900</div>
+                        <div class="palette-value">#18181b</div>
+                    </div>
+                </div>
+                <div class="palette-item">
+                    <div class="palette-swatch" style="background: var(--gray-600);"></div>
+                    <div class="palette-info">
+                        <div class="palette-name">Gray 600</div>
+                        <div class="palette-value">#52525b</div>
+                    </div>
+                </div>
+                <div class="palette-item">
+                    <div class="palette-swatch" style="background: var(--gray-200);"></div>
+                    <div class="palette-info">
+                        <div class="palette-name">Gray 200</div>
+                        <div class="palette-value">#e4e4e7</div>
+                    </div>
+                </div>
+                <div class="palette-item">
+                    <div class="palette-swatch" style="background: var(--gray-50); border: 1px solid var(--gray-200);"></div>
+                    <div class="palette-info">
+                        <div class="palette-name">Gray 50</div>
+                        <div class="palette-value">#fafafa</div>
+                    </div>
+                </div>
+            </div>
+
+            <h3>Accent & Sémantiques</h3>
+            <div class="palette-grid">
+                <div class="palette-item">
+                    <div class="palette-swatch" style="background: var(--accent);"></div>
+                    <div class="palette-info">
+                        <div class="palette-name">Accent</div>
+                        <div class="palette-value">#6366f1</div>
+                    </div>
+                </div>
+                <div class="palette-item">
+                    <div class="palette-swatch" style="background: var(--success);"></div>
+                    <div class="palette-info">
+                        <div class="palette-name">Success</div>
+                        <div class="palette-value">#22c55e</div>
+                    </div>
+                </div>
+                <div class="palette-item">
+                    <div class="palette-swatch" style="background: var(--warning);"></div>
+                    <div class="palette-info">
+                        <div class="palette-name">Warning</div>
+                        <div class="palette-value">#eab308</div>
+                    </div>
+                </div>
+                <div class="palette-item">
+                    <div class="palette-swatch" style="background: var(--error);"></div>
+                    <div class="palette-info">
+                        <div class="palette-name">Error</div>
+                        <div class="palette-value">#ef4444</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ════════════════════════════════════════════════════════════════
+             SECTION: APP MOCKUP — DASHBOARD
+             ════════════════════════════════════════════════════════════════ -->
+        <section class="section">
+            <div class="section-header">
+                <h2>Interface Principale</h2>
+                <p>Vue tableau de bord avec navigation latérale sombre.</p>
+            </div>
+
+            <div class="mockup-frame">
+                <div class="mockup-toolbar">
+                    <div class="toolbar-dot"></div>
+                    <div class="toolbar-dot"></div>
+                    <div class="toolbar-dot"></div>
+                    <div class="toolbar-title">TIMEASE — Collège Saint-Joseph</div>
+                </div>
+                <div class="mockup-content">
+                    <div class="app-layout">
+                        <aside class="app-sidebar">
+                            <div class="sidebar-brand">
+                                <div class="brand-icon">
+                                    <svg viewBox="0 0 24 24"><path d="M19 4H5a2 2 0 00-2 2v12a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2zm0 14H5V8h14v10z"/></svg>
+                                </div>
+                                <span class="brand-name">TIMEASE</span>
+                            </div>
+
+                            <nav class="sidebar-nav">
+                                <div class="nav-item active">
+                                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 13h6a1 1 0 001-1V4a1 1 0 00-1-1H4a1 1 0 00-1 1v8a1 1 0 001 1zm-1 7a1 1 0 001 1h6a1 1 0 001-1v-4a1 1 0 00-1-1H4a1 1 0 00-1 1v4zm10 0a1 1 0 001 1h6a1 1 0 001-1v-8a1 1 0 00-1-1h-6a1 1 0 00-1 1v8zm1-17a1 1 0 00-1 1v4a1 1 0 001 1h6a1 1 0 001-1V4a1 1 0 00-1-1h-6z"/></svg>
+                                    Tableau de bord
+                                </div>
+                                <div class="nav-item">
+                                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.1 0-2 .9-2 2v14a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2zm0 16H5V9h14v11z"/></svg>
+                                    Emploi du temps
+                                </div>
+                                <div class="nav-item">
+                                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                                    Enseignants
+                                </div>
+                                <div class="nav-item">
+                                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 7V3H2v18h20V7H12zM6 19H4v-2h2v2zm0-4H4v-2h2v2zm0-4H4V9h2v2zm0-4H4V5h2v2zm4 12H8v-2h2v2zm0-4H8v-2h2v2zm0-4H8V9h2v2zm0-4H8V5h2v2zm10 12h-8v-2h2v-2h-2v-2h2v-2h-2V9h8v10zm-2-8h-2v2h2v-2zm0 4h-2v2h2v-2z"/></svg>
+                                    Salles
+                                </div>
+
+                                <div class="nav-section-title">Outils</div>
+
+                                <div class="nav-item">
+                                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.35 10.04A7.49 7.49 0 0012 4C9.11 4 6.6 5.64 5.35 8.04A5.994 5.994 0 000 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM17 13l-5 5-5-5h3V9h4v4h3z"/></svg>
+                                    Exports
+                                </div>
+                                <div class="nav-item">
+                                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H5.17L4 17.17V4h16v12z"/></svg>
+                                    Assistant IA
+                                </div>
+                            </nav>
+                        </aside>
+
+                        <main class="app-main">
+                            <header class="app-header">
+                                <h1>Tableau de bord</h1>
+                                <div class="header-actions">
+                                    <button class="btn btn-secondary">
+                                        <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M19.35 10.04A7.49 7.49 0 0012 4C9.11 4 6.6 5.64 5.35 8.04A5.994 5.994 0 000 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM17 13l-5 5-5-5h3V9h4v4h3z"/></svg>
+                                        Exporter
+                                    </button>
+                                    <button class="btn btn-primary">Générer</button>
+                                </div>
+                            </header>
+
+                            <div class="stats-grid">
+                                <div class="stat-card">
+                                    <div class="stat-label">Classes</div>
+                                    <div class="stat-value">12</div>
+                                    <span class="stat-trend up">↑ 2 nouvelles</span>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-label">Enseignants</div>
+                                    <div class="stat-value">24</div>
+                                    <span class="stat-trend up">↑ 100% assignés</span>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-label">Salles</div>
+                                    <div class="stat-value">15</div>
+                                    <span class="stat-trend">87% utilisées</span>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-label">Conflits</div>
+                                    <div class="stat-value">0</div>
+                                    <span class="stat-trend up">Résolu</span>
+                                </div>
+                            </div>
+                        </main>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ════════════════════════════════════════════════════════════════
+             SECTION: TIMETABLE VIEW
+             ════════════════════════════════════════════════════════════════ -->
+        <section class="section">
+            <div class="section-header">
+                <h2>Vue Emploi du Temps</h2>
+                <p>Grille claire avec codes couleur par matière.</p>
+            </div>
+
+            <div class="mockup-frame">
+                <div class="mockup-toolbar">
+                    <div class="toolbar-dot"></div>
+                    <div class="toolbar-dot"></div>
+                    <div class="toolbar-dot"></div>
+                    <div class="toolbar-title">Emploi du temps — 6ème A</div>
+                </div>
+                <div class="mockup-content">
+                    <div class="timetable">
+                        <div class="timetable-grid">
+                            <div class="timetable-header"></div>
+                            <div class="timetable-header">Lun</div>
+                            <div class="timetable-header">Mar</div>
+                            <div class="timetable-header">Mer</div>
+                            <div class="timetable-header">Jeu</div>
+                            <div class="timetable-header">Ven</div>
+
+                            <div class="timetable-time">8h</div>
+                            <div class="timetable-cell">
+                                <div class="timetable-event math">
+                                    <div class="timetable-event-title">Math</div>
+                                    <div class="timetable-event-meta">Salle 12</div>
+                                </div>
+                            </div>
+                            <div class="timetable-cell">
+                                <div class="timetable-event french">
+                                    <div class="timetable-event-title">Français</div>
+                                    <div class="timetable-event-meta">Salle 8</div>
+                                </div>
+                            </div>
+                            <div class="timetable-cell">
+                                <div class="timetable-event science">
+                                    <div class="timetable-event-title">SVT</div>
+                                    <div class="timetable-event-meta">Labo</div>
+                                </div>
+                            </div>
+                            <div class="timetable-cell">
+                                <div class="timetable-event history">
+                                    <div class="timetable-event-title">Histoire</div>
+                                    <div class="timetable-event-meta">Salle 4</div>
+                                </div>
+                            </div>
+                            <div class="timetable-cell">
+                                <div class="timetable-event math">
+                                    <div class="timetable-event-title">Math</div>
+                                    <div class="timetable-event-meta">Salle 12</div>
+                                </div>
+                            </div>
+
+                            <div class="timetable-time">9h</div>
+                            <div class="timetable-cell">
+                                <div class="timetable-event french">
+                                    <div class="timetable-event-title">Français</div>
+                                    <div class="timetable-event-meta">Salle 8</div>
+                                </div>
+                            </div>
+                            <div class="timetable-cell">
+                                <div class="timetable-event math">
+                                    <div class="timetable-event-title">Math</div>
+                                    <div class="timetable-event-meta">Salle 12</div>
+                                </div>
+                            </div>
+                            <div class="timetable-cell"></div>
+                            <div class="timetable-cell">
+                                <div class="timetable-event science">
+                                    <div class="timetable-event-title">Physique</div>
+                                    <div class="timetable-event-meta">Labo</div>
+                                </div>
+                            </div>
+                            <div class="timetable-cell">
+                                <div class="timetable-event french">
+                                    <div class="timetable-event-title">Français</div>
+                                    <div class="timetable-event-meta">Salle 8</div>
+                                </div>
+                            </div>
+
+                            <div class="timetable-time">10h</div>
+                            <div class="timetable-cell">
+                                <div class="timetable-event history">
+                                    <div class="timetable-event-title">Géo</div>
+                                    <div class="timetable-event-meta">Salle 4</div>
+                                </div>
+                            </div>
+                            <div class="timetable-cell"></div>
+                            <div class="timetable-cell">
+                                <div class="timetable-event french">
+                                    <div class="timetable-event-title">Français</div>
+                                    <div class="timetable-event-meta">Salle 8</div>
+                                </div>
+                            </div>
+                            <div class="timetable-cell">
+                                <div class="timetable-event math">
+                                    <div class="timetable-event-title">Math</div>
+                                    <div class="timetable-event-meta">Salle 12</div>
+                                </div>
+                            </div>
+                            <div class="timetable-cell">
+                                <div class="timetable-event science">
+                                    <div class="timetable-event-title">SVT</div>
+                                    <div class="timetable-event-meta">Labo</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ════════════════════════════════════════════════════════════════
+             SECTION: EXPORT CENTER
+             ════════════════════════════════════════════════════════════════ -->
+        <section class="section">
+            <div class="section-header">
+                <h2>Centre d'Export</h2>
+                <p>Tous les formats pour tous les usages.</p>
+            </div>
+
+            <div class="export-grid">
+                <div class="export-item">
+                    <div class="export-icon pdf">
+                        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm-1 2l5 5h-5V4zM9 13h6v2H9v-2zm6 4H9v2h6v-2z"/></svg>
+                    </div>
+                    <div class="export-title">PDF</div>
+                    <div class="export-desc">Document imprimable haute qualité avec mise en page professionnelle.</div>
+                    <div class="export-meta">
+                        <span class="export-tag">A4 / Letter</span>
+                        <span class="export-tag">Multi-pages</span>
+                    </div>
+                </div>
+
+                <div class="export-item">
+                    <div class="export-icon xlsx">
+                        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm-1 2l5 5h-5V4zM8 13h2v2H8v-2zm0 4h2v2H8v-2zm4-4h2v2h-2v-2zm0 4h2v2h-2v-2zm4-4h2v2h-2v-2zm0 4h2v2h-2v-2z"/></svg>
+                    </div>
+                    <div class="export-title">Excel</div>
+                    <div class="export-desc">Classeur avec feuilles multiples, filtres et mise en forme.</div>
+                    <div class="export-meta">
+                        <span class="export-tag">Multi-feuilles</span>
+                        <span class="export-tag">Filtrable</span>
+                    </div>
+                </div>
+
+                <div class="export-item">
+                    <div class="export-icon docx">
+                        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm-1 2l5 5h-5V4zM8 13h8v1H8v-1zm0 3h8v1H8v-1zm0 3h5v1H8v-1z"/></svg>
+                    </div>
+                    <div class="export-title">Word</div>
+                    <div class="export-desc">Document éditable pour circulaires et communications.</div>
+                    <div class="export-meta">
+                        <span class="export-tag">Éditable</span>
+                        <span class="export-tag">Styles</span>
+                    </div>
+                </div>
+
+                <div class="export-item">
+                    <div class="export-icon image">
+                        <svg viewBox="0 0 24 24"><path d="M21 19V5a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2zM8.5 13.5l2.5 3 3.5-4.5 4.5 6H5l3.5-4.5z"/></svg>
+                    </div>
+                    <div class="export-title">Image</div>
+                    <div class="export-desc">PNG, SVG, WebP pour affichage ou intégration web.</div>
+                    <div class="export-meta">
+                        <span class="export-tag">Retina</span>
+                        <span class="export-tag">Vectoriel</span>
+                    </div>
+                </div>
+
+                <div class="export-item">
+                    <div class="export-icon csv">
+                        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm-1 2l5 5h-5V4zM7 10h10v1H7v-1zm0 3h10v1H7v-1zm0 3h7v1H7v-1z"/></svg>
+                    </div>
+                    <div class="export-title">CSV</div>
+                    <div class="export-desc">Données brutes pour import dans d'autres systèmes.</div>
+                    <div class="export-meta">
+                        <span class="export-tag">UTF-8</span>
+                        <span class="export-tag">Universel</span>
+                    </div>
+                </div>
+
+                <div class="export-item">
+                    <div class="export-icon json">
+                        <svg viewBox="0 0 24 24"><path d="M5 3h2v2H5v5a2 2 0 01-2 2 2 2 0 012 2v5h2v2H5c-1.1 0-2-.9-2-2v-4a2 2 0 00-2-2v-2a2 2 0 002-2V5a2 2 0 012-2zm14 0a2 2 0 012 2v4a2 2 0 002 2v2a2 2 0 00-2 2v4a2 2 0 01-2 2h-2v-2h2v-5a2 2 0 012-2 2 2 0 01-2-2V5h-2V3h2z"/></svg>
+                    </div>
+                    <div class="export-title">JSON</div>
+                    <div class="export-desc">Format structuré pour intégrations API et webhooks.</div>
+                    <div class="export-meta">
+                        <span class="export-tag">Schema</span>
+                        <span class="export-tag">API</span>
+                    </div>
+                </div>
+
+                <div class="export-item">
+                    <div class="export-icon ical">
+                        <svg viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2zm0 16H5V9h14v11zM9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm-8 4H7v2h2v-2zm4 0h-2v2h2v-2z"/></svg>
+                    </div>
+                    <div class="export-title">Calendrier</div>
+                    <div class="export-desc">iCal pour Google Calendar, Apple Calendar, Outlook.</div>
+                    <div class="export-meta">
+                        <span class="export-tag">iCal</span>
+                        <span class="export-tag">Sync</span>
+                    </div>
+                </div>
+
+                <div class="export-item">
+                    <div class="export-icon html">
+                        <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                    </div>
+                    <div class="export-title">Web</div>
+                    <div class="export-desc">Page HTML autonome avec filtres interactifs.</div>
+                    <div class="export-meta">
+                        <span class="export-tag">Standalone</span>
+                        <span class="export-tag">Offline</span>
+                    </div>
+                </div>
+
+                <div class="export-item">
+                    <div class="export-icon api">
+                        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+                    </div>
+                    <div class="export-title">API</div>
+                    <div class="export-desc">Endpoint REST pour intégration programmatique.</div>
+                    <div class="export-meta">
+                        <span class="export-tag">REST</span>
+                        <span class="export-tag">Webhook</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ════════════════════════════════════════════════════════════════
+             SECTION: FILE PREVIEWS
+             ════════════════════════════════════════════════════════════════ -->
+        <section class="section">
+            <div class="section-header">
+                <h2>Aperçu des Fichiers</h2>
+                <p>Prévisualisez avant d'exporter.</p>
+            </div>
+
+            <div class="mockup-frame">
+                <div class="mockup-toolbar">
+                    <div class="toolbar-dot"></div>
+                    <div class="toolbar-dot"></div>
+                    <div class="toolbar-dot"></div>
+                    <div class="toolbar-title">Fichiers générés</div>
+                </div>
+                <div class="mockup-content" style="background: var(--gray-50);">
+                    <div class="preview-grid">
+                        <!-- PDF Preview -->
+                        <div class="preview-card">
+                            <div class="preview-thumbnail">
+                                <div class="preview-pdf">
+                                    <div class="preview-pdf-header"></div>
+                                    <div class="preview-pdf-title"></div>
+                                    <div class="preview-pdf-table">
+                                        <div class="preview-pdf-row">
+                                            <div class="preview-pdf-cell"><div class="preview-pdf-cell-content"></div></div>
+                                            <div class="preview-pdf-cell"><div class="preview-pdf-cell-content"></div></div>
+                                            <div class="preview-pdf-cell"><div class="preview-pdf-cell-content"></div></div>
+                                            <div class="preview-pdf-cell"><div class="preview-pdf-cell-content"></div></div>
+                                            <div class="preview-pdf-cell"><div class="preview-pdf-cell-content"></div></div>
+                                        </div>
+                                        <div class="preview-pdf-row">
+                                            <div class="preview-pdf-cell"><div class="preview-pdf-cell-content"></div></div>
+                                            <div class="preview-pdf-cell"><div class="preview-pdf-cell-content" style="background: var(--accent); opacity: 0.3;"></div></div>
+                                            <div class="preview-pdf-cell"><div class="preview-pdf-cell-content"></div></div>
+                                            <div class="preview-pdf-cell"><div class="preview-pdf-cell-content" style="background: #ec4899; opacity: 0.3;"></div></div>
+                                            <div class="preview-pdf-cell"><div class="preview-pdf-cell-content"></div></div>
+                                        </div>
+                                        <div class="preview-pdf-row">
+                                            <div class="preview-pdf-cell"><div class="preview-pdf-cell-content"></div></div>
+                                            <div class="preview-pdf-cell"><div class="preview-pdf-cell-content" style="background: #ec4899; opacity: 0.3;"></div></div>
+                                            <div class="preview-pdf-cell"><div class="preview-pdf-cell-content" style="background: var(--accent); opacity: 0.3;"></div></div>
+                                            <div class="preview-pdf-cell"><div class="preview-pdf-cell-content"></div></div>
+                                            <div class="preview-pdf-cell"><div class="preview-pdf-cell-content" style="background: var(--success); opacity: 0.3;"></div></div>
+                                        </div>
+                                        <div class="preview-pdf-row">
+                                            <div class="preview-pdf-cell"><div class="preview-pdf-cell-content"></div></div>
+                                            <div class="preview-pdf-cell"><div class="preview-pdf-cell-content" style="background: var(--success); opacity: 0.3;"></div></div>
+                                            <div class="preview-pdf-cell"><div class="preview-pdf-cell-content"></div></div>
+                                            <div class="preview-pdf-cell"><div class="preview-pdf-cell-content" style="background: var(--accent); opacity: 0.3;"></div></div>
+                                            <div class="preview-pdf-cell"><div class="preview-pdf-cell-content" style="background: #ec4899; opacity: 0.3;"></div></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="preview-info">
+                                <div class="preview-name">6emeA_Emploi.pdf</div>
+                                <div class="preview-details">2.4 MB • PDF</div>
+                            </div>
+                        </div>
+
+                        <!-- Excel Preview -->
+                        <div class="preview-card">
+                            <div class="preview-thumbnail">
+                                <div class="preview-excel">
+                                    <div class="preview-excel-tabs">
+                                        <div class="preview-excel-tab active">Global</div>
+                                        <div class="preview-excel-tab">6èmeA</div>
+                                        <div class="preview-excel-tab">6èmeB</div>
+                                    </div>
+                                    <div class="preview-excel-grid">
+                                        <div class="preview-excel-row">
+                                            <div class="preview-excel-cell header"></div>
+                                            <div class="preview-excel-cell header">L</div>
+                                            <div class="preview-excel-cell header">M</div>
+                                            <div class="preview-excel-cell header">M</div>
+                                            <div class="preview-excel-cell header">J</div>
+                                            <div class="preview-excel-cell header">V</div>
+                                        </div>
+                                        <div class="preview-excel-row">
+                                            <div class="preview-excel-cell header">8h</div>
+                                            <div class="preview-excel-cell accent"></div>
+                                            <div class="preview-excel-cell"></div>
+                                            <div class="preview-excel-cell accent"></div>
+                                            <div class="preview-excel-cell"></div>
+                                            <div class="preview-excel-cell accent"></div>
+                                        </div>
+                                        <div class="preview-excel-row">
+                                            <div class="preview-excel-cell header">9h</div>
+                                            <div class="preview-excel-cell"></div>
+                                            <div class="preview-excel-cell accent"></div>
+                                            <div class="preview-excel-cell"></div>
+                                            <div class="preview-excel-cell accent"></div>
+                                            <div class="preview-excel-cell"></div>
+                                        </div>
+                                        <div class="preview-excel-row">
+                                            <div class="preview-excel-cell header">10h</div>
+                                            <div class="preview-excel-cell accent"></div>
+                                            <div class="preview-excel-cell"></div>
+                                            <div class="preview-excel-cell"></div>
+                                            <div class="preview-excel-cell"></div>
+                                            <div class="preview-excel-cell accent"></div>
+                                        </div>
+                                        <div class="preview-excel-row">
+                                            <div class="preview-excel-cell header">11h</div>
+                                            <div class="preview-excel-cell"></div>
+                                            <div class="preview-excel-cell"></div>
+                                            <div class="preview-excel-cell accent"></div>
+                                            <div class="preview-excel-cell accent"></div>
+                                            <div class="preview-excel-cell"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="preview-info">
+                                <div class="preview-name">Planning_Complet.xlsx</div>
+                                <div class="preview-details">1.8 MB • 12 feuilles</div>
+                            </div>
+                        </div>
+
+                        <!-- Image Preview -->
+                        <div class="preview-card">
+                            <div class="preview-thumbnail preview-image">
+                                <div class="preview-image-content">
+                                    <div class="preview-image-grid">
+                                        <div class="preview-image-slot filled"></div>
+                                        <div class="preview-image-slot"></div>
+                                        <div class="preview-image-slot filled"></div>
+                                        <div class="preview-image-slot"></div>
+                                        <div class="preview-image-slot filled"></div>
+                                        <div class="preview-image-slot"></div>
+                                        <div class="preview-image-slot filled"></div>
+                                        <div class="preview-image-slot filled"></div>
+                                        <div class="preview-image-slot"></div>
+                                        <div class="preview-image-slot"></div>
+                                        <div class="preview-image-slot filled"></div>
+                                        <div class="preview-image-slot"></div>
+                                        <div class="preview-image-slot"></div>
+                                        <div class="preview-image-slot filled"></div>
+                                        <div class="preview-image-slot"></div>
+                                        <div class="preview-image-slot"></div>
+                                        <div class="preview-image-slot filled"></div>
+                                        <div class="preview-image-slot"></div>
+                                        <div class="preview-image-slot filled"></div>
+                                        <div class="preview-image-slot"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="preview-info">
+                                <div class="preview-name">Emploi_6emeA.png</div>
+                                <div class="preview-details">845 KB • 2400×1600</div>
+                            </div>
+                        </div>
+
+                        <!-- JSON Preview -->
+                        <div class="preview-card">
+                            <div class="preview-thumbnail preview-json">
+<span class="bracket">{</span>
+  <span class="key">"school"</span>: <span class="string">"Saint-Joseph"</span>,
+  <span class="key">"year"</span>: <span class="string">"2025-2026"</span>,
+  <span class="key">"classes"</span>: <span class="bracket">[</span>
+    <span class="bracket">{</span>
+      <span class="key">"name"</span>: <span class="string">"6ème A"</span>,
+      <span class="key">"students"</span>: <span class="number">28</span>
+    <span class="bracket">}</span>
+  <span class="bracket">]</span>,
+  <span class="key">"teachers"</span>: <span class="number">24</span>,
+  <span class="key">"rooms"</span>: <span class="number">15</span>
+<span class="bracket">}</span>
+                            </div>
+                            <div class="preview-info">
+                                <div class="preview-name">export.json</div>
+                                <div class="preview-details">128 KB • Schema v2</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ════════════════════════════════════════════════════════════════
+             SECTION: TECH STACK
+             ════════════════════════════════════════════════════════════════ -->
+        <section class="section">
+            <div class="section-header">
+                <h2>Stack Technique</h2>
+                <p>Chaque langage pour son point fort.</p>
+            </div>
 
             <div class="tech-grid">
                 <div class="tech-card">
-                    <div class="tech-card-header">
-                        <div class="tech-icon" style="background: linear-gradient(135deg, #3178c6 0%, #235a97 100%);">TS</div>
+                    <div class="tech-header">
+                        <div class="tech-logo ts">TS</div>
                         <div>
-                            <div class="tech-card-title">TypeScript</div>
-                            <div class="tech-card-subtitle">Frontend & API Types</div>
+                            <div class="tech-name">TypeScript</div>
+                            <div class="tech-role">Frontend & API Types</div>
                         </div>
                     </div>
-                    <div class="tech-card-content">
-                        <p><strong>Usage:</strong> Next.js frontend, React components, API contracts</p>
+                    <div class="tech-content">
                         <ul>
-                            <li>Type safety end-to-end avec Zod schemas</li>
-                            <li>IntelliSense parfait dans VS Code</li>
-                            <li>Refactoring confiant, erreurs détectées au compile-time</li>
+                            <li>Next.js 16 avec React Server Components</li>
+                            <li>Types partagés frontend/backend via Zod</li>
+                            <li>Tailwind CSS pour le styling</li>
                         </ul>
                     </div>
                 </div>
 
                 <div class="tech-card">
-                    <div class="tech-card-header">
-                        <div class="tech-icon" style="background: linear-gradient(135deg, #3776ab 0%, #ffd43b 100%);">🐍</div>
+                    <div class="tech-header">
+                        <div class="tech-logo py">Py</div>
                         <div>
-                            <div class="tech-card-title">Python</div>
-                            <div class="tech-card-subtitle">Backend & Engine</div>
+                            <div class="tech-name">Python</div>
+                            <div class="tech-role">Backend & Engine</div>
                         </div>
                     </div>
-                    <div class="tech-card-content">
-                        <p><strong>Usage:</strong> FastAPI, OR-Tools solver, AI orchestration</p>
+                    <div class="tech-content">
                         <ul>
-                            <li>OR-Tools pour optimisation combinatoire</li>
-                            <li>Anthropic SDK pour AI chat</li>
-                            <li>Type hints stricts + mypy</li>
+                            <li>FastAPI pour l'API REST</li>
+                            <li>OR-Tools pour l'optimisation</li>
+                            <li>Anthropic SDK pour l'IA</li>
                         </ul>
                     </div>
                 </div>
 
                 <div class="tech-card">
-                    <div class="tech-card-header">
-                        <div class="tech-icon" style="background: linear-gradient(135deg, #e34c26 0%, #f06529 100%);">⚡</div>
+                    <div class="tech-header">
+                        <div class="tech-logo rs">Rs</div>
                         <div>
-                            <div class="tech-card-title">Rust</div>
-                            <div class="tech-card-subtitle">Performance-Critical</div>
+                            <div class="tech-name">Rust</div>
+                            <div class="tech-role">Performance</div>
                         </div>
                     </div>
-                    <div class="tech-card-content">
-                        <p><strong>Usage:</strong> PDF generation, conflict detection, WASM modules</p>
+                    <div class="tech-content">
                         <ul>
-                            <li>10-100x faster que Python pour boucles intensives</li>
-                            <li>Compile to WASM pour calculs côté client</li>
-                            <li>Memory safety garantie sans GC</li>
+                            <li>Génération PDF haute performance</li>
+                            <li>Modules WASM côté client</li>
+                            <li>Détection de conflits temps réel</li>
                         </ul>
                     </div>
                 </div>
 
                 <div class="tech-card">
-                    <div class="tech-card-header">
-                        <div class="tech-icon" style="background: linear-gradient(135deg, #00ADD8 0%, #5DC9E2 100%);">Go</div>
+                    <div class="tech-header">
+                        <div class="tech-logo go">Go</div>
                         <div>
-                            <div class="tech-card-title">Go</div>
-                            <div class="tech-card-subtitle">Microservices</div>
+                            <div class="tech-name">Go</div>
+                            <div class="tech-role">Services</div>
                         </div>
                     </div>
-                    <div class="tech-card-content">
-                        <p><strong>Usage:</strong> Export service, file processing, queue workers</p>
+                    <div class="tech-content">
                         <ul>
-                            <li>Concurrency native avec goroutines</li>
-                            <li>Binaire unique, déploiement simple</li>
-                            <li>Idéal pour services I/O-bound</li>
+                            <li>Service d'export concurrent</li>
+                            <li>Workers de queue Celery/Redis</li>
+                            <li>Microservices légers</li>
                         </ul>
                     </div>
                 </div>
 
                 <div class="tech-card">
-                    <div class="tech-card-header">
-                        <div class="tech-icon" style="background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);">📊</div>
+                    <div class="tech-header">
+                        <div class="tech-logo sql">PG</div>
                         <div>
-                            <div class="tech-card-title">SQL (PostgreSQL)</div>
-                            <div class="tech-card-subtitle">Data Layer</div>
+                            <div class="tech-name">PostgreSQL</div>
+                            <div class="tech-role">Data Layer</div>
                         </div>
                     </div>
-                    <div class="tech-card-content">
-                        <p><strong>Usage:</strong> Persistent storage, RLS multi-tenancy, analytics</p>
+                    <div class="tech-content">
                         <ul>
-                            <li>Row Level Security pour isolation tenants</li>
-                            <li>JSONB pour flexibilité schéma</li>
-                            <li>Full-text search natif (français)</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <div class="tech-card">
-                    <div class="tech-card-header">
-                        <div class="tech-icon" style="background: linear-gradient(135deg, #61DAFB 0%, #21a1f1 100%);">⚛️</div>
-                        <div>
-                            <div class="tech-card-title">React + GSAP</div>
-                            <div class="tech-card-subtitle">UI & Animations</div>
-                        </div>
-                    </div>
-                    <div class="tech-card-content">
-                        <p><strong>Usage:</strong> Component library, micro-interactions, transitions</p>
-                        <ul>
-                            <li>Server Components pour performance</li>
-                            <li>GSAP ScrollTrigger pour animations scroll</li>
-                            <li>Framer Motion pour gestures</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <div class="tech-card">
-                    <div class="tech-card-header">
-                        <div class="tech-icon" style="background: linear-gradient(135deg, #FF6B6B 0%, #ee5a5a 100%);">🎨</div>
-                        <div>
-                            <div class="tech-card-title">CSS/Tailwind 4</div>
-                            <div class="tech-card-subtitle">Styling</div>
-                        </div>
-                    </div>
-                    <div class="tech-card-content">
-                        <p><strong>Usage:</strong> Design system, responsive layout, dark mode</p>
-                        <ul>
-                            <li>CSS Container Queries natif</li>
-                            <li>CSS Cascade Layers pour spécificité</li>
-                            <li>View Transitions API pour navigation</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <div class="tech-card">
-                    <div class="tech-card-header">
-                        <div class="tech-icon" style="background: linear-gradient(135deg, #FF4785 0%, #1EA7FD 100%);">📖</div>
-                        <div>
-                            <div class="tech-card-title">Storybook</div>
-                            <div class="tech-card-subtitle">Component Dev</div>
-                        </div>
-                    </div>
-                    <div class="tech-card-content">
-                        <p><strong>Usage:</strong> Component library, visual testing, documentation</p>
-                        <ul>
-                            <li>Isolate components in development</li>
-                            <li>Chromatic pour visual regression</li>
-                            <li>Auto-generated component docs</li>
+                            <li>Row Level Security multi-tenant</li>
+                            <li>JSONB pour flexibilité</li>
+                            <li>Full-text search français</li>
                         </ul>
                     </div>
                 </div>
             </div>
+        </section>
 
-            <h3>📐 Architecture Diagram</h3>
-            <div class="code-block">
-                <pre>
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                              <span class="keyword">TIMEASE ARCHITECTURE</span>                          │
-├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                             │
-│  ┌───────────────────┐    ┌──────────────────┐    ┌────────────────────┐   │
-│  │  <span class="function">Next.js 16</span>       │    │  <span class="function">FastAPI</span>         │    │  <span class="function">Go Export Svc</span>    │   │
-│  │  (TypeScript)     │◄──►│  (Python)        │◄──►│  (Golang)          │   │
-│  │                   │    │                  │    │                    │   │
-│  │  • React 19       │    │  • OR-Tools      │    │  • PDF Generator   │   │
-│  │  • Tailwind 4     │    │  • Anthropic AI  │    │  • Excel Writer    │   │
-│  │  • GSAP/Framer    │    │  • SQLAlchemy    │    │  • Image Render    │   │
-│  └───────────────────┘    └──────────────────┘    └────────────────────┘   │
-│           │                        │                        │              │
-│           └────────────┬───────────┴────────────────────────┘              │
-│                        ▼                                                   │
-│  ┌─────────────────────────────────────────────────────────────────────┐   │
-│  │                      <span class="string">PostgreSQL + Redis</span>                            │   │
-│  │  • RLS Multi-tenant  • Session Cache  • Job Queue (Celery)          │   │
-│  └─────────────────────────────────────────────────────────────────────┘   │
-│                                                                             │
-│  ┌───────────────────┐    ┌──────────────────┐    ┌────────────────────┐   │
-│  │  <span class="comment">Rust WASM</span>        │    │  <span class="comment">WebSocket</span>       │    │  <span class="comment">CDN/Edge</span>         │   │
-│  │  (Client-side)    │    │  (Real-time)     │    │  (Static assets)   │   │
-│  │  • Conflict calc  │    │  • Collaboration │    │  • Cloudflare R2   │   │
-│  │  • Preview render │    │  • Live updates  │    │  • Image optim     │   │
-│  └───────────────────┘    └──────────────────┘    └────────────────────┘   │
-│                                                                             │
-└─────────────────────────────────────────────────────────────────────────────┘
-                </pre>
-            </div>
-        </div>
-
-        <!-- SECTION: Export Formats -->
-        <div class="section">
-            <h2>📤 Export Formats — Multiformat Universe</h2>
-            <p>L'emploi du temps doit être accessible partout, sur tous les supports. TIMEASE exporte dans 10+ formats professionnels.</p>
-
-            <div class="export-grid">
-                <div class="export-card">
-                    <div class="export-card-preview pdf">📄</div>
-                    <div class="export-card-body">
-                        <div class="export-card-title">PDF Professional</div>
-                        <div class="export-card-description">
-                            Export haute qualité pour impression et archivage. Mise en page optimisée, entêtes personnalisables, pagination automatique.
-                        </div>
-                        <div class="export-features">
-                            <span class="export-feature">A4/Letter</span>
-                            <span class="export-feature">Paysage/Portrait</span>
-                            <span class="export-feature">Logo école</span>
-                            <span class="export-feature">Watermark</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="export-card">
-                    <div class="export-card-preview excel">📊</div>
-                    <div class="export-card-body">
-                        <div class="export-card-title">Excel / XLSX</div>
-                        <div class="export-card-description">
-                            Tableur complet avec mise en forme, filtres, et formules. Multiple feuilles: par classe, par enseignant, par salle.
-                        </div>
-                        <div class="export-features">
-                            <span class="export-feature">Couleurs conservées</span>
-                            <span class="export-feature">Filtres auto</span>
-                            <span class="export-feature">Multi-feuilles</span>
-                            <span class="export-feature">Graphiques</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="export-card">
-                    <div class="export-card-preview word">📝</div>
-                    <div class="export-card-body">
-                        <div class="export-card-title">Word / DOCX</div>
-                        <div class="export-card-description">
-                            Document éditable pour modifications manuelles. Idéal pour circulaires et communications aux parents.
-                        </div>
-                        <div class="export-features">
-                            <span class="export-feature">Éditable</span>
-                            <span class="export-feature">Styles Word</span>
-                            <span class="export-feature">Table des matières</span>
-                            <span class="export-feature">En-têtes</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="export-card">
-                    <div class="export-card-preview image">🖼️</div>
-                    <div class="export-card-body">
-                        <div class="export-card-title">Images (PNG/SVG/WebP)</div>
-                        <div class="export-card-description">
-                            Exportez en image haute résolution pour affichage mural, site web, ou réseaux sociaux. SVG pour qualité vectorielle.
-                        </div>
-                        <div class="export-features">
-                            <span class="export-feature">PNG @2x @3x</span>
-                            <span class="export-feature">SVG vectoriel</span>
-                            <span class="export-feature">WebP optimisé</span>
-                            <span class="export-feature">JPEG compressé</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="export-card">
-                    <div class="export-card-preview csv">📋</div>
-                    <div class="export-card-body">
-                        <div class="export-card-title">CSV / TSV</div>
-                        <div class="export-card-description">
-                            Données brutes pour import dans autres systèmes. Compatible Google Sheets, LibreOffice, bases de données.
-                        </div>
-                        <div class="export-features">
-                            <span class="export-feature">UTF-8</span>
-                            <span class="export-feature">Séparateur configurable</span>
-                            <span class="export-feature">Headers optionnels</span>
-                            <span class="export-feature">Encodage BOM</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="export-card">
-                    <div class="export-card-preview json">{ }</div>
-                    <div class="export-card-body">
-                        <div class="export-card-title">JSON / API</div>
-                        <div class="export-card-description">
-                            Export structuré pour intégrations techniques. Schema documenté, versionné, compatible avec webhooks.
-                        </div>
-                        <div class="export-features">
-                            <span class="export-feature">JSON Schema</span>
-                            <span class="export-feature">Pretty print</span>
-                            <span class="export-feature">Minified</span>
-                            <span class="export-feature">YAML alternatif</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="export-card">
-                    <div class="export-card-preview ical">📅</div>
-                    <div class="export-card-body">
-                        <div class="export-card-title">iCalendar (.ics)</div>
-                        <div class="export-card-description">
-                            Import direct dans Google Calendar, Apple Calendar, Outlook. Récurrence automatique, alertes configurable.
-                        </div>
-                        <div class="export-features">
-                            <span class="export-feature">Google Calendar</span>
-                            <span class="export-feature">Apple Calendar</span>
-                            <span class="export-feature">Outlook</span>
-                            <span class="export-feature">Rappels</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="export-card">
-                    <div class="export-card-preview html">🌐</div>
-                    <div class="export-card-body">
-                        <div class="export-card-title">HTML Interactif</div>
-                        <div class="export-card-description">
-                            Page web autonome avec filtres et recherche. Hébergeable sur n'importe quel serveur, fonctionne offline.
-                        </div>
-                        <div class="export-features">
-                            <span class="export-feature">Standalone</span>
-                            <span class="export-feature">Responsive</span>
-                            <span class="export-feature">Dark mode</span>
-                            <span class="export-feature">Filtres JS</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="export-card">
-                    <div class="export-card-preview print">🖨️</div>
-                    <div class="export-card-body">
-                        <div class="export-card-title">Print-Optimized</div>
-                        <div class="export-card-description">
-                            Mise en page spéciale impression avec repères de coupe, économie d'encre, et pagination intelligente.
-                        </div>
-                        <div class="export-features">
-                            <span class="export-feature">Mode économie</span>
-                            <span class="export-feature">N&B optimisé</span>
-                            <span class="export-feature">Repères coupe</span>
-                            <span class="export-feature">Multi-pages</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="export-card">
-                    <div class="export-card-preview api">🔌</div>
-                    <div class="export-card-body">
-                        <div class="export-card-title">API REST / Webhooks</div>
-                        <div class="export-card-description">
-                            Intégration programmatique avec autres systèmes. Webhooks pour notifications temps réel des changements.
-                        </div>
-                        <div class="export-features">
-                            <span class="export-feature">REST API</span>
-                            <span class="export-feature">GraphQL</span>
-                            <span class="export-feature">Webhooks</span>
-                            <span class="export-feature">OAuth2</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <h3>🎯 Export Center Mockup</h3>
-            <div class="mockup-container">
-                <span class="mockup-label">EXPORT CENTER — Interface utilisateur</span>
-                <div class="mockup">
-                    <div class="dashboard-header" style="padding: 1.5rem;">
-                        <h1 style="font-size: 1.5rem;">📤 Centre d'exportation</h1>
-                        <div class="header-actions">
-                            <button class="btn btn-ghost">⚙️ Préférences</button>
-                            <button class="btn btn-primary">Exporter tout</button>
-                        </div>
-                    </div>
-                    <div class="export-preview">
-                        <div class="export-preview-item">
-                            <div class="export-preview-header">
-                                <div class="export-preview-icon" style="background: linear-gradient(135deg, #dc2626, #991b1b);">📄</div>
-                                <div>
-                                    <div class="export-preview-title">PDF — Emploi_6emeA.pdf</div>
-                                    <div style="font-size: 0.75rem; color: var(--color-gray-500);">2.4 MB • Prêt</div>
-                                </div>
-                            </div>
-                            <div class="export-preview-content">
-┌──────────────────────────────┐
-│  Collège Saint-Joseph        │
-│  Emploi du temps 6ème A      │
-│  Année scolaire 2025-2026    │
-├──────────────────────────────┤
-│  Lundi    │ Mardi   │ ...    │
-│  8h Math  │ 8h Fr   │        │
-│  9h Fr    │ 9h Math │        │
-└──────────────────────────────┘</div>
-                        </div>
-
-                        <div class="export-preview-item">
-                            <div class="export-preview-header">
-                                <div class="export-preview-icon" style="background: linear-gradient(135deg, #16a34a, #166534);">📊</div>
-                                <div>
-                                    <div class="export-preview-title">Excel — Planning_Complet.xlsx</div>
-                                    <div style="font-size: 0.75rem; color: var(--color-gray-500);">1.8 MB • 12 feuilles</div>
-                                </div>
-                            </div>
-                            <div class="export-preview-content">
-Feuilles:
-├── Vue globale
-├── Par classe (x6)
-├── Par enseignant (x24)
-├── Par salle (x15)
-├── Statistiques
-└── Conflits résolus</div>
-                        </div>
-
-                        <div class="export-preview-item">
-                            <div class="export-preview-header">
-                                <div class="export-preview-icon" style="background: linear-gradient(135deg, #db2777, #be185d);">📅</div>
-                                <div>
-                                    <div class="export-preview-title">iCal — calendrier.ics</div>
-                                    <div style="font-size: 0.75rem; color: var(--color-gray-500);">45 KB • 180 événements</div>
-                                </div>
-                            </div>
-                            <div class="export-preview-content">
-BEGIN:VCALENDAR
-VERSION:2.0
-PRODID:-//TIMEASE//FR
-BEGIN:VEVENT
-DTSTART:20260407T080000
-DTEND:20260407T090000
-SUMMARY:Mathématiques - 6ème A
-LOCATION:Salle 12
-END:VEVENT
-...</div>
-                        </div>
-
-                        <div class="export-preview-item">
-                            <div class="export-preview-header">
-                                <div class="export-preview-icon" style="background: linear-gradient(135deg, #ea580c, #c2410c);">{ }</div>
-                                <div>
-                                    <div class="export-preview-title">JSON — api_export.json</div>
-                                    <div style="font-size: 0.75rem; color: var(--color-gray-500);">128 KB • Schema v2</div>
-                                </div>
-                            </div>
-                            <div class="export-preview-content">
-{
-  "school": "Collège Saint-Joseph",
-  "year": "2025-2026",
-  "classes": [...],
-  "teachers": [...],
-  "timetable": {
-    "6ème A": {
-      "monday": [...]
-    }
-  }
-}</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- SECTION: Design Principles -->
-        <div class="section">
-            <h2>✨ Design Principles</h2>
-
-            <div class="principle">
-                <strong>1. AI-First Experience</strong>
-                <p>L'intelligence artificielle n'est plus une fonctionnalité, c'est le cœur de l'application. Interface conversationnelle naturelle avec suggestions proactives et automatisation intelligente.</p>
-            </div>
-
-            <div class="principle">
-                <strong>2. Glass Morphism + Gradient Mastery</strong>
-                <p>Effets de verre dépoli (<code>backdrop-filter: blur()</code>), ombres douces, dégradés subtils. Inspiration: iOS 17, Windows 11, Linear, Vercel.</p>
-            </div>
-
-            <div class="principle">
-                <strong>3. Micro-interactions & Physics-Based Animation</strong>
-                <p>GSAP + Framer Motion pour animations fluides. Spring physics pour feedback naturel. Chaque action a une réaction visuelle immédiate.</p>
-            </div>
-
-            <div class="principle">
-                <strong>4. Dark Mode Native</strong>
-                <p>Pas un "nice-to-have" mais un pilier du design. <code>prefers-color-scheme</code> + toggle persistant. Contraste élevé, économie d'énergie OLED.</p>
-            </div>
-
-            <div class="principle">
-                <strong>5. Data Visualization First</strong>
-                <p>Recharts pour graphiques, D3.js pour heatmaps custom, Canvas/WebGL pour rendering haute performance. Pas de tableaux ennuyeux.</p>
-            </div>
-
-            <div class="principle">
-                <strong>6. Offline-First PWA</strong>
-                <p>Service Workers, IndexedDB pour cache local, Background Sync. Fonctionne sans réseau en zone rurale africaine.</p>
-            </div>
-
-            <div class="principle">
-                <strong>7. Accessibility (WCAG 2.2 AA+)</strong>
-                <p>Focus visible, aria-live regions, keyboard navigation complète, screen reader tested. L'éducation est pour tous.</p>
-            </div>
-
-            <div class="principle">
-                <strong>8. Performance Budget</strong>
-                <p>LCP < 2.5s, FID < 100ms, CLS < 0.1. Code splitting, lazy loading, image optimization (WebP/AVIF). Lighthouse > 95.</p>
-            </div>
-        </div>
-
-        <!-- SECTION: Dashboard Mockup -->
-        <div class="section">
-            <h2>🖥️ Mockup: New Dashboard</h2>
-
-            <div class="mockup-container">
-                <span class="mockup-label">HOMEPAGE — Post-AI Setup</span>
-                <div class="mockup">
-                    <div class="dashboard-header">
-                        <h1>📚 Collège Saint-Joseph</h1>
-                        <div class="header-actions">
-                            <button class="btn btn-ghost">🌙 Dark</button>
-                            <button class="btn btn-ghost">⚙️ Paramètres</button>
-                            <button class="btn btn-primary">+ Nouveau projet</button>
-                        </div>
-                    </div>
-
-                    <div class="dashboard-grid">
-                        <div class="card">
-                            <div class="card-icon">🤖</div>
-                            <div class="card-title">Assistant IA</div>
-                            <div class="card-description">
-                                Posez vos questions, ajoutez des contraintes, ou demandez des ajustements en langage naturel.
-                            </div>
-                            <div class="card-meta">
-                                <span>24 conversations</span>
-                                <span class="status-dot active">Actif</span>
-                            </div>
-                        </div>
-
-                        <div class="card">
-                            <div class="card-icon">📅</div>
-                            <div class="card-title">Emploi du temps</div>
-                            <div class="card-description">
-                                Visualisez, modifiez et exportez votre planning scolaire complet.
-                            </div>
-                            <div class="card-meta">
-                                <span>Modifié il y a 2h</span>
-                                <span>95% complété</span>
-                            </div>
-                        </div>
-
-                        <div class="card">
-                            <div class="card-icon">⚠️</div>
-                            <div class="card-title">Conflits & Alertes</div>
-                            <div class="card-description">
-                                3 conflits détectés. L'IA propose des solutions automatiques.
-                            </div>
-                            <div class="card-meta">
-                                <span>3 à résoudre</span>
-                                <span class="status-dot warning">Action requise</span>
-                            </div>
-                        </div>
-
-                        <div class="card">
-                            <div class="card-icon">📤</div>
-                            <div class="card-title">Exports</div>
-                            <div class="card-description">
-                                PDF, Excel, Word, Images, iCal, JSON, HTML. Tous les formats disponibles.
-                            </div>
-                            <div class="card-meta">
-                                <span>10 formats</span>
-                                <span class="status-dot active">Prêt</span>
-                            </div>
-                        </div>
-
-                        <div class="card">
-                            <div class="card-icon">👥</div>
-                            <div class="card-title">Collaboration</div>
-                            <div class="card-description">
-                                Invitez les enseignants à valider leurs disponibilités en temps réel.
-                            </div>
-                            <div class="card-meta">
-                                <span>5 invités</span>
-                                <span>3 confirmés</span>
-                            </div>
-                        </div>
-
-                        <div class="card">
-                            <div class="card-icon">📊</div>
-                            <div class="card-title">Analytics</div>
-                            <div class="card-description">
-                                Statistiques d'utilisation, charge enseignants, occupation salles.
-                            </div>
-                            <div class="card-meta">
-                                <span>Rapport hebdo</span>
-                                <span class="status-dot active">À jour</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- SECTION: Implementation Roadmap -->
-        <div class="section">
-            <h2>🗺️ Implementation Roadmap</h2>
-
-            <table class="comparison-table">
-                <thead>
-                    <tr>
-                        <th>Phase</th>
-                        <th>Focus</th>
-                        <th>Technologies</th>
-                        <th>Durée</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><strong>Phase 1</strong></td>
-                        <td>Design System Foundation</td>
-                        <td>Tailwind 4, CSS Variables, Storybook</td>
-                        <td>2 semaines</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Phase 2</strong></td>
-                        <td>Core UI Components</td>
-                        <td>React 19, Radix UI, Framer Motion</td>
-                        <td>3 semaines</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Phase 3</strong></td>
-                        <td>Export Engine</td>
-                        <td>Go service, Rust WASM, PDF/Excel libs</td>
-                        <td>2 semaines</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Phase 4</strong></td>
-                        <td>Advanced Features</td>
-                        <td>GSAP animations, Dark mode, PWA</td>
-                        <td>2 semaines</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Phase 5</strong></td>
-                        <td>Polish & Performance</td>
-                        <td>Lighthouse audit, a11y testing, i18n</td>
-                        <td>1 semaine</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <!-- SECTION: Success Metrics -->
-        <div class="section">
-            <h2>📈 Success Metrics</h2>
-
-            <table class="comparison-table">
-                <thead>
-                    <tr>
-                        <th>Metric</th>
-                        <th>Current</th>
-                        <th>Target</th>
-                        <th>Measurement</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Time to first timetable</td>
-                        <td>~4 hours</td>
-                        <td>&lt; 30 min</td>
-                        <td>User session tracking</td>
-                    </tr>
-                    <tr>
-                        <td>Export usage rate</td>
-                        <td>60% PDF only</td>
-                        <td>3+ formats/user</td>
-                        <td>Feature analytics</td>
-                    </tr>
-                    <tr>
-                        <td>Mobile session %</td>
-                        <td>15%</td>
-                        <td>&gt; 40%</td>
-                        <td>Device analytics</td>
-                    </tr>
-                    <tr>
-                        <td>Lighthouse Performance</td>
-                        <td>~75</td>
-                        <td>&gt; 95</td>
-                        <td>CI/CD automated</td>
-                    </tr>
-                    <tr>
-                        <td>Accessibility Score</td>
-                        <td>Unknown</td>
-                        <td>100% WCAG AA</td>
-                        <td>Axe automated + manual</td>
-                    </tr>
-                    <tr>
-                        <td>User satisfaction (NPS)</td>
-                        <td>Unknown</td>
-                        <td>&gt; 50</td>
-                        <td>In-app surveys</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <!-- Call to Action -->
-        <div style="text-align: center; padding: 4rem 2rem; background: linear-gradient(135deg, var(--color-primary-500) 0%, var(--color-secondary-500) 100%); border-radius: var(--radius-2xl); color: white; margin-top: 4rem;">
-            <h2 style="color: white; background: none; -webkit-text-fill-color: white; font-size: 2.5rem; margin-bottom: 1rem;">Ready to transform TIMEASE?</h2>
-            <p style="color: rgba(255,255,255,0.9); font-size: 1.25rem; margin-bottom: 2rem; max-width: 600px; margin-left: auto; margin-right: auto;">
-                Un design qui ne se contente pas d'être beau, mais qui rend vos utilisateurs plus efficaces. Multi-langue, multi-format, world-class.
-            </p>
-            <button class="btn btn-primary" style="font-size: 1.1rem; padding: 1rem 2.5rem; font-weight: 700;">
-                🚀 Commencer l'implémentation
-            </button>
-        </div>
-
-        <footer style="text-align: center; color: var(--color-gray-400); margin-top: 4rem; padding-top: 2rem; border-top: 1px solid var(--color-gray-200);">
-            <p><strong>TIMEASE UI Revamp</strong> • Designed with Claude Sonnet 4.5 • 2026</p>
-            <p style="font-size: 0.875rem; margin-top: 0.5rem;">
-                Open this document in Chrome/Firefox/Safari for the best experience<br>
-                Press <kbd style="background: var(--color-gray-100); padding: 0.25rem 0.5rem; border-radius: 4px; font-family: var(--font-mono);">Cmd+D</kbd> to toggle dark mode preview
-            </p>
+        <!-- ════════════════════════════════════════════════════════════════
+             FOOTER
+             ════════════════════════════════════════════════════════════════ -->
+        <footer class="document-footer">
+            <p>TIMEASE Design System — 2026</p>
         </footer>
     </div>
-
-    <button class="fab" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" title="Back to top">↑</button>
-
-    <script>
-        // Scroll progress indicator
-        window.addEventListener('scroll', () => {
-            const scrollProgress = document.getElementById('scrollProgress');
-            const scrollTop = window.scrollY;
-            const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-            const progress = (scrollTop / docHeight) * 100;
-            scrollProgress.style.width = progress + '%';
-        });
-
-        // Animate sections on scroll
-        const sections = document.querySelectorAll('.section');
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.style.opacity = '1';
-                    entry.target.style.transform = 'translateY(0)';
-                }
-            });
-        }, { threshold: 0.1 });
-
-        sections.forEach(section => observer.observe(section));
-
-        // Dark mode toggle
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'd' && (e.metaKey || e.ctrlKey)) {
-                e.preventDefault();
-                document.body.classList.toggle('dark-mode');
-                if (document.body.classList.contains('dark-mode')) {
-                    document.body.style.filter = 'invert(1) hue-rotate(180deg)';
-                    document.querySelectorAll('img').forEach(img => {
-                        img.style.filter = 'invert(1) hue-rotate(180deg)';
-                    });
-                } else {
-                    document.body.style.filter = '';
-                    document.querySelectorAll('img').forEach(img => {
-                        img.style.filter = '';
-                    });
-                }
-            }
-        });
-
-        // Card hover effects with GSAP (if available)
-        if (typeof gsap !== 'undefined') {
-            document.querySelectorAll('.card, .tech-card, .export-card').forEach(card => {
-                card.addEventListener('mouseenter', () => {
-                    gsap.to(card, { scale: 1.02, duration: 0.3, ease: 'power2.out' });
-                });
-                card.addEventListener('mouseleave', () => {
-                    gsap.to(card, { scale: 1, duration: 0.3, ease: 'power2.out' });
-                });
-            });
-        }
-
-        console.log('🎨 TIMEASE UI Design Revamp loaded');
-        console.log('💡 Tips:');
-        console.log('   - Press Cmd+D (Mac) or Ctrl+D (Win) to toggle dark mode');
-        console.log('   - Scroll to see animated sections');
-        console.log('   - Click cards to see interaction effects');
-    </script>
 </body>
 </html>
