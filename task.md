@@ -13,11 +13,26 @@
   - `[x]` Introduce `solver.parameters.max_time_in_seconds = 30`.
 - `[ ]` **Phase 2.3: The Premium AI Experience (Agentic Concierge)**
   - `[x]` Create `<AgentActionPill />` micro-animations.
-  - `[ ]` Implement inline editable recap arrays in `ChatMessage.tsx`.
+  - `[x]` Implement inline editable recap arrays in `ChatMessage.tsx`.
   - `[x]` Build the streaming polish cursor `▍`.
-- `[ ]` **Phase 2.4: UI Gatekeeping & Detaching the LLM**
-  - `[ ]` Add real-time hour barriers to `StepPanel.tsx`.
-  - `[ ]` Add deterministic failure states natively rendered in React.
+  - `[x]` **Claude-like Native UX Enhancements:**
+    - `[x]` Auto-expanding textarea with keyboard shortcuts (Ctrl+Enter)
+    - `[x]` Character count indicator
+    - `[x]` Code block copy buttons with language labels
+    - `[x]` Message edit functionality (user messages)
+    - `[x]` Regenerate button (last AI message)
+    - `[x]` Smooth scrolling behavior
+    - `[x]` Enhanced input component (ChatInput.tsx)
+  - `[x]` Wire stop generation in chat stream (AbortController + UI stop state)
+  - `[x]` Stabilize editable recap table cell mapping in `ChatMessage.tsx`
+- `[x]` **Phase 2.4: UI Gatekeeping & Detaching the LLM**
+  - `[x]` Add real-time hour barriers to `StepPanel.tsx`.
+  - `[x]` Add deterministic failure states natively rendered in React.
+  - `[x]` Create validation utilities (`validation.ts`)
+  - `[x]` Build ValidationErrorPanel component
+  - `[x]` Wire "Ask AI" button to send error context to chat
+  - `[x]` Disable generate button when validation errors exist
+  - `[x]` Remove automatic AI trigger after solve failures/partials (AI now explicit opt-in)
 - `[ ]` **Phase 2.5: Compiling Diagnosis Bottlenecks (mypyc)**
   - `[ ]` Lock logic loops in `timease/engine/conflicts.py` with strict typing.
   - `[ ]` Implement C-compilation via `mypyc`.
