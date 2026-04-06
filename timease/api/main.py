@@ -406,6 +406,57 @@ def merge_data(sid: str, payload: dict):
     return {"ok": True}
 
 
+def _dispatch_tool_calls(
+    sid: str,
+    tool_calls: list[dict],
+    *,
+    input_key: str = "data",
+) -> dict:
+    """Process AI tool calls: stage saves, apply metadata, return summary.
+
+    ``input_key`` adapts to different schemas — ``process_chat`` uses "data",
+    ``stream_chat`` uses "input".
+    """
+    saved_types: list[str] = []
+    pending: list[dict] = []
+    trigger_generation = False
+    proposed_options: list[dict] = []
+    set_step: int | None = None
+
+    for tc in tool_calls:
+        name = tc["name"]
+        data = tc[input_key]
+        if name == "trigger_generation":
+            trigger_generation = True
+        elif name == "propose_options":
+            proposed_options = data.get("options", [])
+        elif name == "set_current_step":
+            set_step = data.get("step")
+        elif name in _SAVE_TOOLS:
+            pending.append({
+                "tool":    name,
+                "input":   data,
+                "preview": _make_preview(name, data),
+                "label":   _pending_label(name, data),
+            })
+            saved_types.append(name)
+        else:
+            _merge_tool_call(sid, name, data)
+
+    if pending:
+        sessions[sid]["pending_changes"] = (
+            sessions[sid].get("pending_changes", []) + pending
+        )
+
+    return {
+        "pending":            pending,
+        "trigger_generation": trigger_generation,
+        "options":            proposed_options,
+        "set_step":           set_step,
+        "saved_types":        saved_types,
+    }
+
+
 # ── AI chat ────────────────────────────────────────────────────────────────────
 
 @app.post("/api/session/{sid}/chat")
@@ -434,48 +485,17 @@ async def chat(sid: str, payload: dict):
         solve_issues=sessions[sid].get("last_solve_issues") or None,
     )
 
-    # Stage save tool calls; apply metadata tools immediately
-    saved_types: list[str] = []
-    pending: list[dict] = []
-    trigger_generation = False
-    proposed_options: list[dict] = []
-    set_step: int | None = None
-
-    for tc in result["tool_calls"]:
-        name = tc["name"]
-        data = tc["data"]
-        if name == "trigger_generation":
-            trigger_generation = True
-        elif name == "propose_options":
-            proposed_options = data.get("options", [])
-        elif name == "set_current_step":
-            set_step = data.get("step")
-        elif name in _SAVE_TOOLS:
-            pending.append({
-                "tool":    name,
-                "input":   data,
-                "preview": _make_preview(name, data),
-                "label":   _pending_label(name, data),
-            })
-            saved_types.append(name)
-        else:
-            _merge_tool_call(sid, name, data)
-
-    if pending:
-        sessions[sid]["pending_changes"] = (
-            sessions[sid].get("pending_changes", []) + pending
-        )
-
+    dispatch = _dispatch_tool_calls(sid, result["tool_calls"], input_key="data")
     sessions[sid]["ai_history"] = result["updated_history"]
 
     return {
         "message":            result["message"],
         "data_saved":         False,   # not yet — pending review
-        "pending_changes":    pending,
-        "trigger_generation": trigger_generation,
-        "options":            proposed_options,
-        "set_step":           set_step,
-        "saved_types":        saved_types,
+        "pending_changes":    dispatch["pending"],
+        "trigger_generation": dispatch["trigger_generation"],
+        "options":            dispatch["options"],
+        "set_step":           dispatch["set_step"],
+        "saved_types":        dispatch["saved_types"],
         "ai_history":         result["updated_history"],
     }
 
@@ -520,48 +540,19 @@ async def chat_stream(sid: str, payload: dict):
             elif event["type"] == "end":
                 updated_history = event["updated_history"]
 
-                # Apply tool calls to session
-                set_step: int | None = None
-                trigger_generation = False
-                proposed_options: list[dict] = []
-                saved_types: list[str] = []
-
-                pending: list[dict] = []
-                for tc in tool_calls_buf:
-                    name = tc["name"]
-                    data = tc["input"]
-                    if name == "trigger_generation":
-                        trigger_generation = True
-                    elif name == "propose_options":
-                        proposed_options = data.get("options", [])
-                    elif name == "set_current_step":
-                        set_step = data.get("step")
-                    elif name in _SAVE_TOOLS:
-                        pending.append({
-                            "tool":    name,
-                            "input":   data,
-                            "preview": _make_preview(name, data),
-                            "label":   _pending_label(name, data),
-                        })
-                        saved_types.append(name)
-                    else:
-                        _merge_tool_call(sid, name, data)
-
-                if pending:
-                    sessions[sid]["pending_changes"] = (
-                        sessions[sid].get("pending_changes", []) + pending
-                    )
-
+                dispatch = _dispatch_tool_calls(
+                    sid, tool_calls_buf, input_key="input",
+                )
                 sessions[sid]["ai_history"] = updated_history
 
                 done_payload = {
                     "type":               "done",
                     "data_saved":         False,   # not yet — pending review
-                    "pending_changes":    pending,
-                    "trigger_generation": trigger_generation,
-                    "options":            proposed_options,
-                    "set_step":           set_step,
-                    "saved_types":        saved_types,
+                    "pending_changes":    dispatch["pending"],
+                    "trigger_generation": dispatch["trigger_generation"],
+                    "options":            dispatch["options"],
+                    "set_step":           dispatch["set_step"],
+                    "saved_types":        dispatch["saved_types"],
                     "ai_history":         updated_history,
                 }
                 yield f"data: {json.dumps(done_payload)}\n\n"

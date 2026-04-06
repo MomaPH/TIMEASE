@@ -247,16 +247,21 @@ def test_ai_chat_structure() -> None:
     assert "trigger_generation" in tool_names
     assert "set_current_step"  in tool_names
 
-    # _build_system_prompt builds a non-empty string
-    prompt = _build_system_prompt({}, [])
-    assert "TIMEASE" in prompt
-    assert len(prompt) > 100
+    # _build_system_prompt returns a list of content blocks with cache_control
+    blocks = _build_system_prompt({}, [])
+    assert isinstance(blocks, list)
+    assert len(blocks) >= 2
+    assert blocks[0]["cache_control"] == {"type": "ephemeral"}
+    full_text = " ".join(b["text"] for b in blocks)
+    assert "TIMEASE" in full_text
+    assert len(full_text) > 100
 
     # Conflict context is injected when reports provided
     report = {"description_fr": "Test conflict", "severity": "error", "step_to_fix": 2, "fix_options": []}
-    prompt_with_conflict = _build_system_prompt({}, [], conflict_reports=[report])
-    assert "Test conflict" in prompt_with_conflict
-    assert "GÉNÉRATION" in prompt_with_conflict.upper()
+    blocks_conflict = _build_system_prompt({}, [], conflict_reports=[report])
+    full_conflict = " ".join(b["text"] for b in blocks_conflict)
+    assert "Test conflict" in full_conflict
+    assert "GÉNÉRATION" in full_conflict.upper()
 
     # stream_chat and process_chat have expected parameters
     stream_sig = inspect.signature(stream_chat)

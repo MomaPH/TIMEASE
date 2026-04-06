@@ -9,8 +9,32 @@ Tool calls are auto-applied server-side — no confirmation needed from the UI.
 from dotenv import load_dotenv
 load_dotenv()
 
-import anthropic
+import json as _json
 import os
+from typing import Generator
+
+import anthropic
+
+_client: anthropic.Anthropic | None = None
+
+
+def _get_client() -> anthropic.Anthropic:
+    """Return a module-level Anthropic client (lazy singleton)."""
+    global _client
+    if _client is None:
+        _client = anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY", ""))
+    return _client
+
+
+_SAVE_TOOL_NAMES = {
+    "save_school_info", "save_teachers", "save_classes", "save_rooms",
+    "save_subjects", "save_curriculum", "save_constraints", "save_assignments",
+}
+
+STEP_NAMES: dict[int, str] = {
+    0: "École", 1: "Classes", 2: "Enseignants", 3: "Salles",
+    4: "Matières", 5: "Affectations", 6: "Programme", 7: "Contraintes",
+}
 
 TOOLS = [
     {
@@ -252,13 +276,127 @@ TOOLS = [
 ]
 
 
+_STATIC_SYSTEM_PROMPT = """\
+Tu es TIMEASE, un assistant IA expert en emplois du temps scolaires. \
+Tu accompagnes les directeurs d'écoles privées en Afrique francophone dans la configuration \
+complète de leur emploi du temps.
+
+═══════════════════════════════════════════════════
+RÈGLES DE COMPORTEMENT — OBLIGATOIRES
+═══════════════════════════════════════════════════
+
+**RÈGLE 1 — UNE seule question à la fois.**
+Ne pose jamais deux questions dans le même message. Choisis la question la plus importante \
+pour cette étape. Attends toujours la réponse avant d'en poser une autre.
+
+**RÈGLE 2 — Toujours proposer des options interactives.**
+À CHAQUE fois que tu poses une question avec des choix possibles (oui/non, sélection de \
+valeur, confirmation), appelle `propose_options` avec 2 à 5 boutons cliquables.
+Exemples où tu DOIS proposer des options :
+• Confirmation : [✅ Oui, c'est correct] [✏️ Modifier] [➕ Ajouter d'autres]
+• Jours de cours : [Lundi à Vendredi] [Lundi à Samedi] [Personnaliser]
+• Sessions : [Matin + Après-midi] [Matin seulement] [Personnaliser]
+• Unité de base : [30 minutes] [45 minutes] [60 minutes] [Autre]
+• Avancement : [➡️ Étape suivante] [🔄 Modifier cette étape] [⏭️ Passer]
+• Validation finale : [🚀 Générer l'emploi du temps] [📝 Revoir les données]
+
+**RÈGLE 3 — Valider avant d'enregistrer.**
+Avant d'appeler un outil de sauvegarde, affiche un résumé de ce que tu vas enregistrer \
+et demande confirmation avec `propose_options` : [✅ Confirmer] [✏️ Modifier].
+EXCEPTION : si l'utilisateur a déjà confirmé explicitement ou cliqué sur "Confirmer", \
+enregistre directement sans redemander.
+
+**RÈGLE 4 — Proactif après chaque étape.**
+Après confirmation et enregistrement :
+a) Affiche "✓ [données] enregistrées."
+b) Appelle `set_current_step` avec l'index de la prochaine étape incomplète.
+c) Pose immédiatement la première question de la prochaine étape avec `propose_options`.
+Ne laisse JAMAIS l'utilisateur sans une question ou action suivante claire.
+
+Mapping étapes: 0=École, 1=Classes, 2=Enseignants, 3=Salles, 4=Matières, \
+5=Affectations, 6=Programme, 7=Contraintes, 8=Résumé
+
+**RÈGLE 5 — Format de résumé par étape.**
+Avant de valider une étape, présente les données sous forme de tableau markdown :
+```
+| Champ | Valeur |
+|-------|--------|
+| Nom   | ...    |
+```
+Puis propose : [✅ Confirmer] [✏️ Modifier une entrée]
+
+**RÈGLE 6 — Upsert transparent.**
+Envoyer la même entité (même nom) met à jour, pas de doublon. Si l'utilisateur corrige \
+une info, renvoie l'entrée complète corrigée. Dis-le clairement : "J'ai mis à jour X."
+
+**RÈGLE 7 — Affectations.**
+Utilise TOUJOURS `school_class` (jamais `class`).
+Exemple : {"teacher": "Alice", "subject": "Maths", "school_class": "6ème A"}
+
+**RÈGLE 8 — Fichiers importés.**
+Quand un fichier est envoyé :
+1. Extrais TOUTES les données (école, classes, enseignants, salles, matières, \
+affectations, programme, contraintes).
+2. Enregistre tout en une seule passe avec les outils.
+3. Appelle `set_current_step` vers la première étape incomplète.
+4. Affiche un tableau récapitulatif de ce qui a été trouvé vs ce qui manque.
+5. Pose immédiatement la première question pour compléter ce qui manque, \
+avec `propose_options`.
+
+**RÈGLE 9 — Génération.**
+Quand l'utilisateur demande de générer ET que toutes les cases sont ✅ :
+appelle `trigger_generation` ET `set_current_step` avec step=8.
+Si des cases sont ❌, explique précisément ce qui manque et propose des options pour \
+le compléter maintenant.
+
+**RÈGLE 10 — Style.**
+• Tableaux markdown pour les résumés et données.
+• Gras pour les éléments importants, listes pour les étapes.
+• Emojis modérés pour signaler le statut (✅ ❌ ✓ ⚙️ 📋).
+• Jamais de JSON brut visible. Jamais de blocs de code pour des données simples.
+• Réponses concises — une idée par message.
+
+═══════════════════════════════════════════════════
+CONTRAINTES SUPPORTÉES PAR LE SOLVEUR
+═══════════════════════════════════════════════════
+
+Dures (type: "hard"):
+• start_time — heure min de début (param: hour "HH:MM")
+• day_off — jour/session bloqué (params: day, session "all"|nom_session)
+• subject_on_days — matière limitée à certains jours (params: subject, days [])
+• subject_not_on_days — matière exclue de jours (params: subject, days [])
+• subject_not_last_slot — pas en dernier créneau (params: subject)
+• max_consecutive — max heures consécutives (params: max_hours)
+• min_break_between — pause min entre sessions (params: minutes)
+• fixed_assignment — session fixée (params: class, subject, day, start_time)
+• teacher_day_off — congé enseignant (params: teacher, preferred_day_off)
+
+Souples (type: "soft", priority 1–10):
+• teacher_time_preference — préférence horaire (params: teacher, preferred_session)
+• balanced_daily_load — charge équilibrée par jour
+• subject_spread — même matière pas 2x/jour
+• heavy_subjects_morning — matières difficiles le matin (params: subjects [])
+• teacher_compact_schedule — minimiser les trous
+• same_room_for_class — classe concentrée dans une salle
+• no_subject_back_to_back — éviter consécutif même matière
+• light_last_day — peu de cours le dernier jour
+• teacher_day_off — préférence congé (params: teacher, preferred_day_off)
+"""
+
+
 def _build_system_prompt(
     school_data: dict,
     teacher_assignments: list[dict],
     conflict_reports: list[dict] | None = None,
     solve_issues: dict | None = None,
-) -> str:
-    """Build a context-aware system prompt reflecting current session state."""
+) -> list[dict]:
+    """Build a context-aware system prompt as a list of content blocks.
+
+    Returns a list suitable for Anthropic's ``system`` parameter.
+    The first block (static rules) is marked with ``cache_control`` so that
+    Anthropic can cache it across calls — the rules and constraint reference
+    never change, saving ~90% of input cost on the static portion.
+    """
 
     # ── What's filled ────────────────────────────────────────────────────────
     sd = school_data
@@ -334,125 +472,16 @@ Données détaillées:
         8,  # summary if all done
     )
 
-    prompt = f"""Tu es TIMEASE, un assistant IA expert en emplois du temps scolaires. \
-Tu accompagnes les directeurs d'écoles privées en Afrique francophone dans la configuration \
-complète de leur emploi du temps.
-
-{context}
+    dynamic = f"""{context}
 
 {next_step}
-
-═══════════════════════════════════════════════════
-RÈGLES DE COMPORTEMENT — OBLIGATOIRES
-═══════════════════════════════════════════════════
-
-**RÈGLE 1 — UNE seule question à la fois.**
-Ne pose jamais deux questions dans le même message. Choisis la question la plus importante \
-pour cette étape. Attends toujours la réponse avant d'en poser une autre.
-
-**RÈGLE 2 — Toujours proposer des options interactives.**
-À CHAQUE fois que tu poses une question avec des choix possibles (oui/non, sélection de \
-valeur, confirmation), appelle `propose_options` avec 2 à 5 boutons cliquables.
-Exemples où tu DOIS proposer des options :
-• Confirmation : [✅ Oui, c'est correct] [✏️ Modifier] [➕ Ajouter d'autres]
-• Jours de cours : [Lundi à Vendredi] [Lundi à Samedi] [Personnaliser]
-• Sessions : [Matin + Après-midi] [Matin seulement] [Personnaliser]
-• Unité de base : [30 minutes] [45 minutes] [60 minutes] [Autre]
-• Avancement : [➡️ Étape suivante] [🔄 Modifier cette étape] [⏭️ Passer]
-• Validation finale : [🚀 Générer l'emploi du temps] [📝 Revoir les données]
-
-**RÈGLE 3 — Valider avant d'enregistrer.**
-Avant d'appeler un outil de sauvegarde, affiche un résumé de ce que tu vas enregistrer \
-et demande confirmation avec `propose_options` : [✅ Confirmer] [✏️ Modifier].
-EXCEPTION : si l'utilisateur a déjà confirmé explicitement ou cliqué sur "Confirmer", \
-enregistre directement sans redemander.
-
-**RÈGLE 4 — Proactif après chaque étape.**
-Après confirmation et enregistrement :
-a) Affiche "✓ [données] enregistrées."
-b) Appelle `set_current_step` avec l'index de la prochaine étape incomplète.
-c) Pose immédiatement la première question de la prochaine étape avec `propose_options`.
-Ne laisse JAMAIS l'utilisateur sans une question ou action suivante claire.
-
-Mapping étapes: 0=École, 1=Classes, 2=Enseignants, 3=Salles, 4=Matières, \
-5=Affectations, 6=Programme, 7=Contraintes, 8=Résumé
 Prochaine étape recommandée : index {next_step_idx}
-
-**RÈGLE 5 — Format de résumé par étape.**
-Avant de valider une étape, présente les données sous forme de tableau markdown :
-```
-| Champ | Valeur |
-|-------|--------|
-| Nom   | ...    |
-```
-Puis propose : [✅ Confirmer] [✏️ Modifier une entrée]
-
-**RÈGLE 6 — Upsert transparent.**
-Envoyer la même entité (même nom) met à jour, pas de doublon. Si l'utilisateur corrige \
-une info, renvoie l'entrée complète corrigée. Dis-le clairement : "J'ai mis à jour X."
-
-**RÈGLE 7 — Affectations.**
-Utilise TOUJOURS `school_class` (jamais `class`).
-Exemple : {{"teacher": "Alice", "subject": "Maths", "school_class": "6ème A"}}
-
-**RÈGLE 8 — Fichiers importés.**
-Quand un fichier est envoyé :
-1. Extrais TOUTES les données (école, classes, enseignants, salles, matières, \
-affectations, programme, contraintes).
-2. Enregistre tout en une seule passe avec les outils.
-3. Appelle `set_current_step` vers la première étape incomplète.
-4. Affiche un tableau récapitulatif de ce qui a été trouvé vs ce qui manque.
-5. Pose immédiatement la première question pour compléter ce qui manque, \
-avec `propose_options`.
-
-**RÈGLE 9 — Génération.**
-Quand l'utilisateur demande de générer ET que toutes les cases sont ✅ :
-appelle `trigger_generation` ET `set_current_step` avec step=8.
-Si des cases sont ❌, explique précisément ce qui manque et propose des options pour \
-le compléter maintenant.
-
-**RÈGLE 10 — Style.**
-• Tableaux markdown pour les résumés et données.
-• Gras pour les éléments importants, listes pour les étapes.
-• Emojis modérés pour signaler le statut (✅ ❌ ✓ ⚙️ 📋).
-• Jamais de JSON brut visible. Jamais de blocs de code pour des données simples.
-• Réponses concises — une idée par message.
-
-═══════════════════════════════════════════════════
-CONTRAINTES SUPPORTÉES PAR LE SOLVEUR
-═══════════════════════════════════════════════════
-
-Dures (type: "hard"):
-• start_time — heure min de début (param: hour "HH:MM")
-• day_off — jour/session bloqué (params: day, session "all"|nom_session)
-• subject_on_days — matière limitée à certains jours (params: subject, days [])
-• subject_not_on_days — matière exclue de jours (params: subject, days [])
-• subject_not_last_slot — pas en dernier créneau (params: subject)
-• max_consecutive — max heures consécutives (params: max_hours)
-• min_break_between — pause min entre sessions (params: minutes)
-• fixed_assignment — session fixée (params: class, subject, day, start_time)
-• teacher_day_off — congé enseignant (params: teacher, preferred_day_off)
-
-Souples (type: "soft", priority 1–10):
-• teacher_time_preference — préférence horaire (params: teacher, preferred_session)
-• balanced_daily_load — charge équilibrée par jour
-• subject_spread — même matière pas 2x/jour
-• heavy_subjects_morning — matières difficiles le matin (params: subjects [])
-• teacher_compact_schedule — minimiser les trous
-• same_room_for_class — classe concentrée dans une salle
-• no_subject_back_to_back — éviter consécutif même matière
-• light_last_day — peu de cours le dernier jour
-• teacher_day_off — préférence congé (params: teacher, preferred_day_off)
 """
 
     # ── Partial solve context (injected after a partial result) ──────────────
     if solve_issues and solve_issues.get("total_unscheduled", 0) > 0:
         unscheduled = solve_issues.get("unscheduled", [])
         groups = solve_issues.get("groups", [])
-        step_names = {
-            0: "École", 1: "Classes", 2: "Enseignants", 3: "Salles",
-            4: "Matières", 5: "Affectations", 6: "Programme", 7: "Contraintes",
-        }
         cause_steps = {
             "missing_teacher": 2, "room_unavailable": 3,
             "no_valid_slot": 7, "constraint_conflict": 7,
@@ -474,7 +503,7 @@ Souples (type: "soft", priority 1–10):
             issues_lines.append("\nCauses identifiées :")
             for g in groups:
                 step = cause_steps.get(g["cause"])
-                step_label = f" → corriger étape {step} ({step_names.get(step, '')})" if step else ""
+                step_label = f" → corriger étape {step} ({STEP_NAMES.get(step, '')})" if step else ""
                 issues_lines.append(f"  • {g['label']} ({len(g['sessions'])} session(s)){step_label}")
         issues_lines += [
             "\nCOMPORTEMENT REQUIS :",
@@ -485,14 +514,10 @@ Souples (type: "soft", priority 1–10):
             "• Propose des corrections concrètes avec `propose_options`.",
             "• Utilise `set_current_step` vers l'étape à corriger.",
         ]
-        prompt += "\n".join(issues_lines)
+        dynamic += "\n".join(issues_lines)
 
     # ── Conflict context (injected after a failed solve) ─────────────────────
     if conflict_reports:
-        step_names = {
-            0: "École", 1: "Classes", 2: "Enseignants", 3: "Salles",
-            4: "Matières", 5: "Affectations", 6: "Programme", 7: "Contraintes",
-        }
         conflict_lines = [
             "\n═══════════════════════════════════════════════════",
             "RÉSULTAT DU DERNIER ESSAI DE GÉNÉRATION — ÉCHEC",
@@ -502,7 +527,7 @@ Souples (type: "soft", priority 1–10):
         for i, r in enumerate(conflict_reports, 1):
             sev = "🔴 BLOQUANT" if r.get("severity") in ("error", "impossible") else "🟡 AVERTISSEMENT"
             step = r.get("step_to_fix")
-            step_label = f" → corriger à l'étape {step} ({step_names.get(step, '')})" if step is not None else ""
+            step_label = f" → corriger à l'étape {step} ({STEP_NAMES.get(step, '')})" if step is not None else ""
             conflict_lines.append(f"{i}. {sev} — {r['description_fr']}{step_label}")
             for opt in r.get("fix_options", [])[:2]:
                 conflict_lines.append(f"   Fix suggéré : {opt['fix_fr']}")
@@ -515,12 +540,37 @@ Souples (type: "soft", priority 1–10):
             "• Utilise `set_current_step` pour guider l'utilisateur vers l'étape à corriger.",
             "• Si plusieurs conflits, commence par le plus bloquant (🔴 en premier).",
         ]
-        prompt += "\n".join(conflict_lines)
+        dynamic += "\n".join(conflict_lines)
 
-    return prompt
+    return [
+        {
+            "type": "text",
+            "text": _STATIC_SYSTEM_PROMPT,
+            "cache_control": {"type": "ephemeral"},
+        },
+        {
+            "type": "text",
+            "text": dynamic,
+        },
+    ]
 
 
-from typing import Generator
+MAX_HISTORY_PAIRS = 20  # keep first 2 + last 38 messages (≈ 20 user/assistant pairs)
+
+
+def _truncate_history(history: list[dict]) -> list[dict]:
+    """Trim history to stay within context limits.
+
+    Keeps the first 2 messages (initial greeting exchange) and the most
+    recent messages, up to ``MAX_HISTORY_PAIRS * 2`` total messages.
+    """
+    max_msgs = MAX_HISTORY_PAIRS * 2
+    if len(history) <= max_msgs:
+        return history
+    # Always preserve the first exchange so the AI remembers the greeting context
+    head = history[:2]
+    tail = history[-(max_msgs - 2):]
+    return head + tail
 
 
 def stream_chat(
@@ -539,7 +589,7 @@ def stream_chat(
         {"type": "tool_call", "name": ..., "input": ..., "id": ...}  — completed tool call
         {"type": "end",       "updated_history": [...]}   — final event
     """
-    client = anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY", ""))
+    client = _get_client()
     system_prompt = _build_system_prompt(school_data, teacher_assignments, conflict_reports, solve_issues)
 
     full_msg = user_message
@@ -549,10 +599,8 @@ def stream_chat(
             f"---\nMessage accompagnant le fichier: {user_message or '(aucun message)'}"
         )
 
-    history = list(ai_history)
+    history = _truncate_history(list(ai_history))
     history.append({"role": "user", "content": full_msg})
-
-    import json as _json
 
     # ── Agentic loop: keep calling the API until AI returns text-only ──────────
     # Max 4 iterations to prevent infinite loops
@@ -565,7 +613,7 @@ def stream_chat(
         try:
             with client.messages.stream(
                 model="claude-sonnet-4-6",
-                max_tokens=2048,
+                max_tokens=4096,
                 system=system_prompt,
                 tools=TOOLS,
                 messages=history,
@@ -642,11 +690,7 @@ def stream_chat(
             if b.get("type") == "tool_use":
                 # Rich instruction forces AI to generate summary + options next turn
                 tool_name = b["name"]
-                if tool_name in (
-                    "save_school_info", "save_teachers", "save_classes",
-                    "save_rooms", "save_subjects", "save_curriculum",
-                    "save_constraints", "save_assignments",
-                ):
+                if tool_name in _SAVE_TOOL_NAMES:
                     result_msg = (
                         "Modifications envoyées pour validation par l'utilisateur.\n"
                         "Maintenant tu DOIS :\n"
@@ -678,9 +722,12 @@ def process_chat(
     conflict_reports: list[dict] | None = None,
     solve_issues: dict | None = None,
 ) -> dict:
-    """Send one user turn to Claude and return the structured response."""
-    client = anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY", ""))
+    """Send one user turn to Claude and return the structured response.
 
+    Now includes an agentic loop (up to MAX_TURNS) matching stream_chat,
+    so the AI can follow up after tool calls with summaries and options.
+    """
+    client = _get_client()
     system_prompt = _build_system_prompt(school_data, teacher_assignments, conflict_reports, solve_issues)
 
     full_msg = user_message
@@ -690,64 +737,64 @@ def process_chat(
             f"---\nMessage accompagnant le fichier: {user_message or '(aucun message)'}"
         )
 
-    history = list(ai_history)
+    history = _truncate_history(list(ai_history))
     history.append({"role": "user", "content": full_msg})
-
-    response = client.messages.create(
-        model="claude-sonnet-4-6",
-        max_tokens=2048,
-        system=system_prompt,
-        tools=TOOLS,
-        messages=history,
-    )
 
     text_parts: list[str] = []
     tool_calls: list[dict] = []
 
-    for block in response.content:
-        if block.type == "text":
-            text_parts.append(block.text)
-        elif block.type == "tool_use":
-            tool_calls.append({"name": block.name, "data": block.input, "id": block.id})
+    MAX_TURNS = 4
+    for _turn in range(MAX_TURNS):
+        response = client.messages.create(
+            model="claude-sonnet-4-6",
+            max_tokens=4096,
+            system=system_prompt,
+            tools=TOOLS,
+            messages=history,
+        )
 
-    # Rebuild history with proper assistant + tool_result turns
-    assistant_content = []
-    for b in response.content:
-        if b.type == "text":
-            assistant_content.append({"type": "text", "text": b.text})
-        elif b.type == "tool_use":
-            assistant_content.append({
-                "type":  "tool_use",
-                "id":    b.id,
-                "name":  b.name,
-                "input": b.input,
-            })
-    history.append({"role": "assistant", "content": assistant_content})
+        has_tool_calls = False
+        assistant_content: list[dict] = []
 
-    _SAVE_TOOLS = {
-        "save_school_info", "save_teachers", "save_classes", "save_rooms",
-        "save_subjects", "save_curriculum", "save_constraints", "save_assignments",
-    }
-    for block in response.content:
-        if block.type == "tool_use":
-            if block.name in _SAVE_TOOLS:
-                result_msg = (
-                    "✓ Données enregistrées.\n"
-                    "Maintenant tu DOIS obligatoirement :\n"
-                    "1. Afficher un tableau markdown récapitulatif de ce qui vient d'être enregistré.\n"
-                    "2. Appeler `set_current_step` avec l'index de la prochaine étape incomplète.\n"
-                    "3. Appeler `propose_options` avec les actions disponibles."
-                )
-            else:
-                result_msg = "OK."
-            history.append({
-                "role": "user",
-                "content": [{
-                    "type":        "tool_result",
+        for block in response.content:
+            if block.type == "text":
+                text_parts.append(block.text)
+                assistant_content.append({"type": "text", "text": block.text})
+            elif block.type == "tool_use":
+                has_tool_calls = True
+                tool_calls.append({"name": block.name, "data": block.input, "id": block.id})
+                assistant_content.append({
+                    "type": "tool_use", "id": block.id,
+                    "name": block.name, "input": block.input,
+                })
+
+        history.append({"role": "assistant", "content": assistant_content})
+
+        if not has_tool_calls:
+            break
+
+        # Append tool_result turns so AI follows up
+        tool_result_content = []
+        for block in response.content:
+            if block.type == "tool_use":
+                if block.name in _SAVE_TOOL_NAMES:
+                    result_msg = (
+                        "Modifications envoyées pour validation par l'utilisateur.\n"
+                        "Maintenant tu DOIS :\n"
+                        "1. Afficher un tableau markdown récapitulatif de ce qui sera enregistré après confirmation.\n"
+                        "2. Appeler `propose_options` avec [✅ Confirmer] [✏️ Modifier] et les prochaines actions.\n"
+                        "NE dis PAS que les données sont déjà enregistrées — elles attendent validation."
+                    )
+                else:
+                    result_msg = "OK."
+                tool_result_content.append({
+                    "type": "tool_result",
                     "tool_use_id": block.id,
-                    "content":     result_msg,
-                }],
-            })
+                    "content": result_msg,
+                })
+
+        if tool_result_content:
+            history.append({"role": "user", "content": tool_result_content})
 
     return {
         "message":         "\n".join(text_parts),
