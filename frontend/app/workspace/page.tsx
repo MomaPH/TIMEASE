@@ -1,8 +1,9 @@
 'use client'
 import { useState, useEffect, useRef, useCallback, Suspense } from 'react'
-import { Paperclip, Send, Loader2, Bot, MessageSquare, LayoutDashboard, RotateCcw, CheckCircle, XCircle, ChevronDown, ChevronUp } from 'lucide-react'
+import { Bot, MessageSquare, LayoutDashboard, RotateCcw, CheckCircle, XCircle, ChevronDown, ChevronUp, Loader2 } from 'lucide-react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import ChatMessage from '@/components/ChatMessage'
+import ChatInput from '@/components/ChatInput'
 import AgentActionPill from '@/components/AgentActionPill'
 import StepIndicator from '@/components/StepIndicator'
 import StepPanel from '@/components/StepPanel'
@@ -88,14 +89,15 @@ function WorkspaceContent() {
   const [isSolving,        setIsSolving]        = useState(false)
   const [pendingChanges,   setPendingChanges]   = useState<PendingChange[]>([])
   const [activeTool,       setActiveTool]       = useState<string | null>(null)
+  const [isStreamInterrupted, setIsStreamInterrupted] = useState(false)
   const [expandedPreviews, setExpandedPreviews] = useState<Set<number>>(new Set())
   const transientIdRef = useRef<string | null>(null)
+  const streamAbortRef = useRef<AbortController | null>(null)
 
   // ── Import modal ──────────────────────────────────────────────────────────
   const [importModal, setImportModal] = useState<{ open: boolean; data?: any }>({ open: false })
 
   const scrollRef = useRef<HTMLDivElement>(null)
-  const fileRef   = useRef<HTMLInputElement>(null)
 
   // ── Restore messages + history; honour ?step= param ─────────────────────
   useEffect(() => {
@@ -111,10 +113,13 @@ function WorkspaceContent() {
     }
   }, [sessionId]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  // ── Auto-scroll ───────────────────────────────────────────────────────────
+  // ── Auto-scroll with smooth behavior ──────────────────────────────────────
   useEffect(() => {
     if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight
+      scrollRef.current.scrollTo({
+        top: scrollRef.current.scrollHeight,
+        behavior: 'smooth'
+      })
     }
   }, [messages, isLoading])
 
@@ -158,6 +163,11 @@ function WorkspaceContent() {
 
   // ── Streaming send helper ─────────────────────────────────────────────────
   async function _streamSend(msg: string, fileContent?: string) {
+    streamAbortRef.current?.abort()
+    const controller = new AbortController()
+    streamAbortRef.current = controller
+    setIsStreamInterrupted(false)
+
     // Append a placeholder AI message that we'll fill in as tokens arrive
     const streamingId = Date.now().toString()
     setMessages(prev => {
@@ -195,11 +205,20 @@ function WorkspaceContent() {
         },
         // onToolStart: show active tool pill
         (name) => setActiveTool(name),
+        controller.signal,
       )
     } catch (err) {
       removeStreamingMsg()
       setActiveTool(null)
+      if (err instanceof DOMException && err.name === 'AbortError') {
+        setIsStreamInterrupted(true)
+        return
+      }
       throw err
+    } finally {
+      if (streamAbortRef.current === controller) {
+        streamAbortRef.current = null
+      }
     }
 
     // Clear tool pill when streaming completes
@@ -283,37 +302,6 @@ function WorkspaceContent() {
     }
   }
 
-  // ── File upload ───────────────────────────────────────────────────────────
-  async function handleUpload(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0]
-    if (!file || !sessionId) return
-    e.target.value = ''
-
-    addMessage({ role: 'user', content: `📎 ${file.name}` })
-    setIsLoading(true)
-
-    try {
-      const res = await uploadFile(sessionId, file)
-
-      if (res.type === 'direct_import') {
-        refreshSession()
-        setImportModal({ open: true, data: res })
-        toast('Fichier importé avec succès')
-      } else if (res.type === 'text_extract') {
-        // Send extracted text to AI for processing via streaming
-        await _streamSend('Analyse ce fichier et enregistre les données.', res.content)
-        toast('Fichier traité par l\'assistant')
-      } else {
-        addMessage({ role: 'ai', content: 'Je n\'ai pas pu lire ce fichier. Essayez un autre format (xlsx, pdf, docx, csv, txt).' })
-      }
-    } catch {
-      addMessage({ role: 'ai', content: 'Erreur lors du traitement du fichier.' })
-      toast('Erreur lors de l\'upload', 'error')
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
   // ── Direct data edits (from StepPanel forms) ──────────────────────────────
   async function handleUpdateSchoolData(newData: SchoolData) {
     await updateSchoolData(newData)
@@ -323,17 +311,13 @@ function WorkspaceContent() {
     await updateAssignments(newAssignments)
   }
 
-  // ── Auto-trigger: send a silent AI message (no user bubble) ─────────────
-  async function autoTrigger(prompt: string) {
-    if (!sessionId) return
-    setIsLoading(true)
-    try {
-      await _streamSend(prompt)
-    } catch {
-      // silent — don't show error for auto-triggers
-    } finally {
-      setIsLoading(false)
-    }
+  function handleStopStreaming() {
+    if (!streamAbortRef.current) return
+    streamAbortRef.current.abort()
+    setIsLoading(false)
+    setActiveTool(null)
+    toast('Génération interrompue')
+    addMessage({ role: 'system', content: 'Génération interrompue.' })
   }
 
   // ── Generate timetable ────────────────────────────────────────────────────
@@ -374,15 +358,7 @@ function WorkspaceContent() {
             : `✅ **${res.assignments?.length ?? 0} sessions planifiées.**`,
         })
 
-        if (partial) {
-          // Auto-trigger AI diagnosis — no user bubble, AI analyses and proposes fixes
-          setIsSolving(false)
-          await autoTrigger(
-            'Analyse les sessions non planifiées de la dernière génération et explique pourquoi ' +
-            'chacune n\'a pas pu être planifiée en termes simples. Propose des solutions concrètes ' +
-            'avec des options cliquables et indique l\'étape à corriger.',
-          )
-        } else {
+        if (!partial) {
           setTimeout(() => router.push('/results'), 1200)
         }
       } else {
@@ -392,12 +368,6 @@ function WorkspaceContent() {
           content: `❌ **Génération impossible**\n\n${summary}`,
         })
         toast('Impossible de générer l\'emploi du temps', 'error')
-        // Auto-trigger AI conflict diagnosis
-        setIsSolving(false)
-        await autoTrigger(
-          'Explique les conflits détectés lors de la dernière tentative de génération en français simple ' +
-          'et propose des corrections concrètes avec des options cliquables.',
-        )
         return
       }
     } catch {
@@ -478,8 +448,30 @@ function WorkspaceContent() {
                 key={i}
                 message={msg}
                 onOptionSelect={(value) => send(value)}
+                isLastMessage={i === messages.length - 1}
+                onRegenerate={i === messages.length - 1 && msg.role === 'ai' ? () => {
+                  // Remove last AI message and resend previous user message
+                  if (i > 0 && messages[i - 1].role === 'user') {
+                    setMessages(prev => prev.slice(0, -1))
+                    send(messages[i - 1].content)
+                  }
+                } : undefined}
+                onEdit={msg.role === 'user' ? () => {
+                  // Populate input with message content for editing
+                  setInput(msg.content)
+                  // Remove this message and all subsequent messages
+                  setMessages(prev => prev.slice(0, i))
+                } : undefined}
               />
             ))}
+
+            {isStreamInterrupted && (
+              <div className="mb-2 flex justify-center">
+                <span className="text-[11px] text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 px-2 py-1 rounded-full">
+                  Réponse interrompue. Vous pouvez reformuler ou relancer.
+                </span>
+              </div>
+            )}
 
             {/* Active tool pill */}
             {activeTool && (
@@ -584,55 +576,53 @@ function WorkspaceContent() {
           </div>
 
           {/* Input bar */}
-          <div className="flex-shrink-0 border-t border-gray-100 dark:border-gray-800">
-            {pendingChanges.length > 0 && (
-              <div className="px-4 py-1.5 text-xs text-center text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/20">
-                Révisez les modifications ci-dessus avant de continuer
-              </div>
-            )}
-            <div className="flex items-center gap-2 px-3 sm:px-4 py-3">
-              <button
-                onClick={() => fileRef.current?.click()}
-                title="Envoyer un fichier"
-                disabled={isLoading || !sessionId || pendingChanges.length > 0}
-                suppressHydrationWarning
-                className="text-gray-400 hover:text-teal-600 dark:hover:text-teal-400 flex-shrink-0 transition-colors p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 disabled:opacity-50"
-              >
-                <Paperclip size={17} />
-              </button>
-              <input
-                type="file"
-                ref={fileRef}
-                className="hidden"
-                accept=".xlsx,.xls,.csv,.docx,.txt,.pdf,.json,.md,.markdown,.yaml,.yml"
-                onChange={handleUpload}
-              />
-              <input
-                value={input}
-                onChange={e => setInput(e.target.value)}
-                onKeyDown={e => e.key === 'Enter' && !e.shiftKey && send()}
-                placeholder={
-                  pendingChanges.length > 0
-                    ? 'Révisez les modifications avant de continuer…'
-                    : sessionId ? 'Message…' : 'Chargement…'
-                }
-                disabled={isLoading || !sessionId || pendingChanges.length > 0}
-                suppressHydrationWarning
-                className="flex-1 px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:bg-white dark:focus:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 disabled:opacity-60 transition-all"
-              />
-              <button
-                onClick={() => send()}
-                disabled={isLoading || !input.trim() || !sessionId || pendingChanges.length > 0}
-                suppressHydrationWarning
-                className="p-2 rounded-xl bg-teal-600 text-white hover:bg-teal-700 disabled:opacity-40 transition-colors flex-shrink-0"
-              >
-                {isLoading
-                  ? <Loader2 size={16} className="animate-spin" />
-                  : <Send size={16} />
-                }
-              </button>
+          {pendingChanges.length > 0 && (
+            <div className="px-4 py-1.5 text-xs text-center text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/20 border-t border-gray-100 dark:border-gray-800">
+              Révisez les modifications ci-dessus avant de continuer
             </div>
-          </div>
+          )}
+          <ChatInput
+            value={input}
+            onChange={setInput}
+            onSend={() => send()}
+            onStop={handleStopStreaming}
+            onFileUpload={async (file) => {
+              if (!sessionId) return
+              
+              addMessage({ role: 'user', content: `📎 ${file.name}` })
+              setIsLoading(true)
+
+              try {
+                const res = await uploadFile(sessionId, file)
+
+                if (res.type === 'direct_import') {
+                  refreshSession()
+                  setImportModal({ open: true, data: res })
+                  toast('Fichier importé avec succès')
+                } else if (res.type === 'text_extract') {
+                  // Send extracted text to AI for processing via streaming
+                  await _streamSend('Analyse ce fichier et enregistre les données.', res.content)
+                  toast('Fichier traité par l\'assistant')
+                } else {
+                  addMessage({ role: 'ai', content: 'Je n\'ai pas pu lire ce fichier. Essayez un autre format (xlsx, pdf, docx, csv, txt).' })
+                }
+              } catch {
+                addMessage({ role: 'ai', content: 'Erreur lors du traitement du fichier.' })
+                toast('Erreur lors de l\'upload', 'error')
+              } finally {
+                setIsLoading(false)
+              }
+            }}
+            isLoading={isLoading}
+            isStreaming={messages.some(m => (m as any)._streamingId !== undefined)}
+            disabled={pendingChanges.length > 0}
+            placeholder={
+              pendingChanges.length > 0
+                ? 'Révisez les modifications avant de continuer…'
+                : sessionId ? 'Message…' : 'Chargement…'
+            }
+            sessionId={sessionId}
+          />
         </div>
 
         {/* ── Right panel: Step indicator + form ── */}
@@ -653,6 +643,14 @@ function WorkspaceContent() {
               onNext={handleNext}
               onGenerate={handleGenerate}
               isSolving={isSolving}
+              onAskAI={(errorContext) => {
+                // Send error context to AI chat
+                send(errorContext)
+                // Switch to chat view on mobile
+                if (window.innerWidth < 768) {
+                  setMobileView('chat')
+                }
+              }}
             />
           </div>
         </div>

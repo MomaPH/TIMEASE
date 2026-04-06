@@ -36,6 +36,7 @@ export async function sendChatStream(
   aiHistory: any[],
   onDelta: (text: string) => void,
   onToolStart: (name: string) => void,
+  signal?: AbortSignal,
 ): Promise<{
   data_saved: boolean
   trigger_generation: boolean
@@ -49,6 +50,7 @@ export async function sendChatStream(
     method:  'POST',
     headers: { 'Content-Type': 'application/json' },
     body:    JSON.stringify({ message, file_content: fileContent, ai_history: aiHistory }),
+    signal,
   })
   if (!res.ok) throw new Error(`Chat stream failed: ${res.status}`)
   if (!res.body)  throw new Error('No response body')
