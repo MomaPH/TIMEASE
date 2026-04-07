@@ -558,8 +558,49 @@ $ uv run pytest tests/ -x -q
 
 ---
 
+### 13. **Fixed Generate Button Not Re-enabling After AI Help**
+**File:** `frontend/app/workspace/page.tsx`
+
+**Problem:**
+- User reported: "when the AI helps solve the issues, there is nothing that makes the generate button available again"
+- After AI chat saves data (e.g., completing curriculum/assignments), button stays disabled
+- Checklist doesn't update to show new "done" items
+
+**Root Cause:**
+Line 248 called `refreshSession()` without `await`:
+```typescript
+if (res.data_saved) refreshSession()  // ❌ Not awaited!
+```
+
+This caused:
+1. Session refresh happens asynchronously
+2. React re-renders before `schoolData`/`assignments` update
+3. Checklist calculations still see old data
+4. Button remains disabled even though requirements are met
+
+**Solution:**
+```typescript
+if (res.data_saved) await refreshSession()  // ✅ Wait for data
+```
+
+**Impact:**
+- ✅ Button becomes available immediately after AI saves data
+- ✅ Checklist updates correctly showing completed items
+- ✅ User can proceed to generate without manual refresh
+
+**Testing:**
+```bash
+$ cd frontend && npm run build
+✓ Compiled successfully in 2.9s
+```
+
+**Commit:** `fab7d47`
+
+---
+
 **All critical fixes applied successfully.** ✅
 **OpenAI tool calling now matches Claude behavior.** 🎯
+**Generate button properly updates after AI help.** ✨
 **Project ready for continued Phase 2 work.** 🚀
 
 ## Summary of Changes
@@ -573,6 +614,7 @@ $ uv run pytest tests/ -x -q
 | No OpenAI support | ✅ Added | Full integration with provider toggle |
 | History corruption errors | ✅ Fixed | Added _sanitize_history() |
 | OpenAI no tool calling | ✅ Fixed | Implemented complete tool calling |
+| Generate button stuck disabled | ✅ Fixed | Await refreshSession() after data save |
 
 ## Current Configuration
 
