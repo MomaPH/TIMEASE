@@ -245,7 +245,7 @@ function WorkspaceContent() {
       setPendingChanges(res.pending_changes)
       setExpandedPreviews(new Set())
     }
-    if (res.data_saved)                  refreshSession()
+    if (res.data_saved)                  await refreshSession()
     if (typeof res.set_step === 'number') setCurrentStep(res.set_step)
     if (res.trigger_generation)          handleGenerate()
   }
@@ -588,7 +588,7 @@ function WorkspaceContent() {
             onStop={handleStopStreaming}
             onFileUpload={async (file) => {
               if (!sessionId) return
-              
+
               addMessage({ role: 'user', content: `📎 ${file.name}` })
               setIsLoading(true)
 
