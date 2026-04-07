@@ -445,6 +445,264 @@ def merge_data(sid: str, payload: dict):
     return {"ok": True}
 
 
+# ── Workload Analysis Tool ─────────────────────────────────────────────────────
+
+def _analyze_workload(sid: str, check_type: str) -> dict:
+    """Analyze workload: hours demanded vs teacher/room capacity.
+
+    Returns structured analysis with calculations for the AI to present.
+    """
+    sd = sessions[sid]["school_data"]
+    ta = sessions[sid]["teacher_assignments"]
+
+    classes = sd.get("classes", [])
+    teachers = sd.get("teachers", [])
+    rooms = sd.get("rooms", [])
+    subjects = sd.get("subjects", [])
+    curriculum = sd.get("curriculum", [])
+
+    result: dict = {"check_type": check_type, "analyses": [], "warnings": [], "suggestions": []}
+
+    # ── Teacher capacity analysis ──────────────────────────────────────────────
+    if check_type in ("teachers", "all"):
+        # Calculate hours demanded per subject
+        subject_hours: dict[str, int] = {}
+        for entry in curriculum:
+            subj = entry.get("subject", "")
+            minutes = entry.get("total_minutes_per_week", 0)
+            hours = minutes / 60
+            subject_hours[subj] = subject_hours.get(subj, 0) + hours
+
+        # Calculate teacher capacity per subject
+        subject_capacity: dict[str, dict] = {}  # subject -> {teachers: [], total_hours: int}
+        for t in teachers:
+            max_h = t.get("max_hours_per_week", 18)
+            for subj in t.get("subjects", []):
+                if subj not in subject_capacity:
+                    subject_capacity[subj] = {"teachers": [], "total_hours": 0}
+                subject_capacity[subj]["teachers"].append(t.get("name", "?"))
+                subject_capacity[subj]["total_hours"] += max_h
+
+        teacher_analysis = []
+        for subj in sorted(set(list(subject_hours.keys()) + list(subject_capacity.keys()))):
+            demanded = subject_hours.get(subj, 0)
+            capacity_info = subject_capacity.get(subj, {"teachers": [], "total_hours": 0})
+            capacity = capacity_info["total_hours"]
+            teacher_names = capacity_info["teachers"]
+
+            status = "✅" if capacity >= demanded else "❌"
+            diff = capacity - demanded
+
+            entry = {
+                "subject": subj,
+                "hours_demanded": round(demanded, 1),
+                "hours_available": capacity,
+                "teachers": teacher_names,
+                "teacher_count": len(teacher_names),
+                "difference": round(diff, 1),
+                "status": status,
+            }
+            teacher_analysis.append(entry)
+
+            if diff < 0:
+                needed_teachers = abs(diff) / 18  # assuming 18h/week per teacher
+                result["warnings"].append(
+                    f"{subj}: déficit de {abs(round(diff, 1))}h/semaine"
+                )
+                result["suggestions"].append(
+                    f"Pour {subj}: recruter {max(1, round(needed_teachers))} enseignant(s) "
+                    f"supplémentaire(s) OU réduire le volume horaire"
+                )
+
+        result["analyses"].append({
+            "type": "teachers",
+            "title": "Capacité enseignants par matière",
+            "data": teacher_analysis,
+        })
+
+    # ── Room capacity analysis ─────────────────────────────────────────────────
+    if check_type in ("rooms", "all"):
+        # Total class-hours per week
+        total_class_hours = sum(
+            entry.get("total_minutes_per_week", 0) / 60
+            for entry in curriculum
+        )
+
+        # Room slots available (assuming 6 days × 7 hours = 42 slots per room)
+        days = sd.get("days", [])
+        sessions_list = sd.get("sessions", [])
+        slots_per_day = 0
+        for sess in sessions_list:
+            start = sess.get("start_time", "08:00")
+            end = sess.get("end_time", "12:00")
+            try:
+                sh, sm = map(int, start.split(":"))
+                eh, em = map(int, end.split(":"))
+                duration_min = (eh * 60 + em) - (sh * 60 + sm)
+                base_unit = sd.get("base_unit_minutes", 55)
+                slots_per_day += duration_min // base_unit
+            except (ValueError, AttributeError):
+                slots_per_day += 4  # fallback
+
+        total_room_slots = len(rooms) * len(days) * slots_per_day
+
+        room_analysis = {
+            "room_count": len(rooms),
+            "days": len(days),
+            "slots_per_day": slots_per_day,
+            "total_slots_available": total_room_slots,
+            "total_class_hours_needed": round(total_class_hours, 1),
+            "utilization_percent": round((total_class_hours / total_room_slots * 100), 1) if total_room_slots > 0 else 0,
+        }
+
+        result["analyses"].append({
+            "type": "rooms",
+            "title": "Capacité salles",
+            "data": room_analysis,
+        })
+
+        if total_class_hours > total_room_slots:
+            result["warnings"].append(
+                f"Salles insuffisantes: {round(total_class_hours)}h demandées vs {total_room_slots}h disponibles"
+            )
+
+    # ── Curriculum completeness ────────────────────────────────────────────────
+    if check_type in ("curriculum", "all"):
+        class_names = {c.get("name", "") for c in classes}
+        subject_names = {s.get("name", "") for s in subjects}
+
+        curriculum_by_class: dict[str, set] = {}
+        for entry in curriculum:
+            cls = entry.get("school_class", "")
+            subj = entry.get("subject", "")
+            if cls not in curriculum_by_class:
+                curriculum_by_class[cls] = set()
+            curriculum_by_class[cls].add(subj)
+
+        missing = []
+        for cls in class_names:
+            cls_subjects = curriculum_by_class.get(cls, set())
+            for subj in subject_names:
+                if subj not in cls_subjects:
+                    missing.append({"class": cls, "subject": subj})
+
+        result["analyses"].append({
+            "type": "curriculum",
+            "title": "Complétude du programme",
+            "data": {
+                "classes_count": len(class_names),
+                "subjects_count": len(subject_names),
+                "curriculum_entries": len(curriculum),
+                "expected_entries": len(class_names) * len(subject_names),
+                "missing_entries": missing[:20],  # limit for display
+            },
+        })
+
+        if missing:
+            result["warnings"].append(
+                f"Programme incomplet: {len(missing)} entrées manquantes"
+            )
+
+    return result
+
+
+# ── Template Generator ─────────────────────────────────────────────────────────
+
+# Standard Senegalese curriculum hours per week
+_COLLEGE_CURRICULUM = {
+    "Français": 5, "Mathématiques": 5, "Anglais": 3, "Histoire-Géographie": 3,
+    "SVT": 2, "Physique-Chimie": 2, "EPS": 2, "Arts plastiques": 1,
+    "Éducation civique": 1,
+}
+
+_LYCEE_S_CURRICULUM = {
+    "Mathématiques": 6, "Physique-Chimie": 5, "SVT": 4, "Français": 4,
+    "Anglais": 3, "Histoire-Géographie": 3, "Philosophie": 2, "EPS": 2,
+}
+
+_LYCEE_L_CURRICULUM = {
+    "Français": 6, "Philosophie": 5, "Histoire-Géographie": 4, "Anglais": 4,
+    "Espagnol": 3, "Mathématiques": 3, "EPS": 2, "Arts": 2,
+}
+
+
+def _generate_template(template_type: str, class_count_per_level: int = 1) -> dict:
+    """Generate a pre-filled school template.
+
+    Returns data that can be merged into school_data.
+    """
+    classes = []
+    curriculum_entries = []
+    subjects = []
+
+    if template_type == "college_standard":
+        levels = ["6ème", "5ème", "4ème", "3ème"]
+        curriculum_def = _COLLEGE_CURRICULUM
+    elif template_type == "lycee_s":
+        levels = ["2nde", "1ère S", "Tle S"]
+        curriculum_def = _LYCEE_S_CURRICULUM
+    elif template_type == "lycee_l":
+        levels = ["2nde", "1ère L", "Tle L"]
+        curriculum_def = _LYCEE_L_CURRICULUM
+    elif template_type == "lycee_mixte":
+        levels = ["2nde", "1ère S", "1ère L", "Tle S", "Tle L"]
+        curriculum_def = {**_LYCEE_S_CURRICULUM, **_LYCEE_L_CURRICULUM}
+    else:
+        levels = ["CP", "CE1", "CE2", "CM1", "CM2"]
+        curriculum_def = {"Français": 8, "Mathématiques": 5, "Éveil": 3, "EPS": 2}
+
+    # Generate subjects
+    colors = ["#3b82f6", "#ef4444", "#22c55e", "#f59e0b", "#8b5cf6",
+              "#ec4899", "#06b6d4", "#84cc16", "#f97316"]
+    for i, (subj_name, _) in enumerate(curriculum_def.items()):
+        subjects.append({
+            "name": subj_name,
+            "short_name": subj_name[:4].upper(),
+            "color": colors[i % len(colors)],
+            "needs_room": True,
+        })
+
+    # Generate classes
+    suffixes = "ABCDE"[:class_count_per_level]
+    for level in levels:
+        for suffix in suffixes:
+            class_name = f"{level} {suffix}" if class_count_per_level > 1 else level
+            classes.append({
+                "name": class_name,
+                "level": level,
+                "student_count": 35,
+            })
+
+            # Generate curriculum for this class
+            for subj_name, hours in curriculum_def.items():
+                # Skip series-specific subjects for wrong classes
+                if "S" in class_name and subj_name in ["Espagnol", "Arts"]:
+                    continue
+                if "L" in class_name and subj_name == "SVT":
+                    continue
+
+                curriculum_entries.append({
+                    "school_class": class_name,
+                    "subject": subj_name,
+                    "total_minutes_per_week": hours * 60,
+                    "sessions_per_week": hours,
+                    "minutes_per_session": 55,
+                })
+
+    return {
+        "template_type": template_type,
+        "classes": classes,
+        "subjects": subjects,
+        "curriculum": curriculum_entries,
+        "days": ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"],
+        "sessions": [
+            {"name": "Matin", "start_time": "08:00", "end_time": "12:30"},
+            {"name": "Après-midi", "start_time": "15:00", "end_time": "17:00"},
+        ],
+        "base_unit_minutes": 55,
+    }
+
+
 def _dispatch_tool_calls(
     sid: str,
     tool_calls: list[dict],
@@ -461,6 +719,8 @@ def _dispatch_tool_calls(
     trigger_generation = False
     proposed_options: list[dict] = []
     set_step: int | None = None
+    workload_analysis: dict | None = None
+    template_data: dict | None = None
 
     for tc in tool_calls:
         name = tc["name"]
@@ -471,6 +731,13 @@ def _dispatch_tool_calls(
             proposed_options = data.get("options", [])
         elif name == "set_current_step":
             set_step = data.get("step")
+        elif name == "analyze_workload":
+            check_type = data.get("check_type", "all")
+            workload_analysis = _analyze_workload(sid, check_type)
+        elif name == "suggest_template":
+            template_type = data.get("template_type", "college_standard")
+            class_count = data.get("class_count_per_level", 1)
+            template_data = _generate_template(template_type, class_count)
         elif name in _SAVE_TOOLS:
             pending.append({
                 "tool":    name,
@@ -493,6 +760,8 @@ def _dispatch_tool_calls(
         "options":            proposed_options,
         "set_step":           set_step,
         "saved_types":        saved_types,
+        "workload_analysis":  workload_analysis,
+        "template_data":      template_data,
     }
 
 
@@ -592,6 +861,8 @@ async def chat_stream(sid: str, payload: dict):
                     "options":            dispatch["options"],
                     "set_step":           dispatch["set_step"],
                     "saved_types":        dispatch["saved_types"],
+                    "workload_analysis":  dispatch.get("workload_analysis"),
+                    "template_data":      dispatch.get("template_data"),
                     "ai_history":         updated_history,
                 }
                 yield f"data: {json.dumps(done_payload)}\n\n"
