@@ -640,7 +640,7 @@ def stream_chat(
 
         try:
             with client.messages.stream(
-                model="claude-3-5-sonnet-20241022",
+                model="claude-sonnet-4-20250514",
                 max_tokens=2048,
                 system=system_prompt,
                 tools=TOOLS,
@@ -774,7 +774,7 @@ def process_chat(
     MAX_TURNS = 4
     for _turn in range(MAX_TURNS):
         response = client.messages.create(
-            model="claude-3-5-sonnet-20241022",
+            model="claude-sonnet-4-20250514",
             max_tokens=2048,
             system=system_prompt,
             tools=TOOLS,

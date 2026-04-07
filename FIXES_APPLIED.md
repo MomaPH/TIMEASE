@@ -340,5 +340,58 @@ git check-ignore logs/dev/test.log && echo "✅ Logs ignored"
 
 ---
 
+## ✅ Fixes Applied (2026-04-07)
+
+### 6. **Dark Mode Toggle Not Working**
+**Problem:** Dark mode CSS variables were defined in `globals.css` but never applied (no theme toggle mechanism).
+
+**Solution:**
+- Installed `next-themes` package
+- Created `ThemeProvider.tsx` wrapper component
+- Created `ThemeToggle.tsx` for sidebar
+- Updated `layout.tsx` to wrap app in ThemeProvider
+- Updated `Sidebar.tsx` to use `useTheme()` hook instead of manual DOM manipulation
+
+**Files:**
+- `frontend/components/ThemeProvider.tsx` (new)
+- `frontend/components/ThemeToggle.tsx` (new)
+- `frontend/app/layout.tsx` (updated)
+- `frontend/components/Sidebar.tsx` (updated)
+
+**Commit:** `64974d8`
+
+---
+
+### 7. **Emploi du temps and Exports Pages Not Distinct**
+**Problem:** Both timetable view and export center were combined in `/results` page.
+
+**Solution:**
+- Created dedicated `/exports` page with 6 format cards (PDF, Excel, Word, CSV, JSON, Markdown)
+- Simplified `/results` to focus on timetable display only
+- Added link from results → exports
+- Updated sidebar navigation (separate "Emploi du temps" and "Exports" routes)
+
+**Files:**
+- `frontend/app/exports/page.tsx` (new)
+- `frontend/app/results/page.tsx` (simplified)
+- `frontend/components/Sidebar.tsx` (nav routes updated)
+
+**Commit:** `64974d8`
+
+---
+
+### 8. **"Impossible de contacter le serveur" Error**
+**Problem:** User saw connection error when using workspace.
+
+**Cause:** API server was not running. Sessions are in-memory only — restart clears them.
+
+**No code fix needed.** This is expected behavior:
+- Run `./start.sh` to start both API and frontend
+- If server restarts, create new session (automatic)
+
+**Future improvement:** Phase 4 will add database persistence.
+
+---
+
 **All critical fixes applied successfully.** ✅
 **Project ready for continued Phase 2 work.** 🚀
