@@ -5,7 +5,7 @@ import { FileDown, CalendarDays, Loader2, AlertTriangle, ArrowRight, CheckCircle
 import TimetableGrid from '@/components/TimetableGrid'
 import { useSession } from '@/hooks/useSession'
 import { useToast } from '@/components/Toast'
-import { exportFile, restoreSession } from '@/lib/api'
+import { restoreSession } from '@/lib/api'
 import type { TimetableAssignment, BreakSlot } from '@/lib/types'
 
 type TabId = 'class' | 'teacher' | 'room' | 'subject'
@@ -15,15 +15,6 @@ const TABS: { id: TabId; label: string }[] = [
   { id: 'teacher', label: 'Par enseignant' },
   { id: 'room',    label: 'Par salle' },
   { id: 'subject', label: 'Par matière' },
-]
-
-const EXPORT_FORMATS: { id: string; label: string; desc: string; tags: string[]; iconClass: string }[] = [
-  { id: 'pdf',  label: 'PDF',    desc: 'Document imprimable haute qualité',     tags: ['A4', 'Multi-pages'], iconClass: 'export-icon-pdf' },
-  { id: 'xlsx', label: 'Excel',  desc: 'Classeur avec feuilles multiples',      tags: ['Filtrable', 'Éditable'], iconClass: 'export-icon-xlsx' },
-  { id: 'docx', label: 'Word',   desc: 'Document éditable pour circulaires',    tags: ['Styles', 'Éditable'], iconClass: 'export-icon-docx' },
-  { id: 'csv',  label: 'CSV',    desc: 'Données brutes pour import système',    tags: ['UTF-8', 'Universel'], iconClass: 'export-icon-csv' },
-  { id: 'json', label: 'JSON',   desc: 'Format structuré pour intégrations',    tags: ['Schema', 'API'], iconClass: 'export-icon-json' },
-  { id: 'md',   label: 'Markdown', desc: 'Texte formaté pour documentation',    tags: ['Portable', 'Git-friendly'], iconClass: 'export-icon-html' },
 ]
 
 // ── Skeleton ──────────────────────────────────────────────────────────────────
@@ -38,24 +29,12 @@ function GridSkeleton() {
   )
 }
 
-// ── Export Icon SVGs ──────────────────────────────────────────────────────────
-function ExportIcon({ format, className }: { format: string; className?: string }) {
-  return (
-    <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${className}`}>
-      <svg viewBox="0 0 24 24" className="w-6 h-6">
-        <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm-1 2l5 5h-5V4zM9 13h6v2H9v-2zm6 4H9v2h6v-2z"/>
-      </svg>
-    </div>
-  )
-}
-
 export default function ResultsPage() {
   const { sessionId, timetable, schoolData, assignments: sessionAssignments } = useSession()
   const { toast }                 = useToast()
 
   const [activeTab, setActiveTab]     = useState<TabId>('class')
   const [selected, setSelected]       = useState<string>('')
-  const [downloading, setDownloading] = useState<string | null>(null)
 
   const assignments: TimetableAssignment[] = timetable?.assignments ?? []
   const isLoading = !sessionId
@@ -132,33 +111,6 @@ export default function ResultsPage() {
         label: s.name || 'Pause',
       }))
   }, [schoolData])
-
-  // ── Export ─────────────────────────────────────────────────────────────────
-  async function handleExport(format: string) {
-    if (!sessionId || downloading) return
-    setDownloading(format)
-    try {
-      // Re-hydrate the backend session from localStorage before exporting
-      // (the in-memory session is lost on backend restart)
-      await restoreSession(sessionId, {
-        school_data:         schoolData,
-        teacher_assignments: sessionAssignments,
-        timetable_result:    timetable,
-      })
-      const blob = await exportFile(sessionId, format)
-      const url  = URL.createObjectURL(blob)
-      const a    = document.createElement('a')
-      a.href     = url
-      a.download = `emploi_du_temps.${format}`
-      a.click()
-      URL.revokeObjectURL(url)
-      toast('Fichier exporté')
-    } catch {
-      toast('Erreur lors de l\'export', 'error')
-    } finally {
-      setDownloading(null)
-    }
-  }
 
   // ── Empty state (session loaded but no timetable yet) ──────────────────────
   if (!isLoading && !assignments.length) {
@@ -337,38 +289,18 @@ export default function ResultsPage() {
       </section>
 
       {/* ════════════════════════════════════════════════════════════════════
-          EXPORT CENTER
+          EXPORT LINK
           ════════════════════════════════════════════════════════════════════ */}
-      <section id="exports">
-        <h2 className="text-xl font-semibold text-zinc-900 dark:text-white tracking-tight mb-4">Centre d'export</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px bg-zinc-200 dark:bg-zinc-700 border border-zinc-200 dark:border-zinc-700 rounded-xl overflow-hidden">
-          {EXPORT_FORMATS.map(fmt => (
-            <button
-              key={fmt.id}
-              onClick={() => handleExport(fmt.id)}
-              disabled={!!downloading || isLoading}
-              className="bg-white dark:bg-zinc-900 p-5 text-left hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors disabled:opacity-50 group relative"
-            >
-              <div className="absolute inset-0 border-2 border-transparent group-hover:border-indigo-500 rounded-xl pointer-events-none transition-colors" />
-              <ExportIcon format={fmt.id} className={fmt.iconClass} />
-              <div className="mt-4">
-                <div className="flex items-center gap-2">
-                  <span className="font-semibold text-zinc-900 dark:text-white">{fmt.label}</span>
-                  {downloading === fmt.id && <Loader2 size={14} className="animate-spin text-indigo-500" />}
-                </div>
-                <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">{fmt.desc}</p>
-                <div className="flex flex-wrap gap-2 mt-3">
-                  {fmt.tags.map(tag => (
-                    <span key={tag} className="text-[11px] font-medium px-2 py-0.5 bg-zinc-100 dark:bg-zinc-800 rounded text-zinc-600 dark:text-zinc-400">
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </button>
-          ))}
-        </div>
-      </section>
+      <div className="flex justify-center">
+        <Link
+          href="/exports"
+          className="inline-flex items-center gap-3 px-6 py-3 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl hover:border-indigo-500 hover:shadow-lg transition-all group"
+        >
+          <FileDown size={20} className="text-indigo-600 dark:text-indigo-400" />
+          <span className="font-medium text-zinc-900 dark:text-white">Exporter l'emploi du temps</span>
+          <ArrowRight size={16} className="text-zinc-400 group-hover:text-indigo-500 transition-colors" />
+        </Link>
+      </div>
 
       {/* ════════════════════════════════════════════════════════════════════
           CONSTRAINTS PANEL

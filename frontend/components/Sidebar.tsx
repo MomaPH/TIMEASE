@@ -2,6 +2,7 @@
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { LayoutDashboard, Table2, Users, Home, Sun, Moon, X, Download, MessageSquare, Calendar } from 'lucide-react'
+import { useTheme } from 'next-themes'
 import { useState, useEffect } from 'react'
 
 const NAV_MAIN = [
@@ -11,8 +12,8 @@ const NAV_MAIN = [
 ]
 
 const NAV_TOOLS = [
-  { href: '/results#exports', label: 'Exports',     icon: Download },
-  { href: '/collaboration',   label: 'Collaboration', icon: Users },
+  { href: '/exports',       label: 'Exports',       icon: Download },
+  { href: '/collaboration', label: 'Collaboration', icon: Users },
 ]
 
 interface Props {
@@ -22,16 +23,15 @@ interface Props {
 
 export default function Sidebar({ mobileOpen, onMobileClose }: Props) {
   const path = usePathname()
-  const [dark, setDark] = useState(false)
+  const { theme, setTheme, resolvedTheme } = useTheme()
+  const [mounted, setMounted] = useState(false)
 
-  useEffect(() => {
-    setDark(document.documentElement.classList.contains('dark'))
-  }, [])
+  useEffect(() => setMounted(true), [])
+
+  const isDark = mounted && resolvedTheme === 'dark'
 
   function toggleDark() {
-    const next = !dark
-    setDark(next)
-    document.documentElement.classList.toggle('dark', next)
+    setTheme(isDark ? 'light' : 'dark')
   }
 
   const isActive = (href: string) => {
@@ -124,10 +124,10 @@ export default function Sidebar({ mobileOpen, onMobileClose }: Props) {
       <button
         onClick={toggleDark}
         className="flex items-center gap-3 px-3 py-2 text-zinc-400 text-sm font-medium hover:bg-white/[0.06] hover:text-zinc-200 rounded-lg transition-all duration-150 w-full"
-        aria-label={dark ? 'Passer en mode clair' : 'Passer en mode sombre'}
+        aria-label={isDark ? 'Passer en mode clair' : 'Passer en mode sombre'}
       >
-        {dark ? <Sun size={16} /> : <Moon size={16} />}
-        <span>{dark ? 'Mode clair' : 'Mode sombre'}</span>
+        {isDark ? <Sun size={16} /> : <Moon size={16} />}
+        <span>{mounted ? (isDark ? 'Mode clair' : 'Mode sombre') : '...'}</span>
       </button>
     </aside>
   )
