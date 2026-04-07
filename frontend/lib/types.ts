@@ -39,6 +39,13 @@ export interface TimetableAssignment {
   color: string
 }
 
+export interface BreakSlot {
+  type: 'break'
+  start_time: string
+  end_time: string
+  label: string
+}
+
 export type StepId =
   | 'school'
   | 'classes'

@@ -10,26 +10,28 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
   return (
     <ToastProvider>
       {/* ── Mobile top bar (hidden on md+) ─────────────────────────────── */}
-      <div className="md:hidden fixed top-0 left-0 right-0 z-30 h-14 bg-white dark:bg-gray-950 border-b border-gray-200 dark:border-gray-800 flex items-center px-4 gap-3">
+      <div className="md:hidden fixed top-0 left-0 right-0 z-30 h-14 bg-[#09090b] flex items-center px-4 gap-3">
         <button
           onClick={() => setMobileOpen(true)}
-          className="p-2 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+          className="p-2 rounded-lg text-zinc-400 hover:bg-white/10 hover:text-white transition-colors"
           aria-label="Ouvrir le menu"
         >
           <Menu size={20} />
         </button>
-        <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-full bg-teal-600 text-white flex items-center justify-center text-xs font-bold select-none">
-            T
+        <div className="flex items-center gap-3">
+          <div className="w-7 h-7 rounded-md bg-gradient-to-br from-indigo-500 to-indigo-600 flex items-center justify-center">
+            <svg viewBox="0 0 24 24" className="w-4 h-4 fill-white">
+              <path d="M19 4H5a2 2 0 00-2 2v12a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2zm0 14H5V8h14v10z"/>
+            </svg>
           </div>
-          <span className="font-semibold text-gray-900 dark:text-white text-base">TIMEASE</span>
+          <span className="font-semibold text-white text-base tracking-tight">TIMEASE</span>
         </div>
       </div>
 
       {/* ── Mobile backdrop ─────────────────────────────────────────────── */}
       {mobileOpen && (
         <div
-          className="md:hidden fixed inset-0 z-40 bg-black/40 animate-fade-in-fast"
+          className="md:hidden fixed inset-0 z-40 bg-black/60 backdrop-blur-sm animate-fade-in-fast"
           onClick={() => setMobileOpen(false)}
           aria-hidden="true"
         />
@@ -39,7 +41,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
       <Sidebar mobileOpen={mobileOpen} onMobileClose={() => setMobileOpen(false)} />
 
       {/* ── Page content ────────────────────────────────────────────────── */}
-      <main className="md:ml-60 min-h-screen pt-14 md:pt-0 p-4 sm:p-6 md:p-8">
+      <main className="md:ml-60 min-h-screen pt-14 md:pt-0 p-4 sm:p-6 md:p-8 bg-zinc-50 dark:bg-zinc-950">
         {children}
       </main>
     </ToastProvider>

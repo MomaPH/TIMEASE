@@ -1,23 +1,35 @@
 'use client'
-import type { TimetableAssignment } from '@/lib/types'
+import type { TimetableAssignment, BreakSlot } from '@/lib/types'
 
 interface Props {
   assignments: TimetableAssignment[]
   days: string[]
   view: 'class' | 'teacher' | 'room'
+  breaks?: BreakSlot[]
 }
 
-export default function TimetableGrid({ assignments, days, view }: Props) {
+const DAY_LABELS: Record<string, string> = {
+  lundi: 'Lun',
+  mardi: 'Mar',
+  mercredi: 'Mer',
+  jeudi: 'Jeu',
+  vendredi: 'Ven',
+  samedi: 'Sam',
+}
+
+export default function TimetableGrid({ assignments, days, view, breaks = [] }: Props) {
   if (!assignments.length) {
     return (
-      <div className="flex items-center justify-center h-32 text-sm text-gray-400 dark:text-gray-500">
+      <div className="flex items-center justify-center h-32 text-sm text-zinc-400 dark:text-zinc-500">
         Aucune donnée à afficher
       </div>
     )
   }
 
-  // Unique time slots sorted chronologically
-  const timeSlots = [...new Set(assignments.map(a => a.start_time))].sort()
+  // Unique time slots sorted chronologically, including break times
+  const sessionTimes = [...new Set(assignments.map(a => a.start_time))]
+  const breakTimes = breaks.map(b => b.start_time)
+  const allTimes = [...new Set([...sessionTimes, ...breakTimes])].sort()
 
   // Fast lookup: "day||time" → assignment
   const lookup = new Map<string, TimetableAssignment>()
@@ -25,15 +37,20 @@ export default function TimetableGrid({ assignments, days, view }: Props) {
     lookup.set(`${a.day}||${a.start_time}`, a)
   }
 
+  // Break lookup by start_time
+  const breakLookup = new Map<string, BreakSlot>()
+  for (const b of breaks) {
+    breakLookup.set(b.start_time, b)
+  }
+
   function getCell(day: string, time: string): TimetableAssignment | undefined {
     return lookup.get(`${day}||${time}`)
   }
 
-  // True when this (day, slotIndex) continues the previous slot's session
   function isContinuation(day: string, slotIndex: number): boolean {
     if (slotIndex === 0) return false
-    const prev = getCell(day, timeSlots[slotIndex - 1])
-    const curr = getCell(day, timeSlots[slotIndex])
+    const prev = getCell(day, allTimes[slotIndex - 1])
+    const curr = getCell(day, allTimes[slotIndex])
     if (!prev || !curr) return false
     return (
       prev.teacher === curr.teacher &&
@@ -42,7 +59,6 @@ export default function TimetableGrid({ assignments, days, view }: Props) {
     )
   }
 
-  // Secondary info line changes depending on perspective
   function subLine(a: TimetableAssignment): string {
     if (view === 'class') return `${a.teacher} · ${a.room}`
     if (view === 'teacher') return `${a.school_class} · ${a.room}`
@@ -51,75 +67,107 @@ export default function TimetableGrid({ assignments, days, view }: Props) {
 
   return (
     <div className="overflow-x-auto">
-      <table className="w-full border-collapse">
-        <thead>
-          <tr>
-            {/* Time label column header */}
-            <th className="w-14 border-b border-gray-200 dark:border-gray-700" />
-            {days.map(d => (
-              <th
-                key={d}
-                className="px-3 py-2.5 text-center text-xs font-semibold text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-gray-700 capitalize min-w-[130px]"
-              >
-                {d}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {timeSlots.map((time, ti) => (
-            <tr key={time} className="border-b border-gray-100 dark:border-gray-800 last:border-0">
-              {/* Time label */}
-              <td className="pr-2 pl-1 py-1.5 text-right text-[11px] font-mono text-gray-400 dark:text-gray-500 whitespace-nowrap align-top pt-2.5">
-                {time}
-              </td>
+      <div
+        className="grid border border-zinc-200 dark:border-zinc-800 rounded-xl overflow-hidden"
+        style={{ gridTemplateColumns: `60px repeat(${days.length}, 1fr)` }}
+      >
+        {/* Header row */}
+        <div className="bg-zinc-50 dark:bg-zinc-800/50 border-b border-zinc-200 dark:border-zinc-700" />
+        {days.map(d => (
+          <div
+            key={d}
+            className="px-3 py-3 text-center text-xs font-semibold text-zinc-600 dark:text-zinc-400 border-b border-zinc-200 dark:border-zinc-700 uppercase tracking-wide"
+          >
+            {DAY_LABELS[d.toLowerCase()] || d}
+          </div>
+        ))}
 
-              {days.map(day => {
+        {/* Time rows */}
+        {allTimes.map((time, ti) => {
+          const breakSlot = breakLookup.get(time)
+
+          if (breakSlot) {
+            // Render break row spanning all columns
+            return (
+              <div
+                key={`break-${time}`}
+                className="contents"
+              >
+                <div className="bg-zinc-50 dark:bg-zinc-800/50 px-2 py-2 text-right text-[11px] font-mono text-zinc-400 dark:text-zinc-500 border-r border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-end">
+                  {time}
+                </div>
+                <div
+                  className="break-row col-span-full border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-center py-2"
+                  style={{ gridColumn: `2 / -1` }}
+                >
+                  <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400 px-3 py-1 bg-white/60 dark:bg-zinc-900/60 rounded-full">
+                    {breakSlot.label || 'Pause'}
+                  </span>
+                </div>
+              </div>
+            )
+          }
+
+          return (
+            <div key={time} className="contents">
+              {/* Time label */}
+              <div className="bg-zinc-50 dark:bg-zinc-800/50 px-2 py-2 text-right text-[11px] font-mono text-zinc-400 dark:text-zinc-500 border-r border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-end">
+                {time}
+              </div>
+
+              {/* Day cells */}
+              {days.map((day, di) => {
                 const a = getCell(day, time)
                 const cont = isContinuation(day, ti)
+                const isLast = di === days.length - 1
 
                 if (!a) {
                   return (
-                    <td key={day} className="px-1.5 py-1.5 align-top">
+                    <div
+                      key={day}
+                      className={`px-1.5 py-1.5 min-h-[56px] border-b border-zinc-100 dark:border-zinc-800 ${!isLast ? 'border-r' : ''}`}
+                    >
                       {view === 'teacher' ? (
-                        <div className="rounded-md p-1.5 text-xs bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 text-center h-10 flex items-center justify-center">
+                        <div className="rounded-md p-1.5 text-xs bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 text-center h-full min-h-[44px] flex items-center justify-center">
                           Libre
                         </div>
                       ) : (
-                        <div className="h-10 rounded-md bg-gray-50 dark:bg-gray-800/50" />
+                        <div className="h-full min-h-[44px] rounded-md bg-zinc-50 dark:bg-zinc-800/30" />
                       )}
-                    </td>
+                    </div>
                   )
                 }
 
-                // Hex color → 20% opacity background
-                const bg = a.color + '33'
+                const bg = a.color + '20'
                 const border = a.color
 
                 return (
-                  <td key={day} className="px-1.5 py-1.5 align-top">
+                  <div
+                    key={day}
+                    className={`px-1.5 py-1.5 min-h-[56px] border-b border-zinc-100 dark:border-zinc-800 ${!isLast ? 'border-r' : ''}`}
+                  >
                     <div
-                      className="rounded-md p-1.5 text-xs leading-tight"
+                      className="timetable-event rounded-md p-2 text-xs leading-tight h-full cursor-pointer"
                       style={{
                         backgroundColor: bg,
                         borderLeft: `3px solid ${border}`,
                         borderTop: cont ? `2px dashed ${border}` : undefined,
                       }}
                     >
-                      <p className="font-medium text-gray-900 dark:text-gray-100 truncate">
+                      <p className="font-semibold text-zinc-800 dark:text-zinc-100 truncate">
                         {a.subject}
                       </p>
-                      <p className="text-[11px] text-gray-500 dark:text-gray-400 truncate mt-0.5">
+                      <p className="text-[11px] text-zinc-500 dark:text-zinc-400 truncate mt-0.5">
                         {subLine(a)}
                       </p>
                     </div>
-                  </td>
+                  </div>
                 )
               })}
-            </tr>
-          ))}
-        </tbody>
-      </table>
+            </div>
+          )
+        })}
+      </div>
     </div>
   )
 }

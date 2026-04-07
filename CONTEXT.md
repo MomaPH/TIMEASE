@@ -1,57 +1,90 @@
 # TIMEASE Resume Context
 
-**Last Updated:** 2026-04-06  
-**Active Phase:** 2.4 ✅ + Phase 2.3 reliability hardening ✅
+**Last Updated:** 2026-04-07
+**Active Phase:** 2.5 — UI Revamp Implementation ✅
 
 ## Current Work
 
-### Completed in this session (implemented + pushed)
+### Completed in this session (UI Revamp)
 
-1. **P0 — Stream control + explicit AI opt-in**
-   - Added cancellable SSE stream support in `frontend/lib/api.ts` (`AbortSignal` in `sendChatStream`).
-   - Wired stop action in `frontend/app/workspace/page.tsx`:
-     - real abort via `AbortController`
-     - French interruption toast/system message
-     - clearing active tool pill on stop.
-   - Removed automatic AI auto-trigger after `PARTIAL`/`INFEASIBLE` solve results; AI help remains explicit user action.
-   - Aligned hour barrier logic in `frontend/lib/validation.ts` (`requested > available`).
-   - Commit pushed: `d798192`.
+1. **Design System Foundation**
+   - Updated `globals.css` with new CSS variables (zinc palette, indigo accent)
+   - Added button classes (.btn-primary, .btn-secondary, .btn-ghost, .btn-accent)
+   - Export icon gradient classes for PDF, Excel, Word, CSV, JSON, etc.
+   - Break row styling with diagonal stripes
+   - Custom easing and transitions
 
-2. **P1 — Chat editable table reliability**
-   - Fixed key consistency in `frontend/components/ChatMessage.tsx` for editable markdown tables.
-   - Edits now use one stable key path for capture + display + confirmation payload reconstruction.
-   - Commit pushed: `690abda`.
+2. **Sidebar Revamp**
+   - Dark sidebar with gray-950 (#09090b) background
+   - Gradient brand icon with SVG calendar
+   - Section dividers ("Outils" section)
+   - Proper active state styling (white text + subtle bg)
+   - Updated ClientLayout mobile header to match
 
-### Validation run after each step
+3. **Home Page Polish**
+   - Cleaner typography with tracking-tight
+   - Feature cards with indigo accent
+   - Trust badge ("Propulsé par Google OR-Tools & Claude AI")
+   - Dual CTA buttons (Commencer + Voir un exemple)
+
+4. **Timetable Grid + Breaks**
+   - Added BreakSlot type to lib/types.ts
+   - TimetableGrid now accepts breaks prop
+   - Break rows render with diagonal stripe pattern
+   - Subject hover scale animation
+   - CSS Grid layout replacing table
+
+5. **Export Center**
+   - 6 export formats with descriptions and tags
+   - Grid layout with hover borders
+   - Export icon gradient backgrounds
+   - Loading state per format
+
+6. **Dashboard Stats**
+   - Stats cards (Classes, Teachers, Rooms, Conflicts)
+   - Color-coded icons (indigo, emerald, amber, rose)
+   - Conflict count with resolved checkmark
+
+### Validation
 
 - `cd frontend && npm run build` ✅
-- `uv run pytest -q tests/test_conflicts.py tests/test_solver.py` ✅
-- `uv run pytest -q tests/test_io.py` ✅
+- `uv run pytest -q tests/test_solver.py tests/test_conflicts.py tests/test_io.py` ✅ (68 passed)
 
-## Architecture Notes (verified)
+## Architecture Notes
 
-- SSE endpoint remains `POST /api/session/{sid}/chat/stream`.
-- Frontend parses `delta`/`tool_start`/`done` as before.
-- No engine/api boundary change.
-- No Celery/RLS changes in this session.
+- Design inspired by Linear, Stripe, Vercel
+- Single accent color (indigo #6366f1) used sparingly
+- Neutral zinc palette for text and backgrounds
+- System fonts for optimal performance
+- No external dependencies (no Google Fonts, no CDN)
 
-## Remaining Next Steps
+## BREAKS in Timetable — Implementation Plan
 
-1. **Phase 2.5** — mypyc on `timease/engine/conflicts.py`.
-2. **Phase 2.6** — Celery/Redis async solve + Postgres RLS.
-3. **World-class UX follow-up**:
-   - conversation management sidebar/search/export
-   - a11y pass (focus-visible, aria-live audit)
-   - latency/cost instrumentation dashboard.
+Currently, breaks are extracted from `schoolData.sessions` if:
+- `is_break: true` flag is set, OR
+- name contains "pause" or "récréation"
+
+To fully implement breaks:
+
+1. **Backend**: In school setup (step 0), add UI to mark certain sessions as breaks
+2. **Solver**: Already respects unavailable slots — breaks should be naturally excluded
+3. **Export**: PDF/Excel exports should include break rows in output
 
 ## File Quick Reference
 
 | Purpose | Path |
 |---------|------|
-| Strategy reconciliation doc | `ui_world_class_and_api_cost_strategy.md` |
-| Implementation prompts | `implementation_plan.md` |
-| Phase tracker | `task.md` |
-| Workspace page | `frontend/app/workspace/page.tsx` |
-| Stream API client | `frontend/lib/api.ts` |
-| Chat renderer | `frontend/components/ChatMessage.tsx` |
-| Validation logic | `frontend/lib/validation.ts` |
+| Design system CSS | `frontend/app/globals.css` |
+| Sidebar component | `frontend/components/Sidebar.tsx` |
+| Client layout | `frontend/components/ClientLayout.tsx` |
+| Home page | `frontend/app/page.tsx` |
+| Results page | `frontend/app/results/page.tsx` |
+| Timetable grid | `frontend/components/TimetableGrid.tsx` |
+| Types | `frontend/lib/types.ts` |
+
+## Remaining Next Steps
+
+1. **Phase 2.5** — mypyc on `timease/engine/conflicts.py`
+2. **Phase 2.6** — Celery/Redis async solve + Postgres RLS
+3. **Breaks UI** — Add explicit break configuration in school setup wizard
+4. **A11y pass** — focus-visible, aria-live audit
