@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 
 # ── Provider configuration ─────────────────────────────────────────────────────
 AIProvider = Literal["anthropic", "openai"]
-DEFAULT_PROVIDER: AIProvider = "anthropic"
+DEFAULT_PROVIDER: AIProvider = "openai"  # OpenAI is now the default
 
 # Model mappings
 MODELS = {
@@ -662,6 +662,105 @@ def _sanitize_history(history: list[dict]) -> list[dict]:
     return sanitized
 
 
+def _convert_history_for_openai(history: list[dict]) -> list[dict]:
+    """Convert Anthropic-style history to OpenAI format.
+
+    Anthropic uses: {"role": "user/assistant", "content": [{"type": "text", "text": "..."}]}
+    OpenAI uses:    {"role": "user/assistant", "content": "..."}
+
+    Also converts tool_use/tool_result to OpenAI's tool_calls/tool format.
+    """
+    converted = []
+    i = 0
+    while i < len(history):
+        msg = history[i]
+        role = msg.get("role", "user")
+        content = msg.get("content", "")
+
+        # Handle string content directly
+        if isinstance(content, str):
+            converted.append({"role": role, "content": content})
+            i += 1
+            continue
+
+        # Handle list content (Anthropic style)
+        if isinstance(content, list):
+            # Check for tool_use blocks (assistant with tools)
+            tool_uses = [b for b in content if isinstance(b, dict) and b.get("type") == "tool_use"]
+            text_blocks = [b for b in content if isinstance(b, dict) and b.get("type") == "text"]
+
+            if tool_uses and role == "assistant":
+                # Convert to OpenAI tool_calls format
+                text_content = " ".join(b.get("text", "") for b in text_blocks).strip() or None
+                tool_calls = []
+                for tu in tool_uses:
+                    tool_calls.append({
+                        "id": tu.get("id", ""),
+                        "type": "function",
+                        "function": {
+                            "name": tu.get("name", ""),
+                            "arguments": _json.dumps(tu.get("input", {})),
+                        }
+                    })
+                converted.append({
+                    "role": "assistant",
+                    "content": text_content,
+                    "tool_calls": tool_calls,
+                })
+
+                # Look for corresponding tool_result in next message
+                if i + 1 < len(history):
+                    next_msg = history[i + 1]
+                    if next_msg.get("role") == "user" and _is_tool_result_msg(next_msg):
+                        next_content = next_msg.get("content", [])
+                        for tr in next_content:
+                            if isinstance(tr, dict) and tr.get("type") == "tool_result":
+                                converted.append({
+                                    "role": "tool",
+                                    "tool_call_id": tr.get("tool_use_id", ""),
+                                    "content": str(tr.get("content", "")),
+                                })
+                        i += 2
+                        continue
+                i += 1
+                continue
+
+            # Check for tool_result blocks (user with tool results) — already handled above
+            if any(isinstance(b, dict) and b.get("type") == "tool_result" for b in content):
+                # Skip — should have been handled with the preceding tool_use
+                i += 1
+                continue
+
+            # Regular text blocks
+            text = " ".join(
+                b.get("text", "") if isinstance(b, dict) else str(b)
+                for b in content
+            ).strip()
+            if text:
+                converted.append({"role": role, "content": text})
+            i += 1
+            continue
+
+        i += 1
+
+    return converted
+
+
+def _convert_tools_for_openai(tools: list[dict]) -> list[dict]:
+    """Convert Anthropic tool definitions to OpenAI function format."""
+    return [
+        {
+            "type": "function",
+            "function": {
+                "name": t["name"],
+                "description": t.get("description", ""),
+                "parameters": t.get("input_schema", {"type": "object", "properties": {}}),
+            }
+        }
+        for t in tools
+    ]
+
+
 def _truncate_history(history: list[dict]) -> list[dict]:
     """Trim history to stay within context limits.
 
@@ -699,13 +798,38 @@ def stream_chat(
     conflict_reports: list[dict] | None = None,
     solve_issues: dict | None = None,
 ) -> Generator[dict, None, None]:
-    """Stream Claude's response, yielding structured event dicts.
+    """Stream AI response (Anthropic or OpenAI), yielding structured event dicts.
 
     Yields:
         {"type": "delta",     "text": "..."}              — streamed text token
         {"type": "tool_call", "name": ..., "input": ..., "id": ...}  — completed tool call
         {"type": "end",       "updated_history": [...]}   — final event
     """
+    provider = get_ai_provider()
+
+    # Route to provider-specific implementation
+    if provider == "openai":
+        yield from _stream_chat_openai(
+            user_message, file_content, school_data, teacher_assignments,
+            ai_history, conflict_reports, solve_issues
+        )
+    else:
+        yield from _stream_chat_anthropic(
+            user_message, file_content, school_data, teacher_assignments,
+            ai_history, conflict_reports, solve_issues
+        )
+
+
+def _stream_chat_anthropic(
+    user_message: str,
+    file_content: str | None,
+    school_data: dict,
+    teacher_assignments: list[dict],
+    ai_history: list[dict],
+    conflict_reports: list[dict] | None = None,
+    solve_issues: dict | None = None,
+) -> Generator[dict, None, None]:
+    """Stream Anthropic Claude response."""
     client = _get_anthropic_client()
     system_prompt = _build_system_prompt(school_data, teacher_assignments, conflict_reports, solve_issues)
 
@@ -828,6 +952,68 @@ def stream_chat(
         # Loop → AI will generate the follow-up with summary + options
 
     yield {"type": "end", "updated_history": history}
+
+
+def _stream_chat_openai(
+    user_message: str,
+    file_content: str | None,
+    school_data: dict,
+    teacher_assignments: list[dict],
+    ai_history: list[dict],
+    conflict_reports: list[dict] | None = None,
+    solve_issues: dict | None = None,
+) -> Generator[dict, None, None]:
+    """Stream OpenAI GPT response.
+
+    Note: OpenAI's tool calling is simplified here - we don't use tools
+    for now to avoid complexity. Just use text responses.
+    """
+    client = _get_openai_client()
+    system_prompt = _build_system_prompt(school_data, teacher_assignments, conflict_reports, solve_issues)
+
+    full_msg = user_message
+    if file_content:
+        full_msg = (
+            f"[Fichier envoyé par l'utilisateur — contenu extrait]\n\n{file_content}\n\n"
+            f"---\nMessage accompagnant le fichier: {user_message or '(aucun message)'}"
+        )
+
+    # Convert Anthropic-style history to OpenAI format
+    history = _truncate_history(list(ai_history))
+    history_openai = _convert_history_for_openai(history)
+
+    # Add user message
+    history_openai.append({"role": "user", "content": full_msg})
+
+    # Prepend system message
+    messages = [{"role": "system", "content": system_prompt}] + history_openai
+
+    try:
+        stream = client.chat.completions.create(
+            model=MODELS["openai"],
+            messages=messages,
+            stream=True,
+            max_tokens=2048,
+        )
+
+        full_response = ""
+        for chunk in stream:
+            if chunk.choices[0].delta.content:
+                text = chunk.choices[0].delta.content
+                full_response += text
+                yield {"type": "delta", "text": text}
+
+        # Convert back to Anthropic format for history
+        history.append({
+            "role": "assistant",
+            "content": [{"type": "text", "text": full_response}]
+        })
+
+        yield {"type": "end", "updated_history": history}
+
+    except Exception as e:
+        logger.error(f"OpenAI stream error: {e}")
+        yield {"type": "end", "updated_history": history}
 
 
 def process_chat(
