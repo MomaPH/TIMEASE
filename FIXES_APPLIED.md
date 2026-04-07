@@ -1,53 +1,76 @@
 # TIMEASE Fixes Applied
 **Date:** 2026-04-06
-**Session:** Comprehensive audit and repair + OpenAI tool calling implementation
+**Session:** Comprehensive audit, OpenAI migration, class-based curriculum
 
 ---
 
-## ✅ Fixes Applied (Automatic)
+## ✅ Major Changes Applied
 
-### 1. **Fixed Anthropic Model Name** 🔴 CRITICAL
+### 1. **Removed Claude/Anthropic - OpenAI Only** 🔴 BREAKING
+**Files Modified:**
+- `pyproject.toml` - Removed `anthropic >= 0.40` dependency
+- `timease/api/ai_chat.py` - Removed Anthropic client, kept OpenAI only
+- `timease/api/main.py` - Removed `/api/ai/provider` endpoints
+- `frontend/components/Sidebar.tsx` - Removed provider toggle button
+- `frontend/lib/api.ts` - Removed `getAIProvider()`, `setAIProvider()`
+
+**Rationale:**
+- Claude Sonnet 4 costs ~27% more than GPT-4o ($3/$15 vs $2.50/$10 per 1M tokens)
+- User preference for single provider simplicity
+- OpenAI tool calling already fully implemented
+
+---
+
+### 2. **Class-Based Curriculum Model** 🔴 BREAKING
+**Changed from:** Level-based curriculum (all classes at a level share same hours)
+**Changed to:** Class-based curriculum (each class has its own curriculum entry)
+
+**Files Modified:**
+- `timease/engine/models.py`:
+  - `CurriculumEntry.level` → `CurriculumEntry.school_class`
+  - Updated `validate()`, `validate_warnings()`, `verify()` methods
+  - Added migration in `from_json()` for legacy data
+- `timease/engine/solver.py`:
+  - `curriculum_by_level` → `curriculum_by_class` dict
+  - Updated session generation logic
+- `timease/engine/conflicts.py`:
+  - Updated `_check_class_hours_exceed_schedule()`
+- `timease/api/ai_chat.py`:
+  - Updated `save_curriculum` tool schema
+  - Added RÈGLE 7bis explaining class-based approach
+- `timease/api/main.py`:
+  - Updated `_norm_curriculum()` and preview generation
+- `timease/io/excel_import.py`:
+  - Fixed curriculum parsing to use `school_class`
+- `frontend/lib/types.ts`:
+  - Updated validation for Step 5 checklist
+
+**Data Migration:**
+- JSON files: `level` → `school_class` in curriculum entries
+- Sample data expanded: 41 level entries → 82 class entries (2 classes per level)
+
+**Rationale:**
+- User's documents specify hours per class+subject, not per level
+- More flexible - different classes at same level can have different hours
+- Simpler validation logic
+
+---
+
+### 3. **Teacher Hours Optional**
 **File:** `timease/api/ai_chat.py`
 
-**Changed (2 locations):**
-```python
-# Before (404 error):
-model="claude-3-5-haiku-20241022"
-
-# After (stable, working):
-model="claude-3-5-sonnet-20241022"
-```
-
-**Lines:** 643, 777
-
-**Impact:**
-- ✅ AI chat streaming now works
-- ✅ Conversational setup assistant functional
-- ✅ AI help button in workspace operational
-
-**Testing:**
-```bash
-$ uv run python -c "from timease.api.ai_chat import stream_chat; print('AI chat imports OK')"
-AI chat imports OK ✅
-```
+The `max_hours_per_week` field in teacher tool schema is now optional with default 20h.
 
 ---
 
-### 2. **Fixed Print Statements in Docstring**
-**File:** `timease/engine/conflicts.py`
+### 4. **Test Updates**
+All 249 tests updated and passing:
+- Fixed `CurriculumEntry` constructor calls
+- Fixed `SchoolClass` constructor calls
+- Updated assertions for class-based curriculum
+- Updated test fixtures and helpers
 
-**Changed:**
-```python
-# Before (violated coding standards):
-for r in reports:
-    print(r.description_fr)
-    for opt in r.fix_options:
-        print(" →", opt.fix_fr)
-
-# After (proper logging):
-for r in reports:
-    logger.info(r.description_fr)
-    for opt in r.fix_options:
+---
         logger.info(" → %s", opt.fix_fr)
 ```
 

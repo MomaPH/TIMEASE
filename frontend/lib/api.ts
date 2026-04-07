@@ -162,23 +162,3 @@ export async function generateCollabLinks(sid: string) {
   if (!res.ok) throw new Error(`Collab generate failed: ${res.status}`)
   return res.json() as Promise<{ links: { teacher: string; token: string; status: string }[] }>
 }
-
-// ── AI Provider ───────────────────────────────────────────────────────────────
-
-export type AIProvider = 'anthropic' | 'openai'
-
-export async function getAIProvider(): Promise<{ provider: AIProvider; model: string }> {
-  const res = await fetch(`${BASE}/api/ai/provider`)
-  if (!res.ok) throw new Error(`Get AI provider failed: ${res.status}`)
-  return res.json()
-}
-
-export async function setAIProvider(provider: AIProvider): Promise<{ provider: AIProvider; model: string }> {
-  const res = await fetch(`${BASE}/api/ai/provider`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ provider }),
-  })
-  if (!res.ok) throw new Error(`Set AI provider failed: ${res.status}`)
-  return res.json()
-}

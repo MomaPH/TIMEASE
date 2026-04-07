@@ -28,17 +28,17 @@ class ManualAssignmentValidator:
         """Phase 2: Validate manual assignments meet hard constraints"""
         if not school.teacher_assignments:
             raise ValueError("Les affectations des enseignants doivent être fournies manuellement")
-            
+
         # Check H2: One teacher per (class, subject)
         class_subject_teachers = defaultdict(set)
         for assignment in school.teacher_assignments:
             key = (assignment.school_class, assignment.subject)
             class_subject_teachers[key].add(assignment.teacher)
-            
+
         for key, teachers in class_subject_teachers.items():
             if len(teachers) > 1:
                 raise ValueError(f"Plusieurs enseignants affectés à {key[0]} - {key[1]}: {', '.join(teachers)}")
-        
+
         # Check H10: Teacher qualifications
         teacher_map = {t.name: t for t in school.teachers}
         for assignment in school.teacher_assignments:
@@ -203,13 +203,13 @@ class Room:
 @dataclass
 class CurriculumEntry:
     """
-    Weekly teaching load for a subject at a given level.
-    
-    In Phase 2, this strictly requires exact manual specification of 
-    how many sessions per week and their duration.
+    Weekly teaching load for a subject for a specific class.
+
+    In Phase 2, this strictly requires exact manual specification of
+    how many sessions per week and their duration per CLASS (not level).
     """
 
-    level: str                          # e.g. "6ème"
+    school_class: str                   # e.g. "6ème A", "5ème B" - must match SchoolClass.name
     subject: str                        # must match Subject.name
     total_minutes_per_week: int
     sessions_per_week: int
@@ -219,12 +219,12 @@ class CurriculumEntry:
         """Raise ValueError if the entry is internally inconsistent."""
         if self.total_minutes_per_week <= 0:
             raise ValueError(
-                f"Le volume horaire de '{self.subject}' (niveau {self.level}) "
+                f"Le volume horaire de '{self.subject}' (classe {self.school_class}) "
                 "doit être positif."
             )
         if self.sessions_per_week <= 0 or self.minutes_per_session <= 0:
             raise ValueError(
-                f"Le curriculum '{self.subject}' (niveau {self.level}) "
+                f"Le curriculum '{self.subject}' (classe {self.school_class}) "
                 "doit définir sessions_per_week et minutes_per_session avec des valeurs positives."
             )
 
@@ -262,7 +262,7 @@ class Constraint:
 @dataclass
 class SchoolData:
     """Conteneur principal pour toutes les données de l'école."""
-    
+
     school: School
     timeslot_config: TimeslotConfig
     subjects: list[Subject]
@@ -287,7 +287,7 @@ class SchoolData:
     def validate(self) -> list[str]:
         """
         Comprehensive validation of school data.
-        
+
         Returns an empty list if all validations pass.
         Checks:
         - Entity validation (teachers, classes, rooms, curriculum entries)
@@ -298,39 +298,39 @@ class SchoolData:
         - Teacher assignment validation
         """
         errors: list[str] = []
-        
+
         # --- Entity validation ---
         for teacher in self.teachers:
             try:
                 teacher.validate()
             except ValueError as e:
                 errors.append(str(e))
-        
+
         for cls in self.classes:
             try:
                 cls.validate()
             except ValueError as e:
                 errors.append(str(e))
-        
+
         for room in self.rooms:
             try:
                 room.validate()
             except ValueError as e:
                 errors.append(str(e))
-        
+
         for entry in self.curriculum:
             try:
                 entry.validate()
             except ValueError as e:
                 errors.append(str(e))
-        
+
         # --- Infrastructure: base_unit_minutes ---
         if self.timeslot_config.base_unit_minutes not in _VALID_BASE_UNITS:
             errors.append(
                 f"L'unité de base {self.timeslot_config.base_unit_minutes} min "
                 f"n'est pas valide. Valeurs acceptées : {sorted(_VALID_BASE_UNITS)}."
             )
-        
+
         # --- Infrastructure: session times ---
         for sess in self.timeslot_config.sessions:
             start_min = _time_to_min(sess.start_time)
@@ -340,7 +340,7 @@ class SchoolData:
                     f"Session '{sess.name}' : l'heure de fin ({sess.end_time}) "
                     f"doit être après l'heure de début ({sess.start_time})."
                 )
-        
+
         # --- Ceiling limits ---
         if len(self.classes) > _MAX_CLASSES:
             errors.append(
@@ -354,20 +354,20 @@ class SchoolData:
             errors.append(
                 f"Trop de salles : {len(self.rooms)} (max : {_MAX_ROOMS})."
             )
-        
+
         # --- Duplicate names ---
         teacher_names = [t.name for t in self.teachers]
         if len(teacher_names) != len(set(teacher_names)):
             errors.append("Nom d'enseignant en double détecté.")
-        
+
         class_names = [c.name for c in self.classes]
         if len(class_names) != len(set(class_names)):
             errors.append("Nom de classe en double détecté.")
-        
+
         room_names = [r.name for r in self.rooms]
         if len(room_names) != len(set(room_names)):
             errors.append("Nom de salle en double détecté.")
-        
+
         # --- Constraint validation ---
         for c in self.constraints:
             if c.type not in ("hard", "soft"):
@@ -380,23 +380,22 @@ class SchoolData:
                     f"Contrainte '{c.id}' : priorité {c.priority} invalide "
                     f"(doit être entre 1 et 10)."
                 )
-        
+
         # --- Teacher assignment validation ---
         teacher_map = {t.name: t for t in self.teachers}
-        
+
         # Build curriculum requirements: which (class, subject) pairs need teachers
+        # Now curriculum is class-based, so directly use school_class
         required_pairs: set[tuple[str, str]] = set()
-        for cls in self.classes:
-            for entry in self.curriculum:
-                if entry.level == cls.level:
-                    required_pairs.add((cls.name, entry.subject))
-        
+        for entry in self.curriculum:
+            required_pairs.add((entry.school_class, entry.subject))
+
         assigned_pairs: dict[tuple[str, str], list[str]] = defaultdict(list)
-        
+
         for ta in self.teacher_assignments:
             key = (ta.school_class, ta.subject)
             assigned_pairs[key].append(ta.teacher)
-            
+
             # Check unknown teacher
             if ta.teacher not in teacher_map:
                 errors.append(
@@ -404,7 +403,7 @@ class SchoolData:
                     f"(affectation {ta.school_class} / {ta.subject})."
                 )
                 continue
-                
+
             # Check teacher qualification
             teacher = teacher_map[ta.teacher]
             if ta.subject not in teacher.subjects:
@@ -412,7 +411,7 @@ class SchoolData:
                     f"L'enseignant '{ta.teacher}' n'est pas qualifié pour "
                     f"enseigner '{ta.subject}' ({ta.school_class})."
                 )
-        
+
         # Check for duplicates
         for (cls_name, subj), teachers in assigned_pairs.items():
             if len(teachers) > 1:
@@ -420,7 +419,7 @@ class SchoolData:
                     f"Double affectation pour {cls_name} / {subj} : "
                     f"{', '.join(teachers)}."
                 )
-        
+
         # Check for missing assignments
         for cls_name, subj in required_pairs:
             if (cls_name, subj) not in assigned_pairs:
@@ -428,7 +427,7 @@ class SchoolData:
                     f"Affectation manquante : aucun enseignant pour "
                     f"{cls_name} / {subj}."
                 )
-        
+
         return errors
 
     # ------------------------------------------------------------------
@@ -450,13 +449,18 @@ class SchoolData:
         data = json.loads(path.read_text(encoding="utf-8"))
 
         # Legacy migration for Phase 2: Convert any "auto" mode curriculums to "manual"
+        # Also migrate level -> school_class for class-based curriculum
         curriculum = []
         base_unit = data["timeslot_config"]["base_unit_minutes"]
         for e in data["curriculum"]:
             e.pop("mode", None)
             min_s = e.pop("min_session_minutes", None)
             max_s = e.pop("max_session_minutes", None)
-            
+
+            # Migration: level -> school_class (class-based curriculum)
+            if "level" in e and "school_class" not in e:
+                e["school_class"] = e.pop("level")
+
             if e.get("sessions_per_week") is None or e.get("minutes_per_session") is None:
                 total = e["total_minutes_per_week"]
                 min_s = min_s or min(60, total)
@@ -470,7 +474,7 @@ class SchoolData:
                         break
                 e["sessions_per_week"] = sessions
                 e["minutes_per_session"] = minutes
-                
+
             curriculum.append(CurriculumEntry(**e))
 
         return cls(
@@ -485,7 +489,7 @@ class SchoolData:
             ),
             subjects=[Subject(**s) for s in data["subjects"]],
             teachers=[
-                Teacher(**{k: v for k, v in t.items() if k != "preference_weight"}) 
+                Teacher(**{k: v for k, v in t.items() if k != "preference_weight"})
                 for t in data["teachers"]
             ],
             classes=[SchoolClass(**c) for c in data["classes"]],
@@ -506,9 +510,7 @@ class SchoolData:
         warnings: list[str] = []
 
         subject_map = {s.name: s for s in self.subjects}
-        class_by_level: dict[str, list[SchoolClass]] = defaultdict(list)
-        for cls in self.classes:
-            class_by_level.setdefault(cls.level, []).append(cls)
+        class_map = {c.name: c for c in self.classes}
 
         # --- Room capacity vs class size ---
         for entry in self.curriculum:
@@ -520,14 +522,15 @@ class SchoolData:
             if not compatible:
                 continue  # error already reported in validate()
             max_cap = max(r.capacity for r in compatible)
-            for cls in class_by_level.get(entry.level, []):
-                if cls.student_count > max_cap:
-                    warnings.append(
-                        f"La classe '{cls.name}' ({cls.student_count} élèves) "
-                        f"dépasse la capacité maximale des salles de type "
-                        f"'{room_type}' ({max_cap} places) "
-                        f"pour la matière '{entry.subject}'."
-                    )
+            # Now curriculum is class-based, get the class directly
+            cls = class_map.get(entry.school_class)
+            if cls and cls.student_count > max_cap:
+                warnings.append(
+                    f"La classe '{cls.name}' ({cls.student_count} élèves) "
+                    f"dépasse la capacité maximale des salles de type "
+                    f"'{room_type}' ({max_cap} places) "
+                    f"pour la matière '{entry.subject}'."
+                )
 
         # --- Teacher with zero assignments ---
         assigned_teachers = {ta.teacher for ta in self.teacher_assignments}
@@ -630,8 +633,9 @@ class TimetableResult:
         teacher_max_min = {
             t.name: t.max_hours_per_week * 60 for t in school_data.teachers
         }
+        # Class-based curriculum: map (class, subject) -> minutes
         curriculum_target: dict[tuple[str, str], int] = {
-            (e.level, e.subject): e.total_minutes_per_week
+            (e.school_class, e.subject): e.total_minutes_per_week
             for e in school_data.curriculum
         }
 
@@ -670,21 +674,16 @@ class TimetableResult:
                 to_min(a.end_time) - to_min(a.start_time)
             )
 
-        for cls in school_data.classes:
-            level = class_level.get(cls.name)
-            if level is None:
-                continue
-            for entry in school_data.curriculum:
-                if entry.level != level:
-                    continue
-                expected = curriculum_target.get((level, entry.subject), 0)
-                actual = actual_min.get((cls.name, entry.subject), 0)
-                if actual != expected:
-                    violations.append(
-                        f"Curriculum non respecté pour '{cls.name}' / "
-                        f"'{entry.subject}' : {actual} min planifiées, "
-                        f"{expected} min attendues."
-                    )
+        # Class-based curriculum: directly check each entry
+        for entry in school_data.curriculum:
+            expected = entry.total_minutes_per_week
+            actual = actual_min.get((entry.school_class, entry.subject), 0)
+            if actual != expected:
+                violations.append(
+                    f"Curriculum non respecté pour '{entry.school_class}' / "
+                    f"'{entry.subject}' : {actual} min planifiées, "
+                    f"{expected} min attendues."
+                )
 
         # --- Teacher max hours respected ---
         teacher_actual: dict[str, int] = defaultdict(int)

@@ -77,7 +77,7 @@ def _norm_room(d: dict) -> dict:
 
 
 def _norm_curriculum(d: dict) -> dict:
-    level = d.get("level", "")
+    school_class = d.get("school_class", "")
     subject = d.get("subject", "")
     total = int(d.get("total_minutes_per_week", 60) or 60)
     # Phase 2 compatibility:
@@ -96,7 +96,7 @@ def _norm_curriculum(d: dict) -> dict:
     total_i = sessions_i * minutes_i
 
     return {
-        "level": level,
+        "school_class": school_class,
         "subject": subject,
         "total_minutes_per_week": max(1, total_i),
         "sessions_per_week": sessions_i,
@@ -208,7 +208,7 @@ def _merge_tool_call(sid: str, tool_name: str, data: dict) -> None:
             _norm_curriculum(entry) for entry in data.get("curriculum", [])
         ]
         sd["curriculum"] = _upsert_composite(
-            sd.get("curriculum", []), normalized_curriculum, ["level", "subject"]
+            sd.get("curriculum", []), normalized_curriculum, ["school_class", "subject"]
         )
 
     elif tool_name == "save_constraints":
@@ -302,9 +302,9 @@ def _make_preview(tool_name: str, data: dict) -> str:
 
     if tool_name == "save_curriculum":
         items = data.get("curriculum", [])
-        header = "| Niveau | Matière | Min/sem |\n|--------|---------|----------|\n"
+        header = "| Classe | Matière | Min/sem |\n|--------|---------|----------|\n"
         rows = [
-            f"| {e.get('level','?')} | {e.get('subject','?')} | {e.get('total_minutes_per_week','?')} |"
+            f"| {e.get('school_class','?')} | {e.get('subject','?')} | {e.get('total_minutes_per_week','?')} |"
             for e in items
         ]
         return header + "\n".join(rows)
@@ -472,27 +472,6 @@ def _dispatch_tool_calls(
         "set_step":           set_step,
         "saved_types":        saved_types,
     }
-
-
-# ── AI Provider ────────────────────────────────────────────────────────────────
-
-@app.get("/api/ai/provider")
-def get_ai_provider_endpoint():
-    """Get current AI provider (anthropic or openai)."""
-    from timease.api.ai_chat import get_ai_provider, MODELS
-    provider = get_ai_provider()
-    return {"provider": provider, "model": MODELS.get(provider, "unknown")}
-
-
-@app.post("/api/ai/provider")
-def set_ai_provider_endpoint(payload: dict):
-    """Set AI provider (anthropic or openai)."""
-    from timease.api.ai_chat import set_ai_provider, get_ai_provider, MODELS
-    provider = payload.get("provider", "").lower()
-    if provider not in ("anthropic", "openai"):
-        raise HTTPException(400, "Invalid provider. Use 'anthropic' or 'openai'.")
-    set_ai_provider(provider)  # type: ignore
-    return {"provider": provider, "model": MODELS.get(provider, "unknown")}
 
 
 # ── AI chat ────────────────────────────────────────────────────────────────────

@@ -1,9 +1,9 @@
 """
-AI chat handler for TIMEASE.
+AI chat handler for TIMEASE using OpenAI GPT models.
 
-Supports both Anthropic Claude and OpenAI GPT models with tool_use to extract
-school data from natural-language conversations and return structured JSON.
-Tool calls are auto-applied server-side — no confirmation needed from the UI.
+Extracts school data from natural-language conversations and returns structured JSON
+using tool calling. Tool calls are auto-applied server-side — no confirmation needed
+from the UI.
 """
 
 from dotenv import load_dotenv
@@ -13,33 +13,16 @@ import dataclasses
 import json as _json
 import logging
 import os
-from typing import Generator, Literal
+from typing import Generator
 
-import anthropic
 import openai
 
 logger = logging.getLogger(__name__)
 
-# ── Provider configuration ─────────────────────────────────────────────────────
-AIProvider = Literal["anthropic", "openai"]
-DEFAULT_PROVIDER: AIProvider = "openai"  # OpenAI is now the default
+# ── OpenAI Configuration ───────────────────────────────────────────────────────
+OPENAI_MODEL = "gpt-4o"
 
-# Model mappings
-MODELS = {
-    "anthropic": "claude-sonnet-4-20250514",
-    "openai": "gpt-4o",
-}
-
-_anthropic_client: anthropic.Anthropic | None = None
 _openai_client: openai.OpenAI | None = None
-
-
-def _get_anthropic_client() -> anthropic.Anthropic:
-    """Return a module-level Anthropic client (lazy singleton)."""
-    global _anthropic_client
-    if _anthropic_client is None:
-        _anthropic_client = anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY", ""))
-    return _anthropic_client
 
 
 def _get_openai_client() -> openai.OpenAI:
@@ -48,19 +31,6 @@ def _get_openai_client() -> openai.OpenAI:
     if _openai_client is None:
         _openai_client = openai.OpenAI(api_key=os.environ.get("OPENAI_API_KEY", ""))
     return _openai_client
-
-
-def get_ai_provider() -> AIProvider:
-    """Get current AI provider from environment or default."""
-    provider = os.environ.get("AI_PROVIDER", DEFAULT_PROVIDER).lower()
-    if provider in ("anthropic", "openai"):
-        return provider  # type: ignore
-    return DEFAULT_PROVIDER
-
-
-def set_ai_provider(provider: AIProvider) -> None:
-    """Set the AI provider (for runtime switching)."""
-    os.environ["AI_PROVIDER"] = provider
 
 
 _SAVE_TOOL_NAMES = {
@@ -101,7 +71,7 @@ TOOLS = [
     },
     {
         "name": "save_teachers",
-        "description": "Enregistre des enseignants. N'appelle cet outil QU'APRÈS confirmation de l'utilisateur. Avant d'appeler, affiche un tableau récapitulatif et propose [✅ Confirmer] [✏️ Modifier] [➕ Ajouter d'autres].",
+        "description": "Enregistre des enseignants. N'appelle cet outil QU'APRÈS confirmation de l'utilisateur. Avant d'appeler, affiche un tableau récapitulatif et propose [✅ Confirmer] [✏️ Modifier] [➕ Ajouter d'autres]. Le champ 'max_hours_per_week' est optionnel (défaut: 20h si non spécifié).",
         "input_schema": {
             "type": "object",
             "properties": {
@@ -112,8 +82,9 @@ TOOLS = [
                         "properties": {
                             "name":               {"type": "string"},
                             "subjects":           {"type": "array", "items": {"type": "string"}},
-                            "max_hours_per_week": {"type": "integer"},
+                            "max_hours_per_week": {"type": "integer", "description": "Optionnel. Nombre max d'heures par semaine. Défaut: 20."},
                         },
+                        "required": ["name", "subjects"],
                     },
                 },
             },
@@ -209,7 +180,7 @@ TOOLS = [
     },
     {
         "name": "save_curriculum",
-        "description": "Enregistre le programme horaire. N'appelle cet outil QU'APRÈS confirmation. Affiche d'abord un tableau récapitulatif et propose [✅ Confirmer] [✏️ Modifier].",
+        "description": "Enregistre le programme horaire PAR CLASSE (pas par niveau!). N'appelle cet outil QU'APRÈS confirmation. Affiche d'abord un tableau récapitulatif et propose [✅ Confirmer] [✏️ Modifier]. IMPORTANT: utilise 'school_class' avec le nom exact de la classe (ex: '6ème A', pas juste '6ème').",
         "input_schema": {
             "type": "object",
             "properties": {
@@ -218,14 +189,14 @@ TOOLS = [
                     "items": {
                         "type": "object",
                         "properties": {
-                            "level":                  {"type": "string"},
+                            "school_class":           {"type": "string", "description": "Nom exact de la classe (ex: '6ème A')"},
                             "subject":                {"type": "string"},
                             "total_minutes_per_week": {"type": "integer"},
                             "sessions_per_week":      {"type": "integer"},
                             "minutes_per_session":    {"type": "integer"},
                         },
                         "required": [
-                            "level",
+                            "school_class",
                             "subject",
                             "total_minutes_per_week",
                             "sessions_per_week",
@@ -377,6 +348,14 @@ une info, renvoie l'entrée complète corrigée. Dis-le clairement : "J'ai mis �
 Utilise TOUJOURS `school_class` (jamais `class`).
 Exemple : {"teacher": "Alice", "subject": "Maths", "school_class": "6ème A"}
 
+**RÈGLE 7bis — Programme (curriculum).**
+Le programme se définit PAR CLASSE, pas par niveau! Chaque classe peut avoir des heures \
+différentes même au même niveau.
+Utilise TOUJOURS `school_class` avec le nom exact de la classe (ex: "6ème A", pas juste "6ème").
+Si l'utilisateur mentionne un niveau, demande explicitement pour CHAQUE classe de ce niveau.
+Exemple : {"school_class": "6ème A", "subject": "Maths", "total_minutes_per_week": 240, \
+"sessions_per_week": 4, "minutes_per_session": 60}
+
 **RÈGLE 8 — Fichiers importés.**
 Quand un fichier est envoyé :
 1. Extrais TOUTES les données (école, classes, enseignants, salles, matières, \
@@ -436,10 +415,9 @@ def _build_system_prompt(
 ) -> list[dict]:
     """Build a context-aware system prompt as a list of content blocks.
 
-    Returns a list suitable for Anthropic's ``system`` parameter.
-    The first block (static rules) is marked with ``cache_control`` so that
-    Anthropic can cache it across calls — the rules and constraint reference
-    never change, saving ~90% of input cost on the static portion.
+    Returns system prompt content for the LLM. The prompt structure is designed
+    to be cached — rules and constraint reference never change, enabling
+    efficient reuse across calls.
     """
 
     # ── What's filled ────────────────────────────────────────────────────────
@@ -624,172 +602,6 @@ def _has_tool_use(msg: dict) -> bool:
     )
 
 
-def _sanitize_history(history: list[dict]) -> list[dict]:
-    """Remove orphaned tool_use messages that lack corresponding tool_result.
-
-    The Anthropic API requires that every tool_use block is immediately
-    followed by a user message containing the matching tool_result.
-    If the frontend sends corrupted history (e.g., from localStorage),
-    we strip those orphaned messages to prevent 400 errors.
-    """
-    if not history:
-        return []
-
-    sanitized: list[dict] = []
-    i = 0
-    while i < len(history):
-        msg = history[i]
-
-        # If this is an assistant message with tool_use, check for matching tool_result
-        if msg.get("role") == "assistant" and _has_tool_use(msg):
-            # Next message must be a user message with tool_result
-            if i + 1 < len(history):
-                next_msg = history[i + 1]
-                if next_msg.get("role") == "user" and _is_tool_result_msg(next_msg):
-                    # Valid pair — keep both
-                    sanitized.append(msg)
-                    sanitized.append(next_msg)
-                    i += 2
-                    continue
-            # Orphaned tool_use — skip it
-            logger.warning("Skipping orphaned tool_use message at index %d", i)
-            i += 1
-            continue
-
-        # Regular message — keep it
-        sanitized.append(msg)
-        i += 1
-
-    return sanitized
-
-
-def _convert_history_for_openai(history: list[dict]) -> list[dict]:
-    """Convert Anthropic-style history to OpenAI format.
-
-    Anthropic uses: {"role": "user/assistant", "content": [{"type": "text", "text": "..."}]}
-    OpenAI uses:    {"role": "user/assistant", "content": "..."}
-
-    Also converts tool_use/tool_result to OpenAI's tool_calls/tool format.
-    """
-    converted = []
-    i = 0
-    while i < len(history):
-        msg = history[i]
-        role = msg.get("role", "user")
-        content = msg.get("content", "")
-
-        # Handle string content directly
-        if isinstance(content, str):
-            converted.append({"role": role, "content": content})
-            i += 1
-            continue
-
-        # Handle list content (Anthropic style)
-        if isinstance(content, list):
-            # Check for tool_use blocks (assistant with tools)
-            tool_uses = [b for b in content if isinstance(b, dict) and b.get("type") == "tool_use"]
-            text_blocks = [b for b in content if isinstance(b, dict) and b.get("type") == "text"]
-
-            if tool_uses and role == "assistant":
-                # Convert to OpenAI tool_calls format
-                text_content = " ".join(b.get("text", "") for b in text_blocks).strip() or None
-                tool_calls = []
-                for tu in tool_uses:
-                    tool_calls.append({
-                        "id": tu.get("id", ""),
-                        "type": "function",
-                        "function": {
-                            "name": tu.get("name", ""),
-                            "arguments": _json.dumps(tu.get("input", {})),
-                        }
-                    })
-                converted.append({
-                    "role": "assistant",
-                    "content": text_content,
-                    "tool_calls": tool_calls,
-                })
-
-                # Look for corresponding tool_result in next message
-                if i + 1 < len(history):
-                    next_msg = history[i + 1]
-                    if next_msg.get("role") == "user" and _is_tool_result_msg(next_msg):
-                        next_content = next_msg.get("content", [])
-                        for tr in next_content:
-                            if isinstance(tr, dict) and tr.get("type") == "tool_result":
-                                converted.append({
-                                    "role": "tool",
-                                    "tool_call_id": tr.get("tool_use_id", ""),
-                                    "content": str(tr.get("content", "")),
-                                })
-                        i += 2
-                        continue
-                i += 1
-                continue
-
-            # Check for tool_result blocks (user with tool results) — already handled above
-            if any(isinstance(b, dict) and b.get("type") == "tool_result" for b in content):
-                # Skip — should have been handled with the preceding tool_use
-                i += 1
-                continue
-
-            # Regular text blocks
-            text = " ".join(
-                b.get("text", "") if isinstance(b, dict) else str(b)
-                for b in content
-            ).strip()
-            if text:
-                converted.append({"role": role, "content": text})
-            i += 1
-            continue
-
-        i += 1
-
-    return converted
-
-
-def _convert_tools_for_openai(tools: list[dict]) -> list[dict]:
-    """Convert Anthropic tool definitions to OpenAI function format."""
-    return [
-        {
-            "type": "function",
-            "function": {
-                "name": t["name"],
-                "description": t.get("description", ""),
-                "parameters": t.get("input_schema", {"type": "object", "properties": {}}),
-            }
-        }
-        for t in tools
-    ]
-
-
-def _truncate_history(history: list[dict]) -> list[dict]:
-    """Trim history to stay within context limits.
-
-    Keeps the first 2 messages (initial greeting exchange) and the most
-    recent messages, up to ``MAX_HISTORY_PAIRS * 2`` total messages.
-    Never cuts between a tool_use assistant message and its tool_result
-    user message — the tail always starts at a plain user message.
-    """
-    # First sanitize to remove any orphaned tool_use messages
-    history = _sanitize_history(history)
-
-    max_msgs = MAX_HISTORY_PAIRS * 2
-    if len(history) <= max_msgs:
-        return history
-    head = history[:2]
-    # Find a safe cut point: walk forward from the naive cut until we
-    # hit a plain user message (not a tool_result). This ensures we
-    # never orphan a tool_result from its preceding tool_use.
-    cut = len(history) - (max_msgs - 2)
-    while cut < len(history):
-        msg = history[cut]
-        if msg.get("role") == "user" and not _is_tool_result_msg(msg):
-            break
-        cut += 1
-    tail = history[cut:]
-    return head + tail
-
-
 def stream_chat(
     user_message: str,
     file_content: str | None,
@@ -799,172 +611,13 @@ def stream_chat(
     conflict_reports: list[dict] | None = None,
     solve_issues: dict | None = None,
 ) -> Generator[dict, None, None]:
-    """Stream AI response (Anthropic or OpenAI), yielding structured event dicts.
+    """Stream OpenAI GPT response with full tool calling support.
 
     Yields:
         {"type": "delta",     "text": "..."}              — streamed text token
         {"type": "tool_call", "name": ..., "input": ..., "id": ...}  — completed tool call
         {"type": "end",       "updated_history": [...]}   — final event
     """
-    provider = get_ai_provider()
-
-    # Route to provider-specific implementation
-    if provider == "openai":
-        yield from _stream_chat_openai(
-            user_message, file_content, school_data, teacher_assignments,
-            ai_history, conflict_reports, solve_issues
-        )
-    else:
-        yield from _stream_chat_anthropic(
-            user_message, file_content, school_data, teacher_assignments,
-            ai_history, conflict_reports, solve_issues
-        )
-
-
-def _stream_chat_anthropic(
-    user_message: str,
-    file_content: str | None,
-    school_data: dict,
-    teacher_assignments: list[dict],
-    ai_history: list[dict],
-    conflict_reports: list[dict] | None = None,
-    solve_issues: dict | None = None,
-) -> Generator[dict, None, None]:
-    """Stream Anthropic Claude response."""
-    client = _get_anthropic_client()
-    system_prompt = _build_system_prompt(school_data, teacher_assignments, conflict_reports, solve_issues)
-
-    full_msg = user_message
-    if file_content:
-        full_msg = (
-            f"[Fichier envoyé par l'utilisateur — contenu extrait]\n\n{file_content}\n\n"
-            f"---\nMessage accompagnant le fichier: {user_message or '(aucun message)'}"
-        )
-
-    history = _truncate_history(list(ai_history))
-    history.append({"role": "user", "content": full_msg})
-
-    # ── Agentic loop: keep calling the API until AI returns text-only ──────────
-    # Max 4 iterations to prevent infinite loops
-    MAX_TURNS = 4
-    for _turn in range(MAX_TURNS):
-        tool_input_bufs: dict[int, dict] = {}
-        assistant_content: list[dict] = []
-        has_tool_calls = False
-
-        try:
-            with client.messages.stream(
-                model="claude-sonnet-4-20250514",
-                max_tokens=2048,
-                system=system_prompt,
-                tools=TOOLS,
-                messages=history,
-            ) as stream:
-                for event in stream:
-                    etype = event.type
-
-                    if etype == "content_block_start":
-                        block = event.content_block
-                        if block.type == "text":
-                            assistant_content.append({"type": "text", "text": ""})
-                        elif block.type == "tool_use":
-                            has_tool_calls = True
-                            tool_input_bufs[event.index] = {
-                                "id":       block.id,
-                                "name":     block.name,
-                                "json_buf": "",
-                            }
-                            assistant_content.append({
-                                "type":  "tool_use",
-                                "id":    block.id,
-                                "name":  block.name,
-                                "input": {},
-                            })
-
-                    elif etype == "content_block_delta":
-                        delta = event.delta
-                        if delta.type == "text_delta":
-                            for b in reversed(assistant_content):
-                                if b["type"] == "text":
-                                    b["text"] += delta.text
-                                    break
-                            yield {"type": "delta", "text": delta.text}
-
-                        elif delta.type == "input_json_delta":
-                            if event.index in tool_input_bufs:
-                                tool_input_bufs[event.index]["json_buf"] += delta.partial_json
-
-                    elif etype == "content_block_stop":
-                        if event.index in tool_input_bufs:
-                            buf = tool_input_bufs.pop(event.index)
-                            try:
-                                parsed = _json.loads(buf["json_buf"]) if buf["json_buf"] else {}
-                            except Exception:
-                                parsed = {}
-                            for b in assistant_content:
-                                if b.get("type") == "tool_use" and b.get("id") == buf["id"]:
-                                    b["input"] = parsed
-                                    break
-                            yield {"type": "tool_call", "name": buf["name"], "input": parsed, "id": buf["id"]}
-        finally:
-            # Flush incomplete tool blocks (aborted stream)
-            for buf in tool_input_bufs.values():
-                try:
-                    parsed = _json.loads(buf["json_buf"]) if buf["json_buf"] else {}
-                except Exception:
-                    parsed = {}
-                for b in assistant_content:
-                    if b.get("type") == "tool_use" and b.get("id") == buf["id"]:
-                        b["input"] = parsed
-                        break
-                yield {"type": "tool_call", "name": buf["name"], "input": parsed, "id": buf["id"]}
-
-        # Append this turn's assistant message to history
-        history.append({"role": "assistant", "content": assistant_content})
-
-        if not has_tool_calls:
-            # Pure text response — conversation turn complete
-            break
-
-        # Append tool_result turns so AI sees the outcome and MUST follow up
-        tool_result_content = []
-        for b in assistant_content:
-            if b.get("type") == "tool_use":
-                # Rich instruction forces AI to generate summary + options next turn
-                tool_name = b["name"]
-                if tool_name in _SAVE_TOOL_NAMES:
-                    result_msg = (
-                        "Modifications envoyées pour validation par l'utilisateur.\n"
-                        "Maintenant tu DOIS :\n"
-                        "1. Afficher un tableau markdown récapitulatif de ce qui sera enregistré après confirmation.\n"
-                        "2. Appeler `propose_options` avec [✅ Confirmer] [✏️ Modifier] et les prochaines actions.\n"
-                        "NE dis PAS que les données sont déjà enregistrées — elles attendent validation."
-                    )
-                else:
-                    result_msg = "OK."
-                tool_result_content.append({
-                    "type":        "tool_result",
-                    "tool_use_id": b["id"],
-                    "content":     result_msg,
-                })
-
-        if tool_result_content:
-            history.append({"role": "user", "content": tool_result_content})
-        # Loop → AI will generate the follow-up with summary + options
-
-    yield {"type": "end", "updated_history": history}
-
-
-def _stream_chat_openai(
-    user_message: str,
-    file_content: str | None,
-    school_data: dict,
-    teacher_assignments: list[dict],
-    ai_history: list[dict],
-    conflict_reports: list[dict] | None = None,
-    solve_issues: dict | None = None,
-) -> Generator[dict, None, None]:
-    """Stream OpenAI GPT response with full tool calling support."""
     client = _get_openai_client()
     system_prompt = _build_system_prompt(school_data, teacher_assignments, conflict_reports, solve_issues)
 
@@ -975,19 +628,28 @@ def _stream_chat_openai(
             f"---\nMessage accompagnant le fichier: {user_message or '(aucun message)'}"
         )
 
-    # Use Anthropic-style history internally for consistency
-    history = _truncate_history(list(ai_history))
+    history = list(ai_history)
     history.append({"role": "user", "content": full_msg})
 
     # Convert tools to OpenAI format
-    tools_openai = _convert_tools_for_openai(TOOLS)
+    tools_openai = [
+        {
+            "type": "function",
+            "function": {
+                "name": t["name"],
+                "description": t.get("description", ""),
+                "parameters": t.get("input_schema", {"type": "object", "properties": {}}),
+            }
+        }
+        for t in TOOLS
+    ]
 
     # Agentic loop
     MAX_TURNS = 4
     for _turn in range(MAX_TURNS):
-        # Convert current history to OpenAI format
-        history_openai = _convert_history_for_openai(history)
-        messages = [{"role": "system", "content": system_prompt}] + history_openai
+        # Build messages for OpenAI API
+        messages = [{"role": "system", "content": system_prompt}]
+        messages.extend(history)
 
         has_tool_calls = False
         assistant_text = ""
@@ -995,7 +657,7 @@ def _stream_chat_openai(
 
         try:
             stream = client.chat.completions.create(
-                model=MODELS["openai"],
+                model=OPENAI_MODEL,
                 messages=messages,
                 tools=tools_openai,
                 stream=True,
@@ -1045,32 +707,34 @@ def _stream_chat_openai(
             yield {"type": "end", "updated_history": history}
             return
 
-        # Build assistant message in Anthropic format
-        assistant_content = []
-        if assistant_text:
-            assistant_content.append({"type": "text", "text": assistant_text})
-        for tc in tool_calls_data:
-            assistant_content.append({
-                "type": "tool_use",
-                "id": tc["id"],
-                "name": tc["name"],
-                "input": tc["input"],
-            })
+        # Build assistant message for history
+        assistant_msg = {"role": "assistant", "content": assistant_text}
+        if has_tool_calls:
+            assistant_msg["tool_calls"] = [
+                {
+                    "id": tc["id"],
+                    "type": "function",
+                    "function": {
+                        "name": tc["name"],
+                        "arguments": _json.dumps(tc["input"]),
+                    }
+                }
+                for tc in tool_calls_data
+            ]
 
-        history.append({"role": "assistant", "content": assistant_content})
+        history.append(assistant_msg)
 
         # If no tool calls, we're done
         if not has_tool_calls:
             break
 
         # Execute tools and build tool results
-        tool_result_content = []
+        tool_results = []
         for tc in tool_calls_data:
             tool_name = tc["name"]
-            tool_input = tc["input"]
             tool_id = tc["id"]
 
-            # Execute tool - just confirm data saved
+            # Determine result message
             # (actual execution happens in main.py via _dispatch_tool_calls)
             if tool_name == "trigger_solve":
                 result_msg = "Génération de l'emploi du temps demandée."
@@ -1079,17 +743,18 @@ def _stream_chat_openai(
             else:
                 result_msg = "Outil exécuté avec succès."
 
-            tool_result_content.append({
-                "type": "tool_result",
-                "tool_use_id": tool_id,
+            tool_results.append({
+                "role": "tool",
+                "tool_call_id": tool_id,
                 "content": result_msg,
             })
 
-        if tool_result_content:
-            history.append({"role": "user", "content": tool_result_content})
+        if tool_results:
+            history.extend(tool_results)
         # Loop continues - AI will generate follow-up
 
     yield {"type": "end", "updated_history": history}
+
 
 
 def process_chat(
@@ -1101,12 +766,12 @@ def process_chat(
     conflict_reports: list[dict] | None = None,
     solve_issues: dict | None = None,
 ) -> dict:
-    """Send one user turn to Claude and return the structured response.
+    """Send one user turn to OpenAI and return the structured response.
 
-    Now includes an agentic loop (up to MAX_TURNS) matching stream_chat,
-    so the AI can follow up after tool calls with summaries and options.
+    Includes an agentic loop (up to MAX_TURNS) so the AI can follow up after
+    tool calls with summaries and options.
     """
-    client = _get_anthropic_client()
+    client = _get_openai_client()
     system_prompt = _build_system_prompt(school_data, teacher_assignments, conflict_reports, solve_issues)
 
     full_msg = user_message
@@ -1116,64 +781,94 @@ def process_chat(
             f"---\nMessage accompagnant le fichier: {user_message or '(aucun message)'}"
         )
 
-    history = _truncate_history(list(ai_history))
+    history = list(ai_history)
     history.append({"role": "user", "content": full_msg})
+
+    # Convert tools to OpenAI format
+    tools_openai = [
+        {
+            "type": "function",
+            "function": {
+                "name": t["name"],
+                "description": t.get("description", ""),
+                "parameters": t.get("input_schema", {"type": "object", "properties": {}}),
+            }
+        }
+        for t in TOOLS
+    ]
 
     text_parts: list[str] = []
     tool_calls: list[dict] = []
 
     MAX_TURNS = 4
     for _turn in range(MAX_TURNS):
-        response = client.messages.create(
-            model="claude-sonnet-4-20250514",
+        # Build messages for OpenAI API
+        messages = [{"role": "system", "content": system_prompt}]
+        messages.extend(history)
+
+        response = client.chat.completions.create(
+            model=OPENAI_MODEL,
+            messages=messages,
+            tools=tools_openai,
             max_tokens=2048,
-            system=system_prompt,
-            tools=TOOLS,
-            messages=history,
         )
 
         has_tool_calls = False
-        assistant_content: list[dict] = []
+        assistant_msg = {"role": "assistant"}
 
-        for block in response.content:
-            if block.type == "text":
-                text_parts.append(block.text)
-                assistant_content.append({"type": "text", "text": block.text})
-            elif block.type == "tool_use":
-                has_tool_calls = True
-                tool_calls.append({"name": block.name, "data": block.input, "id": block.id})
-                assistant_content.append({
-                    "type": "tool_use", "id": block.id,
-                    "name": block.name, "input": block.input,
+        # Extract content and tool calls from response
+        if response.choices[0].message.content:
+            text = response.choices[0].message.content
+            text_parts.append(text)
+            assistant_msg["content"] = text
+        else:
+            assistant_msg["content"] = None
+
+        if response.choices[0].message.tool_calls:
+            has_tool_calls = True
+            assistant_msg["tool_calls"] = []
+            for tc in response.choices[0].message.tool_calls:
+                tool_calls.append({
+                    "name": tc.function.name,
+                    "data": _json.loads(tc.function.arguments),
+                    "id": tc.id,
+                })
+                assistant_msg["tool_calls"].append({
+                    "id": tc.id,
+                    "type": "function",
+                    "function": {
+                        "name": tc.function.name,
+                        "arguments": tc.function.arguments,
+                    }
                 })
 
-        history.append({"role": "assistant", "content": assistant_content})
+        history.append(assistant_msg)
 
         if not has_tool_calls:
             break
 
-        # Append tool_result turns so AI follows up
-        tool_result_content = []
-        for block in response.content:
-            if block.type == "tool_use":
-                if block.name in _SAVE_TOOL_NAMES:
-                    result_msg = (
-                        "Modifications envoyées pour validation par l'utilisateur.\n"
-                        "Maintenant tu DOIS :\n"
-                        "1. Afficher un tableau markdown récapitulatif de ce qui sera enregistré après confirmation.\n"
-                        "2. Appeler `propose_options` avec [✅ Confirmer] [✏️ Modifier] et les prochaines actions.\n"
-                        "NE dis PAS que les données sont déjà enregistrées — elles attendent validation."
-                    )
-                else:
-                    result_msg = "OK."
-                tool_result_content.append({
-                    "type": "tool_result",
-                    "tool_use_id": block.id,
-                    "content": result_msg,
-                })
+        # Append tool results so AI follows up
+        tool_results = []
+        for tc in response.choices[0].message.tool_calls or []:
+            tool_name = tc.function.name
+            if tool_name in _SAVE_TOOL_NAMES:
+                result_msg = (
+                    "Modifications envoyées pour validation par l'utilisateur.\n"
+                    "Maintenant tu DOIS :\n"
+                    "1. Afficher un tableau markdown récapitulatif de ce qui sera enregistré après confirmation.\n"
+                    "2. Appeler `propose_options` avec [✅ Confirmer] [✏️ Modifier] et les prochaines actions.\n"
+                    "NE dis PAS que les données sont déjà enregistrées — elles attendent validation."
+                )
+            else:
+                result_msg = "OK."
+            tool_results.append({
+                "role": "tool",
+                "tool_call_id": tc.id,
+                "content": result_msg,
+            })
 
-        if tool_result_content:
-            history.append({"role": "user", "content": tool_result_content})
+        if tool_results:
+            history.extend(tool_results)
 
     return {
         "message":         "\n".join(text_parts),

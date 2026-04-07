@@ -1,10 +1,9 @@
 'use client'
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
-import { LayoutDashboard, Table2, Users, Home, Sun, Moon, X, Download, MessageSquare, Calendar, Bot } from 'lucide-react'
+import { LayoutDashboard, Table2, Users, Home, Sun, Moon, X, Download, MessageSquare, Calendar } from 'lucide-react'
 import { useTheme } from 'next-themes'
 import { useState, useEffect } from 'react'
-import { getAIProvider, setAIProvider, type AIProvider } from '@/lib/api'
 
 const NAV_MAIN = [
   { href: '/',              label: 'Accueil',           icon: Home },
@@ -26,35 +25,15 @@ export default function Sidebar({ mobileOpen, onMobileClose }: Props) {
   const path = usePathname()
   const { theme, setTheme, resolvedTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
-  const [aiProvider, setAiProviderState] = useState<AIProvider>('anthropic')
-  const [aiModel, setAiModel] = useState<string>('')
 
   useEffect(() => {
     setMounted(true)
-    // Load current AI provider
-    getAIProvider()
-      .then(({ provider, model }) => {
-        setAiProviderState(provider)
-        setAiModel(model)
-      })
-      .catch(() => {})
   }, [])
 
   const isDark = mounted && resolvedTheme === 'dark'
 
   function toggleDark() {
     setTheme(isDark ? 'light' : 'dark')
-  }
-
-  async function toggleAIProvider() {
-    const newProvider: AIProvider = aiProvider === 'anthropic' ? 'openai' : 'anthropic'
-    try {
-      const { provider, model } = await setAIProvider(newProvider)
-      setAiProviderState(provider)
-      setAiModel(model)
-    } catch (err) {
-      console.error('Failed to switch AI provider:', err)
-    }
   }
 
   const isActive = (href: string) => {
@@ -145,22 +124,6 @@ export default function Sidebar({ mobileOpen, onMobileClose }: Props) {
 
       {/* ── Footer controls ────────────────────────────────────────────────── */}
       <div className="space-y-1">
-        {/* AI Provider toggle */}
-        <button
-          onClick={toggleAIProvider}
-          className="flex items-center gap-3 px-3 py-2 text-zinc-400 text-sm font-medium hover:bg-white/[0.06] hover:text-zinc-200 rounded-lg transition-all duration-150 w-full"
-          aria-label="Changer de modèle IA"
-          title={aiModel || 'Chargement...'}
-        >
-          <Bot size={16} />
-          <span className="truncate">
-            {mounted ? (aiProvider === 'anthropic' ? 'Claude' : 'GPT-4o') : '...'}
-          </span>
-          <span className="ml-auto text-[10px] text-zinc-500 font-mono">
-            {aiProvider === 'anthropic' ? 'ANT' : 'OAI'}
-          </span>
-        </button>
-
         {/* Dark mode toggle */}
         <button
           onClick={toggleDark}

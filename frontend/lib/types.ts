@@ -100,14 +100,10 @@ export function getStepStatus(stepIdx: number, data: SchoolData, assignments: an
       return 'empty'
     case 5: {
       if (assignments.length === 0 && (data.curriculum?.length ?? 0) === 0) return 'empty'
-      // Check coverage
-      const classes = data.classes ?? []
+      // Check coverage: each curriculum entry (class+subject) must have an assignment
       const curriculum = data.curriculum ?? []
       const pairSet = new Set(assignments.map(a => `${a.school_class}__${a.subject}`))
-      const allCovered = curriculum.every(c => {
-        const classesForLevel = classes.filter(cl => (cl.level || cl.name) === c.level)
-        return classesForLevel.length === 0 || classesForLevel.every(cl => pairSet.has(`${cl.name}__${c.subject}`))
-      })
+      const allCovered = curriculum.every(c => pairSet.has(`${c.school_class}__${c.subject}`))
       if (assignments.length > 0 && allCovered) return 'done'
       if (assignments.length > 0) return 'partial'
       return 'empty'
@@ -134,11 +130,11 @@ export function getChecklistItems(data: SchoolData, assignments: any[]) {
   const days       = data.days       ?? []
   const sess       = data.sessions   ?? []
 
+  // Class-based curriculum: check each (school_class, subject) pair has an assignment
   const pairSet = new Set(assignments.map(a => `${a.school_class}__${a.subject}`))
-  const allAssigned = curriculum.length === 0 || curriculum.every(c => {
-    const cls4level = classes.filter(cl => (cl.level || cl.name) === c.level)
-    return cls4level.length === 0 || cls4level.every(cl => pairSet.has(`${cl.name}__${c.subject}`))
-  })
+  const allAssigned = curriculum.length === 0 || curriculum.every(c =>
+    pairSet.has(`${c.school_class}__${c.subject}`)
+  )
 
   return [
     { label: 'École configurée (nom, jours, sessions)', done: !!(data.name && days.length > 0 && sess.length > 0) },

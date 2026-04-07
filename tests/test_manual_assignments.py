@@ -17,7 +17,7 @@ def test_valid_assignments():
     teachers = [Teacher(name="M. Diallo", subjects=["Maths"], max_hours_per_week=20)]
     curriculum = [
         CurriculumEntry(
-            level="6ème",
+            school_class="6ème A",
             subject="Maths",
             total_minutes_per_week=360,
             sessions_per_week=4,
@@ -26,7 +26,7 @@ def test_valid_assignments():
     ]
     subjects = [Subject(name="Maths", short_name="Maths", color="#3498db")]
     teachers = [Teacher(name="M. Diallo", subjects=["Maths"], max_hours_per_week=20)]
-    classes = [SchoolClass(name="6ème", level="6ème", student_count=30)]
+    classes = [SchoolClass(name="6ème A", level="6ème", student_count=30)]
     school = School(name="Test School", academic_year="2026-2027", city="Dakar")
     timeslot_config = TimeslotConfig(
         days=["lundi"],
@@ -63,10 +63,10 @@ def test_missing_assignments():
         ),
         subjects=[Subject(name="Maths", short_name="Maths", color="#3498db")],
         teachers=[Teacher(name="M. Diallo", subjects=["Maths"], max_hours_per_week=20)],
-        classes=[SchoolClass(name="6ème", level="6ème", student_count=30)],
+        classes=[SchoolClass(name="6ème A", level="6ème", student_count=30)],
         rooms=[Room(name="Salle 1", capacity=30, types=["Standard"])],
         curriculum=[
-            CurriculumEntry(level="6ème", subject="Maths", total_minutes_per_week=60,
+            CurriculumEntry(school_class="6ème", subject="Maths", total_minutes_per_week=60,
                           sessions_per_week=1, minutes_per_session=60)
         ],
         constraints=[],
@@ -76,11 +76,11 @@ def test_missing_assignments():
         ManualAssignmentValidator.validate(school)
 
 def test_multiple_teachers_per_subject():
-    teachers = [Teacher(name="M. Diallo", subjects=["Maths"], max_hours_per_week=20), 
+    teachers = [Teacher(name="M. Diallo", subjects=["Maths"], max_hours_per_week=20),
                Teacher(name="M. Ndiaye", subjects=["Maths"], max_hours_per_week=20)]
     curriculum = [
         CurriculumEntry(
-            level="6ème",
+            school_class="6ème A",
             subject="Maths",
             total_minutes_per_week=360,
             sessions_per_week=4,
@@ -88,7 +88,7 @@ def test_multiple_teachers_per_subject():
         )
     ]
     subjects = [Subject(name="Maths", short_name="Maths", color="#3498db")]
-    classes = [SchoolClass(name="6ème", level="6ème", student_count=30)]
+    classes = [SchoolClass(name="6ème A", level="6ème", student_count=30)]
     school_info = School(name="Test School", academic_year="2026-2027", city="Dakar")
     timeslot_config = TimeslotConfig(
         days=["lundi"],

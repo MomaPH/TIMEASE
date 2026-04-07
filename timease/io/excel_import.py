@@ -562,7 +562,7 @@ def _parse_curriculum(wb: Any, errors: list[str]) -> list[CurriculumEntry]:
             sp_w = sp_w or 1
             mps = mps or total
         entries.append(CurriculumEntry(
-            level=niveau, subject=mat, total_minutes_per_week=total,
+            school_class=niveau, subject=mat, total_minutes_per_week=total,
             sessions_per_week=sp_w, minutes_per_session=mps,
         ))
     return entries

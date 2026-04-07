@@ -60,11 +60,11 @@ def _minimal_school() -> SchoolData:
         ),
         subjects=[Subject("Maths", "M", "#FFF")],
         teachers=[Teacher("M. Test", ["Maths"], max_hours_per_week=10)],
-        classes=[SchoolClass("6A", "6ème", 30)],
+        classes=[SchoolClass("6ème A", "6ème", 30)],
         rooms=[Room("Salle 1", 40, ["Salle standard"])],
         curriculum=[
             CurriculumEntry(
-                level="6ème",
+                school_class="6ème A",
                 subject="Maths",
                 total_minutes_per_week=60,
                 sessions_per_week=1,
@@ -73,7 +73,7 @@ def _minimal_school() -> SchoolData:
         ],
         constraints=[],
         teacher_assignments=[
-            TeacherAssignment("M. Test", "Maths", "6A"),
+            TeacherAssignment("M. Test", "Maths", "6ème A"),
         ],
     )
 
@@ -295,7 +295,7 @@ class TestCurriculumConsistency:
         """Sessions × minutes should match total_minutes_per_week (warning)."""
         sd = _minimal_school()
         sd.curriculum[0] = CurriculumEntry(
-            level="6ème", subject="Maths",
+            school_class="6ème", subject="Maths",
             total_minutes_per_week=90,   # inconsistent: 2 × 60 = 120 ≠ 90
             sessions_per_week=2,
             minutes_per_session=60,
@@ -309,7 +309,7 @@ class TestCurriculumConsistency:
     def test_consistent_total_accepted(self) -> None:
         sd = _minimal_school()
         sd.curriculum[0] = CurriculumEntry(
-            level="6ème", subject="Maths",
+            school_class="6ème", subject="Maths",
             total_minutes_per_week=120,
             sessions_per_week=2,
             minutes_per_session=60,
@@ -369,7 +369,7 @@ def _make_valid_result() -> tuple[TimetableResult, SchoolData]:
     result = TimetableResult(
         assignments=[
             Assignment(
-                school_class="6A",
+                school_class="6ème A",
                 subject="Maths",
                 teacher="M. Test",
                 day="lundi",
@@ -395,7 +395,7 @@ class TestTimetableResultVerify:
         # Add a second assignment for the same teacher at the same time
         result.assignments.append(
             Assignment(
-                school_class="6A",
+                school_class="6ème A",
                 subject="Maths",
                 teacher="M. Test",
                 day="lundi",
@@ -431,7 +431,7 @@ class TestTimetableResultVerify:
         sd.teachers.append(Teacher("Mme Autre", ["Français"], max_hours_per_week=10))
         result.assignments.append(
             Assignment(
-                school_class="6A",
+                school_class="6ème A",
                 subject="Français",
                 teacher="Mme Autre",
                 day="lundi",
@@ -441,7 +441,7 @@ class TestTimetableResultVerify:
             )
         )
         violations = result.verify(sd)
-        assert any("6A" in v for v in violations)
+        assert any("6ème A" in v for v in violations)
 
     def test_curriculum_mismatch_detected(self) -> None:
         result, sd = _make_valid_result()
@@ -463,7 +463,7 @@ class TestTimetableResultVerify:
         # Add another 60-min block → total 120 min > 60 min limit
         result.assignments.append(
             Assignment(
-                school_class="6A",
+                school_class="6ème A",
                 subject="Maths",
                 teacher="M. Test",
                 day="mardi",
@@ -492,7 +492,7 @@ class TestTimetableResultVerify:
         result, sd = _make_valid_result()
         result.assignments.append(
             Assignment(
-                school_class="6A",
+                school_class="6ème A",
                 subject="Maths",
                 teacher="M. Test",
                 day="lundi",

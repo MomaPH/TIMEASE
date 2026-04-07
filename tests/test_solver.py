@@ -88,18 +88,18 @@ def _make_school(constraints: list[Constraint] | None = None) -> SchoolData:
     ]
     curriculum = [
         # 6ème: 3 subjects
-        CurriculumEntry("6ème", "Mathématiques", 120, 
+        CurriculumEntry("6ème", "Mathématiques", 120,
                         sessions_per_week=2, minutes_per_session=60),
-        CurriculumEntry("6ème", "Français",      120, 
+        CurriculumEntry("6ème", "Français",      120,
                         sessions_per_week=2, minutes_per_session=60),
-        CurriculumEntry("6ème", "SVT",            60, 
+        CurriculumEntry("6ème", "SVT",            60,
                         sessions_per_week=1, minutes_per_session=60),
         # 5ème: 3 subjects
-        CurriculumEntry("5ème", "Mathématiques", 120, 
+        CurriculumEntry("5ème", "Mathématiques", 120,
                         sessions_per_week=2, minutes_per_session=60),
-        CurriculumEntry("5ème", "Français",       60, 
+        CurriculumEntry("5ème", "Français",       60,
                         sessions_per_week=1, minutes_per_session=60),
-        CurriculumEntry("5ème", "SVT",             60, 
+        CurriculumEntry("5ème", "SVT",             60,
                         sessions_per_week=1, minutes_per_session=60),
     ]
     teacher_assignments = [
@@ -218,15 +218,13 @@ class TestCurriculumHoursSatisfied:
             duration = _to_min(a.end_time) - _to_min(a.start_time)
             actual[key] = actual.get(key, 0) + duration
 
-        for cls in minimal_sd.classes:
-            for entry in minimal_sd.curriculum:
-                if entry.level != cls.level:
-                    continue
-                expected = entry.total_minutes_per_week
-                got = actual.get((cls.name, entry.subject), 0)
-                assert got == expected, (
-                    f"{cls.name}/{entry.subject}: expected {expected} min, got {got}"
-                )
+        # Class-based curriculum: directly check each entry
+        for entry in minimal_sd.curriculum:
+            expected = entry.total_minutes_per_week
+            got = actual.get((entry.school_class, entry.subject), 0)
+            assert got == expected, (
+                f"{entry.school_class}/{entry.subject}: expected {expected} min, got {got}"
+            )
 
     def test_verify_passes(
         self, minimal_result: TimetableResult, minimal_sd: SchoolData
@@ -378,7 +376,7 @@ class TestImpossibleScenario:
         # 20 slots/week × 60 min = 1200 min available; demand 2000 min
         sd = _make_school()
         overloaded = [
-            CurriculumEntry("6ème", "Mathématiques", 2000, 
+            CurriculumEntry("6ème", "Mathématiques", 2000,
                             sessions_per_week=33, minutes_per_session=60),
         ]
         sd = type(sd)(
@@ -421,7 +419,7 @@ class TestSoftConstraintsMatter:
         classes  = [SchoolClass("6ème", "6ème", 28)]
         rooms    = [Room("Salle 1", 35, ["Salle standard"])]
         curriculum = [
-            CurriculumEntry("6ème", "Mathématiques", 360, 
+            CurriculumEntry("6ème", "Mathématiques", 360,
                             sessions_per_week=6, minutes_per_session=60),
         ]
         soft = Constraint(
@@ -555,8 +553,9 @@ class TestMinSessionsPerDay:
         # 5ème has only 4 sessions in the base fixture (2 Maths + 1 Fr + 1 SVT)
         # but H11 requires ≥1 session on each of 5 days → bump Français to 2 sessions.
         new_curriculum = [
-            e if not (e.level == "5ème" and e.subject == "Français")
-            else CurriculumEntry("5ème", "Français", 120, 
+            e if not (e.school_class == "5ème" and e.subject == "Français")
+            else CurriculumEntry(school_class="5ème", subject="Français",
+                                 total_minutes_per_week=120,
                                  sessions_per_week=2, minutes_per_session=60)
             for e in sd.curriculum
         ]

@@ -28,9 +28,9 @@ No-overlap constraints use a global timeline:
 
 Manual assignment
 -----------------
-Each (class, subject) pair must be explicitly assigned to a teacher by the 
+Each (class, subject) pair must be explicitly assigned to a teacher by the
 administrator via a TeacherAssignment record. This eliminates teacher-selection
-complexity from the CP-SAT engine, ensuring high performance (near-instant 
+complexity from the CP-SAT engine, ensuring high performance (near-instant
 feasibility checks) and absolute adherence to administrative contracts.
 """
 
@@ -189,11 +189,11 @@ class TimetableSolver:
         session_name_map = {s.name: s for s in tc.sessions}
 
         # ==================================================================
-        # Step 2 — Curriculum index + session specs
+        # Step 2 — Curriculum index + session specs (class-based)
         # ==================================================================
-        curriculum_by_level: dict[str, list[CurriculumEntry]] = defaultdict(list)
+        curriculum_by_class: dict[str, list[CurriculumEntry]] = defaultdict(list)
         for entry in data.curriculum:
-            curriculum_by_level[entry.level].append(entry)
+            curriculum_by_class[entry.school_class].append(entry)
 
         subject_map = {s.name: s for s in data.subjects}
         teacher_map = {t.name: t for t in data.teachers}
@@ -210,7 +210,7 @@ class TimetableSolver:
 
         spec_for: dict[tuple[str, str], _SessionSpec] = {}
         for school_class in data.classes:
-            for entry in curriculum_by_level.get(school_class.level, []):
+            for entry in curriculum_by_class.get(school_class.name, []):
                 spec_for[(school_class.name, entry.subject)] = (
                     _compute_session_spec(entry, base_unit)
                 )
@@ -295,7 +295,7 @@ class TimetableSolver:
         solver_warnings: list[str] = []
 
         for school_class in data.classes:
-            for entry in curriculum_by_level.get(school_class.level, []):
+            for entry in curriculum_by_class.get(school_class.name, []):
                 spec = spec_for.get((school_class.name, entry.subject))
                 if spec is None:
                     continue

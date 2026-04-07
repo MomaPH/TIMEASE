@@ -341,359 +341,487 @@
   ],
   "curriculum": [
     {
-      "level": "6ème",
       "subject": "Mathématiques",
       "total_minutes_per_week": 180,
       "mode": "auto",
       "sessions_per_week": null,
       "minutes_per_session": null,
       "min_session_minutes": 60,
-      "max_session_minutes": 60
+      "max_session_minutes": 60,
+      "school_class": "6ème"
     },
     {
-      "level": "6ème",
       "subject": "SVT",
       "total_minutes_per_week": 180,
       "mode": "auto",
       "sessions_per_week": null,
       "minutes_per_session": null,
       "min_session_minutes": 60,
-      "max_session_minutes": 60
+      "max_session_minutes": 60,
+      "school_class": "6ème"
     },
     {
-      "level": "6ème",
       "subject": "Physique-Chimie",
       "total_minutes_per_week": 120,
       "mode": "auto",
       "sessions_per_week": null,
       "minutes_per_session": null,
       "min_session_minutes": 60,
-      "max_session_minutes": 60
+      "max_session_minutes": 60,
+      "school_class": "6ème"
     },
     {
-      "level": "6ème",
       "subject": "Coran",
       "total_minutes_per_week": 300,
       "mode": "auto",
       "sessions_per_week": null,
       "minutes_per_session": null,
       "min_session_minutes": 60,
-      "max_session_minutes": 60
+      "max_session_minutes": 60,
+      "school_class": "6ème"
     },
     {
-      "level": "6ème",
       "subject": "Espagnol",
       "total_minutes_per_week": 120,
       "mode": "auto",
       "sessions_per_week": null,
       "minutes_per_session": null,
       "min_session_minutes": 60,
-      "max_session_minutes": 60
+      "max_session_minutes": 60,
+      "school_class": "6ème"
     },
     {
-      "level": "6ème",
       "subject": "Anglais",
       "total_minutes_per_week": 300,
       "mode": "auto",
       "sessions_per_week": null,
       "minutes_per_session": null,
       "min_session_minutes": 60,
-      "max_session_minutes": 60
+      "max_session_minutes": 60,
+      "school_class": "6ème"
     },
     {
-      "level": "6ème",
       "subject": "Éducation Islamique",
       "total_minutes_per_week": 60,
       "mode": "manual",
       "sessions_per_week": 1,
       "minutes_per_session": 60,
       "min_session_minutes": null,
-      "max_session_minutes": null
+      "max_session_minutes": null,
+      "school_class": "6ème"
     },
     {
-      "level": "6ème",
       "subject": "EPS",
       "total_minutes_per_week": 120,
       "mode": "manual",
       "sessions_per_week": 2,
       "minutes_per_session": 60,
       "min_session_minutes": null,
-      "max_session_minutes": null
+      "max_session_minutes": null,
+      "school_class": "6ème"
     },
     {
-      "level": "5ème",
       "subject": "Mathématiques",
       "total_minutes_per_week": 180,
       "mode": "auto",
       "sessions_per_week": null,
       "minutes_per_session": null,
       "min_session_minutes": 60,
-      "max_session_minutes": 60
+      "max_session_minutes": 60,
+      "school_class": "5ème"
     },
     {
-      "level": "5ème",
       "subject": "SVT",
       "total_minutes_per_week": 120,
       "mode": "auto",
       "sessions_per_week": null,
       "minutes_per_session": null,
       "min_session_minutes": 60,
-      "max_session_minutes": 60
+      "max_session_minutes": 60,
+      "school_class": "5ème"
     },
     {
-      "level": "5ème",
       "subject": "Physique-Chimie",
       "total_minutes_per_week": 120,
       "mode": "auto",
       "sessions_per_week": null,
       "minutes_per_session": null,
       "min_session_minutes": 60,
-      "max_session_minutes": 60
+      "max_session_minutes": 60,
+      "school_class": "5ème"
     },
     {
-      "level": "5ème",
       "subject": "Coran",
       "total_minutes_per_week": 300,
       "mode": "auto",
       "sessions_per_week": null,
       "minutes_per_session": null,
       "min_session_minutes": 60,
-      "max_session_minutes": 60
+      "max_session_minutes": 60,
+      "school_class": "5ème"
     },
     {
-      "level": "5ème",
       "subject": "Espagnol",
       "total_minutes_per_week": 120,
       "mode": "auto",
       "sessions_per_week": null,
       "minutes_per_session": null,
       "min_session_minutes": 60,
-      "max_session_minutes": 60
+      "max_session_minutes": 60,
+      "school_class": "5ème"
     },
     {
-      "level": "5ème",
       "subject": "Anglais",
       "total_minutes_per_week": 240,
       "mode": "auto",
       "sessions_per_week": null,
       "minutes_per_session": null,
       "min_session_minutes": 60,
-      "max_session_minutes": 60
+      "max_session_minutes": 60,
+      "school_class": "5ème"
     },
     {
-      "level": "5ème",
       "subject": "Éducation Islamique",
       "total_minutes_per_week": 60,
       "mode": "manual",
       "sessions_per_week": 1,
       "minutes_per_session": 60,
       "min_session_minutes": null,
-      "max_session_minutes": null
+      "max_session_minutes": null,
+      "school_class": "5ème"
     },
     {
-      "level": "5ème",
       "subject": "EPS",
       "total_minutes_per_week": 120,
       "mode": "manual",
       "sessions_per_week": 2,
       "minutes_per_session": 60,
       "min_session_minutes": null,
-      "max_session_minutes": null
+      "max_session_minutes": null,
+      "school_class": "5ème"
     },
     {
-      "level": "4ème",
       "subject": "Mathématiques",
       "total_minutes_per_week": 240,
       "mode": "auto",
       "sessions_per_week": null,
       "minutes_per_session": null,
       "min_session_minutes": 60,
-      "max_session_minutes": 60
+      "max_session_minutes": 60,
+      "school_class": "4ème"
     },
     {
-      "level": "4ème",
       "subject": "SVT",
       "total_minutes_per_week": 120,
       "mode": "auto",
       "sessions_per_week": null,
       "minutes_per_session": null,
       "min_session_minutes": 60,
-      "max_session_minutes": 60
+      "max_session_minutes": 60,
+      "school_class": "4ème"
     },
     {
-      "level": "4ème",
       "subject": "Physique-Chimie",
       "total_minutes_per_week": 180,
       "mode": "auto",
       "sessions_per_week": null,
       "minutes_per_session": null,
       "min_session_minutes": 60,
-      "max_session_minutes": 60
+      "max_session_minutes": 60,
+      "school_class": "4ème"
     },
     {
-      "level": "4ème",
       "subject": "Coran",
       "total_minutes_per_week": 300,
       "mode": "auto",
       "sessions_per_week": null,
       "minutes_per_session": null,
       "min_session_minutes": 60,
-      "max_session_minutes": 60
+      "max_session_minutes": 60,
+      "school_class": "4ème"
     },
     {
-      "level": "4ème",
       "subject": "Espagnol",
       "total_minutes_per_week": 120,
       "mode": "auto",
       "sessions_per_week": null,
       "minutes_per_session": null,
       "min_session_minutes": 60,
-      "max_session_minutes": 60
+      "max_session_minutes": 60,
+      "school_class": "4ème"
     },
     {
-      "level": "4ème",
       "subject": "Anglais",
       "total_minutes_per_week": 240,
       "mode": "auto",
       "sessions_per_week": null,
       "minutes_per_session": null,
       "min_session_minutes": 60,
-      "max_session_minutes": 60
+      "max_session_minutes": 60,
+      "school_class": "4ème"
     },
     {
-      "level": "4ème",
       "subject": "Éducation Islamique",
       "total_minutes_per_week": 60,
       "mode": "manual",
       "sessions_per_week": 1,
       "minutes_per_session": 60,
       "min_session_minutes": null,
-      "max_session_minutes": null
+      "max_session_minutes": null,
+      "school_class": "4ème"
     },
     {
-      "level": "4ème",
       "subject": "EPS",
       "total_minutes_per_week": 120,
       "mode": "manual",
       "sessions_per_week": 2,
       "minutes_per_session": 60,
       "min_session_minutes": null,
-      "max_session_minutes": null
+      "max_session_minutes": null,
+      "school_class": "4ème"
     },
     {
-      "level": "3ème",
       "subject": "Mathématiques",
       "total_minutes_per_week": 360,
       "mode": "auto",
       "sessions_per_week": null,
       "minutes_per_session": null,
       "min_session_minutes": 60,
-      "max_session_minutes": 60
+      "max_session_minutes": 60,
+      "school_class": "3ème"
     },
     {
-      "level": "3ème",
       "subject": "SVT",
       "total_minutes_per_week": 270,
       "mode": "manual",
       "sessions_per_week": 3,
       "minutes_per_session": 90,
       "min_session_minutes": null,
-      "max_session_minutes": null
+      "max_session_minutes": null,
+      "school_class": "3ème"
     },
     {
-      "level": "3ème",
       "subject": "Physique-Chimie",
       "total_minutes_per_week": 300,
       "mode": "auto",
       "sessions_per_week": null,
       "minutes_per_session": null,
       "min_session_minutes": 60,
-      "max_session_minutes": 60
+      "max_session_minutes": 60,
+      "school_class": "3ème"
     },
     {
-      "level": "3ème",
       "subject": "Coran",
       "total_minutes_per_week": 300,
       "mode": "auto",
       "sessions_per_week": null,
       "minutes_per_session": null,
       "min_session_minutes": 60,
-      "max_session_minutes": 60
+      "max_session_minutes": 60,
+      "school_class": "3ème"
     },
     {
-      "level": "3ème",
       "subject": "Espagnol",
       "total_minutes_per_week": 120,
       "mode": "auto",
       "sessions_per_week": null,
       "minutes_per_session": null,
       "min_session_minutes": 60,
-      "max_session_minutes": 60
+      "max_session_minutes": 60,
+      "school_class": "3ème"
     },
     {
-      "level": "3ème",
       "subject": "Anglais",
       "total_minutes_per_week": 360,
       "mode": "auto",
       "sessions_per_week": null,
       "minutes_per_session": null,
       "min_session_minutes": 60,
-      "max_session_minutes": 60
+      "max_session_minutes": 60,
+      "school_class": "3ème"
     },
     {
-      "level": "3ème",
       "subject": "Éducation Islamique",
       "total_minutes_per_week": 60,
       "mode": "manual",
       "sessions_per_week": 1,
       "minutes_per_session": 60,
       "min_session_minutes": null,
-      "max_session_minutes": null
+      "max_session_minutes": null,
+      "school_class": "3ème"
     },
     {
-      "level": "3ème",
       "subject": "EPS",
       "total_minutes_per_week": 120,
       "mode": "manual",
       "sessions_per_week": 2,
       "minutes_per_session": 60,
       "min_session_minutes": null,
-      "max_session_minutes": null
+      "max_session_minutes": null,
+      "school_class": "3ème"
     }
   ],
   "teacher_assignments": [
-    {"teacher": "Samba Diallo",   "subject": "Mathématiques",     "school_class": "6ème"},
-    {"teacher": "Rokhaya Gaye",   "subject": "Mathématiques",     "school_class": "5ème"},
-    {"teacher": "Fatou Mbaye",    "subject": "Mathématiques",     "school_class": "4ème"},
-    {"teacher": "Samba Diallo",   "subject": "Mathématiques",     "school_class": "3ème"},
-    {"teacher": "Ibrahima Sow",   "subject": "SVT",               "school_class": "6ème"},
-    {"teacher": "Aissatou Fall",  "subject": "SVT",               "school_class": "5ème"},
-    {"teacher": "Modou Fall",     "subject": "SVT",               "school_class": "4ème"},
-    {"teacher": "Ibrahima Sow",   "subject": "SVT",               "school_class": "3ème"},
-    {"teacher": "Aissatou Fall",  "subject": "Physique-Chimie",   "school_class": "6ème"},
-    {"teacher": "Modou Fall",     "subject": "Physique-Chimie",   "school_class": "5ème"},
-    {"teacher": "Modou Fall",     "subject": "Physique-Chimie",   "school_class": "4ème"},
-    {"teacher": "Aissatou Fall",  "subject": "Physique-Chimie",   "school_class": "3ème"},
-    {"teacher": "Maguette Diop",  "subject": "Coran",             "school_class": "6ème"},
-    {"teacher": "Abdoulaye Kane", "subject": "Coran",             "school_class": "5ème"},
-    {"teacher": "Maguette Diop",  "subject": "Coran",             "school_class": "4ème"},
-    {"teacher": "Abdoulaye Kane", "subject": "Coran",             "school_class": "3ème"},
-    {"teacher": "Omar Sy",        "subject": "Espagnol",          "school_class": "6ème"},
-    {"teacher": "Omar Sy",        "subject": "Espagnol",          "school_class": "5ème"},
-    {"teacher": "Cheikh Ndour",   "subject": "Espagnol",          "school_class": "4ème"},
-    {"teacher": "Cheikh Ndour",   "subject": "Espagnol",          "school_class": "3ème"},
-    {"teacher": "Ndeye Toure",    "subject": "Anglais",           "school_class": "6ème"},
-    {"teacher": "Mariama Ba",     "subject": "Anglais",           "school_class": "5ème"},
-    {"teacher": "Mariama Ba",     "subject": "Anglais",           "school_class": "4ème"},
-    {"teacher": "Cheikh Ndour",   "subject": "Anglais",           "school_class": "3ème"},
-    {"teacher": "Baye Diallo",    "subject": "Éducation Islamique","school_class": "6ème"},
-    {"teacher": "Baye Diallo",    "subject": "Éducation Islamique","school_class": "5ème"},
-    {"teacher": "Baye Diallo",    "subject": "Éducation Islamique","school_class": "4ème"},
-    {"teacher": "Baye Diallo",    "subject": "Éducation Islamique","school_class": "3ème"},
-    {"teacher": "Aminata Sarr",   "subject": "EPS",               "school_class": "6ème"},
-    {"teacher": "Aminata Sarr",   "subject": "EPS",               "school_class": "5ème"},
-    {"teacher": "Aminata Sarr",   "subject": "EPS",               "school_class": "4ème"},
-    {"teacher": "Aminata Sarr",   "subject": "EPS",               "school_class": "3ème"}
+    {
+      "teacher": "Samba Diallo",
+      "subject": "Mathématiques",
+      "school_class": "6ème"
+    },
+    {
+      "teacher": "Rokhaya Gaye",
+      "subject": "Mathématiques",
+      "school_class": "5ème"
+    },
+    {
+      "teacher": "Fatou Mbaye",
+      "subject": "Mathématiques",
+      "school_class": "4ème"
+    },
+    {
+      "teacher": "Samba Diallo",
+      "subject": "Mathématiques",
+      "school_class": "3ème"
+    },
+    {
+      "teacher": "Ibrahima Sow",
+      "subject": "SVT",
+      "school_class": "6ème"
+    },
+    {
+      "teacher": "Aissatou Fall",
+      "subject": "SVT",
+      "school_class": "5ème"
+    },
+    {
+      "teacher": "Modou Fall",
+      "subject": "SVT",
+      "school_class": "4ème"
+    },
+    {
+      "teacher": "Ibrahima Sow",
+      "subject": "SVT",
+      "school_class": "3ème"
+    },
+    {
+      "teacher": "Aissatou Fall",
+      "subject": "Physique-Chimie",
+      "school_class": "6ème"
+    },
+    {
+      "teacher": "Modou Fall",
+      "subject": "Physique-Chimie",
+      "school_class": "5ème"
+    },
+    {
+      "teacher": "Modou Fall",
+      "subject": "Physique-Chimie",
+      "school_class": "4ème"
+    },
+    {
+      "teacher": "Aissatou Fall",
+      "subject": "Physique-Chimie",
+      "school_class": "3ème"
+    },
+    {
+      "teacher": "Maguette Diop",
+      "subject": "Coran",
+      "school_class": "6ème"
+    },
+    {
+      "teacher": "Abdoulaye Kane",
+      "subject": "Coran",
+      "school_class": "5ème"
+    },
+    {
+      "teacher": "Maguette Diop",
+      "subject": "Coran",
+      "school_class": "4ème"
+    },
+    {
+      "teacher": "Abdoulaye Kane",
+      "subject": "Coran",
+      "school_class": "3ème"
+    },
+    {
+      "teacher": "Omar Sy",
+      "subject": "Espagnol",
+      "school_class": "6ème"
+    },
+    {
+      "teacher": "Omar Sy",
+      "subject": "Espagnol",
+      "school_class": "5ème"
+    },
+    {
+      "teacher": "Cheikh Ndour",
+      "subject": "Espagnol",
+      "school_class": "4ème"
+    },
+    {
+      "teacher": "Cheikh Ndour",
+      "subject": "Espagnol",
+      "school_class": "3ème"
+    },
+    {
+      "teacher": "Ndeye Toure",
+      "subject": "Anglais",
+      "school_class": "6ème"
+    },
+    {
+      "teacher": "Mariama Ba",
+      "subject": "Anglais",
+      "school_class": "5ème"
+    },
+    {
+      "teacher": "Mariama Ba",
+      "subject": "Anglais",
+      "school_class": "4ème"
+    },
+    {
+      "teacher": "Cheikh Ndour",
+      "subject": "Anglais",
+      "school_class": "3ème"
+    },
+    {
+      "teacher": "Baye Diallo",
+      "subject": "Éducation Islamique",
+      "school_class": "6ème"
+    },
+    {
+      "teacher": "Baye Diallo",
+      "subject": "Éducation Islamique",
+      "school_class": "5ème"
+    },
+    {
+      "teacher": "Baye Diallo",
+      "subject": "Éducation Islamique",
+      "school_class": "4ème"
+    },
+    {
+      "teacher": "Baye Diallo",
+      "subject": "Éducation Islamique",
+      "school_class": "3ème"
+    },
+    {
+      "teacher": "Aminata Sarr",
+      "subject": "EPS",
+      "school_class": "6ème"
+    },
+    {
+      "teacher": "Aminata Sarr",
+      "subject": "EPS",
+      "school_class": "5ème"
+    },
+    {
+      "teacher": "Aminata Sarr",
+      "subject": "EPS",
+      "school_class": "4ème"
+    },
+    {
+      "teacher": "Aminata Sarr",
+      "subject": "EPS",
+      "school_class": "3ème"
+    }
   ],
   "constraints": [
     {

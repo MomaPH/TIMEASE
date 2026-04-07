@@ -80,7 +80,8 @@ class TestSampleSchoolLoading:
         assert len(sample_school.rooms) == 9
 
     def test_curriculum_entry_count(self, sample_school: SchoolData) -> None:
-        assert len(sample_school.curriculum) == 41
+        # Class-based curriculum: 41 subjects × 2 classes per level = 82 entries
+        assert len(sample_school.curriculum) == 82
 
     def test_constraint_count(self, sample_school: SchoolData) -> None:
         assert len(sample_school.constraints) == 7
@@ -164,7 +165,7 @@ class TestRoomValidation:
 class TestCurriculumEntryValidation:
     def test_reject_zero_sessions_per_week(self) -> None:
         entry = CurriculumEntry(
-            level="6ème",
+            school_class="6ème A",
             subject="SVT",
             total_minutes_per_week=120,
             sessions_per_week=0,       # invalid
@@ -175,7 +176,7 @@ class TestCurriculumEntryValidation:
 
     def test_reject_zero_minutes_per_session(self) -> None:
         entry = CurriculumEntry(
-            level="6ème",
+            school_class="6ème A",
             subject="SVT",
             total_minutes_per_week=120,
             sessions_per_week=2,
@@ -186,7 +187,7 @@ class TestCurriculumEntryValidation:
 
     def test_reject_zero_total_minutes(self) -> None:
         entry = CurriculumEntry(
-            level="6ème", subject="SVT", total_minutes_per_week=0,
+            school_class="6ème", subject="SVT", total_minutes_per_week=0,
             sessions_per_week=1, minutes_per_session=60,
         )
         with pytest.raises(ValueError, match="positif"):
@@ -194,7 +195,7 @@ class TestCurriculumEntryValidation:
 
     def test_valid_entry_does_not_raise(self) -> None:
         entry = CurriculumEntry(
-            level="6ème",
+            school_class="6ème A",
             subject="SVT",
             total_minutes_per_week=120,
             sessions_per_week=2,
@@ -212,7 +213,7 @@ class TestSchoolDataValidation:
         """Add a curriculum entry for a subject no teacher can teach."""
         base_school_data.curriculum.append(
             CurriculumEntry(
-                level="6ème",
+                school_class="6ème A",
                 subject="Philosophie",   # exists nowhere in subjects or teachers
                 total_minutes_per_week=60,
                 sessions_per_week=1,

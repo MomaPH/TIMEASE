@@ -393,18 +393,19 @@ class ConflictAnalyzer:
 
     def _check_class_hours_exceed_schedule(self) -> list[ConflictReport]:
         """
-        Total curriculum hours for a level must fit in the weekly schedule.
+        Total curriculum hours for a class must fit in the weekly schedule.
         """
         total_slots = len(self._tc.get_all_slots())
         schedule_hours = total_slots * self._tc.base_unit_minutes / 60
 
-        level_hours: dict[str, float] = defaultdict(float)
+        # Group curriculum by class (now directly by school_class)
+        class_hours: dict[str, float] = defaultdict(float)
         for entry in self._sd.curriculum:
-            level_hours[entry.level] += entry.total_minutes_per_week / 60
+            class_hours[entry.school_class] += entry.total_minutes_per_week / 60
 
         reports: list[ConflictReport] = []
         for cls in self._sd.classes:
-            demanded = level_hours.get(cls.level, 0.0)
+            demanded = class_hours.get(cls.name, 0.0)
             if demanded > schedule_hours:
                 excess = demanded - schedule_hours
                 reports.append(ConflictReport(
@@ -418,12 +419,12 @@ class ConflictAnalyzer:
                     fix_options=[
                         FixOption(
                             fix_fr=(
-                                f"Réduire le programme du niveau {cls.level} "
+                                f"Réduire le programme de la classe {cls.name} "
                                 f"d'au moins {int(excess) + 1}h."
                             ),
                             fix_action={
                                 "action": "reduce_curriculum_hours",
-                                "level": cls.level,
+                                "school_class": cls.name,
                                 "by_hours": int(excess) + 1,
                             },
                             impact_fr="Rend le programme compatible avec les créneaux disponibles.",
