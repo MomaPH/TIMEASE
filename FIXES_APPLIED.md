@@ -393,5 +393,87 @@ git check-ignore logs/dev/test.log && echo "✅ Logs ignored"
 
 ---
 
+### 9. **Claude API Model Deprecated (404 Error)**
+**Problem:** Model `claude-3-5-sonnet-20241022` returned 404 errors in AI chat.
+
+**Solution:**
+- Updated to `claude-sonnet-4-20250514` (Claude Sonnet 4)
+- Changed in 2 locations in `timease/api/ai_chat.py`
+
+**Commit:** `3c069a4`
+
+---
+
+### 10. **OpenAI Support Added**
+**Problem:** User requested OpenAI API integration with provider switching.
+
+**Solution:**
+- Added OpenAI SDK dependency (`openai==2.30.0`)
+- Added OpenAI API key to `.env` (gitignored)
+- Created provider selection system:
+  - `get_ai_provider()` / `set_ai_provider()`
+  - `/api/ai/provider` endpoints (GET/POST)
+- Added AI provider toggle in sidebar (Claude ↔ GPT-4o)
+- **Set OpenAI as default provider**
+
+**Models:**
+- Anthropic: `claude-sonnet-4-20250514`
+- OpenAI: `gpt-4o`
+
+**Files:**
+- `timease/api/ai_chat.py` (provider system)
+- `timease/api/main.py` (API endpoints)
+- `frontend/lib/api.ts` (client functions)
+- `frontend/components/Sidebar.tsx` (UI toggle)
+
+**Commits:** `3ebe262`, `1cba63a`
+
+---
+
+### 11. **AI Chat History Corruption (tool_use/tool_result errors)**
+**Problem:** Anthropic API returned 400 errors about orphaned `tool_use` blocks without matching `tool_result`.
+
+**Solution:**
+- Added `_sanitize_history()` to remove orphaned tool_use messages
+- Added `_has_tool_use()` helper to detect tool blocks
+- Integrated sanitization into `_truncate_history()`
+- Created separate `_stream_chat_anthropic()` and `_stream_chat_openai()`
+- Added `stream_chat()` dispatcher that routes to correct provider
+
+**Why it happens:**
+- Frontend localStorage can store corrupted history (e.g., page refresh during tool call)
+- Anthropic requires strict pairing: every `tool_use` must have an immediately following `tool_result`
+
+**Fix approach:**
+- Sanitize before sending to API
+- Skip orphaned assistant messages with tool_use that lack the next user message with tool_result
+- Log warnings when skipping
+
+**OpenAI implementation:**
+- Uses simple text streaming (no tools) to avoid complexity
+- Converts Anthropic-style history to OpenAI format via `_convert_history_for_openai()`
+
+**Commit:** `1cba63a`
+
+---
+
 **All critical fixes applied successfully.** ✅
 **Project ready for continued Phase 2 work.** 🚀
+
+## Summary of Changes
+
+| Issue | Status | Solution |
+|-------|--------|----------|
+| Dark mode not working | ✅ Fixed | Added next-themes + ThemeProvider |
+| Timetable/Exports not distinct | ✅ Fixed | Created separate /exports page |
+| API connection error | ℹ️ Expected | Run ./start.sh to start server |
+| Claude model 404 | ✅ Fixed | Updated to claude-sonnet-4-20250514 |
+| No OpenAI support | ✅ Added | Full integration with provider toggle |
+| History corruption errors | ✅ Fixed | Added _sanitize_history() |
+
+## Current Configuration
+
+- **Default AI Provider:** OpenAI (gpt-4o)
+- **Alternative:** Anthropic Claude Sonnet 4
+- **Toggle:** Sidebar footer (Bot icon)
+- **API Keys:** Stored in `.env` (gitignored)
