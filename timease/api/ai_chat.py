@@ -1,8 +1,8 @@
 """
 AI chat handler for TIMEASE.
 
-Uses the Anthropic Messages API with tool_use to extract school data
-from natural-language conversations and return structured JSON.
+Supports both Anthropic Claude and OpenAI GPT models with tool_use to extract
+school data from natural-language conversations and return structured JSON.
 Tool calls are auto-applied server-side — no confirmation needed from the UI.
 """
 
@@ -10,20 +10,56 @@ from dotenv import load_dotenv
 load_dotenv()
 
 import json as _json
+import logging
 import os
-from typing import Generator
+from typing import Generator, Literal
 
 import anthropic
+import openai
 
-_client: anthropic.Anthropic | None = None
+logger = logging.getLogger(__name__)
+
+# ── Provider configuration ─────────────────────────────────────────────────────
+AIProvider = Literal["anthropic", "openai"]
+DEFAULT_PROVIDER: AIProvider = "anthropic"
+
+# Model mappings
+MODELS = {
+    "anthropic": "claude-sonnet-4-20250514",
+    "openai": "gpt-4o",
+}
+
+_anthropic_client: anthropic.Anthropic | None = None
+_openai_client: openai.OpenAI | None = None
 
 
-def _get_client() -> anthropic.Anthropic:
+def _get_anthropic_client() -> anthropic.Anthropic:
     """Return a module-level Anthropic client (lazy singleton)."""
-    global _client
-    if _client is None:
-        _client = anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY", ""))
-    return _client
+    global _anthropic_client
+    if _anthropic_client is None:
+        _anthropic_client = anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY", ""))
+    return _anthropic_client
+
+
+def _get_openai_client() -> openai.OpenAI:
+    """Return a module-level OpenAI client (lazy singleton)."""
+    global _openai_client
+    if _openai_client is None:
+        _openai_client = openai.OpenAI(api_key=os.environ.get("OPENAI_API_KEY", ""))
+    return _openai_client
+
+
+def get_ai_provider() -> AIProvider:
+    """Get current AI provider from environment or default."""
+    provider = os.environ.get("AI_PROVIDER", DEFAULT_PROVIDER).lower()
+    if provider in ("anthropic", "openai"):
+        return provider  # type: ignore
+    return DEFAULT_PROVIDER
+
+
+def set_ai_provider(provider: AIProvider) -> None:
+    """Set the AI provider (for runtime switching)."""
+    os.environ["AI_PROVIDER"] = provider
 
 
 _SAVE_TOOL_NAMES = {
@@ -576,6 +612,56 @@ def _is_tool_result_msg(msg: dict) -> bool:
     )
 
 
+def _has_tool_use(msg: dict) -> bool:
+    """Check if an assistant message contains tool_use blocks."""
+    content = msg.get("content")
+    if not isinstance(content, list):
+        return False
+    return any(
+        isinstance(b, dict) and b.get("type") == "tool_use"
+        for b in content
+    )
+
+
+def _sanitize_history(history: list[dict]) -> list[dict]:
+    """Remove orphaned tool_use messages that lack corresponding tool_result.
+
+    The Anthropic API requires that every tool_use block is immediately
+    followed by a user message containing the matching tool_result.
+    If the frontend sends corrupted history (e.g., from localStorage),
+    we strip those orphaned messages to prevent 400 errors.
+    """
+    if not history:
+        return []
+
+    sanitized: list[dict] = []
+    i = 0
+    while i < len(history):
+        msg = history[i]
+
+        # If this is an assistant message with tool_use, check for matching tool_result
+        if msg.get("role") == "assistant" and _has_tool_use(msg):
+            # Next message must be a user message with tool_result
+            if i + 1 < len(history):
+                next_msg = history[i + 1]
+                if next_msg.get("role") == "user" and _is_tool_result_msg(next_msg):
+                    # Valid pair — keep both
+                    sanitized.append(msg)
+                    sanitized.append(next_msg)
+                    i += 2
+                    continue
+            # Orphaned tool_use — skip it
+            logger.warning("Skipping orphaned tool_use message at index %d", i)
+            i += 1
+            continue
+
+        # Regular message — keep it
+        sanitized.append(msg)
+        i += 1
+
+    return sanitized
+
+
 def _truncate_history(history: list[dict]) -> list[dict]:
     """Trim history to stay within context limits.
 
@@ -584,6 +670,9 @@ def _truncate_history(history: list[dict]) -> list[dict]:
     Never cuts between a tool_use assistant message and its tool_result
     user message — the tail always starts at a plain user message.
     """
+    # First sanitize to remove any orphaned tool_use messages
+    history = _sanitize_history(history)
+
     max_msgs = MAX_HISTORY_PAIRS * 2
     if len(history) <= max_msgs:
         return history
@@ -617,7 +706,7 @@ def stream_chat(
         {"type": "tool_call", "name": ..., "input": ..., "id": ...}  — completed tool call
         {"type": "end",       "updated_history": [...]}   — final event
     """
-    client = _get_client()
+    client = _get_anthropic_client()
     system_prompt = _build_system_prompt(school_data, teacher_assignments, conflict_reports, solve_issues)
 
     full_msg = user_message
@@ -755,7 +844,7 @@ def process_chat(
     Now includes an agentic loop (up to MAX_TURNS) matching stream_chat,
     so the AI can follow up after tool calls with summaries and options.
     """
-    client = _get_client()
+    client = _get_anthropic_client()
     system_prompt = _build_system_prompt(school_data, teacher_assignments, conflict_reports, solve_issues)
 
     full_msg = user_message

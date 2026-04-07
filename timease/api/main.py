@@ -474,6 +474,27 @@ def _dispatch_tool_calls(
     }
 
 
+# ── AI Provider ────────────────────────────────────────────────────────────────
+
+@app.get("/api/ai/provider")
+def get_ai_provider_endpoint():
+    """Get current AI provider (anthropic or openai)."""
+    from timease.api.ai_chat import get_ai_provider, MODELS
+    provider = get_ai_provider()
+    return {"provider": provider, "model": MODELS.get(provider, "unknown")}
+
+
+@app.post("/api/ai/provider")
+def set_ai_provider_endpoint(payload: dict):
+    """Set AI provider (anthropic or openai)."""
+    from timease.api.ai_chat import set_ai_provider, get_ai_provider, MODELS
+    provider = payload.get("provider", "").lower()
+    if provider not in ("anthropic", "openai"):
+        raise HTTPException(400, "Invalid provider. Use 'anthropic' or 'openai'.")
+    set_ai_provider(provider)  # type: ignore
+    return {"provider": provider, "model": MODELS.get(provider, "unknown")}
+
+
 # ── AI chat ────────────────────────────────────────────────────────────────────
 
 @app.post("/api/session/{sid}/chat")
