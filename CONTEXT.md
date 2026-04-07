@@ -1,53 +1,50 @@
 # TIMEASE Resume Context
 
 **Last Updated:** 2026-04-07
-**Active Phase:** 2.5 — UI Revamp Implementation ✅
+**Active Phase:** 2.5 — OpenAI Migration + Class-Based Curriculum ✅
 
 ## Current Work
 
-### Completed in this session (UI Revamp)
+### Completed in this session
 
-1. **Design System Foundation**
-   - Updated `globals.css` with new CSS variables (zinc palette, indigo accent)
-   - Added button classes (.btn-primary, .btn-secondary, .btn-ghost, .btn-accent)
-   - Export icon gradient classes for PDF, Excel, Word, CSV, JSON, etc.
-   - Break row styling with diagonal stripes
-   - Custom easing and transitions
+1. **Removed Claude/Anthropic Support**
+   - Removed `anthropic` dependency from pyproject.toml
+   - Removed `/api/ai/provider` endpoints
+   - Removed provider toggle from Sidebar.tsx
+   - OpenAI GPT-4o is now sole AI provider
+   - Cost savings: ~27% less than Claude Sonnet
 
-2. **Sidebar Revamp**
-   - Dark sidebar with gray-950 (#09090b) background
-   - Gradient brand icon with SVG calendar
-   - Section dividers ("Outils" section)
-   - Proper active state styling (white text + subtle bg)
-   - Updated ClientLayout mobile header to match
+2. **Class-Based Curriculum Model (BREAKING)**
+   - Changed `CurriculumEntry.level` → `CurriculumEntry.school_class`
+   - Curriculum now specifies hours per individual class, not per level
+   - Updated models.py, solver.py, conflicts.py, ai_chat.py, excel_import.py
+   - Migrated all JSON data files
+   - Sample data expanded: 41 → 82 curriculum entries
 
-3. **Home Page Polish**
-   - Cleaner typography with tracking-tight
-   - Feature cards with indigo accent
-   - Trust badge ("Propulsé par Google OR-Tools & Claude AI")
-   - Dual CTA buttons (Commencer + Voir un exemple)
+3. **Teacher Hours Optional**
+   - `max_hours_per_week` defaults to 20h if not specified
 
-4. **Timetable Grid + Breaks**
-   - Added BreakSlot type to lib/types.ts
-   - TimetableGrid now accepts breaks prop
-   - Break rows render with diagonal stripe pattern
-   - Subject hover scale animation
-   - CSS Grid layout replacing table
-
-5. **Export Center**
-   - 6 export formats with descriptions and tags
-   - Grid layout with hover borders
-   - Export icon gradient backgrounds
-   - Loading state per format
-
-6. **Dashboard Stats**
-   - Stats cards (Classes, Teachers, Rooms, Conflicts)
-   - Color-coded icons (indigo, emerald, amber, rose)
-   - Conflict count with resolved checkmark
+4. **All Tests Fixed**
+   - All 249 tests passing
+   - Updated test fixtures for new data model
+   - Frontend builds successfully
 
 ### Validation
 
+- `uv run pytest tests/ -q` → 249 passed ✅
 - `cd frontend && npm run build` ✅
+- Git commit and push ✅
+
+## Next Steps
+
+1. **Test AI chat end-to-end** - Verify OpenAI tool calling works
+2. **Fix propose_options display** - Ensure clickable buttons appear
+3. **Test curriculum workflow** - Verify class-based curriculum via AI setup
+
+## Known Issues
+
+- `propose_options` tool may not display clickable buttons (needs verification)
+- Pre-commit warning about deprecated pytest stage (cosmetic)
 - `uv run pytest -q tests/test_solver.py tests/test_conflicts.py tests/test_io.py` ✅ (68 passed)
 
 ## Architecture Notes

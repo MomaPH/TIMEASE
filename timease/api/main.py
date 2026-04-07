@@ -165,8 +165,9 @@ def _upsert_composite(existing: list, new_items: list, keys: list[str]) -> list:
 
 
 def _merge_tool_call(sid: str, tool_name: str, data: dict) -> None:
-    """Apply a single AI tool call to the session in-place (upsert — no duplicates)."""
+    """Apply a single AI tool call to the session in-place (upsert or replace)."""
     sd = sessions[sid]["school_data"]
+    replace_mode = data.get("replace", False)
 
     if tool_name == "save_school_info":
         sd.update({k: v for k, v in data.items() if k != "type"})
@@ -178,7 +179,10 @@ def _merge_tool_call(sid: str, tool_name: str, data: dict) -> None:
             if isinstance(t, str) else t
             for t in raw
         ]
-        sd["teachers"] = _upsert(sd.get("teachers", []), items, "name")
+        if replace_mode:
+            sd["teachers"] = items
+        else:
+            sd["teachers"] = _upsert(sd.get("teachers", []), items, "name")
 
     elif tool_name == "save_classes":
         raw = data.get("classes", [])
@@ -187,7 +191,10 @@ def _merge_tool_call(sid: str, tool_name: str, data: dict) -> None:
             if isinstance(c, str) else c
             for c in raw
         ]
-        sd["classes"] = _upsert(sd.get("classes", []), items, "name")
+        if replace_mode:
+            sd["classes"] = items
+        else:
+            sd["classes"] = _upsert(sd.get("classes", []), items, "name")
 
     elif tool_name == "save_rooms":
         raw = data.get("rooms", [])
@@ -196,25 +203,37 @@ def _merge_tool_call(sid: str, tool_name: str, data: dict) -> None:
             if isinstance(r, str) else r
             for r in raw
         ]
-        sd["rooms"] = _upsert(sd.get("rooms", []), items, "name")
+        if replace_mode:
+            sd["rooms"] = items
+        else:
+            sd["rooms"] = _upsert(sd.get("rooms", []), items, "name")
 
     elif tool_name == "save_subjects":
-        sd["subjects"] = _upsert(
-            sd.get("subjects", []), data.get("subjects", []), "name"
-        )
+        if replace_mode:
+            sd["subjects"] = data.get("subjects", [])
+        else:
+            sd["subjects"] = _upsert(
+                sd.get("subjects", []), data.get("subjects", []), "name"
+            )
 
     elif tool_name == "save_curriculum":
         normalized_curriculum = [
             _norm_curriculum(entry) for entry in data.get("curriculum", [])
         ]
-        sd["curriculum"] = _upsert_composite(
-            sd.get("curriculum", []), normalized_curriculum, ["school_class", "subject"]
-        )
+        if replace_mode:
+            sd["curriculum"] = normalized_curriculum
+        else:
+            sd["curriculum"] = _upsert_composite(
+                sd.get("curriculum", []), normalized_curriculum, ["school_class", "subject"]
+            )
 
     elif tool_name == "save_constraints":
-        sd["constraints"] = _upsert(
-            sd.get("constraints", []), data.get("constraints", []), "id"
-        )
+        if replace_mode:
+            sd["constraints"] = data.get("constraints", [])
+        else:
+            sd["constraints"] = _upsert(
+                sd.get("constraints", []), data.get("constraints", []), "id"
+            )
 
     elif tool_name == "save_assignments":
         raw = data.get("assignments", [])
@@ -229,11 +248,14 @@ def _merge_tool_call(sid: str, tool_name: str, data: dict) -> None:
             }
             if entry["teacher"] and entry["subject"] and entry["school_class"]:
                 normalized.append(entry)
-        sessions[sid]["teacher_assignments"] = _upsert_composite(
-            sessions[sid]["teacher_assignments"],
-            normalized,
-            ["teacher", "subject", "school_class"],
-        )
+        if replace_mode:
+            sessions[sid]["teacher_assignments"] = normalized
+        else:
+            sessions[sid]["teacher_assignments"] = _upsert_composite(
+                sessions[sid]["teacher_assignments"],
+                normalized,
+                ["teacher", "subject", "school_class"],
+            )
 
     sessions[sid]["school_data"] = sd
 
