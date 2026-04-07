@@ -120,6 +120,19 @@ export default function ResultsPage() {
 
   const isPartial = !!(unscheduled.length > 0 || (timetable && !timetable.solved && assignments.length > 0))
 
+  // ── Breaks from school data ─────────────────────────────────────────────────
+  const breaks: BreakSlot[] = useMemo(() => {
+    const sessions = schoolData?.sessions ?? []
+    return sessions
+      .filter((s: any) => s.is_break || s.name?.toLowerCase().includes('pause') || s.name?.toLowerCase().includes('récréation'))
+      .map((s: any) => ({
+        type: 'break' as const,
+        start_time: s.start_time,
+        end_time: s.end_time,
+        label: s.name || 'Pause',
+      }))
+  }, [schoolData])
+
   // ── Export ─────────────────────────────────────────────────────────────────
   async function handleExport(format: string) {
     if (!sessionId || downloading) return
@@ -171,20 +184,6 @@ export default function ResultsPage() {
       </div>
     )
   }
-
-  // ── Breaks from school data ─────────────────────────────────────────────────
-  const breaks: BreakSlot[] = useMemo(() => {
-    // Extract breaks from school sessions if they exist
-    const sessions = schoolData?.sessions ?? []
-    return sessions
-      .filter((s: any) => s.is_break || s.name?.toLowerCase().includes('pause') || s.name?.toLowerCase().includes('récréation'))
-      .map((s: any) => ({
-        type: 'break' as const,
-        start_time: s.start_time,
-        end_time: s.end_time,
-        label: s.name || 'Pause',
-      }))
-  }, [schoolData])
 
   // ── Main ───────────────────────────────────────────────────────────────────
   return (
