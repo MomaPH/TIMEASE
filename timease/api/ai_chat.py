@@ -9,6 +9,7 @@ Tool calls are auto-applied server-side — no confirmation needed from the UI.
 from dotenv import load_dotenv
 load_dotenv()
 
+import dataclasses
 import json as _json
 import logging
 import os
@@ -963,11 +964,7 @@ def _stream_chat_openai(
     conflict_reports: list[dict] | None = None,
     solve_issues: dict | None = None,
 ) -> Generator[dict, None, None]:
-    """Stream OpenAI GPT response.
-
-    Note: OpenAI's tool calling is simplified here - we don't use tools
-    for now to avoid complexity. Just use text responses.
-    """
+    """Stream OpenAI GPT response with full tool calling support."""
     client = _get_openai_client()
     system_prompt = _build_system_prompt(school_data, teacher_assignments, conflict_reports, solve_issues)
 
@@ -978,42 +975,121 @@ def _stream_chat_openai(
             f"---\nMessage accompagnant le fichier: {user_message or '(aucun message)'}"
         )
 
-    # Convert Anthropic-style history to OpenAI format
+    # Use Anthropic-style history internally for consistency
     history = _truncate_history(list(ai_history))
-    history_openai = _convert_history_for_openai(history)
+    history.append({"role": "user", "content": full_msg})
 
-    # Add user message
-    history_openai.append({"role": "user", "content": full_msg})
+    # Convert tools to OpenAI format
+    tools_openai = _convert_tools_for_openai(TOOLS)
 
-    # Prepend system message
-    messages = [{"role": "system", "content": system_prompt}] + history_openai
+    # Agentic loop
+    MAX_TURNS = 4
+    for _turn in range(MAX_TURNS):
+        # Convert current history to OpenAI format
+        history_openai = _convert_history_for_openai(history)
+        messages = [{"role": "system", "content": system_prompt}] + history_openai
 
-    try:
-        stream = client.chat.completions.create(
-            model=MODELS["openai"],
-            messages=messages,
-            stream=True,
-            max_tokens=2048,
-        )
+        has_tool_calls = False
+        assistant_text = ""
+        tool_calls_data = []
 
-        full_response = ""
-        for chunk in stream:
-            if chunk.choices[0].delta.content:
-                text = chunk.choices[0].delta.content
-                full_response += text
-                yield {"type": "delta", "text": text}
+        try:
+            stream = client.chat.completions.create(
+                model=MODELS["openai"],
+                messages=messages,
+                tools=tools_openai,
+                stream=True,
+                max_tokens=2048,
+            )
 
-        # Convert back to Anthropic format for history
-        history.append({
-            "role": "assistant",
-            "content": [{"type": "text", "text": full_response}]
-        })
+            # Accumulate tool calls from stream
+            tool_call_buffers: dict[int, dict] = {}
 
-        yield {"type": "end", "updated_history": history}
+            for chunk in stream:
+                delta = chunk.choices[0].delta
 
-    except Exception as e:
-        logger.error(f"OpenAI stream error: {e}")
-        yield {"type": "end", "updated_history": history}
+                # Handle text content
+                if delta.content:
+                    assistant_text += delta.content
+                    yield {"type": "delta", "text": delta.content}
+
+                # Handle tool calls
+                if delta.tool_calls:
+                    has_tool_calls = True
+                    for tc_delta in delta.tool_calls:
+                        idx = tc_delta.index
+                        if idx not in tool_call_buffers:
+                            tool_call_buffers[idx] = {
+                                "id": tc_delta.id or "",
+                                "name": tc_delta.function.name if tc_delta.function else "",
+                                "arguments": "",
+                            }
+                        if tc_delta.function and tc_delta.function.arguments:
+                            tool_call_buffers[idx]["arguments"] += tc_delta.function.arguments
+
+            # Parse completed tool calls
+            for tc_buf in tool_call_buffers.values():
+                try:
+                    args = _json.loads(tc_buf["arguments"])
+                    tool_calls_data.append({
+                        "id": tc_buf["id"],
+                        "name": tc_buf["name"],
+                        "input": args,
+                    })
+                    yield {"type": "tool_call", "name": tc_buf["name"], "input": args, "id": tc_buf["id"]}
+                except _json.JSONDecodeError:
+                    logger.warning(f"Failed to parse tool arguments: {tc_buf['arguments']}")
+
+        except Exception as e:
+            logger.error(f"OpenAI stream error: {e}")
+            yield {"type": "end", "updated_history": history}
+            return
+
+        # Build assistant message in Anthropic format
+        assistant_content = []
+        if assistant_text:
+            assistant_content.append({"type": "text", "text": assistant_text})
+        for tc in tool_calls_data:
+            assistant_content.append({
+                "type": "tool_use",
+                "id": tc["id"],
+                "name": tc["name"],
+                "input": tc["input"],
+            })
+
+        history.append({"role": "assistant", "content": assistant_content})
+
+        # If no tool calls, we're done
+        if not has_tool_calls:
+            break
+
+        # Execute tools and build tool results
+        tool_result_content = []
+        for tc in tool_calls_data:
+            tool_name = tc["name"]
+            tool_input = tc["input"]
+            tool_id = tc["id"]
+
+            # Execute tool - just confirm data saved
+            # (actual execution happens in main.py via _dispatch_tool_calls)
+            if tool_name == "trigger_solve":
+                result_msg = "Génération de l'emploi du temps demandée."
+            elif tool_name in _SAVE_TOOL_NAMES:
+                result_msg = f"Données enregistrées: {tool_name}"
+            else:
+                result_msg = "Outil exécuté avec succès."
+
+            tool_result_content.append({
+                "type": "tool_result",
+                "tool_use_id": tool_id,
+                "content": result_msg,
+            })
+
+        if tool_result_content:
+            history.append({"role": "user", "content": tool_result_content})
+        # Loop continues - AI will generate follow-up
+
+    yield {"type": "end", "updated_history": history}
 
 
 def process_chat(
