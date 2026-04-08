@@ -383,6 +383,44 @@ class SchoolData:
     constraints: list[Constraint]
     teacher_assignments: list[TeacherAssignment] = field(default_factory=list)
 
+    def derive_subjects_if_empty(self) -> None:
+        """
+        Auto-populate subjects list from curriculum and teacher subjects if empty.
+
+        This enables a simpler workflow where subjects don't need explicit definition.
+        Colors are auto-generated using a palette.
+        """
+        if self.subjects:
+            return  # Already has subjects, don't override
+
+        # Collect all subject names from curriculum and teacher qualifications
+        subject_names: set[str] = set()
+        for entry in self.curriculum:
+            subject_names.add(entry.subject)
+        for teacher in self.teachers:
+            subject_names.update(teacher.subjects)
+        for assignment in self.teacher_assignments:
+            subject_names.add(assignment.subject)
+
+        if not subject_names:
+            return
+
+        # Color palette for auto-derived subjects
+        palette = [
+            "#0d9488", "#2563eb", "#dc2626", "#059669", "#7c3aed",
+            "#ea580c", "#0891b2", "#4f46e5", "#be123c", "#65a30d",
+            "#a855f7", "#f59e0b", "#06b6d4", "#8b5cf6", "#ec4899",
+        ]
+
+        self.subjects = [
+            Subject(
+                name=name,
+                short_name=name[:4].upper(),
+                color=palette[i % len(palette)],
+            )
+            for i, name in enumerate(sorted(subject_names))
+        ]
+
     def validate_all(self) -> None:
         """Valide l'intégrité de toutes les données de l'école."""
         for teacher in self.teachers:

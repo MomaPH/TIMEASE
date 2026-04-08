@@ -765,14 +765,28 @@ function AssignmentsStep({
 
 function CurriculumStep({ data, onUpdate }: { data: SchoolData; onUpdate: (d: SchoolData) => void }) {
   const items = data.curriculum || []
-  const levels  = [...new Set((data.classes || []).map((c: any) => c.level || c.name))].filter(Boolean) as string[]
+  const classes = (data.classes || []).map((c: any) => c.name).filter(Boolean) as string[]
   const subjects = (data.subjects || []).map((s: any) => s.name).filter(Boolean) as string[]
+  const [copySource, setCopySource] = useState<string | null>(null)
+
   const def = {
-    level: levels[0] || '',
+    school_class: classes[0] || '',
     subject: subjects[0] || '',
     sessions_per_week: 2,
     minutes_per_session: 60,
     total_minutes_per_week: 120,
+  }
+
+  function copyFromClass(sourceClass: string, targetClass: string) {
+    if (sourceClass === targetClass) return
+    const sourceEntries = items.filter((item: any) => item.school_class === sourceClass)
+    const copiedEntries = sourceEntries.map((entry: any) => ({
+      ...entry,
+      school_class: targetClass,
+    }))
+    // Remove existing entries for target class, then add copied ones
+    const filtered = items.filter((item: any) => item.school_class !== targetClass)
+    onUpdate({ ...data, curriculum: [...filtered, ...copiedEntries] })
   }
 
   function form(f: any, setF: (v: any) => void) {
@@ -780,15 +794,15 @@ function CurriculumStep({ data, onUpdate }: { data: SchoolData; onUpdate: (d: Sc
       <div className="space-y-2">
         <div className="grid grid-cols-2 gap-2">
           <div className="space-y-1">
-            <label className="text-xs text-gray-500">Niveau</label>
-            {levels.length > 0 ? (
-              <select value={f.level} onChange={e => setF({ ...f, level: e.target.value })}
+            <label className="text-xs text-gray-500">Classe</label>
+            {classes.length > 0 ? (
+              <select value={f.school_class} onChange={e => setF({ ...f, school_class: e.target.value })}
                 className="w-full px-2 py-1.5 text-xs border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-1 focus:ring-teal-500">
                 <option value="">—</option>
-                {levels.map(l => <option key={l} value={l}>{l}</option>)}
+                {classes.map(c => <option key={c} value={c}>{c}</option>)}
               </select>
             ) : (
-              <Input value={f.level} onChange={v => setF({ ...f, level: v })} placeholder="6ème" />
+              <Input value={f.school_class} onChange={v => setF({ ...f, school_class: v })} placeholder="6ème A" />
             )}
           </div>
           <div className="space-y-1">
@@ -863,23 +877,53 @@ function CurriculumStep({ data, onUpdate }: { data: SchoolData; onUpdate: (d: Sc
   }
 
   return (
-    <ListStep
-      items={items}
-      columns={['Niveau', 'Matière', 'Min/sem']}
-      defaultItem={def}
-      renderRow={item => [
-        <span className="font-medium text-xs">{item.level}</span>,
-        <span className="text-gray-700 dark:text-gray-300 text-xs">{item.subject}</span>,
-        <span className="ml-auto text-xs text-gray-500">
-          {(item.sessions_per_week ?? '?')}×{(item.minutes_per_session ?? '?')} = {item.total_minutes_per_week} min
-        </span>,
-      ]}
-      renderForm={form}
-      onAdd={item => onUpdate({ ...data, curriculum: [...items, item] })}
-      onEdit={(i, item) => onUpdate({ ...data, curriculum: items.map((x, idx) => idx === i ? item : x) })}
-      onDelete={i => onUpdate({ ...data, curriculum: items.filter((_, idx) => idx !== i) })}
-      emptyText="Aucune entrée de programme — définissez les heures par matière et niveau."
-    />
+    <div className="space-y-4">
+      {/* Copy from class feature */}
+      {classes.length > 1 && (
+        <div className="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-3 space-y-2">
+          <div className="text-xs font-medium text-gray-500 uppercase">Copier le programme d'une classe</div>
+          <div className="flex gap-2 items-center flex-wrap">
+            <select
+              value={copySource || ''}
+              onChange={e => setCopySource(e.target.value || null)}
+              className="px-2 py-1.5 text-xs border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-1 focus:ring-teal-500"
+            >
+              <option value="">Source...</option>
+              {classes.map(c => <option key={c} value={c}>{c}</option>)}
+            </select>
+            <span className="text-xs text-gray-400">→</span>
+            {copySource && classes.filter(c => c !== copySource).map(targetClass => (
+              <button
+                key={targetClass}
+                onClick={() => copyFromClass(copySource, targetClass)}
+                className="px-2 py-1 text-xs bg-teal-100 dark:bg-teal-900/30 text-teal-700 dark:text-teal-300 rounded hover:bg-teal-200 dark:hover:bg-teal-900/50 transition-colors"
+              >
+                {targetClass}
+              </button>
+            ))}
+            {!copySource && <span className="text-xs text-gray-400 italic">Sélectionnez une classe source</span>}
+          </div>
+        </div>
+      )}
+
+      <ListStep
+        items={items}
+        columns={['Classe', 'Matière', 'Min/sem']}
+        defaultItem={def}
+        renderRow={item => [
+          <span className="font-medium text-xs">{item.school_class}</span>,
+          <span className="text-gray-700 dark:text-gray-300 text-xs">{item.subject}</span>,
+          <span className="ml-auto text-xs text-gray-500">
+            {(item.sessions_per_week ?? '?')}×{(item.minutes_per_session ?? '?')} = {item.total_minutes_per_week} min
+          </span>,
+        ]}
+        renderForm={form}
+        onAdd={item => onUpdate({ ...data, curriculum: [...items, item] })}
+        onEdit={(i, item) => onUpdate({ ...data, curriculum: items.map((x, idx) => idx === i ? item : x) })}
+        onDelete={i => onUpdate({ ...data, curriculum: items.filter((_, idx) => idx !== i) })}
+        emptyText="Aucune entrée de programme — définissez les heures par matière et classe."
+      />
+    </div>
   )
 }
 

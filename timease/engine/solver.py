@@ -165,6 +165,9 @@ class TimetableSolver:
         """
         wall_start = time.perf_counter()
 
+        # Auto-derive subjects from curriculum/teachers if not explicitly provided
+        data.derive_subjects_if_empty()
+
         tc        = data.timeslot_config
         base_unit = tc.base_unit_minutes
 

@@ -563,3 +563,95 @@ class TestBreakConfig:
             assert rest_day.breaks[0].end_time == "10:15"
         finally:
             tmp.unlink(missing_ok=True)
+
+
+# ---------------------------------------------------------------------------
+# 12. Subject auto-derivation
+# ---------------------------------------------------------------------------
+
+class TestSubjectAutoDerivation:
+    """Tests for SchoolData.derive_subjects_if_empty()."""
+
+    def test_derives_from_curriculum(self) -> None:
+        """Subjects should be auto-derived from curriculum entries."""
+        tc = TimeslotConfig.from_simple(["lundi"], [SessionConfig("Matin", "08:00", "12:00")])
+        sd = SchoolData(
+            school=School("Test", "2024", "Test"),
+            timeslot_config=tc,
+            subjects=[],  # Empty
+            teachers=[Teacher("M. Dupont", ["Maths"])],
+            classes=[SchoolClass("6A", "6ème", 30)],
+            rooms=[],
+            curriculum=[
+                CurriculumEntry("6A", "Maths", 120, sessions_per_week=2, minutes_per_session=60),
+                CurriculumEntry("6A", "Français", 120, sessions_per_week=2, minutes_per_session=60),
+            ],
+            constraints=[],
+        )
+
+        assert len(sd.subjects) == 0
+        sd.derive_subjects_if_empty()
+        assert len(sd.subjects) == 2
+        subject_names = {s.name for s in sd.subjects}
+        assert "Maths" in subject_names
+        assert "Français" in subject_names
+
+    def test_derives_from_teacher_subjects(self) -> None:
+        """Subjects should include those from teacher qualifications."""
+        tc = TimeslotConfig.from_simple(["lundi"], [SessionConfig("Matin", "08:00", "12:00")])
+        sd = SchoolData(
+            school=School("Test", "2024", "Test"),
+            timeslot_config=tc,
+            subjects=[],
+            teachers=[
+                Teacher("M. Dupont", ["Maths", "Physique"]),
+                Teacher("Mme Martin", ["Français", "Histoire"]),
+            ],
+            classes=[],
+            rooms=[],
+            curriculum=[],
+            constraints=[],
+        )
+
+        sd.derive_subjects_if_empty()
+        assert len(sd.subjects) == 4
+        subject_names = {s.name for s in sd.subjects}
+        assert subject_names == {"Maths", "Physique", "Français", "Histoire"}
+
+    def test_does_not_override_existing_subjects(self) -> None:
+        """If subjects are already defined, don't override them."""
+        tc = TimeslotConfig.from_simple(["lundi"], [SessionConfig("Matin", "08:00", "12:00")])
+        existing_subjects = [Subject("Maths", "MATH", "#FF0000")]
+        sd = SchoolData(
+            school=School("Test", "2024", "Test"),
+            timeslot_config=tc,
+            subjects=existing_subjects,
+            teachers=[Teacher("M. Dupont", ["Physique"])],  # Different subject
+            classes=[],
+            rooms=[],
+            curriculum=[],
+            constraints=[],
+        )
+
+        sd.derive_subjects_if_empty()
+        assert len(sd.subjects) == 1
+        assert sd.subjects[0].name == "Maths"
+        assert sd.subjects[0].color == "#FF0000"
+
+    def test_auto_generates_colors(self) -> None:
+        """Auto-derived subjects should have colors from the palette."""
+        tc = TimeslotConfig.from_simple(["lundi"], [SessionConfig("Matin", "08:00", "12:00")])
+        sd = SchoolData(
+            school=School("Test", "2024", "Test"),
+            timeslot_config=tc,
+            subjects=[],
+            teachers=[Teacher("M. Dupont", ["Maths"])],
+            classes=[],
+            rooms=[],
+            curriculum=[],
+            constraints=[],
+        )
+
+        sd.derive_subjects_if_empty()
+        assert len(sd.subjects) == 1
+        assert sd.subjects[0].color.startswith("#")
