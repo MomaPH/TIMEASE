@@ -55,7 +55,7 @@ def _norm_teacher(d: dict) -> dict:
     return {
         "name":               d.get("name", ""),
         "subjects":           d.get("subjects", []),
-        "max_hours_per_week": int(d.get("max_hours_per_week", 20)),
+        "max_hours_per_week": d.get("max_hours_per_week"),  # None = unlimited
         "unavailable_slots":  d.get("unavailable_slots", []),
     }
 
@@ -175,7 +175,7 @@ def _merge_tool_call(sid: str, tool_name: str, data: dict) -> None:
     elif tool_name == "save_teachers":
         raw = data.get("teachers", [])
         items = [
-            {"name": t, "subjects": [], "max_hours_per_week": 20}
+            {"name": t, "subjects": [], "max_hours_per_week": None}
             if isinstance(t, str) else t
             for t in raw
         ]
@@ -753,6 +753,14 @@ def _dispatch_tool_calls(
         sessions[sid]["pending_changes"] = (
             sessions[sid].get("pending_changes", []) + pending
         )
+
+    # Fallback: inject default options if AI forgot to call propose_options
+    if not proposed_options and pending:
+        # Save tools were called but no options provided → add confirm/modify
+        proposed_options = [
+            {"label": "✅ Confirmer", "value": "Confirmer"},
+            {"label": "✏️ Modifier", "value": "Je veux modifier"},
+        ]
 
     return {
         "pending":            pending,

@@ -151,7 +151,7 @@ class Teacher:
 
     name: str
     subjects: list[str]         # subject names (must match Subject.name)
-    max_hours_per_week: int
+    max_hours_per_week: int | None = None  # None = unlimited
     unavailable_slots: list[dict] = field(default_factory=list)
     # Each dict: {day: str, start: str|None, end: str|None, session: str|None}
     # session defaults to "all" when omitted
@@ -161,9 +161,9 @@ class Teacher:
             raise ValueError(
                 f"L'enseignant '{self.name}' doit enseigner au moins une matière."
             )
-        if self.max_hours_per_week <= 0:
+        if self.max_hours_per_week is not None and self.max_hours_per_week <= 0:
             raise ValueError(
-                f"L'enseignant '{self.name}' doit avoir un volume horaire hebdomadaire positif."
+                f"L'enseignant '{self.name}' doit avoir un volume horaire hebdomadaire positif ou non défini."
             )
 
 
@@ -631,7 +631,8 @@ class TimetableResult:
         class_students = {c.name: c.student_count for c in school_data.classes}
         room_capacity = {r.name: r.capacity for r in school_data.rooms}
         teacher_max_min = {
-            t.name: t.max_hours_per_week * 60 for t in school_data.teachers
+            t.name: t.max_hours_per_week * 60 if t.max_hours_per_week is not None else None
+            for t in school_data.teachers
         }
         # Class-based curriculum: map (class, subject) -> minutes
         curriculum_target: dict[tuple[str, str], int] = {

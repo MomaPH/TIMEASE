@@ -121,6 +121,50 @@ export function getStepStatus(stepIdx: number, data: SchoolData, assignments: an
   }
 }
 
+/** Returns list of curriculum entries that have no matching assignment */
+export function getMissingAssignments(data: SchoolData, assignments: any[]): { school_class: string; subject: string }[] {
+  const curriculum = data.curriculum ?? []
+  const pairSet = new Set(assignments.map(a => `${a.school_class}__${a.subject}`))
+  return curriculum
+    .filter(c => !pairSet.has(`${c.school_class}__${c.subject}`))
+    .map(c => ({ school_class: c.school_class, subject: c.subject }))
+}
+
+/** Returns warnings for the current data state */
+export function getDataWarnings(data: SchoolData, assignments: any[]): { step: number; message: string }[] {
+  const warnings: { step: number; message: string }[] = []
+
+  // Step 2: Teachers without subjects
+  const teachersNoSubjects = (data.teachers ?? []).filter((t: any) => !t.subjects || t.subjects.length === 0)
+  if (teachersNoSubjects.length > 0) {
+    warnings.push({
+      step: 2,
+      message: `${teachersNoSubjects.length} enseignant(s) sans matière: ${teachersNoSubjects.map((t: any) => t.name).slice(0, 3).join(', ')}${teachersNoSubjects.length > 3 ? '...' : ''}`
+    })
+  }
+
+  // Step 5: Missing assignments
+  const missing = getMissingAssignments(data, assignments)
+  if (missing.length > 0) {
+    warnings.push({
+      step: 5,
+      message: `${missing.length} matière(s) sans enseignant: ${missing.slice(0, 3).map(m => `${m.school_class}/${m.subject}`).join(', ')}${missing.length > 3 ? '...' : ''}`
+    })
+  }
+
+  // Step 6: Classes with 0 curriculum hours
+  const classesWithCurriculum = new Set((data.curriculum ?? []).map((c: any) => c.school_class))
+  const classesNoCurriculum = (data.classes ?? []).filter((c: any) => !classesWithCurriculum.has(c.name))
+  if (classesNoCurriculum.length > 0 && (data.curriculum ?? []).length > 0) {
+    warnings.push({
+      step: 6,
+      message: `${classesNoCurriculum.length} classe(s) sans programme: ${classesNoCurriculum.map((c: any) => c.name).slice(0, 3).join(', ')}${classesNoCurriculum.length > 3 ? '...' : ''}`
+    })
+  }
+
+  return warnings
+}
+
 export function getChecklistItems(data: SchoolData, assignments: any[]) {
   const classes    = data.classes    ?? []
   const teachers   = data.teachers   ?? []

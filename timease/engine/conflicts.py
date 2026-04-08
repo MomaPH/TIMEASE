@@ -345,6 +345,9 @@ class ConflictAnalyzer:
 
         for name, min_hours in sole_load.items():
             teacher = teacher_map[name]
+            # Skip check if teacher has no max limit (None = unlimited)
+            if teacher.max_hours_per_week is None:
+                continue
             if min_hours > teacher.max_hours_per_week:
                 gap = min_hours - teacher.max_hours_per_week
                 reports.append(ConflictReport(

@@ -1,8 +1,8 @@
 'use client'
 import { useState, useMemo } from 'react'
-import { Plus, Pencil, Trash2, Check, X, ChevronRight, Loader2, ArrowRight } from 'lucide-react'
+import { Plus, Pencil, Trash2, Check, X, ChevronRight, Loader2, ArrowRight, AlertTriangle } from 'lucide-react'
 import type { SchoolData } from '@/lib/types'
-import { getChecklistItems, getChecklistStatus } from '@/lib/types'
+import { getChecklistItems, getChecklistStatus, getMissingAssignments, getDataWarnings } from '@/lib/types'
 import { validateHourBarriers, type ValidationError } from '@/lib/validation'
 import ValidationErrorPanel from './ValidationErrorPanel'
 
@@ -310,7 +310,7 @@ function ClassesStep({ data, onUpdate }: { data: SchoolData; onUpdate: (d: Schoo
 function TeachersStep({ data, onUpdate }: { data: SchoolData; onUpdate: (d: SchoolData) => void }) {
   const items = data.teachers || []
   const subjects = (data.subjects || []).map((s: any) => s.name).filter(Boolean)
-  const def = { name: '', subjects: [], max_hours_per_week: 20 }
+  const def = { name: '', subjects: [], max_hours_per_week: undefined }
 
   function form(f: any, setF: (v: any) => void) {
     return (
@@ -321,8 +321,13 @@ function TeachersStep({ data, onUpdate }: { data: SchoolData; onUpdate: (d: Scho
             <Input value={f.name} onChange={v => setF({ ...f, name: v })} placeholder="Prénom Nom" />
           </div>
           <div className="space-y-1">
-            <label className="text-xs text-gray-500">Max h/sem</label>
-            <Input type="number" value={String(f.max_hours_per_week)} onChange={v => setF({ ...f, max_hours_per_week: Number(v) })} placeholder="20" />
+            <label className="text-xs text-gray-500">Max h/sem <span className="text-gray-400">(optionnel)</span></label>
+            <Input
+              type="number"
+              value={f.max_hours_per_week != null ? String(f.max_hours_per_week) : ''}
+              onChange={v => setF({ ...f, max_hours_per_week: v ? Number(v) : undefined })}
+              placeholder="Illimité"
+            />
           </div>
         </div>
         <div className="space-y-1">
@@ -358,7 +363,7 @@ function TeachersStep({ data, onUpdate }: { data: SchoolData; onUpdate: (d: Scho
       renderRow={item => [
         <span className="font-medium">{item.name}</span>,
         <span className="text-gray-500 dark:text-gray-400 text-xs truncate">{(item.subjects || []).join(', ') || '—'}</span>,
-        <span className="ml-auto text-xs text-gray-500">{item.max_hours_per_week}h/sem</span>,
+        <span className="ml-auto text-xs text-gray-500">{item.max_hours_per_week != null ? `${item.max_hours_per_week}h/sem` : '∞'}</span>,
       ]}
       renderForm={form}
       onAdd={item => onUpdate({ ...data, teachers: [...items, item] })}
@@ -520,6 +525,9 @@ function AssignmentsStep({
   const [showAdd, setShowAdd] = useState(false)
   const [addForm, setAddForm] = useState(def)
 
+  // Calculate missing assignments
+  const missing = useMemo(() => getMissingAssignments(data, assignments), [data, assignments])
+
   function renderForm(f: any, setF: (v: any) => void) {
     return (
       <div className="grid grid-cols-3 gap-2">
@@ -550,7 +558,27 @@ function AssignmentsStep({
 
   return (
     <div className="space-y-1">
-      {assignments.length === 0 && !showAdd && (
+      {/* Warning banner for missing assignments */}
+      {missing.length > 0 && (
+        <div className="mb-3 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg">
+          <div className="flex items-start gap-2">
+            <AlertTriangle size={16} className="text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
+            <div className="text-xs">
+              <p className="font-medium text-amber-800 dark:text-amber-200">
+                {missing.length} matière(s) sans enseignant assigné
+              </p>
+              <ul className="mt-1 text-amber-700 dark:text-amber-300 space-y-0.5">
+                {missing.slice(0, 5).map((m, i) => (
+                  <li key={i}>• {m.school_class} — {m.subject}</li>
+                ))}
+                {missing.length > 5 && <li className="italic">...et {missing.length - 5} autres</li>}
+              </ul>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {assignments.length === 0 && !showAdd && missing.length === 0 && (
         <SectionEmpty text="Aucune affectation — assignez un enseignant à chaque matière et classe." />
       )}
       {assignments.map((a, idx) => (
