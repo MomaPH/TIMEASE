@@ -113,8 +113,9 @@ export function getStepStatus(stepIdx: number, data: SchoolData, assignments: an
       if ((data.teachers?.length ?? 0) >= 1) return 'done'
       return 'empty'
     case 3:
+      // Phase D: Rooms are optional - always show as 'done' (skippable)
       if ((data.rooms?.length ?? 0) >= 1) return 'done'
-      return 'empty'
+      return 'done'  // Empty rooms is valid
     case 4:
       if ((data.subjects?.length ?? 0) >= 1) return 'done'
       return 'empty'
@@ -204,7 +205,7 @@ export function getChecklistItems(data: SchoolData, assignments: any[]) {
     { label: 'École configurée (nom, jours, sessions)', done: !!(data.name && days.length > 0 && hasSessionsInDays) },
     { label: 'Au moins 1 classe',                       done: classes.length > 0    },
     { label: 'Au moins 1 enseignant',                   done: teachers.length > 0   },
-    { label: 'Au moins 1 salle',                        done: rooms.length > 0      },
+    { label: 'Salles (optionnel)',                      done: true                  },  // Phase D: rooms optional
     { label: 'Au moins 1 matière',                      done: subjects.length > 0   },
     { label: 'Programme défini',                        done: curriculum.length > 0 },
     { label: 'Toutes les affectations renseignées',     done: allAssigned           },

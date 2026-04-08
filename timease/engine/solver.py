@@ -330,47 +330,55 @@ class TimetableSolver:
                 subject = subject_map[entry.subject]
 
                 # Eligible rooms for this (class × subject)
+                # Phase D: Rooms are optional with soft room-type matching
                 eligible_room_idxs: list[int] = []
-                if subject.needs_room:
+                preferred_room_idxs: list[int] = []  # Rooms that match required_room_type
+                fallback_room_idxs: list[int] = []   # Rooms without required_room_type match
+
+                if subject.needs_room and data.rooms:
                     for r_idx, room in enumerate(data.rooms):
                         if room.capacity < school_class.student_count:
                             continue
                         if subject.required_room_type:
-                            if subject.required_room_type not in room.types:
-                                continue
+                            if subject.required_room_type in room.types:
+                                preferred_room_idxs.append(r_idx)
+                            else:
+                                # Soft matching: allow any room as fallback
+                                fallback_room_idxs.append(r_idx)
                         else:
                             # Accept any room that has no specialized type.
                             # This prevents lab/specialist rooms from being
                             # assigned to general subjects.
                             if any(rt in specialized_room_types for rt in room.types):
                                 continue
-                        eligible_room_idxs.append(r_idx)
+                            preferred_room_idxs.append(r_idx)
 
-                    # When a required room type exists but no room of that type
-                    # has enough capacity, record an explicit warning so the admin
-                    # knows exactly why these sessions cannot be placed in the
-                    # specialized room (e.g. why SVT goes to Salle A instead of
-                    # the Laboratoire — in this case it won't be placed at all).
-                    if not eligible_room_idxs and subject.required_room_type:
-                        rooms_of_type = [
-                            r for r in data.rooms
-                            if subject.required_room_type in r.types
-                        ]
-                        if rooms_of_type:
-                            max_cap = max(r.capacity for r in rooms_of_type)
-                            if max_cap < school_class.student_count:
-                                warn_key = (school_class.name, entry.subject)
-                                warn_msg = (
-                                    f"'{entry.subject}' pour '{school_class.name}' "
-                                    f"({school_class.student_count} élèves) : "
-                                    f"toutes les salles de type "
-                                    f"'{subject.required_room_type}' ont une capacité "
-                                    f"insuffisante (maximum {max_cap} places). "
-                                    f"Les sessions ne peuvent pas être planifiées en "
-                                    f"salle spécialisée et seront omises du planning."
-                                )
-                                if warn_msg not in solver_warnings:
-                                    solver_warnings.append(warn_msg)
+                    # Phase D: Use preferred rooms first, fallback if none available
+                    if preferred_room_idxs:
+                        eligible_room_idxs = preferred_room_idxs
+                    elif fallback_room_idxs:
+                        # Soft matching: use fallback rooms with a warning
+                        eligible_room_idxs = fallback_room_idxs
+                        if subject.required_room_type:
+                            warn_key = (school_class.name, entry.subject, subject.required_room_type)
+                            warn_msg = (
+                                f"'{entry.subject}' pour '{school_class.name}' : "
+                                f"aucune salle de type '{subject.required_room_type}' n'est "
+                                f"disponible avec une capacité suffisante. "
+                                f"Les sessions seront placées dans une salle standard."
+                            )
+                            if warn_msg not in solver_warnings:
+                                solver_warnings.append(warn_msg)
+
+                # Phase D: Empty rooms list is valid - sessions can be scheduled without room
+                # When needs_room=True but no rooms defined, generate a warning
+                if subject.needs_room and not data.rooms:
+                    warn_msg = (
+                        "Aucune salle n'est définie. Les sessions seront planifiées "
+                        "sans attribution de salle."
+                    )
+                    if warn_msg not in solver_warnings:
+                        solver_warnings.append(warn_msg)
 
                 for k in range(spec.sessions_per_week):
                     # Last session may use a shorter duration (remainder split).
@@ -535,42 +543,44 @@ class TimetableSolver:
         #
         # room_bvars[(session_idx, room_idx)] = 1 iff room is chosen.
         # add_exactly_one per session + add_no_overlap per room.
+        #
+        # Phase D: Empty rooms list is valid. Sessions can be scheduled
+        # without room assignment. Soft room-type matching means we
+        # don't mark sessions as conflicts when no matching room exists.
         # ==================================================================
         room_bvars: dict[tuple[int, int], cp_model.IntVar] = {}
         room_intervals: dict[int, list[cp_model.IntervalVar]] = defaultdict(list)
 
-        for sess in sessions:
-            if not sess.needs_room:
-                continue
-            if not sess.eligible_room_idxs:
-                conflicts.append({
-                    "class":   sess.class_name,
-                    "subject": sess.subject_name,
-                    "session": sess.k,
-                    "reason":  "No eligible room (capacity or type mismatch)",
-                })
-                continue
+        # Skip room assignment entirely if no rooms are defined
+        if data.rooms:
+            for sess in sessions:
+                if not sess.needs_room:
+                    continue
+                if not sess.eligible_room_idxs:
+                    # Phase D: Soft room matching - sessions without eligible rooms
+                    # are scheduled but without room assignment (room will be None)
+                    continue
 
-            bvars: list[cp_model.IntVar] = []
-            for r_idx in sess.eligible_room_idxs:
-                bv = model.new_bool_var(f"r|{sess.idx}|{r_idx}")
-                room_bvars[(sess.idx, r_idx)] = bv
-                bvars.append(bv)
-                room_intervals[r_idx].append(
-                    model.new_optional_fixed_size_interval_var(
-                        start_vars[sess.idx], sess.dur_slots, bv,
-                        f"riv|{sess.idx}|r{r_idx}",
+                bvars: list[cp_model.IntVar] = []
+                for r_idx in sess.eligible_room_idxs:
+                    bv = model.new_bool_var(f"r|{sess.idx}|{r_idx}")
+                    room_bvars[(sess.idx, r_idx)] = bv
+                    bvars.append(bv)
+                    room_intervals[r_idx].append(
+                        model.new_optional_fixed_size_interval_var(
+                            start_vars[sess.idx], sess.dur_slots, bv,
+                            f"riv|{sess.idx}|r{r_idx}",
+                        )
                     )
-                )
 
-            if len(bvars) == 1:
-                model.add(bvars[0] == 1)
-            else:
-                model.add_exactly_one(bvars)
+                if len(bvars) == 1:
+                    model.add(bvars[0] == 1)
+                else:
+                    model.add_exactly_one(bvars)
 
-        for r_idx, ivars in room_intervals.items():
-            if len(ivars) > 1:
-                model.add_no_overlap(ivars)
+            for r_idx, ivars in room_intervals.items():
+                if len(ivars) > 1:
+                    model.add_no_overlap(ivars)
 
         logger.info(
             "Model vars: %d start_vars + %d room BoolVars = %d total",

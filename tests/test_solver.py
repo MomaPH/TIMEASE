@@ -783,3 +783,101 @@ class TestExplicitTeacherAssignment:
         assert len(cheikh_sessions) > 0, (
             "Cheikh Ndour should teach at least one session (Anglais 3ème)"
         )
+
+
+# ---------------------------------------------------------------------------
+# Phase D: Rooms optional tests
+# ---------------------------------------------------------------------------
+
+class TestRoomsOptional:
+    """Phase D: Rooms are optional with soft room-type matching."""
+
+    def test_solver_works_without_rooms(self) -> None:
+        """Solver should work when rooms list is empty."""
+        sd = SchoolData(
+            school=School("Test", "2024", "Test"),
+            timeslot_config=TimeslotConfig.from_simple(
+                ["lundi", "mardi"],
+                [SessionConfig("Matin", "08:00", "12:00")],
+            ),
+            subjects=[Subject("Maths", "MATH", "#0d9488")],
+            teachers=[Teacher("M. Dupont", ["Maths"])],
+            classes=[SchoolClass("6A", "6ème", 30)],
+            rooms=[],  # Empty rooms
+            curriculum=[CurriculumEntry("6A", "Maths", 120, sessions_per_week=2, minutes_per_session=60)],
+            constraints=[],
+            teacher_assignments=[TeacherAssignment("M. Dupont", "Maths", "6A")],
+        )
+
+        result = TimetableSolver().solve(sd, timeout_seconds=FAST_TIMEOUT)
+
+        assert result.solved
+        assert len(result.assignments) == 2
+        # All assignments should have room=None
+        for a in result.assignments:
+            assert a.room is None or a.room == ""
+        # Should have a warning about no rooms
+        assert any("aucune salle" in w.lower() for w in result.warnings)
+
+    def test_soft_room_type_matching(self) -> None:
+        """Subject requiring specific room type should use fallback when not available."""
+        sd = SchoolData(
+            school=School("Test", "2024", "Test"),
+            timeslot_config=TimeslotConfig.from_simple(
+                ["lundi", "mardi"],
+                [SessionConfig("Matin", "08:00", "12:00")],
+            ),
+            subjects=[
+                Subject("SVT", "SVT", "#059669", required_room_type="Laboratoire"),
+            ],
+            teachers=[Teacher("Mme Bio", ["SVT"])],
+            classes=[SchoolClass("6A", "6ème", 30)],
+            rooms=[
+                Room("Salle A", 40, types=["Standard"]),  # No Laboratoire type
+            ],
+            curriculum=[CurriculumEntry("6A", "SVT", 120, sessions_per_week=2, minutes_per_session=60)],
+            constraints=[],
+            teacher_assignments=[TeacherAssignment("Mme Bio", "SVT", "6A")],
+        )
+
+        result = TimetableSolver().solve(sd, timeout_seconds=FAST_TIMEOUT)
+
+        assert result.solved
+        assert len(result.assignments) == 2
+        # Sessions should be assigned to the fallback room
+        for a in result.assignments:
+            assert a.room == "Salle A"
+        # Should have a warning about missing room type
+        assert any("laboratoire" in w.lower() for w in result.warnings)
+
+    def test_preferred_room_used_when_available(self) -> None:
+        """Subject requiring specific room type should use matching room when available."""
+        sd = SchoolData(
+            school=School("Test", "2024", "Test"),
+            timeslot_config=TimeslotConfig.from_simple(
+                ["lundi", "mardi"],
+                [SessionConfig("Matin", "08:00", "12:00")],
+            ),
+            subjects=[
+                Subject("SVT", "SVT", "#059669", required_room_type="Laboratoire"),
+            ],
+            teachers=[Teacher("Mme Bio", ["SVT"])],
+            classes=[SchoolClass("6A", "6ème", 30)],
+            rooms=[
+                Room("Salle A", 40, types=["Standard"]),
+                Room("Labo SVT", 40, types=["Laboratoire"]),
+            ],
+            curriculum=[CurriculumEntry("6A", "SVT", 120, sessions_per_week=2, minutes_per_session=60)],
+            constraints=[],
+            teacher_assignments=[TeacherAssignment("Mme Bio", "SVT", "6A")],
+        )
+
+        result = TimetableSolver().solve(sd, timeout_seconds=FAST_TIMEOUT)
+
+        assert result.solved
+        assert len(result.assignments) == 2
+        # Sessions should be assigned to the preferred room (Laboratoire)
+        for a in result.assignments:
+            assert a.room == "Labo SVT"
+        # Should NOT have a warning about missing room type
+        assert not any("laboratoire" in w.lower() for w in result.warnings)
