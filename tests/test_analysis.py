@@ -35,8 +35,8 @@ def minimal_sd() -> SchoolData:
     """Minimal SchoolData used as an analysis context (not solved)."""
     return SchoolData(
         school=School("Test", "2026-2027", "Dakar"),
-        timeslot_config=TimeslotConfig(
-            days=["lundi", "mardi", "mercredi", "jeudi", "vendredi"],
+        timeslot_config=TimeslotConfig.from_simple(
+            day_names=["lundi", "mardi", "mercredi", "jeudi", "vendredi"],
             sessions=[
                 SessionConfig("Matin",       "08:00", "12:00"),
                 SessionConfig("Après-midi",  "15:00", "17:00"),
@@ -58,8 +58,8 @@ def minimal_sd() -> SchoolData:
             Room("Salle 2", 40, ["Salle standard"]),
         ],
         curriculum=[
-            CurriculumEntry("6ème", "Maths",    300, sessions_per_week=5, minutes_per_session=60),
-            CurriculumEntry("6ème", "Français", 300, sessions_per_week=5, minutes_per_session=60),
+            CurriculumEntry("6A", "Maths",    300, sessions_per_week=5, minutes_per_session=60),
+            CurriculumEntry("6A", "Français", 300, sessions_per_week=5, minutes_per_session=60),
         ],
         constraints=[],
     )

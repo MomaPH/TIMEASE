@@ -115,6 +115,75 @@ def _norm_constraint(d: dict) -> dict:
     }
 
 
+def _norm_timeslot_config(sd: dict) -> "TimeslotConfig":
+    """
+    Normalize timeslot configuration from API payload.
+
+    Accepts ONLY the new nested format with DayConfig objects.
+    Legacy flat format (days: list[str], sessions: list) is rejected with HTTP 400.
+    """
+    from timease.engine.models import (
+        BreakConfig, DayConfig, SessionConfig, TimeslotConfig,
+    )
+
+    days_raw = sd.get("days", [])
+    sessions_raw = sd.get("sessions")
+    base_unit = int(sd.get("base_unit_minutes", 30))
+
+    # Detect legacy flat format: days is list of strings + sessions at top level
+    if days_raw and isinstance(days_raw[0], str):
+        # Legacy format - reject it
+        raise HTTPException(
+            400,
+            "Format de créneaux obsolète. Utilisez le nouveau format avec "
+            "days: [{name: 'lundi', sessions: [...], breaks: [...]}, ...]. "
+            "Le format plat (days: ['lundi', ...], sessions: [...]) n'est plus accepté."
+        )
+
+    # New format: days is list of DayConfig dicts
+    if not days_raw:
+        # Provide sensible default for empty payload
+        default_sessions = [
+            SessionConfig("Matin", "08:00", "12:00"),
+            SessionConfig("Après-midi", "15:00", "17:00"),
+        ]
+        days_raw = [
+            {"name": d, "sessions": [{"name": s.name, "start_time": s.start_time, "end_time": s.end_time} for s in default_sessions], "breaks": []}
+            for d in ["lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi"]
+        ]
+
+    day_configs = []
+    for day_dict in days_raw:
+        if not isinstance(day_dict, dict):
+            raise HTTPException(400, f"Jour invalide: {day_dict}. Attendu un objet DayConfig.")
+
+        name = day_dict.get("name", "")
+        if not name:
+            raise HTTPException(400, "Chaque jour doit avoir un nom.")
+
+        sessions = [
+            SessionConfig(
+                name=s.get("name", ""),
+                start_time=s.get("start_time", ""),
+                end_time=s.get("end_time", ""),
+            )
+            for s in day_dict.get("sessions", [])
+        ]
+
+        breaks = [
+            BreakConfig(
+                name=b.get("name", ""),
+                start_time=b.get("start_time", ""),
+                end_time=b.get("end_time", ""),
+            )
+            for b in day_dict.get("breaks", [])
+        ]
+
+        day_configs.append(DayConfig(name=name, sessions=sessions, breaks=breaks))
+
+    return TimeslotConfig(days=day_configs, base_unit_minutes=base_unit)
+
+
 # ── In-memory session store ────────────────────────────────────────────────────
 
 sessions: dict[str, dict] = {}
@@ -992,17 +1061,7 @@ def solve(sid: str, payload: dict = {}):
                 academic_year=sd.get("academic_year", ""),
                 city=sd.get("city", ""),
             ),
-            timeslot_config=TimeslotConfig(
-                days=sd.get("days", ["lundi", "mardi", "mercredi", "jeudi", "vendredi"]),
-                base_unit_minutes=int(sd.get("base_unit_minutes", 30)),
-                sessions=[
-                    SessionConfig(**_pick(s, ["name", "start_time", "end_time"]))
-                    for s in sd.get("sessions", [
-                        {"name": "Matin",      "start_time": "08:00", "end_time": "12:00"},
-                        {"name": "Après-midi", "start_time": "14:00", "end_time": "17:00"},
-                    ])
-                ],
-            ),
+            timeslot_config=_norm_timeslot_config(sd),
             subjects=[Subject(**_norm_subject(s)) for s in sd.get("subjects", [])],
             teachers=[Teacher(**_norm_teacher(t)) for t in sd.get("teachers", [])],
             classes=[SchoolClass(**_norm_class(c)) for c in sd.get("classes", [])],
@@ -1042,7 +1101,7 @@ def solve(sid: str, payload: dict = {}):
                     for a in result.assignments
                 ],
                 "solve_time":    result.solve_time_seconds,
-                "days":          sd.get("days", []),
+                "days":          [d.name for d in school_obj.timeslot_config.days],
                 "soft_results":  result.soft_constraint_details,
                 "warnings":      result.warnings,
                 "unscheduled":   result.unscheduled_sessions,
@@ -1108,15 +1167,11 @@ def solve(sid: str, payload: dict = {}):
 def _rebuild_school_obj(sd: dict, ta: list[dict]):
     from timease.engine.models import (
         Constraint, CurriculumEntry, Room, School, SchoolClass,
-        SchoolData, SessionConfig, Subject, Teacher, TeacherAssignment, TimeslotConfig,
+        SchoolData, Subject, Teacher, TeacherAssignment,
     )
     return SchoolData(
         school=School(name=sd.get("name", ""), academic_year=sd.get("academic_year", ""), city=sd.get("city", "")),
-        timeslot_config=TimeslotConfig(
-            days=sd.get("days", []),
-            base_unit_minutes=int(sd.get("base_unit_minutes", 30)),
-            sessions=[SessionConfig(**_pick(s, ["name", "start_time", "end_time"])) for s in sd.get("sessions", [])],
-        ),
+        timeslot_config=_norm_timeslot_config(sd),
         subjects=[Subject(**_norm_subject(s)) for s in sd.get("subjects", [])],
         teachers=[Teacher(**_norm_teacher(t)) for t in sd.get("teachers", [])],
         classes=[SchoolClass(**_norm_class(c)) for c in sd.get("classes", [])],

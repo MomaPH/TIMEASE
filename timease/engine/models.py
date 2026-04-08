@@ -84,50 +84,160 @@ class School:
 # ---------------------------------------------------------------------------
 
 @dataclass
-class SessionConfig:
-    """A named time block within a school day (e.g. morning, afternoon)."""
+class BreakConfig:
+    """A blocked interval inside a day where no teaching occurs."""
+    name: str                # e.g. "Récréation", "Déjeuner"
+    start_time: str          # "HH:MM"
+    end_time: str            # "HH:MM"
 
-    name: str        # e.g. "Matin"
-    start_time: str  # "HH:MM"
-    end_time: str    # "HH:MM"
+
+@dataclass
+class SessionConfig:
+    """A contiguous teaching block within a day."""
+    name: str                # e.g. "Matin", "Après-midi"
+    start_time: str          # "HH:MM"
+    end_time: str            # "HH:MM"
+
+
+@dataclass
+class DayConfig:
+    """One working day's schedule."""
+    name: str                # e.g. "lundi"
+    sessions: list[SessionConfig]
+    breaks: list[BreakConfig] = field(default_factory=list)
 
 
 @dataclass
 class TimeslotConfig:
     """
-    Overall schedule structure: which days are active and how the day is
-    divided into sessions made up of fixed-length base units.
+    Overall schedule structure: per-day schedules with sessions and breaks.
+    Each day can have different sessions/breaks (e.g., Wednesday half-day).
     """
-
-    days: list[str]                  # e.g. ["lundi", "mardi", ...]
-    sessions: list[SessionConfig]
-    base_unit_minutes: int = 30      # smallest schedulable block
+    days: list[DayConfig]
+    base_unit_minutes: int = 30
 
     def get_all_slots(self) -> list[tuple[str, str, str]]:
         """
         Return every base-unit slot across all active days and sessions.
 
         Each element is a (day, start_time, end_time) tuple where times are
-        "HH:MM" strings.  Slots that do not fit exactly within a session
-        boundary are silently dropped.
+        "HH:MM" strings. Slots overlapping any break on that day are skipped.
         """
         slots: list[tuple[str, str, str]] = []
         delta = timedelta(minutes=self.base_unit_minutes)
 
-        for day in self.days:
-            for session in self.sessions:
+        for day_config in self.days:
+            # Build list of break intervals for this day
+            break_intervals: list[tuple[int, int]] = []
+            for brk in day_config.breaks:
+                break_intervals.append((_time_to_min(brk.start_time), _time_to_min(brk.end_time)))
+
+            for session in day_config.sessions:
                 current = datetime.strptime(session.start_time, "%H:%M")
                 end = datetime.strptime(session.end_time, "%H:%M")
                 while current + delta <= end:
                     slot_end = current + delta
-                    slots.append((
-                        day,
-                        current.strftime("%H:%M"),
-                        slot_end.strftime("%H:%M"),
-                    ))
+                    slot_start_min = current.hour * 60 + current.minute
+                    slot_end_min = slot_end.hour * 60 + slot_end.minute
+
+                    # Skip if slot overlaps any break
+                    overlaps_break = False
+                    for brk_start, brk_end in break_intervals:
+                        if slot_start_min < brk_end and slot_end_min > brk_start:
+                            overlaps_break = True
+                            break
+
+                    if not overlaps_break:
+                        slots.append((
+                            day_config.name,
+                            current.strftime("%H:%M"),
+                            slot_end.strftime("%H:%M"),
+                        ))
+
                     current = slot_end
 
         return slots
+
+    def validate(self) -> None:
+        """Raise ValueError if the timeslot configuration is invalid."""
+        if self.base_unit_minutes not in _VALID_BASE_UNITS:
+            raise ValueError(
+                f"L'unité de base {self.base_unit_minutes} min n'est pas valide. "
+                f"Valeurs acceptées : {sorted(_VALID_BASE_UNITS)}."
+            )
+
+        if not self.days:
+            raise ValueError("Au moins un jour doit être défini.")
+
+        for day_config in self.days:
+            if not day_config.sessions:
+                raise ValueError(f"Le jour '{day_config.name}' doit avoir au moins une session.")
+
+            # Validate sessions
+            for sess in day_config.sessions:
+                start_min = _time_to_min(sess.start_time)
+                end_min = _time_to_min(sess.end_time)
+                if end_min <= start_min:
+                    raise ValueError(
+                        f"Jour '{day_config.name}', session '{sess.name}' : "
+                        f"l'heure de fin ({sess.end_time}) doit être après "
+                        f"l'heure de début ({sess.start_time})."
+                    )
+
+            # Validate breaks
+            for brk in day_config.breaks:
+                brk_start = _time_to_min(brk.start_time)
+                brk_end = _time_to_min(brk.end_time)
+
+                if brk_end <= brk_start:
+                    raise ValueError(
+                        f"Jour '{day_config.name}', pause '{brk.name}' : "
+                        f"l'heure de fin ({brk.end_time}) doit être après "
+                        f"l'heure de début ({brk.start_time})."
+                    )
+
+                # Check break lies within some session
+                in_session = False
+                for sess in day_config.sessions:
+                    sess_start = _time_to_min(sess.start_time)
+                    sess_end = _time_to_min(sess.end_time)
+                    if brk_start >= sess_start and brk_end <= sess_end:
+                        in_session = True
+                        break
+                if not in_session:
+                    raise ValueError(
+                        f"Jour '{day_config.name}', pause '{brk.name}' ({brk.start_time}-{brk.end_time}) : "
+                        f"la pause doit être entièrement contenue dans une session."
+                    )
+
+            # Check no overlapping breaks on same day
+            for i, brk1 in enumerate(day_config.breaks):
+                for brk2 in day_config.breaks[i+1:]:
+                    b1_start, b1_end = _time_to_min(brk1.start_time), _time_to_min(brk1.end_time)
+                    b2_start, b2_end = _time_to_min(brk2.start_time), _time_to_min(brk2.end_time)
+                    if b1_start < b2_end and b2_start < b1_end:
+                        raise ValueError(
+                            f"Jour '{day_config.name}' : les pauses '{brk1.name}' et '{brk2.name}' "
+                            f"se chevauchent."
+                        )
+
+    @classmethod
+    def from_simple(
+        cls,
+        day_names: list[str],
+        sessions: list[SessionConfig],
+        base_unit_minutes: int = 30,
+    ) -> "TimeslotConfig":
+        """
+        Factory method for backward compatibility and simpler test construction.
+
+        Creates a TimeslotConfig where all days share the same sessions and have no breaks.
+        """
+        days = [
+            DayConfig(name=day, sessions=sessions, breaks=[])
+            for day in day_names
+        ]
+        return cls(days=days, base_unit_minutes=base_unit_minutes)
 
 
 # ---------------------------------------------------------------------------
@@ -324,22 +434,11 @@ class SchoolData:
             except ValueError as e:
                 errors.append(str(e))
 
-        # --- Infrastructure: base_unit_minutes ---
-        if self.timeslot_config.base_unit_minutes not in _VALID_BASE_UNITS:
-            errors.append(
-                f"L'unité de base {self.timeslot_config.base_unit_minutes} min "
-                f"n'est pas valide. Valeurs acceptées : {sorted(_VALID_BASE_UNITS)}."
-            )
-
-        # --- Infrastructure: session times ---
-        for sess in self.timeslot_config.sessions:
-            start_min = _time_to_min(sess.start_time)
-            end_min = _time_to_min(sess.end_time)
-            if end_min <= start_min:
-                errors.append(
-                    f"Session '{sess.name}' : l'heure de fin ({sess.end_time}) "
-                    f"doit être après l'heure de début ({sess.start_time})."
-                )
+        # --- Timeslot validation (delegates to TimeslotConfig.validate()) ---
+        try:
+            self.timeslot_config.validate()
+        except ValueError as e:
+            errors.append(str(e))
 
         # --- Ceiling limits ---
         if len(self.classes) > _MAX_CLASSES:
@@ -477,16 +576,34 @@ class SchoolData:
 
             curriculum.append(CurriculumEntry(**e))
 
+        # Parse timeslot_config: support both legacy (flat days list) and new (per-day) format
+        tc_data = data["timeslot_config"]
+        if tc_data.get("days") and isinstance(tc_data["days"][0], str):
+            # Legacy format: days is list[str], sessions is flat list
+            # Convert to new per-day format
+            legacy_sessions = [
+                SessionConfig(**s) for s in tc_data.get("sessions", [])
+            ]
+            days = [
+                DayConfig(name=day_name, sessions=legacy_sessions, breaks=[])
+                for day_name in tc_data["days"]
+            ]
+        else:
+            # New format: days is list[DayConfig]
+            days = []
+            for d in tc_data["days"]:
+                sessions = [SessionConfig(**s) for s in d.get("sessions", [])]
+                breaks = [BreakConfig(**b) for b in d.get("breaks", [])]
+                days.append(DayConfig(name=d["name"], sessions=sessions, breaks=breaks))
+
+        timeslot_config = TimeslotConfig(
+            days=days,
+            base_unit_minutes=tc_data.get("base_unit_minutes", 30),
+        )
+
         return cls(
             school=School(**data["school"]),
-            timeslot_config=TimeslotConfig(
-                days=data["timeslot_config"]["days"],
-                base_unit_minutes=data["timeslot_config"]["base_unit_minutes"],
-                sessions=[
-                    SessionConfig(**s)
-                    for s in data["timeslot_config"]["sessions"]
-                ],
-            ),
+            timeslot_config=timeslot_config,
             subjects=[Subject(**s) for s in data["subjects"]],
             teachers=[
                 Teacher(**{k: v for k, v in t.items() if k != "preference_weight"})

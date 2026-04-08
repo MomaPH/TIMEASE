@@ -51,7 +51,7 @@ def _render_entity_table(
     data: SchoolData,
 ) -> None:
     """Append a Markdown table for one entity into *lines*."""
-    days = data.timeslot_config.days
+    days = [d.name for d in data.timeslot_config.days]
     base_min = data.timeslot_config.base_unit_minutes
 
     if perspective == "class":
@@ -69,8 +69,10 @@ def _render_entity_table(
     lines.append("")
 
     # Collect all base-unit slots (no separators in Markdown — just all slots)
+    # Use first day's sessions as reference
     all_slots: list[tuple[str, str]] = []
-    for session in data.timeslot_config.sessions:
+    first_day_sessions = data.timeslot_config.days[0].sessions if data.timeslot_config.days else []
+    for session in first_day_sessions:
         for s, e in _time_slots(session.start_time, session.end_time, base_min):
             all_slots.append((s, e))
 

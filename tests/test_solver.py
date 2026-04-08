@@ -62,8 +62,8 @@ def _sessions_overlap(a: Assignment, b: Assignment) -> bool:
 
 def _make_school(constraints: list[Constraint] | None = None) -> SchoolData:
     school = School("École Test", "2026-2027", "Dakar")
-    tc = TimeslotConfig(
-        days=["lundi", "mardi", "mercredi", "jeudi", "vendredi"],
+    tc = TimeslotConfig.from_simple(
+        day_names=["lundi", "mardi", "mercredi", "jeudi", "vendredi"],
         sessions=[SessionConfig("Matin", "08:00", "12:00")],
         base_unit_minutes=60,
     )
@@ -406,8 +406,8 @@ class TestSoftConstraintsMatter:
 
     def _make_preference_school(self, preferred: str) -> SchoolData:
         school = School("École Préférence", "2026-2027", "Dakar")
-        tc = TimeslotConfig(
-            days=["lundi", "mardi", "mercredi", "jeudi", "vendredi"],
+        tc = TimeslotConfig.from_simple(
+            day_names=["lundi", "mardi", "mercredi", "jeudi", "vendredi"],
             sessions=[
                 SessionConfig("Matin",      "08:00", "12:00"),
                 SessionConfig("Après-midi", "14:00", "16:00"),
@@ -573,11 +573,11 @@ class TestMinSessionsPerDay:
         result = TimetableSolver().solve(sd, timeout_seconds=FAST_TIMEOUT)
         assert result.solved
 
-        days = sd.timeslot_config.days
+        day_names = [d.name for d in sd.timeslot_config.days]
         for cls in sd.classes:
             cls_assignments = [a for a in result.assignments if a.school_class == cls.name]
             days_used = {a.day for a in cls_assignments}
-            for day in days:
+            for day in day_names:
                 assert day in days_used, (
                     f"Class '{cls.name}' has no sessions on '{day}' "
                     f"despite H11 min_sessions=1"

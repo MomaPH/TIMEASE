@@ -141,7 +141,7 @@ def _add_entity_sheet(
     ws.page_setup.fitToPage = True
     ws.page_setup.fitToWidth = 1
 
-    days = data.timeslot_config.days
+    days = [d.name for d in data.timeslot_config.days]
     base_min = data.timeslot_config.base_unit_minutes
     subject_colors = {s.name: s.color.lstrip("#") for s in data.subjects}
     lookup = _build_lookup(result.assignments, perspective, entity)
@@ -159,8 +159,10 @@ def _add_entity_sheet(
     ws.freeze_panes = "B2"
 
     # Build ordered list of grid rows: (session_name, start, end) or None (spacer)
+    # Use first day's sessions as reference
     grid_rows: list[tuple[str, str, str] | None] = []
-    for session in data.timeslot_config.sessions:
+    first_day_sessions = data.timeslot_config.days[0].sessions if data.timeslot_config.days else []
+    for session in first_day_sessions:
         for s, e in _time_slots(session.start_time, session.end_time, base_min):
             grid_rows.append((session.name, s, e))
         grid_rows.append(None)

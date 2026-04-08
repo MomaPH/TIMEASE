@@ -44,8 +44,8 @@ from timease.engine.models import (
 @pytest.fixture
 def base_tc() -> TimeslotConfig:
     """Mon–Fri, 08:00–12:00, base 60 min → 4 slots/day × 5 days = 20 slots."""
-    return TimeslotConfig(
-        days=["lundi", "mardi", "mercredi", "jeudi", "vendredi"],
+    return TimeslotConfig.from_simple(
+        day_names=["lundi", "mardi", "mercredi", "jeudi", "vendredi"],
         sessions=[SessionConfig("Matin", "08:00", "12:00")],
         base_unit_minutes=60,
     )

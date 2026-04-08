@@ -13,8 +13,10 @@ from pathlib import Path
 import pytest
 
 from timease.engine.models import (
+    BreakConfig,
     Constraint,
     CurriculumEntry,
+    DayConfig,
     Room,
     School,
     SchoolClass,
@@ -41,8 +43,8 @@ def sample_school() -> SchoolData:
 @pytest.fixture()
 def minimal_timeslot() -> TimeslotConfig:
     """A small two-day, one-session config for slot-count tests."""
-    return TimeslotConfig(
-        days=["lundi", "mardi"],
+    return TimeslotConfig.from_simple(
+        day_names=["lundi", "mardi"],
         sessions=[SessionConfig("Matin", "08:00", "10:00")],
         base_unit_minutes=30,
     )
@@ -263,9 +265,10 @@ class TestGetAllSlots:
 
     def test_slot_structure(self, sample_school: SchoolData) -> None:
         """Every slot is a (day, start, end) 3-tuple with HH:MM strings."""
+        day_names = {d.name for d in sample_school.timeslot_config.days}
         for slot in sample_school.timeslot_config.get_all_slots():
             day, start, end = slot
-            assert day in sample_school.timeslot_config.days
+            assert day in day_names
             assert len(start) == 5 and start[2] == ":"
             assert len(end) == 5 and end[2] == ":"
 
@@ -297,8 +300,8 @@ class TestGetAllSlots:
 
     def test_base_unit_larger_than_session_yields_no_slots(self) -> None:
         """A base unit longer than the session window should produce zero slots."""
-        tc = TimeslotConfig(
-            days=["lundi"],
+        tc = TimeslotConfig.from_simple(
+            day_names=["lundi"],
             sessions=[SessionConfig("Court", "08:00", "08:20")],
             base_unit_minutes=30,
         )
@@ -307,7 +310,7 @@ class TestGetAllSlots:
     def test_slots_cover_all_days(self, sample_school: SchoolData) -> None:
         slots = sample_school.timeslot_config.get_all_slots()
         days_covered = {s[0] for s in slots}
-        assert days_covered == set(sample_school.timeslot_config.days)
+        assert days_covered == {d.name for d in sample_school.timeslot_config.days}
 
 
 # ---------------------------------------------------------------------------
@@ -350,13 +353,17 @@ class TestJsonRoundTrip:
             sample_school.to_json(tmp)
             restored = SchoolData.from_json(tmp)
 
-            orig_sessions  = sample_school.timeslot_config.sessions
-            rest_sessions  = restored.timeslot_config.sessions
-            assert len(rest_sessions) == len(orig_sessions)
-            for orig, rest in zip(orig_sessions, rest_sessions):
-                assert rest.name       == orig.name
-                assert rest.start_time == orig.start_time
-                assert rest.end_time   == orig.end_time
+            # Check first day's sessions
+            orig_day_configs = sample_school.timeslot_config.days
+            rest_day_configs = restored.timeslot_config.days
+            assert len(rest_day_configs) == len(orig_day_configs)
+            for orig_day, rest_day in zip(orig_day_configs, rest_day_configs):
+                assert rest_day.name == orig_day.name
+                assert len(rest_day.sessions) == len(orig_day.sessions)
+                for orig_sess, rest_sess in zip(orig_day.sessions, rest_day.sessions):
+                    assert rest_sess.name       == orig_sess.name
+                    assert rest_sess.start_time == orig_sess.start_time
+                    assert rest_sess.end_time   == orig_sess.end_time
 
             # Teacher with unavailability (Mme Sanogo, index 2)
             orig_teacher = sample_school.teachers[2]
@@ -389,5 +396,170 @@ class TestJsonRoundTrip:
             for orig, rest in zip(sample_school.curriculum, restored.curriculum):
                 assert rest.sessions_per_week == orig.sessions_per_week
                 assert rest.minutes_per_session == orig.minutes_per_session
+        finally:
+            tmp.unlink(missing_ok=True)
+
+
+# ---------------------------------------------------------------------------
+# 11. BreakConfig and varied day schedules
+# ---------------------------------------------------------------------------
+
+class TestBreakConfig:
+    """Tests for BreakConfig functionality and get_all_slots() with breaks."""
+
+    def test_break_carves_hole_in_slots(self) -> None:
+        """A break should remove slots that overlap with it."""
+        sessions = [SessionConfig("Matin", "08:00", "12:00")]
+        breaks = [BreakConfig("Récréation", "10:00", "10:30")]
+        days = [DayConfig("lundi", sessions, breaks)]
+        tc = TimeslotConfig(days=days, base_unit_minutes=30)
+
+        slots = tc.get_all_slots()
+        slot_starts = [s[1] for s in slots]
+
+        # 08:00-12:00 = 8 slots normally, but 10:00-10:30 is a break = 7 slots
+        assert len(slots) == 7
+        assert "10:00" not in slot_starts
+
+    def test_multiple_breaks_carve_multiple_holes(self) -> None:
+        """Multiple breaks should each carve their own hole."""
+        sessions = [SessionConfig("Matin", "08:00", "12:00")]
+        breaks = [
+            BreakConfig("Récréation 1", "09:30", "10:00"),
+            BreakConfig("Récréation 2", "11:00", "11:30"),
+        ]
+        days = [DayConfig("lundi", sessions, breaks)]
+        tc = TimeslotConfig(days=days, base_unit_minutes=30)
+
+        slots = tc.get_all_slots()
+        slot_starts = [s[1] for s in slots]
+
+        # 8 slots normally, minus 2 breaks = 6 slots
+        assert len(slots) == 6
+        assert "09:30" not in slot_starts
+        assert "11:00" not in slot_starts
+
+    def test_break_spanning_multiple_slots(self) -> None:
+        """A long break should remove all slots it overlaps."""
+        sessions = [SessionConfig("Matin", "08:00", "12:00")]
+        breaks = [BreakConfig("Pause longue", "09:00", "10:30")]  # 3 slots
+        days = [DayConfig("lundi", sessions, breaks)]
+        tc = TimeslotConfig(days=days, base_unit_minutes=30)
+
+        slots = tc.get_all_slots()
+        slot_starts = [s[1] for s in slots]
+
+        # 8 slots minus 3 in the break = 5 slots
+        assert len(slots) == 5
+        assert "09:00" not in slot_starts
+        assert "09:30" not in slot_starts
+        assert "10:00" not in slot_starts
+
+    def test_break_only_affects_its_day(self) -> None:
+        """A break on one day should not affect other days."""
+        sessions = [SessionConfig("Matin", "08:00", "10:00")]
+        breaks_mon = [BreakConfig("Récréation", "08:30", "09:00")]
+        days = [
+            DayConfig("lundi", sessions, breaks_mon),
+            DayConfig("mardi", sessions, []),  # No break
+        ]
+        tc = TimeslotConfig(days=days, base_unit_minutes=30)
+
+        slots = tc.get_all_slots()
+        mon_slots = [s for s in slots if s[0] == "lundi"]
+        tue_slots = [s for s in slots if s[0] == "mardi"]
+
+        assert len(mon_slots) == 3  # 4 minus 1 break
+        assert len(tue_slots) == 4  # Full day
+
+    def test_varied_day_schedules(self) -> None:
+        """Different days can have different sessions."""
+        # Monday: full day
+        mon_sessions = [
+            SessionConfig("Matin", "08:00", "12:00"),
+            SessionConfig("Après-midi", "15:00", "17:00"),
+        ]
+        # Wednesday: morning only, starts later
+        wed_sessions = [SessionConfig("Matin", "09:00", "12:00")]
+
+        days = [
+            DayConfig("lundi", mon_sessions, []),
+            DayConfig("mercredi", wed_sessions, []),
+        ]
+        tc = TimeslotConfig(days=days, base_unit_minutes=30)
+
+        slots = tc.get_all_slots()
+        mon_slots = [s for s in slots if s[0] == "lundi"]
+        wed_slots = [s for s in slots if s[0] == "mercredi"]
+
+        assert len(mon_slots) == 12  # 8 morning + 4 afternoon
+        assert len(wed_slots) == 6   # 6 morning only
+
+        # Wednesday starts at 09:00
+        assert wed_slots[0][1] == "09:00"
+
+    def test_break_validation_within_sessions(self) -> None:
+        """validate() should pass when breaks are within session bounds."""
+        sessions = [SessionConfig("Matin", "08:00", "12:00")]
+        breaks = [BreakConfig("Récréation", "10:00", "10:30")]
+        days = [DayConfig("lundi", sessions, breaks)]
+        tc = TimeslotConfig(days=days, base_unit_minutes=30)
+
+        # Should not raise
+        tc.validate()
+
+    def test_break_outside_session_raises(self) -> None:
+        """validate() should reject breaks outside session bounds."""
+        sessions = [SessionConfig("Matin", "08:00", "12:00")]
+        breaks = [BreakConfig("Invalid", "14:00", "14:30")]  # Outside morning
+        days = [DayConfig("lundi", sessions, breaks)]
+        tc = TimeslotConfig(days=days, base_unit_minutes=30)
+
+        with pytest.raises(ValueError, match="pause.*session"):
+            tc.validate()
+
+    def test_overlapping_breaks_raises(self) -> None:
+        """validate() should reject overlapping breaks."""
+        sessions = [SessionConfig("Matin", "08:00", "12:00")]
+        breaks = [
+            BreakConfig("Récréation 1", "10:00", "10:30"),
+            BreakConfig("Récréation 2", "10:15", "10:45"),  # Overlaps
+        ]
+        days = [DayConfig("lundi", sessions, breaks)]
+        tc = TimeslotConfig(days=days, base_unit_minutes=30)
+
+        with pytest.raises(ValueError, match="chevauch"):
+            tc.validate()
+
+    def test_break_json_round_trip(self) -> None:
+        """Breaks should survive JSON serialization."""
+        sessions = [SessionConfig("Matin", "08:00", "12:00")]
+        breaks = [BreakConfig("Récréation", "10:00", "10:15")]
+        days = [DayConfig("lundi", sessions, breaks)]
+        tc = TimeslotConfig(days=days, base_unit_minutes=30)
+
+        sd = SchoolData(
+            school=School("Test", "2024-2025", "Test"),
+            timeslot_config=tc,
+            subjects=[],
+            teachers=[],
+            classes=[],
+            rooms=[],
+            curriculum=[],
+            constraints=[],
+        )
+
+        with tempfile.NamedTemporaryFile(suffix=".json", delete=False) as f:
+            tmp = Path(f.name)
+        try:
+            sd.to_json(tmp)
+            restored = SchoolData.from_json(tmp)
+
+            assert len(restored.timeslot_config.days) == 1
+            rest_day = restored.timeslot_config.days[0]
+            assert len(rest_day.breaks) == 1
+            assert rest_day.breaks[0].name == "Récréation"
+            assert rest_day.breaks[0].start_time == "10:00"
+            assert rest_day.breaks[0].end_time == "10:15"
         finally:
             tmp.unlink(missing_ok=True)

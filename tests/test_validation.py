@@ -53,8 +53,8 @@ def _minimal_school() -> SchoolData:
     """Smallest possible valid school: 1 class, 1 teacher, 1 subject, 1 room."""
     return SchoolData(
         school=School("Lycée Test", "2026-2027", "Dakar"),
-        timeslot_config=TimeslotConfig(
-            days=["lundi"],
+        timeslot_config=TimeslotConfig.from_simple(
+            day_names=["lundi"],
             sessions=[SessionConfig("Matin", "08:00", "10:00")],
             base_unit_minutes=30,
         ),
@@ -143,13 +143,13 @@ class TestBaseUnitValidation:
 class TestSessionTimeValidation:
     def test_end_before_start_rejected(self) -> None:
         sd = _minimal_school()
-        sd.timeslot_config.sessions[0].end_time = "07:00"
+        sd.timeslot_config.days[0].sessions[0].end_time = "07:00"
         errors = sd.validate()
         assert any("heure de fin" in e for e in errors)
 
     def test_end_equal_start_rejected(self) -> None:
         sd = _minimal_school()
-        sd.timeslot_config.sessions[0].end_time = "08:00"
+        sd.timeslot_config.days[0].sessions[0].end_time = "08:00"
         errors = sd.validate()
         assert any("heure de fin" in e for e in errors)
 
@@ -550,12 +550,16 @@ class TestJsonRoundTrip:
         original.to_json(out_path)
         reloaded  = SchoolData.from_json(out_path)
 
-        assert reloaded.timeslot_config.days == original.timeslot_config.days
+        # Check day names match
+        orig_day_names = [d.name for d in original.timeslot_config.days]
+        reload_day_names = [d.name for d in reloaded.timeslot_config.days]
+        assert reload_day_names == orig_day_names
         assert reloaded.timeslot_config.base_unit_minutes == (
             original.timeslot_config.base_unit_minutes
         )
-        assert len(reloaded.timeslot_config.sessions) == len(
-            original.timeslot_config.sessions
+        # Check first day's sessions
+        assert len(reloaded.timeslot_config.days[0].sessions) == len(
+            original.timeslot_config.days[0].sessions
         )
 
 
@@ -652,8 +656,8 @@ class TestConflictAnalyzerRelaxationPath:
         # (they don't check day-blocking against teacher day-off).
         return SchoolData(
             school=School("Relaxation Test", "2026-2027", "Dakar"),
-            timeslot_config=TimeslotConfig(
-                days=["lundi"],
+            timeslot_config=TimeslotConfig.from_simple(
+                day_names=["lundi"],
                 sessions=[SessionConfig("Matin", "08:00", "09:00")],
                 base_unit_minutes=60,
             ),
@@ -662,7 +666,7 @@ class TestConflictAnalyzerRelaxationPath:
             classes=[SchoolClass("6A", "6ème", 30)],
             rooms=[Room("Salle", 40, ["Salle standard"])],
             curriculum=[
-                CurriculumEntry("6ème", "Maths", 60,
+                CurriculumEntry("6A", "Maths", 60,
                                 sessions_per_week=1, minutes_per_session=60),
             ],
             constraints=[

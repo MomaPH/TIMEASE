@@ -53,8 +53,10 @@ class SoftConstraintAnalyzer:
         self._sd  = school_data
         self._tc  = school_data.timeslot_config
         # Morning boundary: a session is "morning" if it starts before this.
+        # Use first day's first session as reference
+        first_day_sessions = self._tc.days[0].sessions if self._tc.days else []
         self._morning_end: str = (
-            self._tc.sessions[0].end_time if self._tc.sessions else "12:00"
+            first_day_sessions[0].end_time if first_day_sessions else "12:00"
         )
         self._handlers = {
             "teacher_time_preference":     self._s1,
@@ -162,8 +164,8 @@ class SoftConstraintAnalyzer:
     # ------------------------------------------------------------------
 
     def _s3(self, c: Constraint) -> dict | None:
-        days = self._tc.days
-        if not days:
+        day_names = [d.name for d in self._tc.days]
+        if not day_names:
             return None
 
         class_std_devs: list[float] = []
@@ -176,7 +178,7 @@ class SoftConstraintAnalyzer:
                     (self._to_min(a.end_time) - self._to_min(a.start_time)) / 60
                     for a in cls_a if a.day == day
                 )
-                for day in days
+                for day in day_names
             ]
             mean    = sum(hours) / len(hours)
             std_dev = math.sqrt(sum((h - mean) ** 2 for h in hours) / len(hours))
@@ -415,17 +417,17 @@ class SoftConstraintAnalyzer:
     # ------------------------------------------------------------------
 
     def _s10(self, c: Constraint) -> dict | None:
-        days = self._tc.days
-        if not days:
+        day_names = [d.name for d in self._tc.days]
+        if not day_names:
             return None
 
-        last_day      = days[-1]
+        last_day      = day_names[-1]
         hours_per_day = {
             day: sum(
                 (self._to_min(a.end_time) - self._to_min(a.start_time)) / 60
                 for a in self._a if a.day == day
             )
-            for day in days
+            for day in day_names
         }
         avg_hours  = sum(hours_per_day.values()) / len(hours_per_day)
         last_hours = hours_per_day[last_day]

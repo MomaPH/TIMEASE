@@ -101,15 +101,20 @@ export default function ResultsPage() {
 
   // ── Breaks from school data ─────────────────────────────────────────────────
   const breaks: BreakSlot[] = useMemo(() => {
-    const sessions = schoolData?.sessions ?? []
-    return sessions
-      .filter((s: any) => s.is_break || s.name?.toLowerCase().includes('pause') || s.name?.toLowerCase().includes('récréation'))
-      .map((s: any) => ({
-        type: 'break' as const,
-        start_time: s.start_time,
-        end_time: s.end_time,
-        label: s.name || 'Pause',
-      }))
+    // New format: breaks are inside each DayConfig
+    const allBreaks: BreakSlot[] = []
+    const days = schoolData?.days ?? []
+    for (const day of days) {
+      for (const brk of day.breaks ?? []) {
+        allBreaks.push({
+          type: 'break' as const,
+          start_time: brk.start_time,
+          end_time: brk.end_time,
+          label: brk.name || 'Pause',
+        })
+      }
+    }
+    return allBreaks
   }, [schoolData])
 
   // ── Empty state (session loaded but no timetable yet) ──────────────────────

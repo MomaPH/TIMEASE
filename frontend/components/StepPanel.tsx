@@ -66,20 +66,83 @@ function SectionEmpty({ text }: { text: string }) {
 
 // ── Step 1: École ─────────────────────────────────────────────────────────────
 
+import type { DayConfig, SessionConfig, BreakConfig } from '@/lib/types'
+
+const DEFAULT_SESSIONS: SessionConfig[] = [
+  { name: 'Matin', start_time: '08:00', end_time: '12:00' },
+  { name: 'Après-midi', start_time: '15:00', end_time: '17:00' },
+]
+
 function SchoolStep({ data, onUpdate }: { data: SchoolData; onUpdate: (d: SchoolData) => void }) {
-  const sessions = data.sessions || []
+  const days = data.days || []
+  const dayNames = days.map(d => d.name)
+  const [expandedDay, setExpandedDay] = useState<string | null>(null)
 
-  function addSession() {
-    onUpdate({ ...data, sessions: [...sessions, { name: '', start_time: '08:00', end_time: '12:00' }] })
+  function toggleDay(dayVal: string) {
+    if (dayNames.includes(dayVal)) {
+      // Remove day
+      onUpdate({ ...data, days: days.filter(d => d.name !== dayVal) })
+    } else {
+      // Add day with default sessions
+      const newDay: DayConfig = { name: dayVal, sessions: [...DEFAULT_SESSIONS], breaks: [] }
+      onUpdate({ ...data, days: [...days, newDay].sort((a, b) => DAYS_VAL.indexOf(a.name) - DAYS_VAL.indexOf(b.name)) })
+    }
   }
 
-  function updateSession(i: number, field: string, val: string) {
-    const next = sessions.map((s, idx) => idx === i ? { ...s, [field]: val } : s)
-    onUpdate({ ...data, sessions: next })
+  function updateDayConfig(dayName: string, updates: Partial<DayConfig>) {
+    const nextDays = days.map(d => d.name === dayName ? { ...d, ...updates } : d)
+    onUpdate({ ...data, days: nextDays })
   }
 
-  function removeSession(i: number) {
-    onUpdate({ ...data, sessions: sessions.filter((_, idx) => idx !== i) })
+  function addSession(dayName: string) {
+    const day = days.find(d => d.name === dayName)
+    if (!day) return
+    const newSession: SessionConfig = { name: '', start_time: '08:00', end_time: '10:00' }
+    updateDayConfig(dayName, { sessions: [...day.sessions, newSession] })
+  }
+
+  function updateSession(dayName: string, idx: number, field: keyof SessionConfig, val: string) {
+    const day = days.find(d => d.name === dayName)
+    if (!day) return
+    const nextSessions = day.sessions.map((s, i) => i === idx ? { ...s, [field]: val } : s)
+    updateDayConfig(dayName, { sessions: nextSessions })
+  }
+
+  function removeSession(dayName: string, idx: number) {
+    const day = days.find(d => d.name === dayName)
+    if (!day) return
+    updateDayConfig(dayName, { sessions: day.sessions.filter((_, i) => i !== idx) })
+  }
+
+  function addBreak(dayName: string) {
+    const day = days.find(d => d.name === dayName)
+    if (!day) return
+    const newBreak: BreakConfig = { name: 'Récréation', start_time: '10:00', end_time: '10:15' }
+    updateDayConfig(dayName, { breaks: [...day.breaks, newBreak] })
+  }
+
+  function updateBreak(dayName: string, idx: number, field: keyof BreakConfig, val: string) {
+    const day = days.find(d => d.name === dayName)
+    if (!day) return
+    const nextBreaks = day.breaks.map((b, i) => i === idx ? { ...b, [field]: val } : b)
+    updateDayConfig(dayName, { breaks: nextBreaks })
+  }
+
+  function removeBreak(dayName: string, idx: number) {
+    const day = days.find(d => d.name === dayName)
+    if (!day) return
+    updateDayConfig(dayName, { breaks: day.breaks.filter((_, i) => i !== idx) })
+  }
+
+  function copyToAllDays(sourceDay: string) {
+    const source = days.find(d => d.name === sourceDay)
+    if (!source) return
+    const nextDays = days.map(d => ({
+      ...d,
+      sessions: [...source.sessions],
+      breaks: [...source.breaks],
+    }))
+    onUpdate({ ...data, days: nextDays })
   }
 
   return (
@@ -97,18 +160,27 @@ function SchoolStep({ data, onUpdate }: { data: SchoolData; onUpdate: (d: School
         <Input value={data.academic_year || ''} onChange={v => onUpdate({ ...data, academic_year: v })} placeholder="2025-2026" />
       </Field>
 
+      <Field label="Unité de base">
+        <select
+          value={data.base_unit_minutes || 30}
+          onChange={e => onUpdate({ ...data, base_unit_minutes: Number(e.target.value) })}
+          className="w-full px-3 py-2 text-sm border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-teal-500"
+        >
+          <option value={15}>15 minutes</option>
+          <option value={30}>30 minutes</option>
+          <option value={60}>1 heure</option>
+        </select>
+      </Field>
+
       <Field label="Jours de cours">
         <div className="flex flex-wrap gap-2">
           {DAYS_FR.map((d, i) => {
             const val = DAYS_VAL[i]
-            const selected = (data.days || []).includes(val)
+            const selected = dayNames.includes(val)
             return (
               <button
                 key={val}
-                onClick={() => {
-                  const days = data.days || []
-                  onUpdate({ ...data, days: selected ? days.filter(x => x !== val) : [...days, val] })
-                }}
+                onClick={() => toggleDay(val)}
                 className={`px-3 py-1.5 text-xs font-medium rounded-lg border transition-colors ${
                   selected
                     ? 'bg-teal-600 text-white border-teal-600'
@@ -122,51 +194,117 @@ function SchoolStep({ data, onUpdate }: { data: SchoolData; onUpdate: (d: School
         </div>
       </Field>
 
-      <Field label="Unité de base">
-        <select
-          value={data.base_unit_minutes || 30}
-          onChange={e => onUpdate({ ...data, base_unit_minutes: Number(e.target.value) })}
-          className="w-full px-3 py-2 text-sm border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-teal-500"
-        >
-          <option value={15}>15 minutes</option>
-          <option value={30}>30 minutes</option>
-          <option value={60}>1 heure</option>
-        </select>
-      </Field>
+      {days.length > 0 && (
+        <Field label="Horaires par jour">
+          <div className="space-y-2">
+            {days.map(day => {
+              const dayLabel = DAYS_FR[DAYS_VAL.indexOf(day.name)] || day.name
+              const isExpanded = expandedDay === day.name
+              return (
+                <div key={day.name} className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
+                  <button
+                    onClick={() => setExpandedDay(isExpanded ? null : day.name)}
+                    className="w-full flex items-center justify-between px-3 py-2 text-sm font-medium bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                  >
+                    <span>{dayLabel}</span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-gray-400">
+                        {day.sessions.length} session{day.sessions.length !== 1 ? 's' : ''}
+                        {day.breaks.length > 0 && `, ${day.breaks.length} pause${day.breaks.length !== 1 ? 's' : ''}`}
+                      </span>
+                      <ChevronRight size={14} className={`transform transition-transform ${isExpanded ? 'rotate-90' : ''}`} />
+                    </div>
+                  </button>
+                  {isExpanded && (
+                    <div className="p-3 space-y-3 bg-white dark:bg-gray-900">
+                      {/* Sessions */}
+                      <div className="space-y-2">
+                        <div className="text-xs font-medium text-gray-500 uppercase">Sessions</div>
+                        {day.sessions.map((s, i) => (
+                          <div key={i} className="flex gap-2 items-center">
+                            <input
+                              value={s.name}
+                              onChange={e => updateSession(day.name, i, 'name', e.target.value)}
+                              placeholder="Nom"
+                              className="flex-1 min-w-0 px-2 py-1 text-xs border border-gray-200 dark:border-gray-700 rounded bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-1 focus:ring-teal-500"
+                            />
+                            <input
+                              type="time"
+                              value={s.start_time}
+                              onChange={e => updateSession(day.name, i, 'start_time', e.target.value)}
+                              className="w-20 px-2 py-1 text-xs border border-gray-200 dark:border-gray-700 rounded bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-1 focus:ring-teal-500"
+                            />
+                            <span className="text-xs text-gray-400">→</span>
+                            <input
+                              type="time"
+                              value={s.end_time}
+                              onChange={e => updateSession(day.name, i, 'end_time', e.target.value)}
+                              className="w-20 px-2 py-1 text-xs border border-gray-200 dark:border-gray-700 rounded bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-1 focus:ring-teal-500"
+                            />
+                            <button onClick={() => removeSession(day.name, i)} className="text-gray-400 hover:text-red-500 transition-colors">
+                              <X size={13} />
+                            </button>
+                          </div>
+                        ))}
+                        <button onClick={() => addSession(day.name)} className="flex items-center gap-1.5 text-xs text-teal-600 dark:text-teal-400 hover:text-teal-700 transition-colors">
+                          <Plus size={13} /> Ajouter une session
+                        </button>
+                      </div>
 
-      <Field label="Sessions (matin / après-midi)">
-        <div className="space-y-2">
-          {sessions.map((s, i) => (
-            <div key={i} className="flex gap-2 items-center bg-gray-50 dark:bg-gray-800 rounded-lg p-2">
-              <input
-                value={s.name}
-                onChange={e => updateSession(i, 'name', e.target.value)}
-                placeholder="Nom"
-                className="flex-1 min-w-0 px-2 py-1 text-xs border border-gray-200 dark:border-gray-700 rounded bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-1 focus:ring-teal-500"
-              />
-              <input
-                type="time"
-                value={s.start_time}
-                onChange={e => updateSession(i, 'start_time', e.target.value)}
-                className="w-20 px-2 py-1 text-xs border border-gray-200 dark:border-gray-700 rounded bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-1 focus:ring-teal-500"
-              />
-              <span className="text-xs text-gray-400">→</span>
-              <input
-                type="time"
-                value={s.end_time}
-                onChange={e => updateSession(i, 'end_time', e.target.value)}
-                className="w-20 px-2 py-1 text-xs border border-gray-200 dark:border-gray-700 rounded bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-1 focus:ring-teal-500"
-              />
-              <button onClick={() => removeSession(i)} className="text-gray-400 hover:text-red-500 transition-colors">
-                <X size={13} />
-              </button>
-            </div>
-          ))}
-          <button onClick={addSession} className="flex items-center gap-1.5 text-xs text-teal-600 dark:text-teal-400 hover:text-teal-700 transition-colors mt-1">
-            <Plus size={13} /> Ajouter une session
-          </button>
-        </div>
-      </Field>
+                      {/* Breaks */}
+                      <div className="space-y-2">
+                        <div className="text-xs font-medium text-gray-500 uppercase">Pauses / Récréations</div>
+                        {day.breaks.length === 0 && (
+                          <p className="text-xs text-gray-400 italic">Aucune pause définie</p>
+                        )}
+                        {day.breaks.map((b, i) => (
+                          <div key={i} className="flex gap-2 items-center">
+                            <input
+                              value={b.name}
+                              onChange={e => updateBreak(day.name, i, 'name', e.target.value)}
+                              placeholder="Nom"
+                              className="flex-1 min-w-0 px-2 py-1 text-xs border border-gray-200 dark:border-gray-700 rounded bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-1 focus:ring-teal-500"
+                            />
+                            <input
+                              type="time"
+                              value={b.start_time}
+                              onChange={e => updateBreak(day.name, i, 'start_time', e.target.value)}
+                              className="w-20 px-2 py-1 text-xs border border-gray-200 dark:border-gray-700 rounded bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-1 focus:ring-teal-500"
+                            />
+                            <span className="text-xs text-gray-400">→</span>
+                            <input
+                              type="time"
+                              value={b.end_time}
+                              onChange={e => updateBreak(day.name, i, 'end_time', e.target.value)}
+                              className="w-20 px-2 py-1 text-xs border border-gray-200 dark:border-gray-700 rounded bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-1 focus:ring-teal-500"
+                            />
+                            <button onClick={() => removeBreak(day.name, i)} className="text-gray-400 hover:text-red-500 transition-colors">
+                              <X size={13} />
+                            </button>
+                          </div>
+                        ))}
+                        <button onClick={() => addBreak(day.name)} className="flex items-center gap-1.5 text-xs text-teal-600 dark:text-teal-400 hover:text-teal-700 transition-colors">
+                          <Plus size={13} /> Ajouter une pause
+                        </button>
+                      </div>
+
+                      {/* Copy to all days */}
+                      {days.length > 1 && (
+                        <button
+                          onClick={() => copyToAllDays(day.name)}
+                          className="flex items-center gap-1.5 text-xs text-gray-500 hover:text-teal-600 transition-colors mt-2"
+                        >
+                          <ArrowRight size={13} /> Copier cet horaire vers tous les jours
+                        </button>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )
+            })}
+          </div>
+        </Field>
+      )}
     </div>
   )
 }
@@ -896,7 +1034,7 @@ function SummaryStep({
           )}
           {data.days && data.days.length > 0 && (
             <p className="text-xs text-teal-600 dark:text-teal-400 mt-0.5">
-              {data.days.join(', ')} · {data.sessions?.length ?? 0} session(s)
+              {data.days.map(d => d.name).join(', ')} · {data.days[0]?.sessions?.length ?? 0} session(s)
             </p>
           )}
         </div>

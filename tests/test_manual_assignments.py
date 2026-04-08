@@ -28,8 +28,8 @@ def test_valid_assignments():
     teachers = [Teacher(name="M. Diallo", subjects=["Maths"], max_hours_per_week=20)]
     classes = [SchoolClass(name="6ème A", level="6ème", student_count=30)]
     school = School(name="Test School", academic_year="2026-2027", city="Dakar")
-    timeslot_config = TimeslotConfig(
-        days=["lundi"],
+    timeslot_config = TimeslotConfig.from_simple(
+        day_names=["lundi"],
         sessions=[SessionConfig(name="Matin", start_time="08:00", end_time="12:00")],
         base_unit_minutes=30
     )
@@ -56,8 +56,8 @@ def test_missing_assignments():
     """Empty teacher_assignments should trigger validation error."""
     school = SchoolData(
         school=School(name="Test School", academic_year="2026-2027", city="Dakar"),
-        timeslot_config=TimeslotConfig(
-            days=["lundi"],
+        timeslot_config=TimeslotConfig.from_simple(
+            day_names=["lundi"],
             sessions=[SessionConfig(name="Matin", start_time="08:00", end_time="12:00")],
             base_unit_minutes=30
         ),
@@ -90,8 +90,8 @@ def test_multiple_teachers_per_subject():
     subjects = [Subject(name="Maths", short_name="Maths", color="#3498db")]
     classes = [SchoolClass(name="6ème A", level="6ème", student_count=30)]
     school_info = School(name="Test School", academic_year="2026-2027", city="Dakar")
-    timeslot_config = TimeslotConfig(
-        days=["lundi"],
+    timeslot_config = TimeslotConfig.from_simple(
+        day_names=["lundi"],
         sessions=[SessionConfig(name="Matin", start_time="08:00", end_time="12:00")],
         base_unit_minutes=30
     )

@@ -178,8 +178,10 @@ class ConstraintBuilder:
         self._sessions_by_subject = sessions_by_subject
         self._session_domains  = session_domains
         self._tc               = tc
+        # Extract day names from DayConfig objects
+        self._day_names        = [d.name for d in tc.days]
         self._n_days           = len(tc.days)
-        self._day_idx          = {d: i for i, d in enumerate(tc.days)}
+        self._day_idx          = {d: i for i, d in enumerate(self._day_names)}
         self._base_unit        = data.timeslot_config.base_unit_minutes
 
         self._on_day = _OnDayCache(
@@ -276,7 +278,7 @@ class ConstraintBuilder:
             for gpos in dom:
                 d_idx = gpos // n
                 s     = gpos % n
-                day   = self._tc.days[d_idx]
+                day   = self._day_names[d_idx]
                 start_t = self._day_slot_times[day][s][0]
                 eff_hour = (
                     override.get((level, day))
@@ -325,7 +327,7 @@ class ConstraintBuilder:
         n         = self._n
 
         # Compute block sizes from the reference day
-        ref_day   = self._tc.days[0]
+        ref_day   = self._day_names[0]
         ref_slots = self._day_slot_times[ref_day]
 
         block_of_slot: list[int] = [0]
@@ -488,7 +490,7 @@ class ConstraintBuilder:
             warnings.append(f"[{c.id}] H9: missing required parameter — skipped.")
             return
 
-        d_idx = {d: i for i, d in enumerate(self._tc.days)}.get(day)
+        d_idx = {d: i for i, d in enumerate(self._day_names)}.get(day)
         if d_idx is None:
             warnings.append(f"[{c.id}] H9: day '{day}' not in schedule — skipped.")
             return
@@ -607,6 +609,8 @@ class SoftConstraintBuilder:
         self._session_domains    = session_domains
         self._room_bvars         = room_bvars
         self._tc                 = tc
+        # Extract day names from DayConfig objects
+        self._day_names          = [d.name for d in tc.days]
         self._n_days             = len(tc.days)
 
         # Shared on_day cache — one BoolVar per (session_idx, day_idx)
@@ -1049,7 +1053,7 @@ class SoftConstraintBuilder:
         priority = c.priority or 5
         warnings: list[str] = []
 
-        d_idx = next((i for i, d in enumerate(self._tc.days) if d == day), None)
+        d_idx = next((i for i, d in enumerate(self._day_names) if d == day), None)
         if not teacher or d_idx is None:
             warnings.append(f"[{c.id}] S8: missing teacher or day — skipped.")
             return [], None, warnings
@@ -1142,9 +1146,9 @@ class SoftConstraintBuilder:
         warnings: list[str] = []
         terms: list[tuple[int, cp_model.IntVar]] = []
 
-        target_day = c.parameters.get("day", self._tc.days[-1])
+        target_day = c.parameters.get("day", self._day_names[-1])
         d_idx = next(
-            (i for i, d in enumerate(self._tc.days) if d == target_day), None
+            (i for i, d in enumerate(self._day_names) if d == target_day), None
         )
         if d_idx is None:
             warnings.append(f"[{c.id}] S10: day '{target_day}' not in schedule — skipped.")

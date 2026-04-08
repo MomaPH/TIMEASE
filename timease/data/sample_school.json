@@ -6,23 +6,101 @@
   },
   "timeslot_config": {
     "days": [
-      "lundi",
-      "mardi",
-      "mercredi",
-      "jeudi",
-      "vendredi",
-      "samedi"
-    ],
-    "sessions": [
       {
-        "name": "Matin",
-        "start_time": "08:00",
-        "end_time": "12:00"
+        "name": "lundi",
+        "sessions": [
+          {
+            "name": "Matin",
+            "start_time": "08:00",
+            "end_time": "12:00"
+          },
+          {
+            "name": "Après-midi",
+            "start_time": "15:00",
+            "end_time": "17:00"
+          }
+        ],
+        "breaks": []
       },
       {
-        "name": "Après-midi",
-        "start_time": "15:00",
-        "end_time": "17:00"
+        "name": "mardi",
+        "sessions": [
+          {
+            "name": "Matin",
+            "start_time": "08:00",
+            "end_time": "12:00"
+          },
+          {
+            "name": "Après-midi",
+            "start_time": "15:00",
+            "end_time": "17:00"
+          }
+        ],
+        "breaks": []
+      },
+      {
+        "name": "mercredi",
+        "sessions": [
+          {
+            "name": "Matin",
+            "start_time": "08:00",
+            "end_time": "12:00"
+          },
+          {
+            "name": "Après-midi",
+            "start_time": "15:00",
+            "end_time": "17:00"
+          }
+        ],
+        "breaks": []
+      },
+      {
+        "name": "jeudi",
+        "sessions": [
+          {
+            "name": "Matin",
+            "start_time": "08:00",
+            "end_time": "12:00"
+          },
+          {
+            "name": "Après-midi",
+            "start_time": "15:00",
+            "end_time": "17:00"
+          }
+        ],
+        "breaks": []
+      },
+      {
+        "name": "vendredi",
+        "sessions": [
+          {
+            "name": "Matin",
+            "start_time": "08:00",
+            "end_time": "12:00"
+          },
+          {
+            "name": "Après-midi",
+            "start_time": "15:00",
+            "end_time": "17:00"
+          }
+        ],
+        "breaks": []
+      },
+      {
+        "name": "samedi",
+        "sessions": [
+          {
+            "name": "Matin",
+            "start_time": "08:00",
+            "end_time": "12:00"
+          },
+          {
+            "name": "Après-midi",
+            "start_time": "15:00",
+            "end_time": "17:00"
+          }
+        ],
+        "breaks": []
       }
     ],
     "base_unit_minutes": 30
@@ -114,8 +192,7 @@
         "Physique-Chimie"
       ],
       "max_hours_per_week": 18,
-      "unavailable_slots": [],
-      "preference_weight": 1.0
+      "unavailable_slots": []
     },
     {
       "name": "M. Traoré",
@@ -123,8 +200,7 @@
         "Français"
       ],
       "max_hours_per_week": 20,
-      "unavailable_slots": [],
-      "preference_weight": 1.0
+      "unavailable_slots": []
     },
     {
       "name": "Mme Sanogo",
@@ -139,8 +215,7 @@
           "end": null,
           "session": "all"
         }
-      ],
-      "preference_weight": 1.0
+      ]
     },
     {
       "name": "M. Koné",
@@ -149,8 +224,7 @@
         "Physique-Chimie"
       ],
       "max_hours_per_week": 18,
-      "unavailable_slots": [],
-      "preference_weight": 1.0
+      "unavailable_slots": []
     },
     {
       "name": "M. Camara",
@@ -158,8 +232,7 @@
         "Histoire-Géographie"
       ],
       "max_hours_per_week": 16,
-      "unavailable_slots": [],
-      "preference_weight": 1.0
+      "unavailable_slots": []
     },
     {
       "name": "M. Bamba",
@@ -167,8 +240,7 @@
         "EPS"
       ],
       "max_hours_per_week": 20,
-      "unavailable_slots": [],
-      "preference_weight": 1.0
+      "unavailable_slots": []
     },
     {
       "name": "Mme Ndiaye",
@@ -176,8 +248,7 @@
         "Mathématiques"
       ],
       "max_hours_per_week": 18,
-      "unavailable_slots": [],
-      "preference_weight": 1.0
+      "unavailable_slots": []
     },
     {
       "name": "Mme Kouyaté",
@@ -185,8 +256,7 @@
         "Mathématiques"
       ],
       "max_hours_per_week": 22,
-      "unavailable_slots": [],
-      "preference_weight": 1.0
+      "unavailable_slots": []
     },
     {
       "name": "M. Coulibaly",
@@ -194,8 +264,7 @@
         "Français"
       ],
       "max_hours_per_week": 22,
-      "unavailable_slots": [],
-      "preference_weight": 1.0
+      "unavailable_slots": []
     },
     {
       "name": "M. Sow",
@@ -204,8 +273,7 @@
         "Anglais"
       ],
       "max_hours_per_week": 16,
-      "unavailable_slots": [],
-      "preference_weight": 1.0
+      "unavailable_slots": []
     },
     {
       "name": "Mme Fall",
@@ -220,8 +288,7 @@
           "end": "17:00",
           "session": "Après-midi"
         }
-      ],
-      "preference_weight": 1.0
+      ]
     },
     {
       "name": "M. Diop",
@@ -230,8 +297,7 @@
         "Education Civique"
       ],
       "max_hours_per_week": 18,
-      "unavailable_slots": [],
-      "preference_weight": 1.0
+      "unavailable_slots": []
     },
     {
       "name": "Mme Touré",
@@ -240,8 +306,7 @@
         "Musique"
       ],
       "max_hours_per_week": 12,
-      "unavailable_slots": [],
-      "preference_weight": 1.0
+      "unavailable_slots": []
     },
     {
       "name": "M. Ba",
@@ -249,50 +314,49 @@
         "Informatique"
       ],
       "max_hours_per_week": 10,
-      "unavailable_slots": [],
-      "preference_weight": 1.0
+      "unavailable_slots": []
     }
   ],
   "classes": [
     {
       "name": "6ème A",
-      "student_count": 38,
-      "level": "6ème"
+      "level": "6ème",
+      "student_count": 38
     },
     {
       "name": "6ème B",
-      "student_count": 35,
-      "level": "6ème"
+      "level": "6ème",
+      "student_count": 35
     },
     {
       "name": "5ème A",
-      "student_count": 40,
-      "level": "5ème"
+      "level": "5ème",
+      "student_count": 40
     },
     {
       "name": "5ème B",
-      "student_count": 37,
-      "level": "5ème"
+      "level": "5ème",
+      "student_count": 37
     },
     {
       "name": "4ème A",
-      "student_count": 42,
-      "level": "4ème"
+      "level": "4ème",
+      "student_count": 42
     },
     {
       "name": "4ème B",
-      "student_count": 39,
-      "level": "4ème"
+      "level": "4ème",
+      "student_count": 39
     },
     {
       "name": "3ème A",
-      "student_count": 36,
-      "level": "3ème"
+      "level": "3ème",
+      "student_count": 36
     },
     {
       "name": "3ème B",
-      "student_count": 32,
-      "level": "3ème"
+      "level": "3ème",
+      "student_count": 32
     }
   ],
   "rooms": [
@@ -365,821 +429,646 @@
       "school_class": "6ème A",
       "subject": "Mathématiques",
       "total_minutes_per_week": 300,
-      "mode": "auto",
-      "sessions_per_week": null,
-      "minutes_per_session": null,
-      "min_session_minutes": 60,
-      "max_session_minutes": 120
+      "sessions_per_week": 5,
+      "minutes_per_session": 60
     },
     {
       "school_class": "6ème B",
       "subject": "Mathématiques",
       "total_minutes_per_week": 300,
-      "mode": "auto",
-      "sessions_per_week": null,
-      "minutes_per_session": null,
-      "min_session_minutes": 60,
-      "max_session_minutes": 120
+      "sessions_per_week": 5,
+      "minutes_per_session": 60
     },
     {
       "school_class": "6ème A",
       "subject": "Français",
       "total_minutes_per_week": 300,
-      "mode": "auto",
-      "sessions_per_week": null,
-      "minutes_per_session": null,
-      "min_session_minutes": 60,
-      "max_session_minutes": 120
+      "sessions_per_week": 5,
+      "minutes_per_session": 60
     },
     {
       "school_class": "6ème B",
       "subject": "Français",
       "total_minutes_per_week": 300,
-      "mode": "auto",
-      "sessions_per_week": null,
-      "minutes_per_session": null,
-      "min_session_minutes": 60,
-      "max_session_minutes": 120
+      "sessions_per_week": 5,
+      "minutes_per_session": 60
     },
     {
       "school_class": "6ème A",
       "subject": "Anglais",
       "total_minutes_per_week": 180,
-      "mode": "auto",
-      "sessions_per_week": null,
-      "minutes_per_session": null,
-      "min_session_minutes": 60,
-      "max_session_minutes": 120
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
     },
     {
       "school_class": "6ème B",
       "subject": "Anglais",
       "total_minutes_per_week": 180,
-      "mode": "auto",
-      "sessions_per_week": null,
-      "minutes_per_session": null,
-      "min_session_minutes": 60,
-      "max_session_minutes": 120
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
     },
     {
       "school_class": "6ème A",
       "subject": "SVT",
       "total_minutes_per_week": 120,
-      "mode": "manual",
       "sessions_per_week": 1,
-      "minutes_per_session": 120,
-      "min_session_minutes": null,
-      "max_session_minutes": null
+      "minutes_per_session": 120
     },
     {
       "school_class": "6ème B",
       "subject": "SVT",
       "total_minutes_per_week": 120,
-      "mode": "manual",
       "sessions_per_week": 1,
-      "minutes_per_session": 120,
-      "min_session_minutes": null,
-      "max_session_minutes": null
+      "minutes_per_session": 120
     },
     {
       "school_class": "6ème A",
       "subject": "Physique-Chimie",
       "total_minutes_per_week": 120,
-      "mode": "auto",
-      "sessions_per_week": null,
-      "minutes_per_session": null,
-      "min_session_minutes": 60,
-      "max_session_minutes": 120
-    },
-    {
-      "school_class": "6ème B",
-      "subject": "Physique-Chimie",
-      "total_minutes_per_week": 120,
-      "mode": "auto",
-      "sessions_per_week": null,
-      "minutes_per_session": null,
-      "min_session_minutes": 60,
-      "max_session_minutes": 120
-    },
-    {
-      "school_class": "6ème A",
-      "subject": "Histoire-Géographie",
-      "total_minutes_per_week": 180,
-      "mode": "auto",
-      "sessions_per_week": null,
-      "minutes_per_session": null,
-      "min_session_minutes": 60,
-      "max_session_minutes": 120
-    },
-    {
-      "school_class": "6ème B",
-      "subject": "Histoire-Géographie",
-      "total_minutes_per_week": 180,
-      "mode": "auto",
-      "sessions_per_week": null,
-      "minutes_per_session": null,
-      "min_session_minutes": 60,
-      "max_session_minutes": 120
-    },
-    {
-      "school_class": "6ème A",
-      "subject": "EPS",
-      "total_minutes_per_week": 120,
-      "mode": "manual",
-      "sessions_per_week": 1,
-      "minutes_per_session": 120,
-      "min_session_minutes": null,
-      "max_session_minutes": null
-    },
-    {
-      "school_class": "6ème B",
-      "subject": "EPS",
-      "total_minutes_per_week": 120,
-      "mode": "manual",
-      "sessions_per_week": 1,
-      "minutes_per_session": 120,
-      "min_session_minutes": null,
-      "max_session_minutes": null
-    },
-    {
-      "school_class": "6ème A",
-      "subject": "Education Civique",
-      "total_minutes_per_week": 60,
-      "mode": "auto",
-      "sessions_per_week": null,
-      "minutes_per_session": null,
-      "min_session_minutes": 60,
-      "max_session_minutes": 60
-    },
-    {
-      "school_class": "6ème B",
-      "subject": "Education Civique",
-      "total_minutes_per_week": 60,
-      "mode": "auto",
-      "sessions_per_week": null,
-      "minutes_per_session": null,
-      "min_session_minutes": 60,
-      "max_session_minutes": 60
-    },
-    {
-      "school_class": "6ème A",
-      "subject": "Arts Plastiques",
-      "total_minutes_per_week": 60,
-      "mode": "auto",
-      "sessions_per_week": null,
-      "minutes_per_session": null,
-      "min_session_minutes": 60,
-      "max_session_minutes": 60
-    },
-    {
-      "school_class": "6ème B",
-      "subject": "Arts Plastiques",
-      "total_minutes_per_week": 60,
-      "mode": "auto",
-      "sessions_per_week": null,
-      "minutes_per_session": null,
-      "min_session_minutes": 60,
-      "max_session_minutes": 60
-    },
-    {
-      "school_class": "6ème A",
-      "subject": "Musique",
-      "total_minutes_per_week": 60,
-      "mode": "auto",
-      "sessions_per_week": null,
-      "minutes_per_session": null,
-      "min_session_minutes": 60,
-      "max_session_minutes": 60
-    },
-    {
-      "school_class": "6ème B",
-      "subject": "Musique",
-      "total_minutes_per_week": 60,
-      "mode": "auto",
-      "sessions_per_week": null,
-      "minutes_per_session": null,
-      "min_session_minutes": 60,
-      "max_session_minutes": 60
-    },
-    {
-      "school_class": "6ème A",
-      "subject": "Informatique",
-      "total_minutes_per_week": 60,
-      "mode": "auto",
-      "sessions_per_week": null,
-      "minutes_per_session": null,
-      "min_session_minutes": 60,
-      "max_session_minutes": 60
-    },
-    {
-      "school_class": "6ème B",
-      "subject": "Informatique",
-      "total_minutes_per_week": 60,
-      "mode": "auto",
-      "sessions_per_week": null,
-      "minutes_per_session": null,
-      "min_session_minutes": 60,
-      "max_session_minutes": 60
-    },
-    {
-      "school_class": "5ème A",
-      "subject": "Mathématiques",
-      "total_minutes_per_week": 300,
-      "mode": "auto",
-      "sessions_per_week": null,
-      "minutes_per_session": null,
-      "min_session_minutes": 60,
-      "max_session_minutes": 120
-    },
-    {
-      "school_class": "5ème B",
-      "subject": "Mathématiques",
-      "total_minutes_per_week": 300,
-      "mode": "auto",
-      "sessions_per_week": null,
-      "minutes_per_session": null,
-      "min_session_minutes": 60,
-      "max_session_minutes": 120
-    },
-    {
-      "school_class": "5ème A",
-      "subject": "Français",
-      "total_minutes_per_week": 300,
-      "mode": "auto",
-      "sessions_per_week": null,
-      "minutes_per_session": null,
-      "min_session_minutes": 60,
-      "max_session_minutes": 120
-    },
-    {
-      "school_class": "5ème B",
-      "subject": "Français",
-      "total_minutes_per_week": 300,
-      "mode": "auto",
-      "sessions_per_week": null,
-      "minutes_per_session": null,
-      "min_session_minutes": 60,
-      "max_session_minutes": 120
-    },
-    {
-      "school_class": "5ème A",
-      "subject": "Anglais",
-      "total_minutes_per_week": 180,
-      "mode": "auto",
-      "sessions_per_week": null,
-      "minutes_per_session": null,
-      "min_session_minutes": 60,
-      "max_session_minutes": 120
-    },
-    {
-      "school_class": "5ème B",
-      "subject": "Anglais",
-      "total_minutes_per_week": 180,
-      "mode": "auto",
-      "sessions_per_week": null,
-      "minutes_per_session": null,
-      "min_session_minutes": 60,
-      "max_session_minutes": 120
-    },
-    {
-      "school_class": "5ème A",
-      "subject": "SVT",
-      "total_minutes_per_week": 120,
-      "mode": "manual",
-      "sessions_per_week": 1,
-      "minutes_per_session": 120,
-      "min_session_minutes": null,
-      "max_session_minutes": null
-    },
-    {
-      "school_class": "5ème B",
-      "subject": "SVT",
-      "total_minutes_per_week": 120,
-      "mode": "manual",
-      "sessions_per_week": 1,
-      "minutes_per_session": 120,
-      "min_session_minutes": null,
-      "max_session_minutes": null
-    },
-    {
-      "school_class": "5ème A",
-      "subject": "Physique-Chimie",
-      "total_minutes_per_week": 120,
-      "mode": "auto",
-      "sessions_per_week": null,
-      "minutes_per_session": null,
-      "min_session_minutes": 60,
-      "max_session_minutes": 120
-    },
-    {
-      "school_class": "5ème B",
-      "subject": "Physique-Chimie",
-      "total_minutes_per_week": 120,
-      "mode": "auto",
-      "sessions_per_week": null,
-      "minutes_per_session": null,
-      "min_session_minutes": 60,
-      "max_session_minutes": 120
-    },
-    {
-      "school_class": "5ème A",
-      "subject": "Histoire-Géographie",
-      "total_minutes_per_week": 180,
-      "mode": "auto",
-      "sessions_per_week": null,
-      "minutes_per_session": null,
-      "min_session_minutes": 60,
-      "max_session_minutes": 120
-    },
-    {
-      "school_class": "5ème B",
-      "subject": "Histoire-Géographie",
-      "total_minutes_per_week": 180,
-      "mode": "auto",
-      "sessions_per_week": null,
-      "minutes_per_session": null,
-      "min_session_minutes": 60,
-      "max_session_minutes": 120
-    },
-    {
-      "school_class": "5ème A",
-      "subject": "EPS",
-      "total_minutes_per_week": 120,
-      "mode": "manual",
-      "sessions_per_week": 1,
-      "minutes_per_session": 120,
-      "min_session_minutes": null,
-      "max_session_minutes": null
-    },
-    {
-      "school_class": "5ème B",
-      "subject": "EPS",
-      "total_minutes_per_week": 120,
-      "mode": "manual",
-      "sessions_per_week": 1,
-      "minutes_per_session": 120,
-      "min_session_minutes": null,
-      "max_session_minutes": null
-    },
-    {
-      "school_class": "5ème A",
-      "subject": "Education Civique",
-      "total_minutes_per_week": 60,
-      "mode": "auto",
-      "sessions_per_week": null,
-      "minutes_per_session": null,
-      "min_session_minutes": 60,
-      "max_session_minutes": 60
-    },
-    {
-      "school_class": "5ème B",
-      "subject": "Education Civique",
-      "total_minutes_per_week": 60,
-      "mode": "auto",
-      "sessions_per_week": null,
-      "minutes_per_session": null,
-      "min_session_minutes": 60,
-      "max_session_minutes": 60
-    },
-    {
-      "school_class": "5ème A",
-      "subject": "Arts Plastiques",
-      "total_minutes_per_week": 60,
-      "mode": "auto",
-      "sessions_per_week": null,
-      "minutes_per_session": null,
-      "min_session_minutes": 60,
-      "max_session_minutes": 60
-    },
-    {
-      "school_class": "5ème B",
-      "subject": "Arts Plastiques",
-      "total_minutes_per_week": 60,
-      "mode": "auto",
-      "sessions_per_week": null,
-      "minutes_per_session": null,
-      "min_session_minutes": 60,
-      "max_session_minutes": 60
-    },
-    {
-      "school_class": "5ème A",
-      "subject": "Musique",
-      "total_minutes_per_week": 60,
-      "mode": "auto",
-      "sessions_per_week": null,
-      "minutes_per_session": null,
-      "min_session_minutes": 60,
-      "max_session_minutes": 60
-    },
-    {
-      "school_class": "5ème B",
-      "subject": "Musique",
-      "total_minutes_per_week": 60,
-      "mode": "auto",
-      "sessions_per_week": null,
-      "minutes_per_session": null,
-      "min_session_minutes": 60,
-      "max_session_minutes": 60
-    },
-    {
-      "school_class": "5ème A",
-      "subject": "Informatique",
-      "total_minutes_per_week": 60,
-      "mode": "auto",
-      "sessions_per_week": null,
-      "minutes_per_session": null,
-      "min_session_minutes": 60,
-      "max_session_minutes": 60
-    },
-    {
-      "school_class": "5ème B",
-      "subject": "Informatique",
-      "total_minutes_per_week": 60,
-      "mode": "auto",
-      "sessions_per_week": null,
-      "minutes_per_session": null,
-      "min_session_minutes": 60,
-      "max_session_minutes": 60
-    },
-    {
-      "school_class": "4ème A",
-      "subject": "Mathématiques",
-      "total_minutes_per_week": 300,
-      "mode": "auto",
-      "sessions_per_week": null,
-      "minutes_per_session": null,
-      "min_session_minutes": 60,
-      "max_session_minutes": 120
-    },
-    {
-      "school_class": "4ème B",
-      "subject": "Mathématiques",
-      "total_minutes_per_week": 300,
-      "mode": "auto",
-      "sessions_per_week": null,
-      "minutes_per_session": null,
-      "min_session_minutes": 60,
-      "max_session_minutes": 120
-    },
-    {
-      "school_class": "4ème A",
-      "subject": "Français",
-      "total_minutes_per_week": 300,
-      "mode": "auto",
-      "sessions_per_week": null,
-      "minutes_per_session": null,
-      "min_session_minutes": 60,
-      "max_session_minutes": 120
-    },
-    {
-      "school_class": "4ème B",
-      "subject": "Français",
-      "total_minutes_per_week": 300,
-      "mode": "auto",
-      "sessions_per_week": null,
-      "minutes_per_session": null,
-      "min_session_minutes": 60,
-      "max_session_minutes": 120
-    },
-    {
-      "school_class": "4ème A",
-      "subject": "Anglais",
-      "total_minutes_per_week": 240,
-      "mode": "auto",
-      "sessions_per_week": null,
-      "minutes_per_session": null,
-      "min_session_minutes": 60,
-      "max_session_minutes": 120
-    },
-    {
-      "school_class": "4ème B",
-      "subject": "Anglais",
-      "total_minutes_per_week": 240,
-      "mode": "auto",
-      "sessions_per_week": null,
-      "minutes_per_session": null,
-      "min_session_minutes": 60,
-      "max_session_minutes": 120
-    },
-    {
-      "school_class": "4ème A",
-      "subject": "SVT",
-      "total_minutes_per_week": 120,
-      "mode": "manual",
-      "sessions_per_week": 1,
-      "minutes_per_session": 120,
-      "min_session_minutes": null,
-      "max_session_minutes": null
-    },
-    {
-      "school_class": "4ème B",
-      "subject": "SVT",
-      "total_minutes_per_week": 120,
-      "mode": "manual",
-      "sessions_per_week": 1,
-      "minutes_per_session": 120,
-      "min_session_minutes": null,
-      "max_session_minutes": null
-    },
-    {
-      "school_class": "4ème A",
-      "subject": "Physique-Chimie",
-      "total_minutes_per_week": 180,
-      "mode": "auto",
-      "sessions_per_week": null,
-      "minutes_per_session": null,
-      "min_session_minutes": 60,
-      "max_session_minutes": 120
-    },
-    {
-      "school_class": "4ème B",
-      "subject": "Physique-Chimie",
-      "total_minutes_per_week": 180,
-      "mode": "auto",
-      "sessions_per_week": null,
-      "minutes_per_session": null,
-      "min_session_minutes": 60,
-      "max_session_minutes": 120
-    },
-    {
-      "school_class": "4ème A",
-      "subject": "Histoire-Géographie",
-      "total_minutes_per_week": 180,
-      "mode": "auto",
-      "sessions_per_week": null,
-      "minutes_per_session": null,
-      "min_session_minutes": 60,
-      "max_session_minutes": 120
-    },
-    {
-      "school_class": "4ème B",
-      "subject": "Histoire-Géographie",
-      "total_minutes_per_week": 180,
-      "mode": "auto",
-      "sessions_per_week": null,
-      "minutes_per_session": null,
-      "min_session_minutes": 60,
-      "max_session_minutes": 120
-    },
-    {
-      "school_class": "4ème A",
-      "subject": "EPS",
-      "total_minutes_per_week": 120,
-      "mode": "manual",
-      "sessions_per_week": 1,
-      "minutes_per_session": 120,
-      "min_session_minutes": null,
-      "max_session_minutes": null
-    },
-    {
-      "school_class": "4ème B",
-      "subject": "EPS",
-      "total_minutes_per_week": 120,
-      "mode": "manual",
-      "sessions_per_week": 1,
-      "minutes_per_session": 120,
-      "min_session_minutes": null,
-      "max_session_minutes": null
-    },
-    {
-      "school_class": "4ème A",
-      "subject": "Education Civique",
-      "total_minutes_per_week": 60,
-      "mode": "auto",
-      "sessions_per_week": null,
-      "minutes_per_session": null,
-      "min_session_minutes": 60,
-      "max_session_minutes": 60
-    },
-    {
-      "school_class": "4ème B",
-      "subject": "Education Civique",
-      "total_minutes_per_week": 60,
-      "mode": "auto",
-      "sessions_per_week": null,
-      "minutes_per_session": null,
-      "min_session_minutes": 60,
-      "max_session_minutes": 60
-    },
-    {
-      "school_class": "4ème A",
-      "subject": "Arts Plastiques",
-      "total_minutes_per_week": 60,
-      "mode": "auto",
-      "sessions_per_week": null,
-      "minutes_per_session": null,
-      "min_session_minutes": 60,
-      "max_session_minutes": 60
-    },
-    {
-      "school_class": "4ème B",
-      "subject": "Arts Plastiques",
-      "total_minutes_per_week": 60,
-      "mode": "auto",
-      "sessions_per_week": null,
-      "minutes_per_session": null,
-      "min_session_minutes": 60,
-      "max_session_minutes": 60
-    },
-    {
-      "school_class": "4ème A",
-      "subject": "Informatique",
-      "total_minutes_per_week": 60,
-      "mode": "auto",
-      "sessions_per_week": null,
-      "minutes_per_session": null,
-      "min_session_minutes": 60,
-      "max_session_minutes": 60
-    },
-    {
-      "school_class": "4ème B",
-      "subject": "Informatique",
-      "total_minutes_per_week": 60,
-      "mode": "auto",
-      "sessions_per_week": null,
-      "minutes_per_session": null,
-      "min_session_minutes": 60,
-      "max_session_minutes": 60
-    },
-    {
-      "school_class": "3ème A",
-      "subject": "Mathématiques",
-      "total_minutes_per_week": 300,
-      "mode": "auto",
-      "sessions_per_week": null,
-      "minutes_per_session": null,
-      "min_session_minutes": 60,
-      "max_session_minutes": 120
-    },
-    {
-      "school_class": "3ème B",
-      "subject": "Mathématiques",
-      "total_minutes_per_week": 300,
-      "mode": "auto",
-      "sessions_per_week": null,
-      "minutes_per_session": null,
-      "min_session_minutes": 60,
-      "max_session_minutes": 120
-    },
-    {
-      "school_class": "3ème A",
-      "subject": "Français",
-      "total_minutes_per_week": 300,
-      "mode": "auto",
-      "sessions_per_week": null,
-      "minutes_per_session": null,
-      "min_session_minutes": 60,
-      "max_session_minutes": 120
-    },
-    {
-      "school_class": "3ème B",
-      "subject": "Français",
-      "total_minutes_per_week": 300,
-      "mode": "auto",
-      "sessions_per_week": null,
-      "minutes_per_session": null,
-      "min_session_minutes": 60,
-      "max_session_minutes": 120
-    },
-    {
-      "school_class": "3ème A",
-      "subject": "Anglais",
-      "total_minutes_per_week": 240,
-      "mode": "auto",
-      "sessions_per_week": null,
-      "minutes_per_session": null,
-      "min_session_minutes": 60,
-      "max_session_minutes": 120
-    },
-    {
-      "school_class": "3ème B",
-      "subject": "Anglais",
-      "total_minutes_per_week": 240,
-      "mode": "auto",
-      "sessions_per_week": null,
-      "minutes_per_session": null,
-      "min_session_minutes": 60,
-      "max_session_minutes": 120
-    },
-    {
-      "school_class": "3ème A",
-      "subject": "SVT",
-      "total_minutes_per_week": 180,
-      "mode": "manual",
       "sessions_per_week": 2,
-      "minutes_per_session": 90,
-      "min_session_minutes": null,
-      "max_session_minutes": null
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "6ème B",
+      "subject": "Physique-Chimie",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "6ème A",
+      "subject": "Histoire-Géographie",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "6ème B",
+      "subject": "Histoire-Géographie",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "6ème A",
+      "subject": "EPS",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "6ème B",
+      "subject": "EPS",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "6ème A",
+      "subject": "Education Civique",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "6ème B",
+      "subject": "Education Civique",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "6ème A",
+      "subject": "Arts Plastiques",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "6ème B",
+      "subject": "Arts Plastiques",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "6ème A",
+      "subject": "Musique",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "6ème B",
+      "subject": "Musique",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "6ème A",
+      "subject": "Informatique",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "6ème B",
+      "subject": "Informatique",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "5ème A",
+      "subject": "Mathématiques",
+      "total_minutes_per_week": 300,
+      "sessions_per_week": 5,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "5ème B",
+      "subject": "Mathématiques",
+      "total_minutes_per_week": 300,
+      "sessions_per_week": 5,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "5ème A",
+      "subject": "Français",
+      "total_minutes_per_week": 300,
+      "sessions_per_week": 5,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "5ème B",
+      "subject": "Français",
+      "total_minutes_per_week": 300,
+      "sessions_per_week": 5,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "5ème A",
+      "subject": "Anglais",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "5ème B",
+      "subject": "Anglais",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "5ème A",
+      "subject": "SVT",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "5ème B",
+      "subject": "SVT",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "5ème A",
+      "subject": "Physique-Chimie",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "5ème B",
+      "subject": "Physique-Chimie",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "5ème A",
+      "subject": "Histoire-Géographie",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "5ème B",
+      "subject": "Histoire-Géographie",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "5ème A",
+      "subject": "EPS",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "5ème B",
+      "subject": "EPS",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "5ème A",
+      "subject": "Education Civique",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "5ème B",
+      "subject": "Education Civique",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "5ème A",
+      "subject": "Arts Plastiques",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "5ème B",
+      "subject": "Arts Plastiques",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "5ème A",
+      "subject": "Musique",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "5ème B",
+      "subject": "Musique",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "5ème A",
+      "subject": "Informatique",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "5ème B",
+      "subject": "Informatique",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "4ème A",
+      "subject": "Mathématiques",
+      "total_minutes_per_week": 300,
+      "sessions_per_week": 5,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "4ème B",
+      "subject": "Mathématiques",
+      "total_minutes_per_week": 300,
+      "sessions_per_week": 5,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "4ème A",
+      "subject": "Français",
+      "total_minutes_per_week": 300,
+      "sessions_per_week": 5,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "4ème B",
+      "subject": "Français",
+      "total_minutes_per_week": 300,
+      "sessions_per_week": 5,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "4ème A",
+      "subject": "Anglais",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "4ème B",
+      "subject": "Anglais",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "4ème A",
+      "subject": "SVT",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "4ème B",
+      "subject": "SVT",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "4ème A",
+      "subject": "Physique-Chimie",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "4ème B",
+      "subject": "Physique-Chimie",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "4ème A",
+      "subject": "Histoire-Géographie",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "4ème B",
+      "subject": "Histoire-Géographie",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "4ème A",
+      "subject": "EPS",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "4ème B",
+      "subject": "EPS",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "4ème A",
+      "subject": "Education Civique",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "4ème B",
+      "subject": "Education Civique",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "4ème A",
+      "subject": "Arts Plastiques",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "4ème B",
+      "subject": "Arts Plastiques",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "4ème A",
+      "subject": "Informatique",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "4ème B",
+      "subject": "Informatique",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "3ème A",
+      "subject": "Mathématiques",
+      "total_minutes_per_week": 300,
+      "sessions_per_week": 5,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "3ème B",
+      "subject": "Mathématiques",
+      "total_minutes_per_week": 300,
+      "sessions_per_week": 5,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "3ème A",
+      "subject": "Français",
+      "total_minutes_per_week": 300,
+      "sessions_per_week": 5,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "3ème B",
+      "subject": "Français",
+      "total_minutes_per_week": 300,
+      "sessions_per_week": 5,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "3ème A",
+      "subject": "Anglais",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "3ème B",
+      "subject": "Anglais",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "3ème A",
+      "subject": "SVT",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 2,
+      "minutes_per_session": 90
     },
     {
       "school_class": "3ème B",
       "subject": "SVT",
       "total_minutes_per_week": 180,
-      "mode": "manual",
       "sessions_per_week": 2,
-      "minutes_per_session": 90,
-      "min_session_minutes": null,
-      "max_session_minutes": null
+      "minutes_per_session": 90
     },
     {
       "school_class": "3ème A",
       "subject": "Physique-Chimie",
       "total_minutes_per_week": 180,
-      "mode": "auto",
-      "sessions_per_week": null,
-      "minutes_per_session": null,
-      "min_session_minutes": 60,
-      "max_session_minutes": 120
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
     },
     {
       "school_class": "3ème B",
       "subject": "Physique-Chimie",
       "total_minutes_per_week": 180,
-      "mode": "auto",
-      "sessions_per_week": null,
-      "minutes_per_session": null,
-      "min_session_minutes": 60,
-      "max_session_minutes": 120
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
     },
     {
       "school_class": "3ème A",
       "subject": "Histoire-Géographie",
       "total_minutes_per_week": 180,
-      "mode": "auto",
-      "sessions_per_week": null,
-      "minutes_per_session": null,
-      "min_session_minutes": 60,
-      "max_session_minutes": 120
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
     },
     {
       "school_class": "3ème B",
       "subject": "Histoire-Géographie",
       "total_minutes_per_week": 180,
-      "mode": "auto",
-      "sessions_per_week": null,
-      "minutes_per_session": null,
-      "min_session_minutes": 60,
-      "max_session_minutes": 120
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
     },
     {
       "school_class": "3ème A",
       "subject": "EPS",
       "total_minutes_per_week": 120,
-      "mode": "manual",
       "sessions_per_week": 1,
-      "minutes_per_session": 120,
-      "min_session_minutes": null,
-      "max_session_minutes": null
+      "minutes_per_session": 120
     },
     {
       "school_class": "3ème B",
       "subject": "EPS",
       "total_minutes_per_week": 120,
-      "mode": "manual",
       "sessions_per_week": 1,
-      "minutes_per_session": 120,
-      "min_session_minutes": null,
-      "max_session_minutes": null
+      "minutes_per_session": 120
     },
     {
       "school_class": "3ème A",
       "subject": "Education Civique",
       "total_minutes_per_week": 60,
-      "mode": "auto",
-      "sessions_per_week": null,
-      "minutes_per_session": null,
-      "min_session_minutes": 60,
-      "max_session_minutes": 60
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
     },
     {
       "school_class": "3ème B",
       "subject": "Education Civique",
       "total_minutes_per_week": 60,
-      "mode": "auto",
-      "sessions_per_week": null,
-      "minutes_per_session": null,
-      "min_session_minutes": 60,
-      "max_session_minutes": 60
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
     },
     {
       "school_class": "3ème A",
       "subject": "Informatique",
       "total_minutes_per_week": 60,
-      "mode": "auto",
-      "sessions_per_week": null,
-      "minutes_per_session": null,
-      "min_session_minutes": 60,
-      "max_session_minutes": 60
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
     },
     {
       "school_class": "3ème B",
       "subject": "Informatique",
       "total_minutes_per_week": 60,
-      "mode": "auto",
-      "sessions_per_week": null,
-      "minutes_per_session": null,
-      "min_session_minutes": 60,
-      "max_session_minutes": 60
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    }
+  ],
+  "constraints": [
+    {
+      "id": "H1",
+      "type": "hard",
+      "category": "start_time",
+      "description_fr": "Toutes les classes commencent au créneau 08h00.",
+      "priority": 5,
+      "parameters": {
+        "hour": "08:00"
+      }
+    },
+    {
+      "id": "H4",
+      "type": "hard",
+      "category": "max_consecutive",
+      "description_fr": "Maximum 4 heures consécutives par classe.",
+      "priority": 5,
+      "parameters": {
+        "max_hours": 4
+      }
+    },
+    {
+      "id": "H10",
+      "type": "hard",
+      "category": "one_teacher_per_subject_per_class",
+      "description_fr": "Un seul enseignant assigné par matière et par classe sur l'année entière.",
+      "priority": 5,
+      "parameters": {}
+    },
+    {
+      "id": "H11",
+      "type": "hard",
+      "category": "day_off",
+      "description_fr": "Aucun cours le samedi après-midi.",
+      "priority": 5,
+      "parameters": {
+        "day": "samedi",
+        "session": "Après-midi"
+      }
+    },
+    {
+      "id": "S3",
+      "type": "soft",
+      "category": "balanced_daily_load",
+      "description_fr": "Répartition équilibrée des heures de cours par jour.",
+      "priority": 7,
+      "parameters": {}
+    },
+    {
+      "id": "S4",
+      "type": "soft",
+      "category": "subject_spread",
+      "description_fr": "Les matières doivent être réparties sur toute la semaine (pas deux fois le même jour).",
+      "priority": 8,
+      "parameters": {}
+    },
+    {
+      "id": "S5",
+      "type": "soft",
+      "category": "heavy_subjects_morning",
+      "description_fr": "Les matières lourdes (Maths, Français) sont placées de préférence le matin.",
+      "priority": 6,
+      "parameters": {
+        "subjects": [
+          "Mathématiques",
+          "Français"
+        ],
+        "preferred_session": "Matin"
+      }
     }
   ],
   "teacher_assignments": [
@@ -1592,77 +1481,6 @@
       "teacher": "M. Ba",
       "subject": "Informatique",
       "school_class": "3ème B"
-    }
-  ],
-  "constraints": [
-    {
-      "id": "H1",
-      "type": "hard",
-      "category": "start_time",
-      "description_fr": "Toutes les classes commencent au créneau 08h00.",
-      "priority": 5,
-      "parameters": {
-        "hour": "08:00"
-      }
-    },
-    {
-      "id": "H4",
-      "type": "hard",
-      "category": "max_consecutive",
-      "description_fr": "Maximum 4 heures consécutives par classe.",
-      "priority": 5,
-      "parameters": {
-        "max_hours": 4
-      }
-    },
-    {
-      "id": "H10",
-      "type": "hard",
-      "category": "one_teacher_per_subject_per_class",
-      "description_fr": "Un seul enseignant assigné par matière et par classe sur l'année entière.",
-      "priority": 5,
-      "parameters": {}
-    },
-    {
-      "id": "H11",
-      "type": "hard",
-      "category": "day_off",
-      "description_fr": "Aucun cours le samedi après-midi.",
-      "priority": 5,
-      "parameters": {
-        "day": "samedi",
-        "session": "Après-midi"
-      }
-    },
-    {
-      "id": "S3",
-      "type": "soft",
-      "category": "balanced_daily_load",
-      "description_fr": "Répartition équilibrée des heures de cours par jour.",
-      "priority": 7,
-      "parameters": {}
-    },
-    {
-      "id": "S4",
-      "type": "soft",
-      "category": "subject_spread",
-      "description_fr": "Les matières doivent être réparties sur toute la semaine (pas deux fois le même jour).",
-      "priority": 8,
-      "parameters": {}
-    },
-    {
-      "id": "S5",
-      "type": "soft",
-      "category": "heavy_subjects_morning",
-      "description_fr": "Les matières lourdes (Maths, Français) sont placées de préférence le matin.",
-      "priority": 6,
-      "parameters": {
-        "subjects": [
-          "Mathématiques",
-          "Français"
-        ],
-        "preferred_session": "Matin"
-      }
     }
   ]
 }

@@ -171,22 +171,29 @@ class TimetableSolver:
         # ==================================================================
         # Step 1 — Schedule structure
         # ==================================================================
-        day_slot_times: dict[str, list[tuple[str, str]]] = {d: [] for d in tc.days}
+        # Extract day names from DayConfig objects
+        day_names = [d.name for d in tc.days]
+        day_slot_times: dict[str, list[tuple[str, str]]] = {d: [] for d in day_names}
         for day, start, end in tc.get_all_slots():
             day_slot_times[day].append((start, end))
 
         n_slots_per_day = max(len(v) for v in day_slot_times.values())
-        day_idx_map     = {d: i for i, d in enumerate(tc.days)}
+        day_idx_map     = {d: i for i, d in enumerate(day_names)}
 
         # Number of morning slots (first session block) — used by soft S5.
-        first_day = tc.days[0]
-        morning_end     = tc.sessions[0].end_time if tc.sessions else "12:00"
+        first_day = day_names[0]
+        first_day_sessions = tc.days[0].sessions
+        morning_end = first_day_sessions[0].end_time if first_day_sessions else "12:00"
         n_morning_slots = sum(
             1 for _st, en in day_slot_times[first_day] if en <= morning_end
         )
 
-        # Session name → SessionConfig for blocked-session checks
-        session_name_map = {s.name: s for s in tc.sessions}
+        # Session name → SessionConfig for blocked-session checks (aggregate from all days)
+        session_name_map: dict[str, SessionConfig] = {}
+        for day_config in tc.days:
+            for sess in day_config.sessions:
+                if sess.name not in session_name_map:
+                    session_name_map[sess.name] = sess
 
         # ==================================================================
         # Step 2 — Curriculum index + session specs (class-based)
@@ -372,7 +379,7 @@ class TimetableSolver:
                     )
                     domain: list[int] = []
 
-                    for d_idx, day in enumerate(tc.days):
+                    for d_idx, day in enumerate(day_names):
                         # H3: entire day blocked?
                         if "all" in blocked_day_info.get(day, set()):
                             continue
@@ -672,7 +679,7 @@ class TimetableSolver:
             global_pos = solver.value(start_vars[sess.idx])
             d_idx      = global_pos // n_slots_per_day
             s          = global_pos % n_slots_per_day
-            day        = tc.days[d_idx]
+            day        = day_names[d_idx]
             start_time = day_slot_times[day][s][0]
             end_time   = day_slot_times[day][s + sess.dur_slots - 1][1]
 
@@ -694,7 +701,7 @@ class TimetableSolver:
                 end_time=end_time,
             ))
 
-        day_order = {d: i for i, d in enumerate(tc.days)}
+        day_order = {d: i for i, d in enumerate(day_names)}
         assignments.sort(
             key=lambda a: (a.school_class, day_order[a.day], a.start_time)
         )

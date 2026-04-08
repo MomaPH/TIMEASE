@@ -86,7 +86,7 @@ def _build_timetable(
     data: SchoolData,
 ) -> Table:
     """Build a reportlab Table for one class or teacher."""
-    days = data.timeslot_config.days
+    days = [d.name for d in data.timeslot_config.days]
     base_min = data.timeslot_config.base_unit_minutes
     subject_colors = {s.name: s.color for s in data.subjects}
     day_to_col = {day: i + 1 for i, day in enumerate(days)}
@@ -100,8 +100,10 @@ def _build_timetable(
     }
 
     # Build ordered grid: (start, end) tuples or None for session separators
+    # Use first day's sessions as reference (all days typically share same structure)
     grid: list[tuple[str, str] | None] = []
-    for session in data.timeslot_config.sessions:
+    first_day_sessions = data.timeslot_config.days[0].sessions if data.timeslot_config.days else []
+    for session in first_day_sessions:
         for s, e in _time_slots(session.start_time, session.end_time, base_min):
             grid.append((s, e))
         grid.append(None)

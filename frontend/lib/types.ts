@@ -13,12 +13,30 @@ export interface PendingChange {
   label: string     // human label e.g. "3 enseignants"
 }
 
+export interface SessionConfig {
+  name: string
+  start_time: string
+  end_time: string
+}
+
+export interface BreakConfig {
+  name: string
+  start_time: string
+  end_time: string
+}
+
+export interface DayConfig {
+  name: string
+  sessions: SessionConfig[]
+  breaks: BreakConfig[]
+}
+
 export interface SchoolData {
   name?: string
   city?: string
   academic_year?: string
-  days?: string[]
-  sessions?: { name: string; start_time: string; end_time: string }[]
+  // New format: days is list of DayConfig objects
+  days?: DayConfig[]
   base_unit_minutes?: number
   teachers?: Record<string, any>[]
   classes?: Record<string, any>[]
@@ -80,9 +98,11 @@ export const STEPS: Step[] = [
 export function getStepStatus(stepIdx: number, data: SchoolData, assignments: any[]): StepStatus {
   switch (stepIdx) {
     case 0: {
-      const hasDays = (data.days?.length ?? 0) > 0
-      const hasSessions = (data.sessions?.length ?? 0) > 0
-      if (data.name && hasDays && hasSessions) return 'done'
+      // New format: days is array of DayConfig objects
+      const days = data.days ?? []
+      const hasDays = days.length > 0
+      const hasSessionsInDays = days.some(d => d.sessions?.length > 0)
+      if (data.name && hasDays && hasSessionsInDays) return 'done'
       if (data.name || hasDays) return 'partial'
       return 'empty'
     }
@@ -172,7 +192,7 @@ export function getChecklistItems(data: SchoolData, assignments: any[]) {
   const subjects   = data.subjects   ?? []
   const curriculum = data.curriculum ?? []
   const days       = data.days       ?? []
-  const sess       = data.sessions   ?? []
+  const hasSessionsInDays = days.some(d => d.sessions?.length > 0)
 
   // Class-based curriculum: check each (school_class, subject) pair has an assignment
   const pairSet = new Set(assignments.map(a => `${a.school_class}__${a.subject}`))
@@ -181,7 +201,7 @@ export function getChecklistItems(data: SchoolData, assignments: any[]) {
   )
 
   return [
-    { label: 'École configurée (nom, jours, sessions)', done: !!(data.name && days.length > 0 && sess.length > 0) },
+    { label: 'École configurée (nom, jours, sessions)', done: !!(data.name && days.length > 0 && hasSessionsInDays) },
     { label: 'Au moins 1 classe',                       done: classes.length > 0    },
     { label: 'Au moins 1 enseignant',                   done: teachers.length > 0   },
     { label: 'Au moins 1 salle',                        done: rooms.length > 0      },

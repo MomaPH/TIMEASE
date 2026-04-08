@@ -438,8 +438,7 @@ class ConflictAnalyzer:
                             fix_action={"action": "extend_schedule"},
                             impact_fr=(
                                 f"Augmente la capacité hebdomadaire "
-                                f"({self._tc.base_unit_minutes * len(self._tc.sessions)} "
-                                f"min/jour supplémentaire possible)."
+                                f"({self._tc.base_unit_minutes} min/unité supplémentaire possible)."
                             ),
                             ease=3,
                         ),

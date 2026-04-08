@@ -14,6 +14,7 @@ from openpyxl.worksheet.datavalidation import DataValidation
 from timease.engine.models import (
     Constraint,
     CurriculumEntry,
+    DayConfig,
     Room,
     School,
     SchoolClass,
@@ -398,7 +399,7 @@ def _parse_horaires(wb: Any, errors: list[str]) -> TimeslotConfig | None:
         errors.append(f"{sn} ligne 20 : unité de base invalide « {raw_unit} ».")
         base_unit = 30
 
-    return TimeslotConfig(days=days, sessions=sessions, base_unit_minutes=base_unit)
+    return TimeslotConfig.from_simple(day_names=days, sessions=sessions, base_unit_minutes=base_unit)
 
 
 def _parse_subjects(wb: Any, errors: list[str]) -> list[Subject]:
