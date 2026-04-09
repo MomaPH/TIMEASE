@@ -92,12 +92,10 @@ export function useSession() {
   const resetSession = useCallback(async () => {
     const sid = await createSession()
     localStorage.setItem(SESSION_KEY, sid)
-    // Clear per-session keys
+    // Clear per-session timetable key
     const old = sessionId
     if (old) {
       localStorage.removeItem(timetableKey(old))
-      localStorage.removeItem(`timease_messages_${old}`)
-      localStorage.removeItem(`timease_aihistory_${old}`)
     }
     setSessionId(sid)
     setSchoolData({})

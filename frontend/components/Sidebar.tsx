@@ -1,7 +1,7 @@
 'use client'
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
-import { LayoutDashboard, Table2, Users, Home, Sun, Moon, X, Download, MessageSquare, Calendar } from 'lucide-react'
+import { LayoutDashboard, Table2, Users, Home, Sun, Moon, X, Download, Calendar } from 'lucide-react'
 import { useTheme } from 'next-themes'
 import { useState, useEffect } from 'react'
 
@@ -13,7 +13,6 @@ const NAV_MAIN = [
 
 const NAV_TOOLS = [
   { href: '/exports',       label: 'Exports',       icon: Download },
-  { href: '/collaboration', label: 'Collaboration', icon: Users },
 ]
 
 interface Props {

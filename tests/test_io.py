@@ -8,7 +8,7 @@ All export tests share one module-scoped solver run to keep the suite fast.
 from __future__ import annotations
 
 import dataclasses
-import inspect
+
 import tempfile
 from pathlib import Path
 
@@ -229,46 +229,3 @@ def test_file_parser_unknown_format(tmp_path: Path) -> None:
         f"Expected 'non supporté' in content, got: {content!r}"
     )
 
-
-# ---------------------------------------------------------------------------
-# AI chat structure test  (no API call)
-# ---------------------------------------------------------------------------
-
-def test_ai_chat_structure() -> None:
-    """_build_system_prompt and stream_chat/process_chat exist with correct signatures."""
-    from timease.api.ai_chat import _build_system_prompt, stream_chat, process_chat, TOOLS
-
-    # TOOLS list contains expected save tools
-    tool_names = {t["name"] for t in TOOLS}
-    assert "save_school_info"  in tool_names
-    assert "save_teachers"     in tool_names
-    assert "save_classes"      in tool_names
-    assert "propose_options"   in tool_names
-    assert "trigger_generation" in tool_names
-    assert "set_current_step"  in tool_names
-
-    # _build_system_prompt returns a list of content blocks with cache_control
-    blocks = _build_system_prompt({}, [])
-    assert isinstance(blocks, list)
-    assert len(blocks) >= 2
-    assert blocks[0]["cache_control"] == {"type": "ephemeral"}
-    full_text = " ".join(b["text"] for b in blocks)
-    assert "TIMEASE" in full_text
-    assert len(full_text) > 100
-
-    # Conflict context is injected when reports provided
-    report = {"description_fr": "Test conflict", "severity": "error", "step_to_fix": 2, "fix_options": []}
-    blocks_conflict = _build_system_prompt({}, [], conflict_reports=[report])
-    full_conflict = " ".join(b["text"] for b in blocks_conflict)
-    assert "Test conflict" in full_conflict
-    assert "GÉNÉRATION" in full_conflict.upper()
-
-    # stream_chat and process_chat have expected parameters
-    stream_sig = inspect.signature(stream_chat)
-    assert "user_message"      in stream_sig.parameters
-    assert "school_data"       in stream_sig.parameters
-    assert "conflict_reports"  in stream_sig.parameters
-
-    proc_sig = inspect.signature(process_chat)
-    assert "user_message"      in proc_sig.parameters
-    assert "conflict_reports"  in proc_sig.parameters

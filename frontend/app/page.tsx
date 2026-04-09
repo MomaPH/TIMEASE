@@ -1,11 +1,11 @@
 import Link from 'next/link'
-import { CalendarDays, BrainCircuit, FileDown, Sparkles, ArrowRight } from 'lucide-react'
+import { CalendarDays, ClipboardList, FileDown, ArrowRight } from 'lucide-react'
 
 const FEATURES = [
   {
-    icon: BrainCircuit,
-    title: 'Assistant IA',
-    desc: 'Configurez votre école en langage naturel. L\'IA extrait automatiquement les données.',
+    icon: ClipboardList,
+    title: 'Formulaire intuitif',
+    desc: 'Saisissez vos classes, enseignants et contraintes étape par étape via un assistant de formulaire clair.',
   },
   {
     icon: CalendarDays,
@@ -15,7 +15,7 @@ const FEATURES = [
   {
     icon: FileDown,
     title: 'Export multi-format',
-    desc: 'PDF, Excel, Word, iCal, JSON — tous les formats pour tous les usages.',
+    desc: 'PDF, Excel, Word, Markdown — tous les formats pour tous les usages.',
   },
 ]
 
@@ -73,8 +73,7 @@ export default function HomePage() {
       {/* Trust badge */}
       <div className="mt-16 text-center">
         <div className="inline-flex items-center gap-2 px-4 py-2 bg-zinc-100 dark:bg-zinc-800 rounded-full text-sm text-zinc-600 dark:text-zinc-400">
-          <Sparkles size={14} className="text-amber-500" />
-          <span>Propulsé par Google OR-Tools & Claude AI</span>
+          <span>Propulsé par Google OR-Tools CP-SAT</span>
         </div>
       </div>
     </div>
