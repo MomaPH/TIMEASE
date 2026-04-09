@@ -197,7 +197,7 @@ class SessionData(BaseModel):
     last_solve_issues: dict = {}
 
 
-# ── Merge helpers ─────────────────────────────────────────────────────────────
+# ── Data merge helpers ────────────────────────────────────────────────────────
 
 def _upsert(existing: list, new_items: list, key: str) -> list:
     """Upsert new_items into existing by a single string key field."""

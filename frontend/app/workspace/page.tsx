@@ -63,7 +63,7 @@ function WorkspaceContent() {
   }
 
   return (
-    <div className="flex flex-col h-full min-h-screen bg-gray-50 dark:bg-zinc-950">
+    <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-zinc-950">
       {/* Top bar */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 flex-shrink-0">
         <h1 className="text-sm font-semibold text-gray-800 dark:text-gray-100">

@@ -1,6 +1,6 @@
 """
 Tests for timease/io modules: import, export (Excel/PDF/Word/Markdown),
-file_parser, and ai_setup class structure.
+and file_parser.
 
 All export tests share one module-scoped solver run to keep the suite fast.
 """
@@ -8,7 +8,6 @@ All export tests share one module-scoped solver run to keep the suite fast.
 from __future__ import annotations
 
 import dataclasses
-
 import tempfile
 from pathlib import Path
 
