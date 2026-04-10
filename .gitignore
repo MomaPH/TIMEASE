@@ -25,3 +25,4 @@ logs/
 # Test / editor caches
 .pytest_cache/
 timease/.claude/
+frontend/tsconfig.tsbuildinfo

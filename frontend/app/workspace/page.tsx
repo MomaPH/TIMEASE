@@ -9,7 +9,7 @@ import { useToast } from '@/components/Toast'
 import { solve } from '@/lib/api'
 import type { SchoolData } from '@/lib/types'
 
-const TOTAL_STEPS = 9
+const TOTAL_STEPS = 3
 
 // ── Workspace page ────────────────────────────────────────────────────────────
 
