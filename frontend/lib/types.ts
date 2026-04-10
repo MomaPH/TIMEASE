@@ -49,16 +49,7 @@ export interface BreakSlot {
   label: string
 }
 
-export type StepId =
-  | 'school'
-  | 'classes'
-  | 'teachers'
-  | 'rooms'
-  | 'subjects'
-  | 'assignments'
-  | 'curriculum'
-  | 'constraints'
-  | 'summary'
+export type StepId = 'school' | 'classes' | 'generation'
 
 export type StepStatus = 'empty' | 'partial' | 'done'
 
@@ -69,21 +60,14 @@ export interface Step {
 }
 
 export const STEPS: Step[] = [
-  { id: 'school',      label: 'École',        shortLabel: 'École'   },
-  { id: 'classes',     label: 'Classes',      shortLabel: 'Classes' },
-  { id: 'teachers',    label: 'Enseignants',  shortLabel: 'Enseignants' },
-  { id: 'rooms',       label: 'Salles',       shortLabel: 'Salles'  },
-  { id: 'subjects',    label: 'Matières',     shortLabel: 'Matières'},
-  { id: 'assignments', label: 'Affectations', shortLabel: 'Affect.' },
-  { id: 'curriculum',  label: 'Programme',    shortLabel: 'Prog.'   },
-  { id: 'constraints', label: 'Contraintes',  shortLabel: 'Contr.'  },
-  { id: 'summary',     label: 'Résumé',       shortLabel: 'Résumé'  },
+  { id: 'school',     label: 'École & Semaine',    shortLabel: 'École'   },
+  { id: 'classes',    label: 'Classes & Programme', shortLabel: 'Classes' },
+  { id: 'generation', label: 'Génération',          shortLabel: 'Générer' },
 ]
 
 export function getStepStatus(stepIdx: number, data: SchoolData, assignments: any[]): StepStatus {
   switch (stepIdx) {
     case 0: {
-      // New format: days is array of DayConfig objects
       const days = data.days ?? []
       const hasDays = days.length > 0
       const hasSessionsInDays = days.some(d => d.sessions?.length > 0)
@@ -91,36 +75,19 @@ export function getStepStatus(stepIdx: number, data: SchoolData, assignments: an
       if (data.name || hasDays) return 'partial'
       return 'empty'
     }
-    case 1:
-      if ((data.classes?.length ?? 0) >= 1) return 'done'
-      return 'empty'
-    case 2:
-      if ((data.teachers?.length ?? 0) >= 1) return 'done'
-      return 'empty'
-    case 3:
-      // Phase D: Rooms are optional - always show as 'done' (skippable)
-      if ((data.rooms?.length ?? 0) >= 1) return 'done'
-      return 'done'  // Empty rooms is valid
-    case 4:
-      if ((data.subjects?.length ?? 0) >= 1) return 'done'
-      return 'empty'
-    case 5: {
-      if (assignments.length === 0 && (data.curriculum?.length ?? 0) === 0) return 'empty'
-      // Check coverage: each curriculum entry (class+subject) must have an assignment
+    case 1: {
+      const classes   = data.classes   ?? []
+      const teachers  = data.teachers  ?? []
       const curriculum = data.curriculum ?? []
-      const pairSet = new Set(assignments.map(a => `${a.school_class}__${a.subject}`))
-      const allCovered = curriculum.every(c => pairSet.has(`${c.school_class}__${c.subject}`))
-      if (assignments.length > 0 && allCovered) return 'done'
-      if (assignments.length > 0) return 'partial'
-      return 'empty'
+      if (classes.length === 0) return 'empty'
+      if (teachers.length > 0 && curriculum.length > 0) {
+        const pairSet = new Set(assignments.map(a => `${a.school_class}__${a.subject}`))
+        const allCovered = curriculum.every(c => pairSet.has(`${c.school_class}__${c.subject}`))
+        if (allCovered) return 'done'
+      }
+      return 'partial'
     }
-    case 6:
-      if ((data.curriculum?.length ?? 0) >= 1) return 'done'
-      return 'empty'
-    case 7:
-      // Constraints are optional — always 'done'
-      return 'done'
-    case 8:
+    case 2:
       return getChecklistStatus(data, assignments) ? 'done' : 'partial'
     default:
       return 'empty'
