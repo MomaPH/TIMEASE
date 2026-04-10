@@ -5,7 +5,7 @@
 - **Python 3.12** + FastAPI (`timease/api/`)
 - **Next.js 14** + TypeScript (`frontend/`)
 - **Google OR-Tools CP-SAT** (`timease/engine/`)
-- **OpenAI GPT-4o** (`timease/api/ai_chat.py`)
+- **OpenAI GPT-4o** (reserved for Sprint 3 narrow AI features; currently dormant)
 - **openpyxl** / **reportlab** / **python-docx** for exports
 
 **Not in the stack**: Reflex, Anthropic, Celery, Mypyc, Postgres, SQLAlchemy, SQLite.
@@ -25,7 +25,6 @@ cd frontend && npm run build  # Build frontend
 | Purpose | Path |
 |---------|------|
 | FastAPI routes | `timease/api/main.py` |
-| AI chat logic | `timease/api/ai_chat.py` |
 | Solver | `timease/engine/solver.py` |
 | Data models | `timease/engine/models.py` |
 | Constraints | `timease/engine/constraints.py` |
