@@ -76,13 +76,14 @@ export function getStepStatus(stepIdx: number, data: SchoolData, assignments: an
       return 'empty'
     }
     case 1: {
-      const classes   = data.classes   ?? []
-      const teachers  = data.teachers  ?? []
+      const classes    = data.classes   ?? []
+      const teachers   = data.teachers  ?? []
       const curriculum = data.curriculum ?? []
       if (classes.length === 0) return 'empty'
       if (teachers.length > 0 && curriculum.length > 0) {
+        const valid = curriculum.filter(isValidCurriculumEntry)
         const pairSet = new Set(assignments.map(a => `${a.school_class}__${a.subject}`))
-        const allCovered = curriculum.every(c => pairSet.has(`${c.school_class}__${c.subject}`))
+        const allCovered = valid.length > 0 && valid.every(c => pairSet.has(`${c.school_class}__${c.subject}`))
         if (allCovered) return 'done'
       }
       return 'partial'
@@ -94,9 +95,14 @@ export function getStepStatus(stepIdx: number, data: SchoolData, assignments: an
   }
 }
 
+/** Returns true if the curriculum entry has a non-empty class and subject */
+function isValidCurriculumEntry(c: any): boolean {
+  return !!(c.school_class && c.subject)
+}
+
 /** Returns list of curriculum entries that have no matching assignment */
 export function getMissingAssignments(data: SchoolData, assignments: any[]): { school_class: string; subject: string }[] {
-  const curriculum = data.curriculum ?? []
+  const curriculum = (data.curriculum ?? []).filter(isValidCurriculumEntry)
   const pairSet = new Set(assignments.map(a => `${a.school_class}__${a.subject}`))
   return curriculum
     .filter(c => !pairSet.has(`${c.school_class}__${c.subject}`))
@@ -141,26 +147,30 @@ export function getDataWarnings(data: SchoolData, assignments: any[]): { step: n
 export function getChecklistItems(data: SchoolData, assignments: any[]) {
   const classes    = data.classes    ?? []
   const teachers   = data.teachers   ?? []
-  const rooms      = data.rooms      ?? []
-  const subjects   = data.subjects   ?? []
   const curriculum = data.curriculum ?? []
   const days       = data.days       ?? []
   const hasSessionsInDays = days.some(d => d.sessions?.length > 0)
 
-  // Class-based curriculum: check each (school_class, subject) pair has an assignment
+  // Only count valid curriculum entries (non-empty class and subject)
+  const validCurriculum = curriculum.filter(isValidCurriculumEntry)
+
+  // Class-based curriculum: check each valid (school_class, subject) pair has an assignment
   const pairSet = new Set(assignments.map(a => `${a.school_class}__${a.subject}`))
-  const allAssigned = curriculum.length === 0 || curriculum.every(c =>
+  const allAssigned = validCurriculum.length === 0 || validCurriculum.every(c =>
     pairSet.has(`${c.school_class}__${c.subject}`)
   )
 
+  // Derive subjects from valid curriculum entries
+  const subjectNames = new Set(validCurriculum.map((c: any) => c.subject))
+  const hasSubjects  = (data.subjects?.length ?? 0) > 0 || subjectNames.size > 0
+
   return [
-    { label: 'École configurée (nom, jours, sessions)', done: !!(data.name && days.length > 0 && hasSessionsInDays) },
-    { label: 'Au moins 1 classe',                       done: classes.length > 0    },
-    { label: 'Au moins 1 enseignant',                   done: teachers.length > 0   },
-    { label: 'Salles (optionnel)',                      done: true                  },  // Phase D: rooms optional
-    { label: 'Au moins 1 matière',                      done: subjects.length > 0   },
-    { label: 'Programme défini',                        done: curriculum.length > 0 },
-    { label: 'Toutes les affectations renseignées',     done: allAssigned           },
+    { id: 'school',      label: 'École configurée (nom, jours, sessions)', done: !!(data.name && days.length > 0 && hasSessionsInDays) },
+    { id: 'classes',     label: 'Au moins 1 classe',                       done: classes.length > 0    },
+    { id: 'teachers',    label: 'Au moins 1 enseignant',                   done: teachers.length > 0   },
+    { id: 'subjects',    label: 'Au moins 1 matière',                      done: hasSubjects            },
+    { id: 'curriculum',  label: 'Programme défini',                        done: validCurriculum.length > 0 },
+    { id: 'assignments', label: 'Toutes les affectations renseignées',     done: allAssigned           },
   ]
 }
 

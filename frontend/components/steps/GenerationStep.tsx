@@ -2,7 +2,7 @@
 import { useMemo } from 'react'
 import { Loader2, ChevronRight } from 'lucide-react'
 import type { SchoolData } from '@/lib/types'
-import { getChecklistItems, getChecklistStatus, getMissingAssignments } from '@/lib/types'
+import { getChecklistItems, getMissingAssignments } from '@/lib/types'
 import { validateHourBarriers } from '@/lib/validation'
 import ValidationErrorPanel from '@/components/ValidationErrorPanel'
 
@@ -15,7 +15,7 @@ interface Props {
 
 export default function GenerationStep({ data, assignments, onGenerate, isSolving }: Props) {
   const checklist        = getChecklistItems(data, assignments)
-  const ready            = getChecklistStatus(data, assignments)
+  const ready            = checklist.every(i => i.done)
   const missing          = getMissingAssignments(data, assignments)
   const validationErrors = useMemo(() => validateHourBarriers(data), [data])
   const hasErrors        = validationErrors.some(e => e.severity === 'error')
@@ -28,15 +28,6 @@ export default function GenerationStep({ data, assignments, onGenerate, isSolvin
     { label: 'Affectations', count: assignments.length             },
     { label: 'Programme',    count: data.curriculum?.length ?? 0 },
     { label: 'Contraintes',  count: data.constraints?.length ?? 0 },
-  ]
-
-  // Checklist items restricted to the 5 required ones per directive
-  const requiredItems = [
-    checklist.find(i => i.label.startsWith('École configurée'))   ?? { label: 'École configurée',                  done: false },
-    checklist.find(i => i.label.startsWith('Au moins 1 classe'))  ?? { label: 'Au moins 1 classe',                  done: false },
-    checklist.find(i => i.label.startsWith('Au moins 1 enseign')) ?? { label: 'Au moins 1 enseignant',              done: false },
-    checklist.find(i => i.label.startsWith('Programme'))          ?? { label: 'Programme défini',                   done: false },
-    checklist.find(i => i.label.startsWith('Toutes les affect'))  ?? { label: 'Toutes les affectations renseignées', done: false },
   ]
 
   return (
@@ -79,8 +70,8 @@ export default function GenerationStep({ data, assignments, onGenerate, isSolvin
         <h4 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
           Conditions pour générer
         </h4>
-        {requiredItems.map((item, i) => (
-          <div key={i} className="flex items-center gap-2.5">
+        {checklist.map((item) => (
+          <div key={item.id} className="flex items-center gap-2.5">
             <span className="text-base leading-none">
               {item.done ? '✓' : '✗'}
             </span>

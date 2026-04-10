@@ -29,10 +29,14 @@ interface Props {
 
 function TeachersSection({
   data,
+  assignments,
   onUpdateData,
+  onUpdateAssignments,
 }: {
   data: SchoolData
+  assignments: any[]
   onUpdateData: (d: SchoolData) => void
+  onUpdateAssignments: (a: any[]) => void
 }) {
   const teachers = data.teachers ?? []
   const [open, setOpen] = useState(teachers.length === 0)
@@ -42,11 +46,26 @@ function TeachersSection({
   }
 
   function updateTeacher(idx: number, field: string, val: string | string[]) {
-    onUpdateData({ ...data, teachers: teachers.map((t, i) => i === idx ? { ...t, [field]: val } : t) })
+    if (field === 'name') {
+      const oldName = teachers[idx]?.name as string
+      const newName = val as string
+      onUpdateData({ ...data, teachers: teachers.map((t, i) => i === idx ? { ...t, [field]: val } : t) })
+      // cascade rename in assignments
+      if (oldName && oldName !== newName) {
+        onUpdateAssignments(assignments.map(a => a.teacher === oldName ? { ...a, teacher: newName } : a))
+      }
+    } else {
+      onUpdateData({ ...data, teachers: teachers.map((t, i) => i === idx ? { ...t, [field]: val } : t) })
+    }
   }
 
   function deleteTeacher(idx: number) {
+    const deletedName = teachers[idx]?.name as string
     onUpdateData({ ...data, teachers: teachers.filter((_, i) => i !== idx) })
+    // remove assignments that reference the deleted teacher
+    if (deletedName) {
+      onUpdateAssignments(assignments.filter(a => a.teacher !== deletedName))
+    }
   }
 
   return (
@@ -175,14 +194,26 @@ function ClassCard({
     })
     const nextSubjects = deriveSubjects({ ...data, curriculum: updated })
     onUpdateData({ ...data, curriculum: updated, subjects: nextSubjects })
-    // update assignment if subject changed
+    // update assignment if subject changed: delete old, upsert new to avoid duplicates
     if (field === 'subject') {
-      const oldRow = allCurriculum[globalIdx]
-      const nextAssignments = assignments.map(a =>
-        a.school_class === cls.name && a.subject === oldRow.subject
-          ? { ...a, subject: val as string }
-          : a
+      const oldRow    = allCurriculum[globalIdx]
+      const oldSubject = oldRow.subject as string
+      const newSubject = val as string
+      // drop any assignment for (class, old subject)
+      let nextAssignments = assignments.filter(
+        a => !(a.school_class === cls.name && a.subject === oldSubject)
       )
+      // if there was a teacher on the old assignment, re-attach it to the new subject name (only when non-empty)
+      if (newSubject) {
+        const oldAssignment = assignments.find(a => a.school_class === cls.name && a.subject === oldSubject)
+        if (oldAssignment) {
+          // remove any existing assignment for (class, new subject) first, then add
+          nextAssignments = nextAssignments.filter(
+            a => !(a.school_class === cls.name && a.subject === newSubject)
+          )
+          nextAssignments = [...nextAssignments, { ...oldAssignment, subject: newSubject }]
+        }
+      }
       onUpdateAssignments(nextAssignments)
     }
   }
@@ -190,8 +221,7 @@ function ClassCard({
   function updateCurriculumTeacher(globalIdx: number, teacher: string) {
     const allCurriculum = data.curriculum ?? []
     const row = allCurriculum[globalIdx]
-    if (!row) return
-    const pair = `${cls.name}__${row.subject}`
+    if (!row || !row.subject) return  // guard: no subject yet
     const existing = assignments.findIndex(a => a.school_class === cls.name && a.subject === row.subject)
     let nextAssignments: any[]
     if (teacher === '') {
@@ -221,7 +251,13 @@ function ClassCard({
     const filtered = allCurriculum.filter((c: any) => c.school_class !== cls.name)
     const nextCurriculum = [...filtered, ...copied]
     const nextSubjects = deriveSubjects({ ...data, curriculum: nextCurriculum })
+    // Purge assignments for target class that no longer have a matching curriculum entry
+    const newSubjectSet = new Set(copied.map((c: any) => c.subject).filter(Boolean))
+    const nextAssignments = assignments.filter(
+      a => a.school_class !== cls.name || newSubjectSet.has(a.subject)
+    )
     onUpdateData({ ...data, curriculum: nextCurriculum, subjects: nextSubjects })
+    onUpdateAssignments(nextAssignments)
     setCopyOpen(false)
   }
 
@@ -338,12 +374,43 @@ function ConstraintsSection({
   const items = data.constraints ?? []
   const [open, setOpen] = useState(false)
   const [showAdd, setShowAdd] = useState(false)
-  const [addForm, setAddForm] = useState<any>({ id: '', type: 'hard', category: 'start_time', description_fr: '', priority: 5, parameters: {} })
+  const [addForm, setAddForm] = useState<any>({ id: '', type: 'hard', category: 'start_time', description_fr: '', priority: 5 })
+  const [addParamsRaw, setAddParamsRaw] = useState('{}')
+  const [addParamsParsed, setAddParamsParsed] = useState<Record<string, unknown>>({})
+  const [addParamsError, setAddParamsError] = useState(false)
   const [editIdx, setEditIdx] = useState<number | null>(null)
   const [editForm, setEditForm] = useState<any>(null)
+  const [editParamsRaw, setEditParamsRaw] = useState('{}')
+  const [editParamsParsed, setEditParamsParsed] = useState<Record<string, unknown>>({})
+  const [editParamsError, setEditParamsError] = useState(false)
 
-  function save(form: any, idx: number | null) {
-    const entry = { ...form, id: form.id || `C${items.length + 1}` }
+  function openAdd() {
+    setAddForm({ id: '', type: 'hard', category: 'start_time', description_fr: '', priority: 5 })
+    setAddParamsRaw('{}')
+    setAddParamsParsed({})
+    setAddParamsError(false)
+    setShowAdd(true)
+    setEditIdx(null)
+  }
+
+  function openEdit(idx: number) {
+    const item = items[idx]
+    setEditIdx(idx)
+    setEditForm({ ...item })
+    const raw = JSON.stringify(item.parameters ?? {})
+    setEditParamsRaw(raw)
+    setEditParamsParsed(item.parameters ?? {})
+    setEditParamsError(false)
+    setShowAdd(false)
+  }
+
+  function cancel() {
+    setShowAdd(false)
+    setEditIdx(null)
+  }
+
+  function save(form: any, parameters: Record<string, unknown>, idx: number | null) {
+    const entry = { ...form, parameters, id: form.id || `C${items.length + 1}` }
     if (idx === null) {
       onUpdateData({ ...data, constraints: [...items, entry] })
     } else {
@@ -353,8 +420,17 @@ function ConstraintsSection({
     setEditIdx(null)
   }
 
-  function renderForm(f: any, setF: (v: any) => void) {
-    const cat = CONSTRAINT_CATEGORIES.find(c => c.value === f.category)
+  function renderForm(
+    f: any,
+    setF: (v: any) => void,
+    paramsRaw: string,
+    setParamsRaw: (s: string) => void,
+    paramsParsed: Record<string, unknown>,
+    setParamsParsed: (p: Record<string, unknown>) => void,
+    paramsError: boolean,
+    setParamsError: (b: boolean) => void,
+    saveIdx: number | null,
+  ) {
     return (
       <div className="space-y-2">
         <div className="grid grid-cols-2 gap-2">
@@ -392,18 +468,36 @@ function ConstraintsSection({
           </div>
         )}
         <div className="space-y-1">
-          <label className="text-xs text-gray-500">Paramètres (JSON)</label>
+          <label className="text-xs text-gray-500">
+            Paramètres (JSON)
+            {paramsError && <span className="ml-1 text-red-500">— JSON invalide</span>}
+          </label>
           <textarea
-            value={JSON.stringify(f.parameters ?? {})}
-            onChange={e => { try { setF({ ...f, parameters: JSON.parse(e.target.value) }) } catch {} }}
+            value={paramsRaw}
+            onChange={e => {
+              setParamsRaw(e.target.value)
+              try {
+                const parsed = JSON.parse(e.target.value)
+                setParamsParsed(parsed)
+                setParamsError(false)
+              } catch {
+                setParamsError(true)
+              }
+            }}
             rows={2}
-            className="w-full px-2 py-1.5 text-xs font-mono border border-gray-200 dark:border-gray-700 rounded bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-1 focus:ring-teal-500"
+            className={`w-full px-2 py-1.5 text-xs font-mono border rounded bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-1 focus:ring-teal-500 ${paramsError ? 'border-red-400 dark:border-red-600' : 'border-gray-200 dark:border-gray-700'}`}
             placeholder='{"hour": "08:00"}'
           />
         </div>
         <div className="flex gap-2">
-          <button onClick={() => save(f, editIdx)} className="px-3 py-1.5 text-xs font-medium bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors">Enregistrer</button>
-          <button onClick={() => { setShowAdd(false); setEditIdx(null) }} className="px-3 py-1.5 text-xs text-gray-500 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">Annuler</button>
+          <button
+            onClick={() => !paramsError && save(f, paramsParsed, saveIdx)}
+            disabled={paramsError}
+            className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${paramsError ? 'bg-gray-200 dark:bg-gray-700 text-gray-400 cursor-not-allowed' : 'bg-teal-600 text-white hover:bg-teal-700'}`}
+          >
+            Enregistrer
+          </button>
+          <button onClick={cancel} className="px-3 py-1.5 text-xs text-gray-500 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">Annuler</button>
         </div>
       </div>
     )
@@ -435,23 +529,23 @@ function ConstraintsSection({
                 </span>
                 <span className="text-gray-600 dark:text-gray-400">{CONSTRAINT_CATEGORIES.find(c => c.value === item.category)?.label ?? item.category}</span>
                 <span className="ml-auto text-gray-500 truncate">{item.description_fr || '—'}</span>
-                <button onClick={() => { setEditIdx(idx); setEditForm({ ...item }); setShowAdd(false) }} className="text-gray-400 hover:text-teal-600 transition-colors"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+                <button onClick={() => openEdit(idx)} className="text-gray-400 hover:text-teal-600 transition-colors"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
                 <button onClick={() => onUpdateData({ ...data, constraints: items.filter((_: any, i: number) => i !== idx) })} className="text-gray-400 hover:text-red-500 transition-colors"><Trash2 size={12} /></button>
               </div>
               {editIdx === idx && editForm && (
                 <div className="mt-1 mb-2 p-3 border border-teal-200 dark:border-teal-800 rounded-lg bg-teal-50 dark:bg-teal-900/10">
-                  {renderForm(editForm, setEditForm)}
+                  {renderForm(editForm, setEditForm, editParamsRaw, setEditParamsRaw, editParamsParsed, setEditParamsParsed, editParamsError, setEditParamsError, idx)}
                 </div>
               )}
             </div>
           ))}
           {showAdd && (
             <div className="p-3 border border-teal-200 dark:border-teal-800 rounded-lg bg-teal-50 dark:bg-teal-900/10">
-              {renderForm(addForm, setAddForm)}
+              {renderForm(addForm, setAddForm, addParamsRaw, setAddParamsRaw, addParamsParsed, setAddParamsParsed, addParamsError, setAddParamsError, null)}
             </div>
           )}
           {!showAdd && editIdx === null && (
-            <button onClick={() => { setShowAdd(true); setEditIdx(null) }} className="flex items-center gap-1.5 text-xs text-teal-600 dark:text-teal-400 hover:text-teal-700 transition-colors">
+            <button onClick={openAdd} className="flex items-center gap-1.5 text-xs text-teal-600 dark:text-teal-400 hover:text-teal-700 transition-colors">
               <Plus size={13} /> Ajouter une contrainte
             </button>
           )}
@@ -486,7 +580,7 @@ export default function ClassCardsStep({ data, assignments, onUpdateData, onUpda
   return (
     <div className="space-y-4">
       {/* Enseignants */}
-      <TeachersSection data={data} onUpdateData={onUpdateData} />
+      <TeachersSection data={data} assignments={assignments} onUpdateData={onUpdateData} onUpdateAssignments={onUpdateAssignments} />
 
       {/* Class cards */}
       {(data.classes ?? []).map((cls: any, idx: number) => (
