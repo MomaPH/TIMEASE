@@ -1,7 +1,7 @@
 'use client'
-import { useState, Suspense } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import { RotateCcw, Loader2 } from 'lucide-react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import StepIndicator from '@/components/StepIndicator'
 import StepPanel from '@/components/StepPanel'
 import { useSession } from '@/hooks/useSession'
@@ -15,13 +15,13 @@ const TOTAL_STEPS = 3
 
 function WorkspaceContent() {
   const router    = useRouter()
-  const params    = useSearchParams()
   const { toast } = useToast()
 
   const {
     sessionId,
     schoolData,
     assignments,
+    sessionError,
     setTimetable,
     updateSchoolData,
     updateAssignments,
@@ -30,6 +30,12 @@ function WorkspaceContent() {
 
   const [currentStep, setCurrentStep] = useState(0)
   const [isSolving,   setIsSolving]   = useState(false)
+
+  useEffect(() => {
+    if (sessionError) {
+      toast(sessionError, 'error')
+    }
+  }, [sessionError, toast])
 
   // ── Solve / generate ────────────────────────────────────────────────────────
   async function handleGenerate() {
@@ -57,9 +63,13 @@ function WorkspaceContent() {
 
   // ── Reset ───────────────────────────────────────────────────────────────────
   async function handleReset() {
-    await resetSession()
-    setCurrentStep(0)
-    toast('Session réinitialisée.')
+    try {
+      await resetSession()
+      setCurrentStep(0)
+      toast('Session reinitialisee.')
+    } catch (err: any) {
+      toast(err?.message || 'Erreur reseau.', 'error')
+    }
   }
 
   return (

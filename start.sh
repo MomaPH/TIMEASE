@@ -1,5 +1,5 @@
 #!/bin/bash
+set -euo pipefail
+
 cd "$(dirname "$0")"
-uv run python run_api.py &
-cd frontend && npm run dev &
-wait
+exec ./scripts/dev.sh "$@"

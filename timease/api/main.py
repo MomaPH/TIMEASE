@@ -24,12 +24,17 @@ from pydantic import BaseModel
 
 app = FastAPI(title="TIMEASE API", version="1.0.0")
 
+
+def _allowed_origins() -> list[str]:
+    origins = {"http://localhost:3000", "http://localhost:3001"}
+    frontend_port = os.getenv("FRONTEND_PORT")
+    if frontend_port:
+        origins.add(f"http://localhost:{frontend_port}")
+    return sorted(origins)
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:3000",
-        "http://localhost:3001",
-    ],
+    allow_origins=_allowed_origins(),
     allow_methods=["*"],
     allow_headers=["*"],
     allow_credentials=True,

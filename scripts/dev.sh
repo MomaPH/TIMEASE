@@ -12,6 +12,14 @@ LOG_DIR="$ROOT_DIR/logs/dev"
 RUN_ID="$(date +%Y%m%d-%H%M%S)"
 MODE="watch"
 
+find_free_port() {
+  local port="$1"
+  while lsof -iTCP:"$port" -sTCP:LISTEN -Pn >/dev/null 2>&1; do
+    port=$((port + 1))
+  done
+  printf '%s\n' "$port"
+}
+
 for arg in "$@"; do
   case "$arg" in
     --once)
@@ -44,6 +52,10 @@ BACKEND_ERR="$LOG_DIR/backend-${RUN_ID}.err.log"
 FRONTEND_OUT="$LOG_DIR/frontend-${RUN_ID}.out.log"
 FRONTEND_ERR="$LOG_DIR/frontend-${RUN_ID}.err.log"
 
+BACKEND_PORT="${BACKEND_PORT:-$(find_free_port 8000)}"
+FRONTEND_PORT="${FRONTEND_PORT:-$(find_free_port 3000)}"
+API_BASE_URL="${API_BASE_URL:-http://localhost:${BACKEND_PORT}}"
+
 BACKEND_PID=""
 FRONTEND_PID=""
 
@@ -59,12 +71,20 @@ trap cleanup EXIT INT TERM
 
 if [[ "$MODE" == "once" ]]; then
   echo "Mode: one-shot (sans watchers)"
-  echo "Démarrage backend  → http://localhost:8000"
+  echo "Démarrage backend  → http://localhost:${BACKEND_PORT}"
   (
     cd "$ROOT_DIR"
-    uv run uvicorn timease.api.main:app --port 8000
+    BACKEND_PORT="$BACKEND_PORT" FRONTEND_PORT="$FRONTEND_PORT" uv run uvicorn timease.api.main:app --port "$BACKEND_PORT"
   ) >"$BACKEND_OUT" 2>"$BACKEND_ERR" &
   BACKEND_PID="$!"
+
+  if [[ ! -x "$FRONTEND_DIR/node_modules/.bin/next" ]]; then
+    echo "Installation des dépendances frontend..."
+    (
+      cd "$FRONTEND_DIR"
+      npm install
+    ) >"$FRONTEND_OUT" 2>"$FRONTEND_ERR"
+  fi
 
   echo "Build frontend..."
   (
@@ -72,31 +92,41 @@ if [[ "$MODE" == "once" ]]; then
     npm run build
   ) >"$FRONTEND_OUT" 2>"$FRONTEND_ERR"
 
-  echo "Démarrage frontend → http://localhost:3000"
+  echo "Démarrage frontend → http://localhost:${FRONTEND_PORT}"
   (
     cd "$FRONTEND_DIR"
-    npm run start
+    PORT="$FRONTEND_PORT" NEXT_PUBLIC_API_BASE_URL="$API_BASE_URL" npm run start
   ) >>"$FRONTEND_OUT" 2>>"$FRONTEND_ERR" &
   FRONTEND_PID="$!"
 else
   echo "Mode: watch"
-  echo "Démarrage backend  → http://localhost:8000"
+  echo "Démarrage backend  → http://localhost:${BACKEND_PORT}"
   (
     cd "$ROOT_DIR"
-    uv run uvicorn timease.api.main:app --reload --port 8000
+    BACKEND_PORT="$BACKEND_PORT" FRONTEND_PORT="$FRONTEND_PORT" uv run uvicorn timease.api.main:app --reload --port "$BACKEND_PORT"
   ) >"$BACKEND_OUT" 2>"$BACKEND_ERR" &
   BACKEND_PID="$!"
 
-  echo "Démarrage frontend → http://localhost:3000"
+  if [[ ! -x "$FRONTEND_DIR/node_modules/.bin/next" ]]; then
+    echo "Installation des dépendances frontend..."
+    (
+      cd "$FRONTEND_DIR"
+      npm install
+    ) >"$FRONTEND_OUT" 2>"$FRONTEND_ERR"
+  fi
+
+  echo "Démarrage frontend → http://localhost:${FRONTEND_PORT}"
   (
     cd "$FRONTEND_DIR"
-    npm run dev
+    PORT="$FRONTEND_PORT" NEXT_PUBLIC_API_BASE_URL="$API_BASE_URL" npm run dev
   ) >"$FRONTEND_OUT" 2>"$FRONTEND_ERR" &
   FRONTEND_PID="$!"
 fi
 
 echo "Logs backend : $BACKEND_OUT / $BACKEND_ERR"
 echo "Logs frontend: $FRONTEND_OUT / $FRONTEND_ERR"
+echo "Port backend  : $BACKEND_PORT"
+echo "Port frontend : $FRONTEND_PORT"
 echo "Astuce: tail -f \"$BACKEND_ERR\" \"$FRONTEND_ERR\""
 
 wait

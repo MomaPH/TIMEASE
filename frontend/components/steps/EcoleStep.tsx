@@ -43,8 +43,15 @@ export default function EcoleStep({ data, onUpdate }: Props) {
 
   const [expandedDay,   setExpandedDay]   = useState<string | null>(null)
   const [roomsOpen,     setRoomsOpen]     = useState(false)
+  const [copySourceByDay, setCopySourceByDay] = useState<Record<string, string>>({})
+  const [includeBreaksByDay, setIncludeBreaksByDay] = useState<Record<string, boolean>>({})
 
   // ── Day helpers ──────────────────────────────────────────────────────────────
+
+  function getDayLabel(dayName: string): string {
+    const idx = DAYS_VAL.indexOf(dayName)
+    return idx >= 0 ? DAYS_FR[idx] : dayName
+  }
 
   function toggleDay(dayVal: string) {
     if (dayNames.includes(dayVal)) {
@@ -81,6 +88,43 @@ export default function EcoleStep({ data, onUpdate }: Props) {
     const day = days.find(d => d.name === dayName)
     if (!day) return
     updateDay(dayName, { sessions: day.sessions.filter((_, i) => i !== idx) })
+  }
+
+  function copySessionsFromDay(targetDayName: string, sourceDayName: string, includeBreaks: boolean) {
+    if (!targetDayName || !sourceDayName || targetDayName === sourceDayName) return
+    const sourceDay = days.find(d => d.name === sourceDayName)
+    if (!sourceDay) return
+    const copiedSessions = sourceDay.sessions.map(s => ({ ...s }))
+    const copiedBreaks = sourceDay.breaks.map(b => ({ ...b }))
+    updateDay(targetDayName, includeBreaks
+      ? { sessions: copiedSessions, breaks: copiedBreaks }
+      : { sessions: copiedSessions }
+    )
+  }
+
+  function applyDayToAllOtherDays(sourceDayName: string, includeBreaks: boolean) {
+    const sourceDay = days.find(d => d.name === sourceDayName)
+    if (!sourceDay) return
+
+    const copiedSessions = sourceDay.sessions.map(s => ({ ...s }))
+    const copiedBreaks = sourceDay.breaks.map(b => ({ ...b }))
+
+    const nextDays = days.map(d => {
+      if (d.name === sourceDayName) return d
+      if (includeBreaks) {
+        return {
+          ...d,
+          sessions: copiedSessions.map(s => ({ ...s })),
+          breaks: copiedBreaks.map(b => ({ ...b })),
+        }
+      }
+      return {
+        ...d,
+        sessions: copiedSessions.map(s => ({ ...s })),
+      }
+    })
+
+    onUpdate({ ...data, days: nextDays })
   }
 
   function addBreak(dayName: string) {
@@ -167,8 +211,14 @@ export default function EcoleStep({ data, onUpdate }: Props) {
         <section className="space-y-2">
           <h4 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Emploi du temps par jour</h4>
           {days.map(day => {
-            const dayLabel  = DAYS_FR[DAYS_VAL.indexOf(day.name)] ?? day.name
+            const dayLabel  = getDayLabel(day.name)
             const expanded  = expandedDay === day.name
+            const sourceDays = days.filter(d => d.name !== day.name && d.sessions.length > 0)
+            const selectedSource = copySourceByDay[day.name]
+            const effectiveSource = sourceDays.some(d => d.name === selectedSource)
+              ? selectedSource
+              : (sourceDays[0]?.name ?? '')
+            const includeBreaks = !!includeBreaksByDay[day.name]
             return (
               <div key={day.name} className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
                 <button
@@ -189,7 +239,53 @@ export default function EcoleStep({ data, onUpdate }: Props) {
                   <div className="p-3 space-y-3 bg-white dark:bg-gray-900">
                     {/* Sessions */}
                     <div className="space-y-2">
-                      <div className="text-xs font-medium text-gray-500 uppercase">Sessions</div>
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="text-xs font-medium text-gray-500 uppercase">Sessions</div>
+                        {(sourceDays.length > 0 || days.length > 1) && (
+                          <div className="flex flex-wrap items-center justify-end gap-1.5">
+                            <label className="inline-flex items-center gap-1 text-[10px] text-gray-500 dark:text-gray-400">
+                              <input
+                                type="checkbox"
+                                checked={includeBreaks}
+                                onChange={e => setIncludeBreaksByDay(prev => ({ ...prev, [day.name]: e.target.checked }))}
+                                className="h-3 w-3 rounded border-gray-300 text-teal-600 focus:ring-teal-500"
+                              />
+                              Inclure pauses
+                            </label>
+
+                            {sourceDays.length > 0 && (
+                              <>
+                                <span className="text-[10px] text-gray-400">Copier depuis</span>
+                                <select
+                                  value={effectiveSource}
+                                  onChange={e => setCopySourceByDay(prev => ({ ...prev, [day.name]: e.target.value }))}
+                                  className="px-2 py-1 text-xs border border-gray-200 dark:border-gray-700 rounded bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-1 focus:ring-teal-500"
+                                >
+                                  {sourceDays.map(src => (
+                                    <option key={src.name} value={src.name}>{getDayLabel(src.name)}</option>
+                                  ))}
+                                </select>
+                                <button
+                                  onClick={() => copySessionsFromDay(day.name, effectiveSource, includeBreaks)}
+                                  className="px-2 py-1 text-xs rounded border border-teal-200 dark:border-teal-800 text-teal-700 dark:text-teal-300 hover:bg-teal-50 dark:hover:bg-teal-900/20 transition-colors"
+                                  disabled={!effectiveSource}
+                                >
+                                  Copier
+                                </button>
+                              </>
+                            )}
+
+                            {days.length > 1 && (
+                              <button
+                                onClick={() => applyDayToAllOtherDays(day.name, includeBreaks)}
+                                className="px-2 py-1 text-xs rounded border border-amber-200 dark:border-amber-800 text-amber-700 dark:text-amber-300 hover:bg-amber-50 dark:hover:bg-amber-900/20 transition-colors"
+                              >
+                                Appliquer à tous
+                              </button>
+                            )}
+                          </div>
+                        )}
+                      </div>
                       {day.sessions.map((s, i) => (
                         <div key={i} className="flex gap-2 items-center">
                           <input

@@ -12,6 +12,86 @@ export interface ValidationError {
   affectedItems?: string[]
 }
 
+interface DayMinutesSummary {
+  sessionMinutes: number
+  breakMinutes: number
+  netMinutes: number
+  invalidSessions: number
+  invalidBreaks: number
+}
+
+function curriculumEntryMinutes(entry: Record<string, any>): number {
+  if (entry.total_minutes_per_week != null) {
+    return Number(entry.total_minutes_per_week) || 0
+  }
+  const sessionsPerWeek = Number(entry.sessions_per_week) || 0
+  const minutesPerSession = Number(entry.minutes_per_session) || 0
+  return sessionsPerWeek * minutesPerSession
+}
+
+function summarizeDayMinutes(day: DayConfig): DayMinutesSummary {
+  let sessionMinutes = 0
+  let breakMinutes = 0
+  let invalidSessions = 0
+  let invalidBreaks = 0
+
+  for (const session of day.sessions || []) {
+    const start = timeToMinutes(session.start_time)
+    const end = timeToMinutes(session.end_time)
+    const delta = end - start
+    sessionMinutes += delta
+    if (delta <= 0) invalidSessions += 1
+  }
+
+  for (const brk of day.breaks || []) {
+    const start = timeToMinutes(brk.start_time)
+    const end = timeToMinutes(brk.end_time)
+    const delta = end - start
+    breakMinutes += delta
+    if (delta <= 0) invalidBreaks += 1
+  }
+
+  return {
+    sessionMinutes,
+    breakMinutes,
+    netMinutes: sessionMinutes - breakMinutes,
+    invalidSessions,
+    invalidBreaks,
+  }
+}
+
+function minutesToHours(minutes: number): number {
+  return minutes / 60
+}
+
+function formatHours(minutes: number): string {
+  return `${minutesToHours(minutes).toFixed(1)}h`
+}
+
+function buildSchoolCapacityBreakdown(schoolData: SchoolData): string {
+  const days = schoolData.days || []
+  if (days.length === 0) {
+    return 'Aucun jour configure.'
+  }
+
+  const totalSessions = days.reduce((acc, day) => acc + (day.sessions?.length || 0), 0)
+  const totalBreaks = days.reduce((acc, day) => acc + (day.breaks?.length || 0), 0)
+  const lines: string[] = [
+    `Jours: ${days.length}, sessions: ${totalSessions}, pauses: ${totalBreaks}`,
+  ]
+
+  for (const day of days) {
+    const summary = summarizeDayMinutes(day)
+    let line = `- ${day.name}: brut ${formatHours(summary.sessionMinutes)} - pauses ${formatHours(summary.breakMinutes)} = net ${formatHours(summary.netMinutes)}`
+    if (summary.invalidSessions > 0 || summary.invalidBreaks > 0) {
+      line += ` (creneaux invalides: sessions ${summary.invalidSessions}, pauses ${summary.invalidBreaks})`
+    }
+    lines.push(line)
+  }
+
+  return lines.join('\n')
+}
+
 /**
  * Calculate total school hours available per week
  */
@@ -20,42 +100,32 @@ export function calculateSchoolHours(schoolData: SchoolData): number {
 
   let totalMinutes = 0
   for (const day of days) {
-    for (const session of day.sessions || []) {
-      const start = timeToMinutes(session.start_time)
-      const end = timeToMinutes(session.end_time)
-      totalMinutes += (end - start)
-    }
-    // Subtract break time
-    for (const brk of day.breaks || []) {
-      const start = timeToMinutes(brk.start_time)
-      const end = timeToMinutes(brk.end_time)
-      totalMinutes -= (end - start)
-    }
+    totalMinutes += summarizeDayMinutes(day).netMinutes
   }
 
   // Convert to hours
-  return totalMinutes / 60
+  return minutesToHours(totalMinutes)
 }
 
 /**
- * Calculate total teacher hours requested in curriculum
+ * Calculate requested weekly hours per class.
  */
-export function calculateRequestedTeacherHours(schoolData: SchoolData): number {
+export function calculateRequestedClassHours(schoolData: SchoolData): Record<string, number> {
   const curriculum = schoolData.curriculum || []
+  const minutesByClass: Record<string, number> = {}
 
-  let totalMinutes = 0
   for (const entry of curriculum) {
-    if (entry.total_minutes_per_week != null) {
-      totalMinutes += Number(entry.total_minutes_per_week) || 0
-      continue
-    }
-    const sessionsPerWeek = Number(entry.sessions_per_week) || 0
-    const minutesPerSession = Number(entry.minutes_per_session) || 0
-    totalMinutes += sessionsPerWeek * minutesPerSession
+    const schoolClass = String(entry.school_class || '').trim()
+    if (!schoolClass) continue
+    minutesByClass[schoolClass] = (minutesByClass[schoolClass] || 0) + curriculumEntryMinutes(entry)
   }
 
-  // Convert to hours
-  return totalMinutes / 60
+  const hoursByClass: Record<string, number> = {}
+  for (const schoolClass in minutesByClass) {
+    hoursByClass[schoolClass] = minutesToHours(minutesByClass[schoolClass])
+  }
+
+  return hoursByClass
 }
 
 /**
@@ -71,23 +141,13 @@ export function calculateTeacherWorkloads(schoolData: SchoolData): Record<string
     const key = `${a.school_class}::${a.subject}`
     teacherByClassSubject[key] = a.teacher
   }
-  const classesByLevel: Record<string, string[]> = {}
-  for (const c of schoolData.classes || []) {
-    const level = c.level || c.name
-    if (!classesByLevel[level]) classesByLevel[level] = []
-    classesByLevel[level].push(c.name)
-  }
 
   for (const entry of curriculum) {
-    const totalMinutes = Number(entry.total_minutes_per_week) || (
-      (Number(entry.sessions_per_week) || 0) * (Number(entry.minutes_per_session) || 0)
-    )
-    const levelClasses = classesByLevel[entry.level] || []
-    for (const schoolClass of levelClasses) {
-      const teacher = teacherByClassSubject[`${schoolClass}::${entry.subject}`]
-      if (!teacher) continue
-      workloads[teacher] = (workloads[teacher] || 0) + totalMinutes
-    }
+    const schoolClass = String(entry.school_class || '').trim()
+    if (!schoolClass) continue
+    const teacher = teacherByClassSubject[`${schoolClass}::${entry.subject}`]
+    if (!teacher) continue
+    workloads[teacher] = (workloads[teacher] || 0) + curriculumEntryMinutes(entry)
   }
 
   // Convert all to hours
@@ -137,15 +197,34 @@ export function validateHourBarriers(schoolData: SchoolData): ValidationError[] 
 
   // Calculate total hours
   const schoolHours = calculateSchoolHours(schoolData)
-  const requestedHours = calculateRequestedTeacherHours(schoolData)
+  const requestedClassHours = calculateRequestedClassHours(schoolData)
+  const schoolClassHoursLimit = schoolHours
 
-  // Check if requested hours exceed school capacity
-  if (requestedHours > schoolHours) {
+  // Check capacity per class (parallel classes are allowed).
+  const overCapacityClasses: string[] = []
+  const knownClassNames = new Set<string>([
+    ...(schoolData.classes || []).map((c: any) => String(c.name || '').trim()).filter(Boolean),
+    ...Object.keys(requestedClassHours),
+  ])
+
+  for (const schoolClass of knownClassNames) {
+    const requested = requestedClassHours[schoolClass] || 0
+    if (requested > schoolClassHoursLimit) {
+      const overflow = requested - schoolClassHoursLimit
+      overCapacityClasses.push(
+        `${schoolClass} (${requested.toFixed(1)}h / ${schoolClassHoursLimit.toFixed(1)}h, excedent ${overflow.toFixed(1)}h)`
+      )
+    }
+  }
+
+  if (overCapacityClasses.length > 0) {
+    const breakdown = buildSchoolCapacityBreakdown(schoolData)
     errors.push({
       type: 'hour_overflow',
       severity: 'error',
-      message: `Heures demandées (${requestedHours.toFixed(1)}h) dépassent la capacité scolaire (${schoolHours.toFixed(1)}h)`,
-      details: `Vous demandez ${requestedHours.toFixed(1)} heures de cours par semaine, mais l'école ne dispose que de ${schoolHours.toFixed(1)} heures disponibles. Réduisez le nombre de sessions ou augmentez les créneaux horaires.`
+      message: `${overCapacityClasses.length} classe(s) depassent la capacite horaire hebdomadaire`,
+      details: `Le solveur autorise les cours en parallele entre classes differentes. La capacite doit donc etre verifiee classe par classe.\n\nClasses en excedent:\n${overCapacityClasses.join('\n')}\n\nDetail du calcul de capacite hebdomadaire (par classe):\n${breakdown}`,
+      affectedItems: overCapacityClasses,
     })
   }
 

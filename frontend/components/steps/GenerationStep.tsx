@@ -19,6 +19,10 @@ export default function GenerationStep({ data, assignments, onGenerate, isSolvin
   const missing          = getMissingAssignments(data, assignments)
   const validationErrors = useMemo(() => validateHourBarriers(data), [data])
   const hasErrors        = validationErrors.some(e => e.severity === 'error')
+  const totalSessions    = useMemo(
+    () => (data.days ?? []).reduce((acc, day) => acc + (day.sessions?.length ?? 0), 0),
+    [data.days],
+  )
 
   const stats = [
     { label: 'Classes',      count: data.classes?.length    ?? 0 },
@@ -44,7 +48,7 @@ export default function GenerationStep({ data, assignments, onGenerate, isSolvin
           )}
           {(data.days?.length ?? 0) > 0 && (
             <p className="text-xs text-teal-600 dark:text-teal-400 mt-0.5">
-              {data.days?.map(d => d.name).join(', ')} · {data.days?.[0]?.sessions?.length ?? 0} session(s)/jour
+              {data.days?.map(d => d.name).join(', ')} · {(data.days?.length ?? 0)} jour(s) · {totalSessions} session(s) au total
             </p>
           )}
         </div>
