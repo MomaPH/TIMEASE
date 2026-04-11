@@ -771,6 +771,8 @@ class TimetableResult:
         class_level = {c.name: c.level for c in school_data.classes}
         class_students = {c.name: c.student_count for c in school_data.classes}
         room_capacity = {r.name: r.capacity for r in school_data.rooms}
+        teacher_subjects = {t.name: set(t.subjects) for t in school_data.teachers}
+        teacher_unavailable = {t.name: t.unavailable_slots for t in school_data.teachers}
         teacher_max_min = {
             t.name: t.max_hours_per_week * 60 if t.max_hours_per_week is not None else None
             for t in school_data.teachers
@@ -780,6 +782,9 @@ class TimetableResult:
             (e.school_class, e.subject): e.total_minutes_per_week
             for e in school_data.curriculum
         }
+        valid_slots_by_day: dict[str, set[tuple[str, str]]] = defaultdict(set)
+        for day, start, end in school_data.timeslot_config.get_all_slots():
+            valid_slots_by_day[day].add((start, end))
 
         # --- No double-booking ---
         def check_no_overlap(groups: dict) -> None:
@@ -826,6 +831,120 @@ class TimetableResult:
                     f"'{entry.subject}' : {actual} min planifiées, "
                     f"{expected} min attendues."
                 )
+
+        # --- Assignment must map to declared timetable slots ---
+        for a in self.assignments:
+            if (a.start_time, a.end_time) not in valid_slots_by_day.get(a.day, set()):
+                violations.append(
+                    f"Créneau invalide pour '{a.school_class}' / '{a.subject}' : "
+                    f"{a.day} {a.start_time}–{a.end_time} n'existe pas dans le calendrier."
+                )
+
+        # --- Teacher qualification respected in produced assignments ---
+        for a in self.assignments:
+            declared = teacher_subjects.get(a.teacher, set())
+            if declared and a.subject not in declared:
+                violations.append(
+                    f"L'enseignant '{a.teacher}' n'est pas déclaré pour '{a.subject}' "
+                    f"({a.school_class}, {a.day} {a.start_time}–{a.end_time})."
+                )
+
+        # --- Teacher unavailability respected in produced assignments ---
+        for a in self.assignments:
+            for u in teacher_unavailable.get(a.teacher, []):
+                if u.get("day") != a.day:
+                    continue
+                u_start = str(u.get("start") or "00:00")
+                u_end = str(u.get("end") or "23:59")
+                if to_min(a.start_time) < to_min(u_end) and to_min(u_start) < to_min(a.end_time):
+                    violations.append(
+                        f"L'enseignant '{a.teacher}' est indisponible "
+                        f"({u_start}–{u_end}) mais planifié le {a.day} "
+                        f"{a.start_time}–{a.end_time}."
+                    )
+                    break
+
+        # --- Hard day_off constraints respected ---
+        hard_day_off = [c for c in school_data.constraints if c.type == "hard" and c.category == "day_off"]
+        for c in hard_day_off:
+            p = c.parameters or {}
+            blocked_day = str(p.get("day", "") or "")
+            blocked_session = str(p.get("session", "all") or "all")
+            if not blocked_day:
+                continue
+            for a in self.assignments:
+                if a.day != blocked_day:
+                    continue
+                if blocked_session == "all":
+                    violations.append(
+                        f"Contrainte day_off violée ({blocked_day}): "
+                        f"{a.school_class}/{a.subject} {a.start_time}–{a.end_time}."
+                    )
+                    continue
+                session_def = next(
+                    (
+                        s
+                        for d in school_data.timeslot_config.days
+                        if d.name == blocked_day
+                        for s in d.sessions
+                        if s.name == blocked_session
+                    ),
+                    None,
+                )
+                if session_def is None:
+                    continue
+                if to_min(a.start_time) < to_min(session_def.end_time) and to_min(session_def.start_time) < to_min(a.end_time):
+                    violations.append(
+                        f"Contrainte day_off violée ({blocked_day}/{blocked_session}): "
+                        f"{a.school_class}/{a.subject} {a.start_time}–{a.end_time}."
+                    )
+
+        # --- Hard max_consecutive respected on declared scope ---
+        hard_max_consecutive = [
+            c for c in school_data.constraints
+            if c.type == "hard" and c.category == "max_consecutive"
+        ]
+        for c in hard_max_consecutive:
+            p = c.parameters or {}
+            limit = int(p.get("max_consecutive", p.get("max_hours", 0)) or 0)
+            if limit <= 0:
+                continue
+            teacher_filter = str(p.get("teacher", "") or "")
+            subject_filter = str(p.get("subject", "") or "")
+            class_filter = str(p.get("school_class", "") or "")
+
+            by_day: dict[str, list[Assignment]] = defaultdict(list)
+            for a in self.assignments:
+                if teacher_filter and a.teacher != teacher_filter:
+                    continue
+                if subject_filter and a.subject != subject_filter:
+                    continue
+                if class_filter and a.school_class != class_filter:
+                    continue
+                by_day[a.day].append(a)
+
+            for day, items in by_day.items():
+                items.sort(key=lambda x: to_min(x.start_time))
+                if not items:
+                    continue
+                best = 1
+                run = 1
+                for i in range(1, len(items)):
+                    prev = items[i - 1]
+                    cur = items[i]
+                    contiguous = cur.start_time == prev.end_time
+                    same_subject = (not subject_filter) or (cur.subject == prev.subject)
+                    if contiguous and same_subject:
+                        run += 1
+                        best = max(best, run)
+                    else:
+                        run = 1
+                if best > limit:
+                    scope = teacher_filter or class_filter or "global"
+                    violations.append(
+                        f"Contrainte max_consecutive violée ({scope}, {day}) : "
+                        f"{best} consécutifs > limite {limit}."
+                    )
 
         # --- Teacher max hours respected ---
         teacher_actual: dict[str, int] = defaultdict(int)

@@ -1,6 +1,7 @@
 'use client'
 import { ChevronRight } from 'lucide-react'
 import type { SchoolData } from '@/lib/types'
+import type { SolveMode } from '@/lib/api'
 import EcoleStep      from './steps/EcoleStep'
 import ClassCardsStep from './steps/ClassCardsStep'
 import GenerationStep from './steps/GenerationStep'
@@ -20,6 +21,9 @@ interface Props {
   onNext: () => void
   onGenerate: () => void
   isSolving: boolean
+  solveEstimate: any | null
+  solveMode: SolveMode
+  onSolveModeChange: (mode: SolveMode) => void
 }
 
 export default function StepPanel({
@@ -31,6 +35,9 @@ export default function StepPanel({
   onNext,
   onGenerate,
   isSolving,
+  solveEstimate,
+  solveMode,
+  onSolveModeChange,
 }: Props) {
   return (
     <div className="flex flex-col h-full overflow-hidden">
@@ -58,6 +65,9 @@ export default function StepPanel({
             assignments={assignments}
             onGenerate={onGenerate}
             isSolving={isSolving}
+            solveEstimate={solveEstimate}
+            solveMode={solveMode}
+            onSolveModeChange={onSolveModeChange}
           />
         )}
       </div>

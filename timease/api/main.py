@@ -12,8 +12,11 @@ load_dotenv()
 
 import dataclasses
 import json
+import logging
+import multiprocessing
 import os
 import tempfile
+import time
 import uuid
 from pathlib import Path
 
@@ -23,6 +26,7 @@ from fastapi.responses import FileResponse
 from pydantic import BaseModel
 
 app = FastAPI(title="TIMEASE API", version="1.0.0")
+logger = logging.getLogger(__name__)
 
 
 def _allowed_origins() -> list[str]:
@@ -110,10 +114,39 @@ def _norm_curriculum(d: dict) -> dict:
 
 
 def _norm_constraint(d: dict) -> dict:
+    category_raw = d.get("category", "")
+    category_aliases = {
+        "one_teacher_per_subject_class": "one_teacher_per_subject_per_class",
+    }
+    category = category_aliases.get(category_raw, category_raw)
+    category_type_map = {
+        "start_time": "hard",
+        "start_time_exceptions": "hard",
+        "day_off": "hard",
+        "max_consecutive": "hard",
+        "subject_on_days": "hard",
+        "subject_not_on_days": "hard",
+        "subject_not_last_slot": "hard",
+        "min_break_between": "hard",
+        "fixed_assignment": "hard",
+        "one_teacher_per_subject_per_class": "hard",
+        "min_sessions_per_day": "hard",
+        "teacher_time_preference": "soft",
+        "teacher_fallback_preference": "soft",
+        "balanced_daily_load": "soft",
+        "subject_spread": "soft",
+        "heavy_subjects_morning": "soft",
+        "teacher_compact_schedule": "soft",
+        "same_room_for_class": "soft",
+        "teacher_day_off": "soft",
+        "no_subject_back_to_back": "soft",
+        "light_last_day": "soft",
+    }
+    normalized_type = category_type_map.get(category, d.get("type", "hard"))
     return {
         "id":             d.get("id") or str(uuid.uuid4())[:8],
-        "type":           d.get("type", "hard"),
-        "category":       d.get("category", ""),
+        "type":           normalized_type,
+        "category":       category,
         "description_fr": d.get("description_fr") or d.get("description", ""),
         "priority":       int(d.get("priority", 5)),
         "parameters":     d.get("parameters", {}),
@@ -192,6 +225,7 @@ def _norm_timeslot_config(sd: dict) -> "TimeslotConfig":
 # ── In-memory session store ────────────────────────────────────────────────────
 
 sessions: dict[str, dict] = {}
+job_runtime_handles: dict[str, dict] = {}
 
 
 class SessionData(BaseModel):
@@ -200,6 +234,8 @@ class SessionData(BaseModel):
     timetable_result: dict = {}
     last_conflict_reports: list[dict] = []
     last_solve_issues: dict = {}
+    snapshots: list[dict] = []
+    jobs: list[dict] = []
 
 
 # ── Data merge helpers ────────────────────────────────────────────────────────
@@ -235,6 +271,105 @@ def _upsert_composite(existing: list, new_items: list, keys: list[str]) -> list:
     return result
 
 
+def _estimate_solve_complexity(school_data: dict, teacher_assignments: list[dict]) -> dict:
+    """Return a lightweight solve complexity estimate and suggested timeout."""
+    classes = school_data.get("classes", []) or []
+    curriculum = school_data.get("curriculum", []) or []
+    constraints = school_data.get("constraints", []) or []
+    days = school_data.get("days", []) or []
+    rooms = school_data.get("rooms", []) or []
+    teachers = school_data.get("teachers", []) or []
+
+    sessions_total = 0
+    for row in curriculum:
+        sessions = int(row.get("sessions_per_week", 1) or 1)
+        sessions_total += max(1, sessions)
+
+    n_days = max(1, len(days))
+    n_hard = sum(1 for c in constraints if _norm_constraint(c).get("type") == "hard")
+    n_soft = max(0, len(constraints) - n_hard)
+
+    assign_pairs = {
+        (a.get("school_class", ""), a.get("subject", ""))
+        for a in teacher_assignments
+    }
+    curriculum_pairs = {
+        (c.get("school_class", ""), c.get("subject", ""))
+        for c in curriculum
+    }
+    assignment_coverage = 0.0
+    if curriculum_pairs:
+        assignment_coverage = len(assign_pairs & curriculum_pairs) / len(curriculum_pairs)
+
+    room_pressure = 1.0
+    has_rooms = len(rooms) > 0
+    if classes and has_rooms:
+        room_pressure = len(rooms) / len(classes)
+    room_penalty = max(0.0, (1.0 - room_pressure) * 12.0) if has_rooms else 0.0
+
+    score = (
+        sessions_total * 1.2
+        + len(classes) * 2.0
+        + len(curriculum) * 0.9
+        + n_hard * 2.5
+        + n_soft * 0.8
+        + n_days * 1.5
+        + max(0, (len(classes) - len(teachers)) * 1.0)
+        + room_penalty
+        + max(0, (1.0 - assignment_coverage) * 10.0)
+    )
+
+    if score < 95:
+        tier = "fast"
+        label = "Rapide"
+        suggested_timeout_seconds = 60
+        predicted_seconds = "10-30 s"
+    elif score < 190:
+        tier = "medium"
+        label = "Moyen"
+        suggested_timeout_seconds = 120
+        predicted_seconds = "30-90 s"
+    else:
+        tier = "long"
+        label = "Long"
+        suggested_timeout_seconds = 240
+        predicted_seconds = "90-240 s"
+
+    factors: list[str] = []
+    if sessions_total >= 120:
+        factors.append("beaucoup de sessions hebdomadaires à placer")
+    if n_hard >= 8:
+        factors.append("volume important de contraintes dures")
+    if not has_rooms:
+        factors.append("aucune salle définie (ne bloque pas si les matières n'en exigent pas)")
+    elif room_pressure < 0.8:
+        factors.append("pression sur les salles")
+    if assignment_coverage < 0.9:
+        factors.append("affectations enseignant/matière incomplètes")
+    if not factors:
+        factors.append("complexité standard")
+
+    return {
+        "tier": tier,
+        "label": label,
+        "score": round(score, 1),
+        "predicted_seconds": predicted_seconds,
+        "suggested_timeout_seconds": suggested_timeout_seconds,
+        "factors": factors,
+        "inputs": {
+            "classes": len(classes),
+            "teachers": len(teachers),
+            "rooms": len(rooms),
+            "curriculum_entries": len(curriculum),
+            "sessions_total": sessions_total,
+            "hard_constraints": n_hard,
+            "soft_constraints": n_soft,
+            "days": len(days),
+            "assignment_coverage": round(assignment_coverage, 2),
+        },
+    }
+
+
 # ── Session management ─────────────────────────────────────────────────────────
 
 @app.post("/api/session")
@@ -248,6 +383,7 @@ def create_session():
 def get_session(sid: str):
     if sid not in sessions:
         raise HTTPException(404, "Session not found")
+    _poll_jobs(sid)
     return sessions[sid]
 
 
@@ -264,6 +400,8 @@ def restore_session(sid: str, payload: dict):
         sessions[sid]["timetable_result"] = payload["timetable_result"]
     if "last_conflict_reports" in payload:
         sessions[sid]["last_conflict_reports"] = payload["last_conflict_reports"]
+    sessions[sid].setdefault("snapshots", [])
+    sessions[sid].setdefault("jobs", [])
     return {"ok": True}
 
 
@@ -283,6 +421,245 @@ def put_assignments(sid: str, payload: dict):
         raise HTTPException(404, "Session not found")
     sessions[sid]["teacher_assignments"] = payload.get("assignments", [])
     return {"ok": True}
+
+
+def _next_snapshot_name(existing: list[dict], school_data: dict) -> str:
+    school_name = str(school_data.get("name", "") or "").strip() or "École"
+    prefix = f"{school_name} v"
+    version_numbers: list[int] = []
+    for snap in existing:
+        name = str(snap.get("name", "") or "")
+        if not name.startswith(prefix):
+            continue
+        suffix = name[len(prefix):].strip()
+        if suffix.isdigit():
+            version_numbers.append(int(suffix))
+    next_num = (max(version_numbers) + 1) if version_numbers else 1
+    return f"{school_name} v{next_num}"
+
+
+@app.post("/api/session/{sid}/snapshots")
+def create_snapshot(sid: str, payload: dict = {}):
+    if sid not in sessions:
+        raise HTTPException(404, "Session not found")
+    snapshots = sessions[sid].setdefault("snapshots", [])
+    snap_id = str(uuid.uuid4())[:8]
+    school_data = payload.get("school_data", sessions[sid].get("school_data", {}))
+    name = str(payload.get("name", "") or "").strip() or _next_snapshot_name(snapshots, school_data)
+    snapshot = {
+        "id": snap_id,
+        "name": name,
+        "created_at": time.time(),
+        "school_data": school_data,
+        "teacher_assignments": payload.get("teacher_assignments", sessions[sid].get("teacher_assignments", [])),
+    }
+    snapshots.append(snapshot)
+    return {"snapshot": snapshot}
+
+
+@app.get("/api/session/{sid}/snapshots")
+def list_snapshots(sid: str):
+    if sid not in sessions:
+        raise HTTPException(404, "Session not found")
+    return {"snapshots": sessions[sid].get("snapshots", [])}
+
+
+@app.patch("/api/session/{sid}/snapshots/{snapshot_id}")
+def rename_snapshot(sid: str, snapshot_id: str, payload: dict = {}):
+    if sid not in sessions:
+        raise HTTPException(404, "Session not found")
+    new_name = str(payload.get("name", "") or "").strip()
+    if not new_name:
+        raise HTTPException(400, "Le nom de la version est requis.")
+    snapshots = sessions[sid].setdefault("snapshots", [])
+    snapshot = next((s for s in snapshots if s.get("id") == snapshot_id), None)
+    if snapshot is None:
+        raise HTTPException(404, "Snapshot not found")
+    snapshot["name"] = new_name
+    return {"snapshot": snapshot}
+
+
+@app.post("/api/session/{sid}/snapshots/{snapshot_id}/duplicate")
+def duplicate_snapshot(sid: str, snapshot_id: str):
+    if sid not in sessions:
+        raise HTTPException(404, "Session not found")
+    snapshots = sessions[sid].setdefault("snapshots", [])
+    source = next((s for s in snapshots if s.get("id") == snapshot_id), None)
+    if source is None:
+        raise HTTPException(404, "Snapshot not found")
+    clone = {
+        "id": str(uuid.uuid4())[:8],
+        "name": f"{source.get('name', 'Version')} (copie)",
+        "created_at": time.time(),
+        "school_data": json.loads(json.dumps(source.get("school_data", {}))),
+        "teacher_assignments": json.loads(json.dumps(source.get("teacher_assignments", []))),
+    }
+    snapshots.append(clone)
+    return {"snapshot": clone}
+
+
+@app.delete("/api/session/{sid}/snapshots/{snapshot_id}")
+def delete_snapshot(sid: str, snapshot_id: str):
+    if sid not in sessions:
+        raise HTTPException(404, "Session not found")
+    _poll_jobs(sid)
+    snapshots = sessions[sid].setdefault("snapshots", [])
+    jobs = sessions[sid].setdefault("jobs", [])
+
+    snap_idx = next((i for i, s in enumerate(snapshots) if s.get("id") == snapshot_id), None)
+    if snap_idx is None:
+        raise HTTPException(404, "Snapshot not found")
+
+    blocking_job = next(
+        (
+            j for j in jobs
+            if j.get("snapshot_id") == snapshot_id
+            and j.get("status") in {"running", "queued"}
+        ),
+        None,
+    )
+    if blocking_job is not None:
+        raise HTTPException(
+            409,
+            "La version est utilisée par un job en cours. Arrêtez le job avant suppression.",
+        )
+
+    snapshots.pop(snap_idx)
+    kept_jobs = [j for j in jobs if j.get("snapshot_id") != snapshot_id]
+    removed_count = len(jobs) - len(kept_jobs)
+    sessions[sid]["jobs"] = kept_jobs
+
+    for job in jobs:
+        if job.get("snapshot_id") == snapshot_id:
+            job_runtime_handles.pop(str(job.get("id", "")), None)
+
+    return {"ok": True, "deleted_jobs": removed_count}
+
+
+@app.post("/api/session/{sid}/jobs")
+def create_job(sid: str, payload: dict):
+    if sid not in sessions:
+        raise HTTPException(404, "Session not found")
+    _poll_jobs(sid)
+    snapshots = sessions[sid].setdefault("snapshots", [])
+    jobs = sessions[sid].setdefault("jobs", [])
+    snapshot_id = str(payload.get("snapshot_id", "") or "")
+    snapshot = next((s for s in snapshots if s.get("id") == snapshot_id), None)
+    if snapshot is None:
+        raise HTTPException(404, "Snapshot not found")
+
+    requested_timeout = int(payload.get("timeout", 120))
+    solve_mode = str(payload.get("mode", "balanced") or "balanced").strip().lower()
+    request_id = str(payload.get("request_id", "") or "").strip()
+    estimate = _estimate_solve_complexity(snapshot.get("school_data", {}), snapshot.get("teacher_assignments", []))
+    adaptive_timeout = int(estimate.get("suggested_timeout_seconds", 120))
+    mode_timeout_map = {"fast": 60, "balanced": 180, "complete": 360}
+    mode_floor = mode_timeout_map.get(solve_mode, 180)
+    effective_timeout = min(max(max(requested_timeout, adaptive_timeout, mode_floor), 30), 900)
+
+    job_id = str(uuid.uuid4())[:10]
+    now = time.time()
+    job = {
+        "id": job_id,
+        "snapshot_id": snapshot_id,
+        "status": "running",
+        "mode": solve_mode,
+        "request_id": request_id,
+        "requested_timeout_seconds": requested_timeout,
+        "adaptive_timeout_seconds": adaptive_timeout,
+        "effective_timeout_seconds": effective_timeout,
+        "created_at": now,
+        "started_at": now,
+        "finished_at": None,
+        "estimate": estimate,
+        "result": None,
+    }
+    jobs.append(job)
+
+    out_q: multiprocessing.Queue = multiprocessing.Queue()
+    proc = multiprocessing.Process(
+        target=_run_solver_worker,
+        args=({
+            "school_data": snapshot.get("school_data", {}),
+            "teacher_assignments": snapshot.get("teacher_assignments", []),
+            "effective_timeout_seconds": effective_timeout,
+        }, out_q),
+        daemon=True,
+    )
+    proc.start()
+    job_runtime_handles[job_id] = {"process": proc, "queue": out_q, "sid": sid}
+    return {"job": job}
+
+
+@app.get("/api/session/{sid}/jobs")
+def list_jobs(sid: str):
+    if sid not in sessions:
+        raise HTTPException(404, "Session not found")
+    _poll_jobs(sid)
+    return {"jobs": sessions[sid].get("jobs", [])}
+
+
+@app.get("/api/session/{sid}/jobs/{job_id}")
+def get_job(sid: str, job_id: str):
+    if sid not in sessions:
+        raise HTTPException(404, "Session not found")
+    _poll_jobs(sid)
+    job = next((j for j in sessions[sid].get("jobs", []) if j.get("id") == job_id), None)
+    if job is None:
+        raise HTTPException(404, "Job not found")
+    return {"job": job}
+
+
+@app.post("/api/session/{sid}/jobs/{job_id}/cancel")
+def cancel_job(sid: str, job_id: str):
+    if sid not in sessions:
+        raise HTTPException(404, "Session not found")
+    job = next((j for j in sessions[sid].get("jobs", []) if j.get("id") == job_id), None)
+    if job is None:
+        raise HTTPException(404, "Job not found")
+    if job.get("status") not in {"running", "queued"}:
+        return {"ok": True, "job": job}
+    handle = job_runtime_handles.get(job_id)
+    if handle and handle.get("process") is not None:
+        proc = handle["process"]
+        if proc.is_alive():
+            proc.terminate()
+            proc.join(timeout=1)
+    job_runtime_handles.pop(job_id, None)
+    job["status"] = "cancelled"
+    job["finished_at"] = time.time()
+    job["result"] = {
+        "status": "CANCELLED",
+        "solved": False,
+        "conflict_summary": "Génération arrêtée par l'utilisateur.",
+    }
+    return {"ok": True, "job": job}
+
+
+@app.delete("/api/session/{sid}/jobs/{job_id}")
+def delete_job(sid: str, job_id: str):
+    if sid not in sessions:
+        raise HTTPException(404, "Session not found")
+    _poll_jobs(sid)
+    jobs = sessions[sid].get("jobs", [])
+    idx = next((i for i, j in enumerate(jobs) if j.get("id") == job_id), None)
+    if idx is None:
+        raise HTTPException(404, "Job not found")
+    job = jobs[idx]
+    if job.get("status") in {"running", "queued"}:
+        raise HTTPException(409, "Le job est en cours. Arrêtez-le avant suppression.")
+    jobs.pop(idx)
+    job_runtime_handles.pop(job_id, None)
+    return {"ok": True}
+
+
+@app.get("/api/session/{sid}/solve-estimate")
+def solve_estimate(sid: str):
+    if sid not in sessions:
+        raise HTTPException(404, "Session not found")
+    sd = sessions[sid]["school_data"]
+    ta = sessions[sid]["teacher_assignments"]
+    return _estimate_solve_complexity(sd, ta)
 
 # ── File upload ────────────────────────────────────────────────────────────────
 
@@ -368,12 +745,174 @@ def _group_unscheduled(unscheduled: list[dict]) -> list[dict]:
     ]
 
 
+def _run_solver_worker(payload: dict, out_q: "multiprocessing.Queue") -> None:
+    """
+    Isolated worker process for long solve jobs.
+    Returns a JSON-serializable payload through out_q.
+    """
+    try:
+        from timease.engine.models import (
+            Constraint, CurriculumEntry, Room, School, SchoolClass,
+            SchoolData, Subject, Teacher, TeacherAssignment,
+        )
+        from timease.engine.solver import TimetableSolver
+        from timease.utils.teacher_colors import teacher_color_map
+
+        sd = payload["school_data"]
+        ta = payload["teacher_assignments"]
+        timeout = int(payload["effective_timeout_seconds"])
+
+        school_obj = SchoolData(
+            school=School(
+                name=sd.get("name", ""),
+                academic_year=sd.get("academic_year", ""),
+                city=sd.get("city", ""),
+            ),
+            timeslot_config=_norm_timeslot_config(sd),
+            subjects=[Subject(**_norm_subject(s)) for s in sd.get("subjects", [])],
+            teachers=[Teacher(**_norm_teacher(t)) for t in sd.get("teachers", [])],
+            classes=[SchoolClass(**_norm_class(c)) for c in sd.get("classes", [])],
+            rooms=[Room(**_norm_room(r)) for r in sd.get("rooms", [])],
+            curriculum=[CurriculumEntry(**_norm_curriculum(e)) for e in sd.get("curriculum", [])],
+            constraints=[Constraint(**_norm_constraint(c)) for c in sd.get("constraints", [])],
+            teacher_assignments=[
+                TeacherAssignment(**_pick(a, ["teacher", "subject", "school_class"]))
+                for a in ta
+            ],
+        )
+
+        validation_errors = school_obj.validate()
+        if validation_errors:
+            summary = "**Erreurs de validation :**\n" + "\n".join(f"- {e}" for e in validation_errors)
+            out_q.put({
+                "status": "INFEASIBLE",
+                "solved": False,
+                "conflict_summary": summary,
+                "errors": validation_errors,
+            })
+            return
+
+        result = TimetableSolver().solve(school_obj, timeout_seconds=timeout)
+
+        if result.solved or result.partial:
+            teacher_colors = teacher_color_map([t.name for t in school_obj.teachers])
+            unscheduled_grouped = _group_unscheduled(result.unscheduled_sessions)
+            status = "OPTIMAL" if result.solved and not result.partial else "PARTIAL"
+            out_q.put({
+                "status": status,
+                "solved": True,
+                "assignments": [
+                    {
+                        "school_class": a.school_class,
+                        "subject": a.subject,
+                        "teacher": a.teacher,
+                        "room": a.room or "",
+                        "day": a.day,
+                        "start_time": a.start_time,
+                        "end_time": a.end_time,
+                        "color": teacher_colors.get(a.teacher, "#0d9488"),
+                    }
+                    for a in result.assignments
+                ],
+                "solve_time": result.solve_time_seconds,
+                "days": [d.name for d in school_obj.timeslot_config.days],
+                "soft_results": result.soft_constraint_details,
+                "warnings": result.warnings,
+                "unscheduled": result.unscheduled_sessions,
+                "unscheduled_groups": unscheduled_grouped,
+            })
+            return
+
+        raw_reasons = [
+            str(c.get("reason", "")).upper()
+            for c in (result.conflicts or [])
+            if isinstance(c, dict)
+        ]
+        if any("UNKNOWN" in r for r in raw_reasons):
+            out_q.put({
+                "status": "TIMEOUT",
+                "solved": False,
+                "solve_time": result.solve_time_seconds,
+                "warnings": result.warnings,
+                "conflict_summary": (
+                    "Limite de calcul atteinte avant de trouver une solution. "
+                    "Essayez de simplifier certaines contraintes dures ou de relancer."
+                ),
+            })
+            return
+
+        out_q.put({
+            "status": "INFEASIBLE",
+            "solved": False,
+            "conflict_summary": "Aucune solution trouvée avec les données actuelles.",
+        })
+    except Exception as exc:
+        out_q.put({
+            "status": "ERROR",
+            "solved": False,
+            "errors": [str(exc)],
+            "conflict_summary": str(exc),
+        })
+
+
+def _poll_jobs(sid: str) -> None:
+    if sid not in sessions:
+        return
+    now = time.time()
+    jobs = sessions[sid].setdefault("jobs", [])
+    for job in jobs:
+        if job.get("status") not in {"running", "queued"}:
+            continue
+        handle = job_runtime_handles.get(job["id"])
+        if not handle:
+            continue
+        proc = handle.get("process")
+        out_q = handle.get("queue")
+        if proc is None or out_q is None:
+            continue
+        if proc.is_alive():
+            continue
+        payload = None
+        try:
+            if not out_q.empty():
+                payload = out_q.get_nowait()
+        except Exception:
+            payload = None
+
+        if payload is None:
+            job["status"] = "failed"
+            job["error"] = "Le solveur s'est arrêté sans résultat."
+            job["finished_at"] = now
+            continue
+
+        job["status"] = str(payload.get("status", "failed")).lower()
+        if job["status"] == "optimal":
+            job["status"] = "done"
+        elif job["status"] == "partial":
+            job["status"] = "done"
+        elif job["status"] == "timeout":
+            job["status"] = "timeout"
+        elif job["status"] == "infeasible":
+            job["status"] = "failed"
+        elif job["status"] == "error":
+            job["status"] = "failed"
+        job["result"] = payload
+        job["finished_at"] = now
+        job_runtime_handles.pop(job["id"], None)
+
+        if payload.get("solved"):
+            sessions[sid]["timetable_result"] = payload
+            sessions[sid]["last_conflict_reports"] = []
+
+
 @app.post("/api/session/{sid}/solve")
 def solve(sid: str, payload: dict = {}):
     if sid not in sessions:
         raise HTTPException(404, "Session not found")
 
-    timeout = int(payload.get("timeout", 120))
+    requested_timeout = int(payload.get("timeout", 120))
+    solve_mode = str(payload.get("mode", "balanced") or "balanced").strip().lower()
+    request_id = str(payload.get("request_id", "") or "").strip()
     sd      = sessions[sid]["school_data"]
     ta      = sessions[sid]["teacher_assignments"]
 
@@ -410,10 +949,41 @@ def solve(sid: str, payload: dict = {}):
             )
             return {"status": "INFEASIBLE", "solved": False, "conflict_summary": conflict_summary, "errors": validation_errors}
 
-        result = TimetableSolver().solve(school_obj, timeout_seconds=timeout)
+        estimate = _estimate_solve_complexity(sd, ta)
+        adaptive_timeout = int(estimate.get("suggested_timeout_seconds", 120))
+        mode_timeout_map = {
+            "fast": 60,
+            "balanced": 180,
+            "complete": 360,
+        }
+        mode_floor = mode_timeout_map.get(solve_mode, 180)
+        effective_timeout = max(requested_timeout, adaptive_timeout, mode_floor)
+        effective_timeout = min(max(effective_timeout, 30), 900)
+        wall_start = time.perf_counter()
+        logger.info(
+            "Solve request started sid=%s request_id=%s mode=%s requested_timeout=%s adaptive_timeout=%s effective_timeout=%s",
+            sid,
+            request_id or "-",
+            solve_mode,
+            requested_timeout,
+            adaptive_timeout,
+            effective_timeout,
+        )
+        result = TimetableSolver().solve(school_obj, timeout_seconds=effective_timeout)
+        api_wall_time = round(time.perf_counter() - wall_start, 3)
+        logger.info(
+            "Solve request finished sid=%s request_id=%s solved=%s partial=%s solve_time=%s api_wall=%s",
+            sid,
+            request_id or "-",
+            result.solved,
+            result.partial,
+            result.solve_time_seconds,
+            api_wall_time,
+        )
 
         if result.solved or result.partial:
-            subj_colors = {s.name: s.color for s in school_obj.subjects}
+            from timease.utils.teacher_colors import teacher_color_map
+            teacher_colors = teacher_color_map([t.name for t in school_obj.teachers])
             unscheduled_grouped = _group_unscheduled(result.unscheduled_sessions)
             timetable = {
                 "assignments": [
@@ -425,7 +995,7 @@ def solve(sid: str, payload: dict = {}):
                         "day":          a.day,
                         "start_time":   a.start_time,
                         "end_time":     a.end_time,
-                        "color":        subj_colors.get(a.subject, "#0d9488"),
+                        "color":        teacher_colors.get(a.teacher, "#0d9488"),
                     }
                     for a in result.assignments
                 ],
@@ -435,6 +1005,14 @@ def solve(sid: str, payload: dict = {}):
                 "warnings":      result.warnings,
                 "unscheduled":   result.unscheduled_sessions,
                 "unscheduled_groups": unscheduled_grouped,
+                "diagnostics": {
+                    "request_id": request_id,
+                    "mode": solve_mode,
+                    "requested_timeout_seconds": requested_timeout,
+                    "adaptive_timeout_seconds": adaptive_timeout,
+                    "effective_timeout_seconds": effective_timeout,
+                    "api_wall_time_seconds": api_wall_time,
+                },
             }
             sessions[sid]["timetable_result"] = timetable
             sessions[sid]["last_conflict_reports"] = []
@@ -449,6 +1027,35 @@ def solve(sid: str, payload: dict = {}):
             else:
                 sessions[sid]["last_solve_issues"] = {}
             return {"status": status, "solved": True, **timetable}
+
+        # Timeout (UNKNOWN) — explicit status and guidance
+        raw_reasons = [
+            str(c.get("reason", "")).upper()
+            for c in (result.conflicts or [])
+            if isinstance(c, dict)
+        ]
+        is_timeout = (
+            any("UNKNOWN" in r for r in raw_reasons)
+            and result.solve_time_seconds >= max(1, effective_timeout - 2)
+        )
+        if is_timeout:
+            summary = (
+                "Limite de calcul atteinte avant de trouver une solution. "
+                "Essayez de simplifier certaines contraintes dures ou de relancer."
+            )
+            return {
+                "status": "TIMEOUT",
+                "solved": False,
+                "solve_time": result.solve_time_seconds,
+                "request_id": request_id,
+                "mode": solve_mode,
+                "requested_timeout_seconds": requested_timeout,
+                "adaptive_timeout_seconds": adaptive_timeout,
+                "effective_timeout_seconds": effective_timeout,
+                "conflict_summary": summary,
+                "warnings": result.warnings,
+                "estimate": estimate,
+            }
 
         # Infeasible — run conflict analyzer
         conflict_summary = ""

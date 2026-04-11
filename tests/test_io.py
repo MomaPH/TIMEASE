@@ -144,6 +144,37 @@ def test_export_excel_has_all_perspectives(dakar_result, dakar_data, tmp_path: P
     assert "Par matière" in names,               f"No subject summary in {names}"
 
 
+def test_export_excel_teacher_colors_not_subject_colors(dakar_result, dakar_data, tmp_path: Path) -> None:
+    """Class sheet cells should use teacher color coding."""
+    from timease.io.excel_export import export_timetable
+    from timease.utils.teacher_colors import teacher_color
+
+    xlsx = tmp_path / "teacher-colors.xlsx"
+    export_timetable(dakar_result, dakar_data, str(xlsx), perspectives=["class"])
+    wb = load_workbook(str(xlsx))
+    class_sheet_name = next(n for n in wb.sheetnames if n.startswith("Classe"))
+    ws = wb[class_sheet_name]
+
+    # Find first scheduled cell on class sheet
+    target = None
+    for row in range(2, ws.max_row + 1):
+        for col in range(2, ws.max_column + 1):
+            val = ws.cell(row=row, column=col).value
+            if isinstance(val, str) and "\n" in val:
+                target = ws.cell(row=row, column=col)
+                break
+        if target is not None:
+            break
+
+    assert target is not None, "No scheduled cell found on class sheet"
+    lines = str(target.value).split("\n")
+    assert len(lines) >= 2
+    teacher = lines[1]
+    expected = teacher_color(teacher).lstrip("#").upper()
+    actual = target.fill.fgColor.rgb[-6:].upper() if target.fill.fgColor and target.fill.fgColor.rgb else ""
+    assert actual == expected
+
+
 def test_export_maguette_both_subjects(dakar_result, dakar_data, tmp_path: Path) -> None:
     """Markdown export contains both subjects that Maguette teaches."""
     from timease.io.md_export import export_markdown
@@ -198,6 +229,250 @@ def test_export_markdown_has_all_classes(dakar_result, dakar_data, tmp_path: Pat
         assert cls.name in content, f"Class '{cls.name}' missing from markdown"
 
 
+def test_api_estimation_endpoint_exists() -> None:
+    from fastapi.testclient import TestClient
+    from timease.api.main import app
+
+    client = TestClient(app)
+    sid = client.post("/api/session").json()["session_id"]
+    est = client.get(f"/api/session/{sid}/solve-estimate")
+    assert est.status_code == 200
+    data = est.json()
+    assert "suggested_timeout_seconds" in data
+
+
+def test_api_estimation_no_room_pressure_when_no_rooms() -> None:
+    from fastapi.testclient import TestClient
+    from timease.api.main import app
+
+    client = TestClient(app)
+    sid = client.post("/api/session").json()["session_id"]
+    client.put(
+        f"/api/session/{sid}/school_data",
+        json={
+            "classes": [{"name": "6e A", "level": "Collège", "student_count": 30}],
+            "rooms": [],
+            "curriculum": [],
+            "constraints": [],
+            "days": [],
+            "teachers": [],
+        },
+    )
+    est = client.get(f"/api/session/{sid}/solve-estimate")
+    assert est.status_code == 200
+    factors = est.json().get("factors", [])
+    assert any("aucune salle définie" in f for f in factors)
+    assert not any("pression sur les salles" in f for f in factors)
+
+
+def test_api_solve_mode_enforces_timeout_floor(dakar_data: SchoolData, monkeypatch: pytest.MonkeyPatch) -> None:
+    from fastapi.testclient import TestClient
+    from timease.api.main import app
+    from timease.engine.models import SchoolData as EngineSchoolData, TimetableResult
+    from timease.engine.solver import TimetableSolver
+
+    seen: dict[str, int] = {}
+
+    def fake_solve(self, data, timeout_seconds=30):  # noqa: ANN001
+        seen["timeout"] = int(timeout_seconds)
+        return TimetableResult(
+            assignments=[],
+            solved=False,
+            solve_time_seconds=float(max(1, timeout_seconds - 1)),
+            conflicts=[{"reason": "UNKNOWN"}],
+        )
+
+    monkeypatch.setattr(TimetableSolver, "solve", fake_solve)
+    monkeypatch.setattr(EngineSchoolData, "validate", lambda self: [])
+
+    client = TestClient(app)
+    sid = client.post("/api/session").json()["session_id"]
+    client.post(
+        f"/api/session/{sid}/restore",
+        json={
+            "school_data": dataclasses.asdict(dakar_data),
+            "teacher_assignments": [
+                {
+                    "teacher": ta.teacher,
+                    "subject": ta.subject,
+                    "school_class": ta.school_class,
+                }
+                for ta in dakar_data.teacher_assignments
+            ],
+        },
+    )
+
+    res = client.post(
+        f"/api/session/{sid}/solve",
+        json={"timeout": 10, "mode": "complete", "request_id": "test-mode-floor"},
+    )
+    assert res.status_code == 200
+    body = res.json()
+    assert body["status"] == "TIMEOUT"
+    assert seen["timeout"] >= 360
+    assert body["effective_timeout_seconds"] >= 360
+
+
+def test_api_job_lifecycle_create_cancel_delete(dakar_data: SchoolData) -> None:
+    from fastapi.testclient import TestClient
+    from timease.api.main import app
+
+    client = TestClient(app)
+    sid = client.post("/api/session").json()["session_id"]
+
+    snapshot = client.post(
+        f"/api/session/{sid}/snapshots",
+        json={
+            "name": "Version test",
+            "school_data": dataclasses.asdict(dakar_data),
+            "teacher_assignments": [
+                {"teacher": ta.teacher, "subject": ta.subject, "school_class": ta.school_class}
+                for ta in dakar_data.teacher_assignments
+            ],
+        },
+    )
+    assert snapshot.status_code == 200
+    snap_id = snapshot.json()["snapshot"]["id"]
+
+    created = client.post(
+        f"/api/session/{sid}/jobs",
+        json={"snapshot_id": snap_id, "mode": "complete", "request_id": "job-lifecycle"},
+    )
+    assert created.status_code == 200
+    job_id = created.json()["job"]["id"]
+
+    cancelled = client.post(f"/api/session/{sid}/jobs/{job_id}/cancel")
+    assert cancelled.status_code == 200
+    assert cancelled.json()["job"]["status"] == "cancelled"
+
+    deleted = client.delete(f"/api/session/{sid}/jobs/{job_id}")
+    assert deleted.status_code == 200
+    assert deleted.json()["ok"] is True
+
+    listed = client.get(f"/api/session/{sid}/jobs")
+    assert listed.status_code == 200
+    assert all(j["id"] != job_id for j in listed.json().get("jobs", []))
+
+
+def test_api_snapshot_delete_removes_snapshot_and_related_finished_jobs(dakar_data: SchoolData) -> None:
+    from fastapi.testclient import TestClient
+    from timease.api.main import app
+
+    client = TestClient(app)
+    sid = client.post("/api/session").json()["session_id"]
+
+    snapshot = client.post(
+        f"/api/session/{sid}/snapshots",
+        json={
+            "name": "Version à supprimer",
+            "school_data": dataclasses.asdict(dakar_data),
+            "teacher_assignments": [
+                {"teacher": ta.teacher, "subject": ta.subject, "school_class": ta.school_class}
+                for ta in dakar_data.teacher_assignments
+            ],
+        },
+    )
+    assert snapshot.status_code == 200
+    snap_id = snapshot.json()["snapshot"]["id"]
+
+    created = client.post(
+        f"/api/session/{sid}/jobs",
+        json={"snapshot_id": snap_id, "mode": "fast", "request_id": "snapshot-delete"},
+    )
+    assert created.status_code == 200
+    job_id = created.json()["job"]["id"]
+
+    cancelled = client.post(f"/api/session/{sid}/jobs/{job_id}/cancel")
+    assert cancelled.status_code == 200
+
+    deleted = client.delete(f"/api/session/{sid}/snapshots/{snap_id}")
+    assert deleted.status_code == 200
+    body = deleted.json()
+    assert body["ok"] is True
+    assert body["deleted_jobs"] >= 1
+
+    snaps = client.get(f"/api/session/{sid}/snapshots").json().get("snapshots", [])
+    assert all(s["id"] != snap_id for s in snaps)
+
+
+def test_api_snapshot_delete_blocks_when_job_running(dakar_data: SchoolData) -> None:
+    from fastapi.testclient import TestClient
+    from timease.api.main import app, sessions
+
+    client = TestClient(app)
+    sid = client.post("/api/session").json()["session_id"]
+
+    snapshot = client.post(
+        f"/api/session/{sid}/snapshots",
+        json={
+            "name": "Version occupée",
+            "school_data": dataclasses.asdict(dakar_data),
+            "teacher_assignments": [
+                {"teacher": ta.teacher, "subject": ta.subject, "school_class": ta.school_class}
+                for ta in dakar_data.teacher_assignments
+            ],
+        },
+    )
+    assert snapshot.status_code == 200
+    snap_id = snapshot.json()["snapshot"]["id"]
+
+    # Inject a deterministic running job linked to this snapshot.
+    sessions[sid].setdefault("jobs", []).append(
+        {
+            "id": "running-delete-block",
+            "snapshot_id": snap_id,
+            "status": "running",
+            "mode": "complete",
+            "request_id": "snapshot-delete-block",
+            "created_at": 0.0,
+            "started_at": 0.0,
+            "finished_at": None,
+            "estimate": {},
+            "result": None,
+        }
+    )
+
+    blocked = client.delete(f"/api/session/{sid}/snapshots/{snap_id}")
+    assert blocked.status_code == 409
+    assert "job en cours" in blocked.json()["detail"]
+
+
+def test_api_snapshot_rename_happy_path_and_validation(dakar_data: SchoolData) -> None:
+    from fastapi.testclient import TestClient
+    from timease.api.main import app
+
+    client = TestClient(app)
+    sid = client.post("/api/session").json()["session_id"]
+
+    snapshot = client.post(
+        f"/api/session/{sid}/snapshots",
+        json={
+            "name": "Version initiale",
+            "school_data": dataclasses.asdict(dakar_data),
+            "teacher_assignments": [
+                {"teacher": ta.teacher, "subject": ta.subject, "school_class": ta.school_class}
+                for ta in dakar_data.teacher_assignments
+            ],
+        },
+    )
+    assert snapshot.status_code == 200
+    snap_id = snapshot.json()["snapshot"]["id"]
+
+    renamed = client.patch(
+        f"/api/session/{sid}/snapshots/{snap_id}",
+        json={"name": "Version renommée"},
+    )
+    assert renamed.status_code == 200
+    assert renamed.json()["snapshot"]["name"] == "Version renommée"
+
+    invalid = client.patch(
+        f"/api/session/{sid}/snapshots/{snap_id}",
+        json={"name": "   "},
+    )
+    assert invalid.status_code == 400
+    assert "nom de la version" in invalid.json()["detail"].lower()
+
+
 # ---------------------------------------------------------------------------
 # File parser tests
 # ---------------------------------------------------------------------------
@@ -227,4 +502,3 @@ def test_file_parser_unknown_format(tmp_path: Path) -> None:
     assert "non supporté" in content.lower(), (
         f"Expected 'non supporté' in content, got: {content!r}"
     )
-

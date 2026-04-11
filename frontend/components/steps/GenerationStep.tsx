@@ -6,15 +6,27 @@ import { getChecklistItems, getMissingAssignments } from '@/lib/types'
 import { validateHourBarriers } from '@/lib/validation'
 import ValidationErrorPanel from '@/components/ValidationErrorPanel'
 import { useToast } from '@/components/Toast'
+import type { SolveMode } from '@/lib/api'
 
 interface Props {
   data: SchoolData
   assignments: any[]
   onGenerate: () => void
   isSolving: boolean
+  solveEstimate: any | null
+  solveMode: SolveMode
+  onSolveModeChange: (mode: SolveMode) => void
 }
 
-export default function GenerationStep({ data, assignments, onGenerate, isSolving }: Props) {
+export default function GenerationStep({
+  data,
+  assignments,
+  onGenerate,
+  isSolving,
+  solveEstimate,
+  solveMode,
+  onSolveModeChange,
+}: Props) {
   const { toast }       = useToast()
   const checklist        = getChecklistItems(data, assignments)
   const ready            = checklist.every(i => i.done)
@@ -81,6 +93,61 @@ export default function GenerationStep({ data, assignments, onGenerate, isSolvin
             <div className="text-[10px] text-gray-500 dark:text-gray-400 leading-tight">{s.label}</div>
           </div>
         ))}
+      </div>
+
+      {solveEstimate && (
+        <div className="p-3 bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-200 dark:border-indigo-800 rounded-lg space-y-1">
+          <p className="text-xs font-semibold text-indigo-800 dark:text-indigo-200">
+            Estimation de génération: {solveEstimate.label} ({solveEstimate.predicted_seconds})
+          </p>
+          <p className="text-xs text-indigo-700 dark:text-indigo-300">
+            Timeout conseillé: {solveEstimate.suggested_timeout_seconds}s
+          </p>
+          {Array.isArray(solveEstimate.factors) && solveEstimate.factors.length > 0 && (
+            <p className="text-xs text-indigo-700 dark:text-indigo-300">
+              Facteurs: {solveEstimate.factors.slice(0, 3).join(', ')}
+            </p>
+          )}
+        </div>
+      )}
+
+      <div className="p-3 bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-lg space-y-2">
+        <p className="text-xs font-semibold text-gray-700 dark:text-gray-300">Mode de génération</p>
+        <div className="flex flex-wrap gap-2">
+          <button
+            onClick={() => onSolveModeChange('fast')}
+            className={`px-2.5 py-1.5 text-xs rounded border transition-colors ${
+              solveMode === 'fast'
+                ? 'bg-teal-600 text-white border-teal-600'
+                : 'bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700'
+            }`}
+          >
+            Rapide (60s min)
+          </button>
+          <button
+            onClick={() => onSolveModeChange('balanced')}
+            className={`px-2.5 py-1.5 text-xs rounded border transition-colors ${
+              solveMode === 'balanced'
+                ? 'bg-teal-600 text-white border-teal-600'
+                : 'bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700'
+            }`}
+          >
+            Équilibré (180s min)
+          </button>
+          <button
+            onClick={() => onSolveModeChange('complete')}
+            className={`px-2.5 py-1.5 text-xs rounded border transition-colors ${
+              solveMode === 'complete'
+                ? 'bg-teal-600 text-white border-teal-600'
+                : 'bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700'
+            }`}
+          >
+            Complet (360s min)
+          </button>
+        </div>
+        <p className="text-[11px] text-gray-500 dark:text-gray-400">
+          Utilisez "Complet" pour les écoles complexes afin d'éviter les coupures trop tôt.
+        </p>
       </div>
 
       {/* Validation errors */}

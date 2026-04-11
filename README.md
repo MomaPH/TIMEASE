@@ -56,3 +56,9 @@ tests/            # pytest suite
 - [`CLAUDE.md`](CLAUDE.md) — conventions and key file map
 - [`ARCHITECTURE.md`](ARCHITECTURE.md) — system design and data flow
 - [`AI_CONTRACT.md`](AI_CONTRACT.md) — AI layer specification
+
+## Constraint editor and exports
+
+- Constraint creation is guided by category-specific forms in the workspace (no manual JSON needed).
+- Each category and key field includes an "i" help tooltip with beginner-focused, actionable guidance.
+- Timetable colors are teacher-based for both on-screen timetable cards and exported Excel/PDF/Word files.

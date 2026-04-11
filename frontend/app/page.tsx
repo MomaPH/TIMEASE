@@ -45,10 +45,10 @@ export default function HomePage() {
             <ArrowRight size={16} />
           </Link>
           <Link
-            href="/results"
+            href="/workspace"
             className="inline-flex items-center gap-2 px-6 py-3 bg-white dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 font-medium rounded-xl transition-colors shadow-sm border border-zinc-200 dark:border-zinc-700 hover:border-zinc-300 dark:hover:border-zinc-600"
           >
-            Voir un exemple
+            Tutoriel interactif
           </Link>
         </div>
       </div>

@@ -17,6 +17,7 @@ from reportlab.platypus import (
     Table,
     TableStyle,
 )
+from timease.utils.teacher_colors import teacher_color_map
 
 if TYPE_CHECKING:
     from timease.engine.models import Assignment, SchoolData, TimetableResult
@@ -88,7 +89,7 @@ def _build_timetable(
     """Build a reportlab Table for one class or teacher."""
     days = [d.name for d in data.timeslot_config.days]
     base_min = data.timeslot_config.base_unit_minutes
-    subject_colors = {s.name: s.color for s in data.subjects}
+    colors_by_teacher = teacher_color_map([t.name for t in data.teachers])
     day_to_col = {day: i + 1 for i, day in enumerate(days)}
 
     if perspective == "class":
@@ -156,7 +157,7 @@ def _build_timetable(
         ri = row_map[start_time]
         ci = day_to_col[day]
         span = _slot_span(a.start_time, a.end_time, base_min)
-        rl_color = _hex_to_rl(subject_colors.get(a.subject, "#FFFFFF"))
+        rl_color = _hex_to_rl(colors_by_teacher.get(a.teacher, "#FFFFFF"))
 
         if perspective == "class":
             lines = [a.subject, a.teacher] + ([a.room] if a.room else [])

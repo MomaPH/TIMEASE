@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING
 from openpyxl import Workbook
 from openpyxl.styles import Alignment, Font, PatternFill
 from openpyxl.utils import get_column_letter
+from timease.utils.teacher_colors import teacher_color_map
 
 if TYPE_CHECKING:
     from timease.engine.models import Assignment, SchoolData, TimetableResult
@@ -143,7 +144,10 @@ def _add_entity_sheet(
 
     days = [d.name for d in data.timeslot_config.days]
     base_min = data.timeslot_config.base_unit_minutes
-    subject_colors = {s.name: s.color.lstrip("#") for s in data.subjects}
+    teacher_colors = {
+        name: color.lstrip("#")
+        for name, color in teacher_color_map([t.name for t in data.teachers]).items()
+    }
     lookup = _build_lookup(result.assignments, perspective, entity)
     is_teacher = perspective == "teacher"
 
@@ -197,7 +201,7 @@ def _add_entity_sheet(
             if key in lookup:
                 a = lookup[key]
                 span = _slot_span(a.start_time, a.end_time, base_min)
-                color = subject_colors.get(a.subject, "FFFFFF")
+                color = teacher_colors.get(a.teacher, "FFFFFF")
 
                 cell = ws.cell(row=current_row, column=col, value=_cell_text(a, perspective))
                 cell.fill = PatternFill("solid", fgColor=color)

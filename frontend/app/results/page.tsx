@@ -81,6 +81,7 @@ export default function ResultsPage() {
 
   const softResults: { description: string; satisfied: boolean; score: number }[] =
     timetable?.soft_results ?? []
+  const solverWarnings: string[] = timetable?.warnings ?? []
 
   const unscheduled: { school_class?: string; subject?: string; teacher?: string; reason?: string }[] =
     (timetable?.unscheduled ?? []).filter((u: any) => u.subject)
@@ -412,6 +413,21 @@ export default function ResultsPage() {
           )}
         </div>
       </div>
+
+      {solverWarnings.length > 0 && (
+        <div className="mt-4 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-sm p-5">
+          <h2 className="text-sm font-semibold text-zinc-700 dark:text-zinc-300 mb-3">
+            Avertissements du solveur
+          </h2>
+          <div className="space-y-2">
+            {solverWarnings.map((w, i) => (
+              <div key={i} className="text-xs bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg px-3 py-2 text-amber-800 dark:text-amber-200">
+                {w}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   )
 }

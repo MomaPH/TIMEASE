@@ -609,8 +609,11 @@ class TimetableSolver:
                 session_domains=session_domains,
                 tc=tc,
             )
-            for w in builder.apply_all(hard_constraints):
+            hard_warnings = builder.apply_all(hard_constraints)
+            for w in hard_warnings:
                 logger.warning("ConstraintBuilder: %s", w)
+                if w not in solver_warnings:
+                    solver_warnings.append(w)
 
         # ==================================================================
         # Step 10 — Soft constraints and maximize objective
@@ -637,6 +640,8 @@ class TimetableSolver:
             obj_terms, soft_sat_vars, soft_warnings = soft_builder.apply_all(soft_constraints)
             for w in soft_warnings:
                 logger.warning("SoftBuilder: %s", w)
+                if w not in solver_warnings:
+                    solver_warnings.append(w)
 
             if obj_terms:
                 model.maximize(

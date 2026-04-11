@@ -97,13 +97,133 @@ export async function updateAssignments(sid: string, assignments: any[]) {
   return res.json()
 }
 
-export async function solve(sid: string) {
+export type SolveMode = 'fast' | 'balanced' | 'complete'
+export type SolveJobStatus = 'queued' | 'running' | 'done' | 'failed' | 'timeout' | 'cancelled'
+
+export type SnapshotRecord = {
+  id: string
+  name: string
+  created_at: number
+  school_data: any
+  teacher_assignments: any[]
+}
+
+export type JobRecord = {
+  id: string
+  snapshot_id: string
+  status: SolveJobStatus
+  mode: SolveMode
+  created_at: number
+  started_at?: number | null
+  finished_at?: number | null
+  result?: any
+  estimate?: any
+  request_id?: string
+}
+
+export async function solve(
+  sid: string,
+  options?: { mode?: SolveMode; timeout?: number; requestId?: string },
+) {
+  const estimate = await getSolveEstimate(sid)
+  const mode = options?.mode ?? 'balanced'
   const res = await request(`/api/session/${sid}/solve`, {
     method:  'POST',
     headers: { 'Content-Type': 'application/json' },
-    body:    JSON.stringify({ timeout: 120 }),
+    body: JSON.stringify({
+      timeout: options?.timeout ?? estimate.suggested_timeout_seconds ?? 120,
+      mode,
+      request_id: options?.requestId ?? '',
+      estimate_score: estimate?.score ?? null,
+    }),
   })
   await ensureOk(res, 'Generation echouee')
+  return res.json()
+}
+
+export async function createSnapshot(
+  sid: string,
+  payload?: { name?: string; school_data?: any; teacher_assignments?: any[] },
+) {
+  const res = await request(`/api/session/${sid}/snapshots`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload ?? {}),
+  })
+  await ensureOk(res, 'Creation de version echouee')
+  return res.json()
+}
+
+export async function renameSnapshot(sid: string, snapshotId: string, name: string) {
+  const res = await request(`/api/session/${sid}/snapshots/${snapshotId}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name }),
+  })
+  await ensureOk(res, 'Renommage de version echoue')
+  return res.json()
+}
+
+export async function deleteSnapshot(sid: string, snapshotId: string): Promise<{ ok: boolean; deleted_jobs: number }> {
+  const res = await request(`/api/session/${sid}/snapshots/${snapshotId}`, { method: 'DELETE' })
+  await ensureOk(res, 'Suppression de version echouee')
+  return res.json()
+}
+
+export async function listSnapshots(sid: string): Promise<{ snapshots: SnapshotRecord[] }> {
+  const res = await request(`/api/session/${sid}/snapshots`)
+  await ensureOk(res, 'Lecture des versions echouee')
+  return res.json()
+}
+
+export async function duplicateSnapshot(sid: string, snapshotId: string) {
+  const res = await request(`/api/session/${sid}/snapshots/${snapshotId}/duplicate`, {
+    method: 'POST',
+  })
+  await ensureOk(res, 'Duplication de version echouee')
+  return res.json()
+}
+
+export async function createSolveJob(
+  sid: string,
+  payload: { snapshot_id: string; mode?: SolveMode; timeout?: number; request_id?: string },
+): Promise<{ job: JobRecord }> {
+  const res = await request(`/api/session/${sid}/jobs`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  })
+  await ensureOk(res, 'Creation du job echouee')
+  return res.json()
+}
+
+export async function listSolveJobs(sid: string): Promise<{ jobs: JobRecord[] }> {
+  const res = await request(`/api/session/${sid}/jobs`)
+  await ensureOk(res, 'Lecture des jobs echouee')
+  return res.json()
+}
+
+export async function getSolveJob(sid: string, jobId: string): Promise<{ job: JobRecord }> {
+  const res = await request(`/api/session/${sid}/jobs/${jobId}`)
+  await ensureOk(res, 'Lecture du job echouee')
+  return res.json()
+}
+
+export async function cancelSolveJob(sid: string, jobId: string): Promise<{ job: JobRecord }> {
+  const res = await request(`/api/session/${sid}/jobs/${jobId}/cancel`, { method: 'POST' })
+  await ensureOk(res, 'Arret du job echoue')
+  return res.json()
+}
+
+export async function deleteSolveJob(sid: string, jobId: string): Promise<{ ok: boolean }> {
+  const res = await request(`/api/session/${sid}/jobs/${jobId}`, { method: 'DELETE' })
+  await ensureOk(res, 'Suppression du job echouee')
+  return res.json()
+}
+
+export async function getSolveEstimate(sid: string) {
+  const res = await request(`/api/session/${sid}/solve-estimate`)
+  await ensureOk(res, 'Estimation de generation echouee')
   return res.json()
 }
 

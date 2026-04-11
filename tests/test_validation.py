@@ -94,9 +94,9 @@ class TestEntityValidateCalledFromSchoolData:
         assert any("volume horaire" in e for e in errors)
 
     def test_invalid_class_student_count_propagates(self, base: SchoolData) -> None:
-        base.classes[0].student_count = 0
+        base.classes[0].student_count = -1
         errors = base.validate()
-        assert any("élève" in e for e in errors)
+        assert any("effectif" in e for e in errors)
 
     def test_invalid_room_capacity_propagates(self, base: SchoolData) -> None:
         base.rooms[0].capacity = -5

@@ -12,6 +12,7 @@ from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 from docx.shared import Mm, Pt, RGBColor
+from timease.utils.teacher_colors import teacher_color_map
 
 if TYPE_CHECKING:
     from timease.engine.models import Assignment, SchoolData, TimetableResult
@@ -376,7 +377,7 @@ def _add_timetable(
     """Add a styled timetable table to the document for one entity."""
     days = [d.name for d in data.timeslot_config.days]
     base_min = data.timeslot_config.base_unit_minutes
-    subject_colors = {s.name: s.color for s in data.subjects}
+    teacher_colors = teacher_color_map([t.name for t in data.teachers])
     day_to_col = {day: i + 1 for i, day in enumerate(days)}
 
     if perspective == "class":
@@ -459,7 +460,7 @@ def _add_timetable(
         ci_a = day_to_col[day]
         span = _slot_span(a.start_time, a.end_time, base_min)
 
-        raw_hex = subject_colors.get(a.subject, "#E5E7EB")
+        raw_hex = teacher_colors.get(a.teacher, "#E5E7EB")
         # Lighten subject color to 20% opacity over white for readability
         # We approximate: blend hex with white at 20% opacity
         hex_c = raw_hex.strip("#")
