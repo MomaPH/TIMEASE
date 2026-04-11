@@ -265,7 +265,7 @@ def test_api_estimation_no_room_pressure_when_no_rooms() -> None:
     assert not any("pression sur les salles" in f for f in factors)
 
 
-def test_api_solve_mode_enforces_timeout_floor(dakar_data: SchoolData, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_api_solve_mode_applies_timeout_cap_and_fast_flags(dakar_data: SchoolData, monkeypatch: pytest.MonkeyPatch) -> None:
     from fastapi.testclient import TestClient
     from timease.api.main import app
     from timease.engine.models import SchoolData as EngineSchoolData, TimetableResult
@@ -273,8 +273,18 @@ def test_api_solve_mode_enforces_timeout_floor(dakar_data: SchoolData, monkeypat
 
     seen: dict[str, int] = {}
 
-    def fake_solve(self, data, timeout_seconds=30):  # noqa: ANN001
+    seen_flags: dict[str, bool] = {}
+
+    def fake_solve(
+        self,
+        data,  # noqa: ANN001
+        timeout_seconds=30,
+        optimize_soft_constraints=True,
+        stop_at_first_solution=False,
+    ):
         seen["timeout"] = int(timeout_seconds)
+        seen_flags["optimize_soft_constraints"] = bool(optimize_soft_constraints)
+        seen_flags["stop_at_first_solution"] = bool(stop_at_first_solution)
         return TimetableResult(
             assignments=[],
             solved=False,
@@ -309,8 +319,22 @@ def test_api_solve_mode_enforces_timeout_floor(dakar_data: SchoolData, monkeypat
     assert res.status_code == 200
     body = res.json()
     assert body["status"] == "TIMEOUT"
-    assert seen["timeout"] >= 360
-    assert body["effective_timeout_seconds"] >= 360
+    assert seen["timeout"] == 30
+    assert body["effective_timeout_seconds"] == 30
+    assert seen_flags["optimize_soft_constraints"] is True
+    assert seen_flags["stop_at_first_solution"] is False
+
+    res_fast = client.post(
+        f"/api/session/{sid}/solve",
+        json={"mode": "fast", "request_id": "test-fast-mode"},
+    )
+    assert res_fast.status_code == 200
+    body_fast = res_fast.json()
+    assert body_fast["status"] == "TIMEOUT"
+    assert seen["timeout"] <= 60
+    assert body_fast["effective_timeout_seconds"] <= 60
+    assert seen_flags["optimize_soft_constraints"] is False
+    assert seen_flags["stop_at_first_solution"] is True
 
 
 def test_api_job_lifecycle_create_cancel_delete(dakar_data: SchoolData) -> None:

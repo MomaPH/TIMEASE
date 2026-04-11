@@ -58,6 +58,13 @@ FRONTEND_ERR="$LOG_DIR/frontend-${RUN_ID}.err.log"
 BACKEND_PORT="${BACKEND_PORT:-$(find_free_port 8000)}"
 FRONTEND_PORT="${FRONTEND_PORT:-$(find_free_port 3000)}"
 BACKEND_INTERNAL_URL="${BACKEND_INTERNAL_URL:-http://127.0.0.1:${BACKEND_PORT}}"
+if [[ -n "${BIND_HOST:-}" ]]; then
+  :
+elif [[ "${CODESPACES:-false}" == "true" ]]; then
+  BIND_HOST="0.0.0.0"
+else
+  BIND_HOST="127.0.0.1"
+fi
 
 BACKEND_PID=""
 FRONTEND_PID=""
@@ -74,10 +81,10 @@ trap cleanup EXIT INT TERM
 
 if [[ "$MODE" == "once" ]]; then
   echo "Mode: one-shot (sans watchers)"
-  echo "Démarrage backend  → http://localhost:${BACKEND_PORT}"
+  echo "Démarrage backend  → http://${BIND_HOST}:${BACKEND_PORT}"
   (
     cd "$ROOT_DIR"
-    BACKEND_PORT="$BACKEND_PORT" FRONTEND_PORT="$FRONTEND_PORT" uv run uvicorn timease.api.main:app --port "$BACKEND_PORT"
+    BACKEND_PORT="$BACKEND_PORT" FRONTEND_PORT="$FRONTEND_PORT" uv run uvicorn timease.api.main:app --host "$BIND_HOST" --port "$BACKEND_PORT"
   ) >"$BACKEND_OUT" 2>"$BACKEND_ERR" &
   BACKEND_PID="$!"
 
@@ -95,18 +102,18 @@ if [[ "$MODE" == "once" ]]; then
     npm run build
   ) >"$FRONTEND_OUT" 2>"$FRONTEND_ERR"
 
-  echo "Démarrage frontend → http://localhost:${FRONTEND_PORT}"
+  echo "Démarrage frontend → http://${BIND_HOST}:${FRONTEND_PORT}"
   (
     cd "$FRONTEND_DIR"
-    PORT="$FRONTEND_PORT" BACKEND_INTERNAL_URL="$BACKEND_INTERNAL_URL" npm run start
+    PORT="$FRONTEND_PORT" BACKEND_INTERNAL_URL="$BACKEND_INTERNAL_URL" npm run start -- --hostname "$BIND_HOST" --port "$FRONTEND_PORT"
   ) >>"$FRONTEND_OUT" 2>>"$FRONTEND_ERR" &
   FRONTEND_PID="$!"
 else
   echo "Mode: watch"
-  echo "Démarrage backend  → http://localhost:${BACKEND_PORT}"
+  echo "Démarrage backend  → http://${BIND_HOST}:${BACKEND_PORT}"
   (
     cd "$ROOT_DIR"
-    BACKEND_PORT="$BACKEND_PORT" FRONTEND_PORT="$FRONTEND_PORT" uv run uvicorn timease.api.main:app --reload --port "$BACKEND_PORT"
+    BACKEND_PORT="$BACKEND_PORT" FRONTEND_PORT="$FRONTEND_PORT" uv run uvicorn timease.api.main:app --reload --host "$BIND_HOST" --port "$BACKEND_PORT"
   ) >"$BACKEND_OUT" 2>"$BACKEND_ERR" &
   BACKEND_PID="$!"
 
@@ -118,10 +125,10 @@ else
     ) >"$FRONTEND_OUT" 2>"$FRONTEND_ERR"
   fi
 
-  echo "Démarrage frontend → http://localhost:${FRONTEND_PORT}"
+  echo "Démarrage frontend → http://${BIND_HOST}:${FRONTEND_PORT}"
   (
     cd "$FRONTEND_DIR"
-    PORT="$FRONTEND_PORT" BACKEND_INTERNAL_URL="$BACKEND_INTERNAL_URL" npm run dev
+    PORT="$FRONTEND_PORT" BACKEND_INTERNAL_URL="$BACKEND_INTERNAL_URL" npm run dev -- --hostname "$BIND_HOST" --port "$FRONTEND_PORT"
   ) >"$FRONTEND_OUT" 2>"$FRONTEND_ERR" &
   FRONTEND_PID="$!"
 fi

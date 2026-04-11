@@ -263,8 +263,8 @@ function WorkspaceContent() {
           {jobs.length === 0 && (
             <p className="text-xs text-gray-500">Aucun job pour le moment.</p>
           )}
-          {jobs.map((job) => (
-            <div key={job.id} className="flex items-center gap-2 rounded-lg border border-gray-200 dark:border-gray-700 px-2 py-2">
+          {jobs.map((job, index) => (
+            <div key={`${job.id}-${job.created_at ?? index}`} className="flex items-center gap-2 rounded-lg border border-gray-200 dark:border-gray-700 px-2 py-2">
               <div className="text-xs min-w-[130px]">
                 <div className="font-medium text-gray-700 dark:text-gray-200">{job.id}</div>
                 <div className="text-gray-500">{job.mode}</div>

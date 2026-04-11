@@ -29,6 +29,36 @@ app = FastAPI(title="TIMEASE API", version="1.0.0")
 logger = logging.getLogger(__name__)
 
 
+MODE_TIMEOUT_CAP_SECONDS = {"fast": 60, "balanced": 180, "complete": 360}
+
+
+def _resolve_mode_timeout(
+    *,
+    solve_mode: str,
+    requested_timeout: int,
+    adaptive_timeout: int,
+) -> int:
+    mode = (solve_mode or "balanced").strip().lower()
+    cap = MODE_TIMEOUT_CAP_SECONDS.get(mode, MODE_TIMEOUT_CAP_SECONDS["balanced"])
+    base = adaptive_timeout if requested_timeout <= 0 else requested_timeout
+    return min(max(base, 30), cap)
+
+
+def _solver_flags_for_mode(solve_mode: str) -> tuple[bool, bool]:
+    mode = (solve_mode or "balanced").strip().lower()
+    if mode == "fast":
+        return (False, True)  # optimize_soft_constraints, stop_at_first_solution
+    return (True, False)
+
+
+def _new_short_id(existing_ids: set[str], length: int) -> str:
+    """Generate a collision-free short id for in-memory records."""
+    while True:
+        value = uuid.uuid4().hex[:length]
+        if value not in existing_ids:
+            return value
+
+
 def _allowed_origins() -> list[str]:
     origins = {"http://localhost:3000", "http://localhost:3001"}
     frontend_port = os.getenv("FRONTEND_PORT")
@@ -523,7 +553,8 @@ def create_snapshot(sid: str, payload: dict = {}):
     if sid not in sessions:
         raise HTTPException(404, "Session not found")
     snapshots = sessions[sid].setdefault("snapshots", [])
-    snap_id = str(uuid.uuid4())[:8]
+    existing_snapshot_ids = {str(s.get("id", "")) for s in snapshots}
+    snap_id = _new_short_id(existing_snapshot_ids, 8)
     school_data = payload.get("school_data", sessions[sid].get("school_data", {}))
     name = str(payload.get("name", "") or "").strip() or _next_snapshot_name(snapshots, school_data)
     snapshot = {
@@ -567,8 +598,9 @@ def duplicate_snapshot(sid: str, snapshot_id: str):
     source = next((s for s in snapshots if s.get("id") == snapshot_id), None)
     if source is None:
         raise HTTPException(404, "Snapshot not found")
+    existing_snapshot_ids = {str(s.get("id", "")) for s in snapshots}
     clone = {
-        "id": str(uuid.uuid4())[:8],
+        "id": _new_short_id(existing_snapshot_ids, 8),
         "name": f"{source.get('name', 'Version')} (copie)",
         "created_at": time.time(),
         "school_data": json.loads(json.dumps(source.get("school_data", {}))),
@@ -628,16 +660,20 @@ def create_job(sid: str, payload: dict):
     if snapshot is None:
         raise HTTPException(404, "Snapshot not found")
 
-    requested_timeout = int(payload.get("timeout", 120))
+    requested_timeout = int(payload.get("timeout", 0))
     solve_mode = str(payload.get("mode", "balanced") or "balanced").strip().lower()
     request_id = str(payload.get("request_id", "") or "").strip()
     estimate = _estimate_solve_complexity(snapshot.get("school_data", {}), snapshot.get("teacher_assignments", []))
     adaptive_timeout = int(estimate.get("suggested_timeout_seconds", 120))
-    mode_timeout_map = {"fast": 60, "balanced": 180, "complete": 360}
-    mode_floor = mode_timeout_map.get(solve_mode, 180)
-    effective_timeout = min(max(max(requested_timeout, adaptive_timeout, mode_floor), 30), 900)
+    effective_timeout = _resolve_mode_timeout(
+        solve_mode=solve_mode,
+        requested_timeout=requested_timeout,
+        adaptive_timeout=adaptive_timeout,
+    )
+    optimize_soft_constraints, stop_at_first_solution = _solver_flags_for_mode(solve_mode)
 
-    job_id = str(uuid.uuid4())[:10]
+    existing_job_ids = {str(j.get("id", "")) for j in jobs}
+    job_id = _new_short_id(existing_job_ids, 10)
     now = time.time()
     job = {
         "id": job_id,
@@ -648,6 +684,8 @@ def create_job(sid: str, payload: dict):
         "requested_timeout_seconds": requested_timeout,
         "adaptive_timeout_seconds": adaptive_timeout,
         "effective_timeout_seconds": effective_timeout,
+        "optimize_soft_constraints": optimize_soft_constraints,
+        "stop_at_first_solution": stop_at_first_solution,
         "created_at": now,
         "started_at": now,
         "finished_at": None,
@@ -663,7 +701,12 @@ def create_job(sid: str, payload: dict):
         args=({
             "school_data": snapshot.get("school_data", {}),
             "teacher_assignments": snapshot.get("teacher_assignments", []),
+            "solve_mode": solve_mode,
+            "requested_timeout_seconds": requested_timeout,
+            "adaptive_timeout_seconds": adaptive_timeout,
             "effective_timeout_seconds": effective_timeout,
+            "optimize_soft_constraints": optimize_soft_constraints,
+            "stop_at_first_solution": stop_at_first_solution,
         }, out_q),
         daemon=True,
     )
@@ -853,6 +896,8 @@ def _run_solver_worker(payload: dict, out_q: "multiprocessing.Queue") -> None:
         sd = payload["school_data"]
         ta = payload["teacher_assignments"]
         timeout = int(payload["effective_timeout_seconds"])
+        optimize_soft_constraints = bool(payload.get("optimize_soft_constraints", True))
+        stop_at_first_solution = bool(payload.get("stop_at_first_solution", False))
 
         school_obj = SchoolData(
             school=School(
@@ -884,7 +929,14 @@ def _run_solver_worker(payload: dict, out_q: "multiprocessing.Queue") -> None:
             })
             return
 
-        result = TimetableSolver().solve(school_obj, timeout_seconds=timeout)
+        wall_start = time.perf_counter()
+        result = TimetableSolver().solve(
+            school_obj,
+            timeout_seconds=timeout,
+            optimize_soft_constraints=optimize_soft_constraints,
+            stop_at_first_solution=stop_at_first_solution,
+        )
+        api_wall_time = round(time.perf_counter() - wall_start, 3)
 
         if result.solved or result.partial:
             teacher_colors = teacher_color_map([t.name for t in school_obj.teachers])
@@ -912,6 +964,15 @@ def _run_solver_worker(payload: dict, out_q: "multiprocessing.Queue") -> None:
                 "warnings": result.warnings,
                 "unscheduled": result.unscheduled_sessions,
                 "unscheduled_groups": unscheduled_grouped,
+                "diagnostics": {
+                    "mode": payload.get("solve_mode", "balanced"),
+                    "requested_timeout_seconds": payload.get("requested_timeout_seconds", 0),
+                    "adaptive_timeout_seconds": payload.get("adaptive_timeout_seconds", timeout),
+                    "effective_timeout_seconds": timeout,
+                    "optimize_soft_constraints": optimize_soft_constraints,
+                    "stop_at_first_solution": stop_at_first_solution,
+                    "api_wall_time_seconds": api_wall_time,
+                },
             })
             return
 
@@ -930,6 +991,15 @@ def _run_solver_worker(payload: dict, out_q: "multiprocessing.Queue") -> None:
                     "Limite de calcul atteinte avant de trouver une solution. "
                     "Essayez de simplifier certaines contraintes dures ou de relancer."
                 ),
+                "diagnostics": {
+                    "mode": payload.get("solve_mode", "balanced"),
+                    "requested_timeout_seconds": payload.get("requested_timeout_seconds", 0),
+                    "adaptive_timeout_seconds": payload.get("adaptive_timeout_seconds", timeout),
+                    "effective_timeout_seconds": timeout,
+                    "optimize_soft_constraints": optimize_soft_constraints,
+                    "stop_at_first_solution": stop_at_first_solution,
+                    "api_wall_time_seconds": api_wall_time,
+                },
             })
             return
 
@@ -937,6 +1007,15 @@ def _run_solver_worker(payload: dict, out_q: "multiprocessing.Queue") -> None:
             "status": "INFEASIBLE",
             "solved": False,
             "conflict_summary": "Aucune solution trouvée avec les données actuelles.",
+            "diagnostics": {
+                "mode": payload.get("solve_mode", "balanced"),
+                "requested_timeout_seconds": payload.get("requested_timeout_seconds", 0),
+                "adaptive_timeout_seconds": payload.get("adaptive_timeout_seconds", timeout),
+                "effective_timeout_seconds": timeout,
+                "optimize_soft_constraints": optimize_soft_constraints,
+                "stop_at_first_solution": stop_at_first_solution,
+                "api_wall_time_seconds": api_wall_time,
+            },
         })
     except Exception as exc:
         out_q.put({
@@ -1014,7 +1093,7 @@ def solve(sid: str, payload: dict = {}):
     if sid not in sessions:
         raise HTTPException(404, "Session not found")
 
-    requested_timeout = int(payload.get("timeout", 120))
+    requested_timeout = int(payload.get("timeout", 0))
     solve_mode = str(payload.get("mode", "balanced") or "balanced").strip().lower()
     request_id = str(payload.get("request_id", "") or "").strip()
     sd      = sessions[sid]["school_data"]
@@ -1055,25 +1134,30 @@ def solve(sid: str, payload: dict = {}):
 
         estimate = _estimate_solve_complexity(sd, ta)
         adaptive_timeout = int(estimate.get("suggested_timeout_seconds", 120))
-        mode_timeout_map = {
-            "fast": 60,
-            "balanced": 180,
-            "complete": 360,
-        }
-        mode_floor = mode_timeout_map.get(solve_mode, 180)
-        effective_timeout = max(requested_timeout, adaptive_timeout, mode_floor)
-        effective_timeout = min(max(effective_timeout, 30), 900)
+        effective_timeout = _resolve_mode_timeout(
+            solve_mode=solve_mode,
+            requested_timeout=requested_timeout,
+            adaptive_timeout=adaptive_timeout,
+        )
+        optimize_soft_constraints, stop_at_first_solution = _solver_flags_for_mode(solve_mode)
         wall_start = time.perf_counter()
         logger.info(
-            "Solve request started sid=%s request_id=%s mode=%s requested_timeout=%s adaptive_timeout=%s effective_timeout=%s",
+            "Solve request started sid=%s request_id=%s mode=%s requested_timeout=%s adaptive_timeout=%s effective_timeout=%s optimize_soft=%s first_solution=%s",
             sid,
             request_id or "-",
             solve_mode,
             requested_timeout,
             adaptive_timeout,
             effective_timeout,
+            optimize_soft_constraints,
+            stop_at_first_solution,
         )
-        result = TimetableSolver().solve(school_obj, timeout_seconds=effective_timeout)
+        result = TimetableSolver().solve(
+            school_obj,
+            timeout_seconds=effective_timeout,
+            optimize_soft_constraints=optimize_soft_constraints,
+            stop_at_first_solution=stop_at_first_solution,
+        )
         api_wall_time = round(time.perf_counter() - wall_start, 3)
         logger.info(
             "Solve request finished sid=%s request_id=%s solved=%s partial=%s solve_time=%s api_wall=%s",
@@ -1115,6 +1199,8 @@ def solve(sid: str, payload: dict = {}):
                     "requested_timeout_seconds": requested_timeout,
                     "adaptive_timeout_seconds": adaptive_timeout,
                     "effective_timeout_seconds": effective_timeout,
+                    "optimize_soft_constraints": optimize_soft_constraints,
+                    "stop_at_first_solution": stop_at_first_solution,
                     "api_wall_time_seconds": api_wall_time,
                 },
             }
@@ -1156,6 +1242,8 @@ def solve(sid: str, payload: dict = {}):
                 "requested_timeout_seconds": requested_timeout,
                 "adaptive_timeout_seconds": adaptive_timeout,
                 "effective_timeout_seconds": effective_timeout,
+                "optimize_soft_constraints": optimize_soft_constraints,
+                "stop_at_first_solution": stop_at_first_solution,
                 "conflict_summary": summary,
                 "warnings": result.warnings,
                 "estimate": estimate,

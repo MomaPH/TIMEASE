@@ -150,6 +150,8 @@ class TimetableSolver:
         self,
         data: SchoolData,
         timeout_seconds: int = DEFAULT_SOLVE_TIMEOUT_SECONDS,
+        optimize_soft_constraints: bool = True,
+        stop_at_first_solution: bool = False,
     ) -> TimetableResult:
         """Build and solve the model; return a TimetableResult.
 
@@ -170,6 +172,8 @@ class TimetableSolver:
 
         tc        = data.timeslot_config
         base_unit = tc.base_unit_minutes
+
+        build_start = time.perf_counter()
 
         # ==================================================================
         # Step 1 — Schedule structure
@@ -618,10 +622,10 @@ class TimetableSolver:
         # ==================================================================
         # Step 10 — Soft constraints and maximize objective
         # ==================================================================
-        soft_constraints = [c for c in data.constraints if c.type == "soft"]
+        soft_constraints = [c for c in data.constraints if c.type == "soft"] if optimize_soft_constraints else []
         soft_sat_vars: dict[str, cp_model.IntVar | None] = {}
 
-        if soft_constraints:
+        if soft_constraints and optimize_soft_constraints:
             soft_builder = SoftConstraintBuilder(
                 model=model,
                 data=data,
@@ -651,6 +655,8 @@ class TimetableSolver:
                     )
                 )
                 logger.info("Objective: %d terms (soft constraints)", len(obj_terms))
+        elif not optimize_soft_constraints:
+            logger.info("Soft objective disabled — solving for feasibility only.")
         else:
             logger.info("No soft constraints — solving for feasibility only.")
 
@@ -660,19 +666,22 @@ class TimetableSolver:
         solver = cp_model.CpSolver()
         solver.parameters.max_time_in_seconds  = timeout_seconds
         solver.parameters.log_search_progress  = False
+        solver.parameters.stop_after_first_solution = stop_at_first_solution
         n_workers = min(8, max(1, os.cpu_count() or 1))
         solver.parameters.num_search_workers   = n_workers
+        build_time = time.perf_counter() - build_start
 
         logger.info(
-            "Launching CP-SAT (limit: %ds, workers: %d)...",
-            timeout_seconds, n_workers,
+            "Launching CP-SAT (limit: %ds, workers: %d, first_solution=%s, build=%.2fs)...",
+            timeout_seconds, n_workers, stop_at_first_solution, build_time,
         )
+        solve_start = time.perf_counter()
         status     = solver.solve(model)
-        solve_time = time.perf_counter() - wall_start
+        solve_time = time.perf_counter() - solve_start
 
         logger.info(
-            "Solver finished — status: %s | wall time: %.2fs | conflicts: %d",
-            solver.status_name(status), solve_time, solver.num_conflicts,
+            "Solver finished — status: %s | solve time: %.2fs | total: %.2fs | conflicts: %d",
+            solver.status_name(status), solve_time, (time.perf_counter() - wall_start), solver.num_conflicts,
         )
 
         # ==================================================================
