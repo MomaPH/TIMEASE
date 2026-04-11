@@ -272,6 +272,20 @@ function WorkspaceContent() {
               <span className="text-[11px] px-2 py-0.5 rounded bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300">
                 {job.status}
               </span>
+              {(job.status === 'failed' || job.status === 'timeout' || job.status === 'cancelled') && (
+                <div className="min-w-0 flex-1 text-[11px] text-red-600 dark:text-red-400">
+                  <div className="truncate">
+                    {job.report?.reason_message || (job.status === 'timeout'
+                      ? 'Limite de calcul atteinte.'
+                      : "Échec de génération sans détail.")}
+                  </div>
+                  {job.report?.summary && (
+                    <div className="truncate text-red-500/90 dark:text-red-300/90">
+                      {job.report.summary}
+                    </div>
+                  )}
+                </div>
+              )}
               <div className="ml-auto flex items-center gap-1">
                 {job.status === 'done' && (
                   <button

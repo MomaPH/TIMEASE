@@ -119,6 +119,13 @@ export type JobRecord = {
   result?: any
   estimate?: any
   request_id?: string
+  report?: {
+    outcome: 'success' | 'failed' | 'partial'
+    reason_code: string
+    reason_message: string
+    summary: string
+    diagnostics?: Record<string, any>
+  } | null
 }
 
 export async function solve(

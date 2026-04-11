@@ -238,6 +238,86 @@ class SessionData(BaseModel):
     jobs: list[dict] = []
 
 
+def _build_job_report(
+    *,
+    outcome: str,
+    reason_code: str,
+    reason_message: str,
+    summary: str,
+    diagnostics: dict | None = None,
+) -> dict:
+    return {
+        "outcome": outcome,
+        "reason_code": reason_code,
+        "reason_message": reason_message,
+        "summary": summary,
+        "diagnostics": diagnostics or {},
+    }
+
+
+def _report_from_worker_payload(payload: dict, job: dict) -> dict:
+    status = str(payload.get("status", "")).strip().upper()
+    conflict_summary = str(payload.get("conflict_summary", "") or "").strip()
+    diagnostics = {
+        "request_id": job.get("request_id"),
+        "mode": job.get("mode"),
+        "effective_timeout_seconds": job.get("effective_timeout_seconds"),
+        "solve_time_seconds": payload.get("solve_time"),
+    }
+
+    if status == "OPTIMAL":
+        return _build_job_report(
+            outcome="success",
+            reason_code="SOLVED",
+            reason_message="Emploi du temps généré avec succès.",
+            summary="Génération complète réussie.",
+            diagnostics=diagnostics,
+        )
+    if status == "PARTIAL":
+        return _build_job_report(
+            outcome="partial",
+            reason_code="PARTIAL_SOLUTION",
+            reason_message="Solution partielle générée.",
+            summary=conflict_summary or "La génération est partielle.",
+            diagnostics=diagnostics,
+        )
+    if status == "TIMEOUT":
+        return _build_job_report(
+            outcome="failed",
+            reason_code="TIMEOUT",
+            reason_message="Limite de calcul atteinte avant de trouver une solution.",
+            summary=conflict_summary or "Temps limite atteint.",
+            diagnostics=diagnostics,
+        )
+    if status == "INFEASIBLE":
+        return _build_job_report(
+            outcome="failed",
+            reason_code="INFEASIBLE",
+            reason_message="Aucune solution compatible avec les contraintes actuelles.",
+            summary=conflict_summary or "Aucune solution trouvée.",
+            diagnostics=diagnostics,
+        )
+    if status == "ERROR":
+        errors = payload.get("errors", [])
+        details = ""
+        if isinstance(errors, list) and errors:
+            details = str(errors[0])
+        return _build_job_report(
+            outcome="failed",
+            reason_code="WORKER_ERROR",
+            reason_message="Erreur interne pendant la génération.",
+            summary=details or conflict_summary or "Le worker a rencontré une erreur.",
+            diagnostics=diagnostics,
+        )
+    return _build_job_report(
+        outcome="failed",
+        reason_code="UNKNOWN_RESULT",
+        reason_message="Résultat du worker non reconnu.",
+        summary=conflict_summary or "État final non reconnu.",
+        diagnostics=diagnostics,
+    )
+
+
 # ── Data merge helpers ────────────────────────────────────────────────────────
 
 def _upsert(existing: list, new_items: list, key: str) -> list:
@@ -573,6 +653,7 @@ def create_job(sid: str, payload: dict):
         "finished_at": None,
         "estimate": estimate,
         "result": None,
+        "report": None,
     }
     jobs.append(job)
 
@@ -633,6 +714,17 @@ def cancel_job(sid: str, job_id: str):
         "solved": False,
         "conflict_summary": "Génération arrêtée par l'utilisateur.",
     }
+    job["report"] = _build_job_report(
+        outcome="failed",
+        reason_code="CANCELLED_BY_USER",
+        reason_message="Génération arrêtée par l'utilisateur.",
+        summary="Le job a été annulé manuellement.",
+        diagnostics={
+            "request_id": job.get("request_id"),
+            "mode": job.get("mode"),
+            "effective_timeout_seconds": job.get("effective_timeout_seconds"),
+        },
+    )
     return {"ok": True, "job": job}
 
 
@@ -881,8 +973,19 @@ def _poll_jobs(sid: str) -> None:
 
         if payload is None:
             job["status"] = "failed"
-            job["error"] = "Le solveur s'est arrêté sans résultat."
+            job["report"] = _build_job_report(
+                outcome="failed",
+                reason_code="WORKER_NO_RESULT",
+                reason_message="Le solveur s'est arrêté sans résultat.",
+                summary="Le processus de génération s'est terminé sans renvoyer de rapport.",
+                diagnostics={
+                    "request_id": job.get("request_id"),
+                    "mode": job.get("mode"),
+                    "effective_timeout_seconds": job.get("effective_timeout_seconds"),
+                },
+            )
             job["finished_at"] = now
+            job_runtime_handles.pop(job["id"], None)
             continue
 
         job["status"] = str(payload.get("status", "failed")).lower()
@@ -897,6 +1000,7 @@ def _poll_jobs(sid: str) -> None:
         elif job["status"] == "error":
             job["status"] = "failed"
         job["result"] = payload
+        job["report"] = _report_from_worker_payload(payload, job)
         job["finished_at"] = now
         job_runtime_handles.pop(job["id"], None)
 

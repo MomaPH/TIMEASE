@@ -344,6 +344,10 @@ def test_api_job_lifecycle_create_cancel_delete(dakar_data: SchoolData) -> None:
     cancelled = client.post(f"/api/session/{sid}/jobs/{job_id}/cancel")
     assert cancelled.status_code == 200
     assert cancelled.json()["job"]["status"] == "cancelled"
+    report = cancelled.json()["job"].get("report")
+    assert isinstance(report, dict)
+    assert report["reason_code"] == "CANCELLED_BY_USER"
+    assert "arrêtée" in report["reason_message"]
 
     deleted = client.delete(f"/api/session/{sid}/jobs/{job_id}")
     assert deleted.status_code == 200
@@ -429,12 +433,59 @@ def test_api_snapshot_delete_blocks_when_job_running(dakar_data: SchoolData) -> 
             "finished_at": None,
             "estimate": {},
             "result": None,
+            "report": None,
         }
     )
 
     blocked = client.delete(f"/api/session/{sid}/snapshots/{snap_id}")
     assert blocked.status_code == 409
     assert "job en cours" in blocked.json()["detail"]
+
+
+def test_api_poll_jobs_sets_report_when_worker_returns_no_payload(dakar_data: SchoolData) -> None:
+    from fastapi.testclient import TestClient
+    from timease.api.main import app, sessions, _poll_jobs
+
+    class DeadProcess:
+        def is_alive(self) -> bool:
+            return False
+
+    class EmptyQueue:
+        def empty(self) -> bool:
+            return True
+
+    client = TestClient(app)
+    sid = client.post("/api/session").json()["session_id"]
+
+    sessions[sid]["jobs"] = [
+        {
+            "id": "job-no-payload",
+            "snapshot_id": "snap-x",
+            "status": "running",
+            "mode": "balanced",
+            "request_id": "req-no-payload",
+            "effective_timeout_seconds": 180,
+            "created_at": 0.0,
+            "started_at": 0.0,
+            "finished_at": None,
+            "estimate": {},
+            "result": None,
+            "report": None,
+        }
+    ]
+
+    from timease.api import main as api_main
+    api_main.job_runtime_handles["job-no-payload"] = {
+        "process": DeadProcess(),
+        "queue": EmptyQueue(),
+        "sid": sid,
+    }
+
+    _poll_jobs(sid)
+    job = sessions[sid]["jobs"][0]
+    assert job["status"] == "failed"
+    assert job.get("report", {}).get("reason_code") == "WORKER_NO_RESULT"
+    assert "sans résultat" in job.get("report", {}).get("reason_message", "")
 
 
 def test_api_snapshot_rename_happy_path_and_validation(dakar_data: SchoolData) -> None:
