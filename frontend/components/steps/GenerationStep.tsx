@@ -122,7 +122,7 @@ export default function GenerationStep({
                 : 'bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700'
             }`}
           >
-            Rapide (60s min)
+            Rapide (1 min)
           </button>
           <button
             onClick={() => onSolveModeChange('balanced')}
@@ -132,7 +132,7 @@ export default function GenerationStep({
                 : 'bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700'
             }`}
           >
-            Équilibré (180s min)
+            Équilibré (3 min)
           </button>
           <button
             onClick={() => onSolveModeChange('complete')}
@@ -142,7 +142,7 @@ export default function GenerationStep({
                 : 'bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700'
             }`}
           >
-            Complet (360s min)
+            Complet (6 min)
           </button>
         </div>
         <p className="text-[11px] text-gray-500 dark:text-gray-400">
