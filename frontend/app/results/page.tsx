@@ -109,6 +109,7 @@ export default function ResultsPage() {
       for (const brk of day.breaks ?? []) {
         allBreaks.push({
           type: 'break' as const,
+          day: day.name,
           start_time: brk.start_time,
           end_time: brk.end_time,
           label: brk.name || 'Pause',

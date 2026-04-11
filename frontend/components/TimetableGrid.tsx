@@ -37,10 +37,10 @@ export default function TimetableGrid({ assignments, days, view, breaks = [] }: 
     lookup.set(`${a.day}||${a.start_time}`, a)
   }
 
-  // Break lookup by start_time
+  // Break lookup by day + start_time
   const breakLookup = new Map<string, BreakSlot>()
   for (const b of breaks) {
-    breakLookup.set(b.start_time, b)
+    breakLookup.set(`${b.day}||${b.start_time}`, b)
   }
 
   function getCell(day: string, time: string): TimetableAssignment | undefined {
@@ -84,30 +84,6 @@ export default function TimetableGrid({ assignments, days, view, breaks = [] }: 
 
         {/* Time rows */}
         {allTimes.map((time, ti) => {
-          const breakSlot = breakLookup.get(time)
-
-          if (breakSlot) {
-            // Render break row spanning all columns
-            return (
-              <div
-                key={`break-${time}`}
-                className="contents"
-              >
-                <div className="bg-zinc-50 dark:bg-zinc-800/50 px-2 py-2 text-right text-[11px] font-mono text-zinc-400 dark:text-zinc-500 border-r border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-end">
-                  {time}
-                </div>
-                <div
-                  className="break-row col-span-full border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-center py-2"
-                  style={{ gridColumn: `2 / -1` }}
-                >
-                  <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400 px-3 py-1 bg-white/60 dark:bg-zinc-900/60 rounded-full">
-                    {breakSlot.label || 'Pause'}
-                  </span>
-                </div>
-              </div>
-            )
-          }
-
           return (
             <div key={time} className="contents">
               {/* Time label */}
@@ -120,6 +96,20 @@ export default function TimetableGrid({ assignments, days, view, breaks = [] }: 
                 const a = getCell(day, time)
                 const cont = isContinuation(day, ti)
                 const isLast = di === days.length - 1
+                const dayBreak = breakLookup.get(`${day}||${time}`)
+
+                if (dayBreak) {
+                  return (
+                    <div
+                      key={day}
+                      className={`px-1.5 py-1.5 min-h-[56px] border-b border-zinc-100 dark:border-zinc-800 ${!isLast ? 'border-r' : ''}`}
+                    >
+                      <div className="rounded-md p-1.5 text-xs bg-zinc-100 dark:bg-zinc-800/70 text-zinc-600 dark:text-zinc-300 text-center h-full min-h-[44px] flex items-center justify-center">
+                        {dayBreak.label || 'Pause'}
+                      </div>
+                    </div>
+                  )
+                }
 
                 if (!a) {
                   return (

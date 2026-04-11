@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { Plus, Trash2, ChevronRight, ChevronDown, Info } from 'lucide-react'
 import type { SchoolData } from '@/lib/types'
 import { FORM_SCENARIOS } from '@/lib/test-scenarios'
+import { applyScenarioPreset } from '@/lib/scenario-prefill'
 
 const LEVELS = ['Maternelle', 'Primaire', 'Collège', 'Lycée', 'Autre']
 
@@ -1122,22 +1123,9 @@ export default function ClassCardsStep({ data, assignments, onUpdateData, onUpda
             <button
               key={preset.id}
               onClick={() => {
-                const built = { schoolData: preset.schoolData, assignments: preset.assignments }
-                onUpdateData({
-                  ...data,
-                  name: built.schoolData.name,
-                  city: built.schoolData.city,
-                  academic_year: built.schoolData.academic_year,
-                  base_unit_minutes: built.schoolData.base_unit_minutes,
-                  days: built.schoolData.days ?? [],
-                  rooms: built.schoolData.rooms ?? [],
-                  classes: built.schoolData.classes ?? [],
-                  teachers: built.schoolData.teachers ?? [],
-                  curriculum: built.schoolData.curriculum ?? [],
-                  subjects: built.schoolData.subjects ?? [],
-                  constraints: built.schoolData.constraints ?? [],
-                })
-                onUpdateAssignments(built.assignments)
+                const prefilled = applyScenarioPreset(data, preset)
+                onUpdateData(prefilled.data)
+                onUpdateAssignments(prefilled.assignments)
               }}
               className="px-2.5 py-1.5 rounded border border-indigo-300 dark:border-indigo-700 text-xs text-indigo-700 dark:text-indigo-300 bg-white dark:bg-gray-900 hover:bg-indigo-100 dark:hover:bg-indigo-900/30 transition-colors"
               title={`${preset.category.toUpperCase()} · ${preset.description}\nAttendu: ${preset.expectedOutcome}`}
