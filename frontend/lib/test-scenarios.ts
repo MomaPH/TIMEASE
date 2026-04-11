@@ -122,24 +122,101 @@ function teacherForSubject(subject: string, cls: string): string {
   return choices[idx]
 }
 
-function buildRealisticCurriculumAndAssignments() {
-  const sessionsBySubject: Record<string, number> = {
-    CORAN: 3, EDU_ISL: 2, ARABE: 3, FR: 4, MATH: 4, PC: 2, SVT: 2,
-    HG: 2, ANG: 2, ESP: 1, ECO: 1, SS: 1, SCI_PROJ: 1, RENF: 2,
+function buildRealisticCurriculumAndAssignments(mode: 'feasible' | 'overloaded' = 'feasible') {
+  // Source used for lycée-level weekly credits:
+  // https://actes.education.sn/pieces_jointes/actes/600.pdf
+  // (CREDITS HORAIRES DU CYCLE SECONDAIRE GENERAL)
+  //
+  // For collège levels (6e -> 3e), we keep the same subject universe and
+  // align toward realistic Senegal middle-cycle load distributions while
+  // preserving TIMEASE-specific subjects (CORAN, EDU_ISL, SCI_PROJ, RENF, SS).
+  const baseMiddleHours: Record<string, number> = mode === 'overloaded'
+    ? {
+      CORAN: 2,
+      EDU_ISL: 1,
+      ARABE: 2,
+      FR: 5,
+      MATH: 5,
+      PC: 2,
+      SVT: 2,
+      HG: 3,
+      ANG: 3,
+      ESP: 1,
+      ECO: 1,
+      SS: 1,
+      SCI_PROJ: 1,
+      RENF: 2,
+    }
+    : {
+      CORAN: 1,
+      EDU_ISL: 1,
+      ARABE: 2,
+      FR: 4,
+      MATH: 4,
+      PC: 2,
+      SVT: 2,
+      HG: 2,
+      ANG: 2,
+      ESP: 1,
+      ECO: 1,
+      SS: 1,
+      SCI_PROJ: 1,
+      RENF: 1,
+    }
+
+  const hoursByClass: Record<string, Record<string, number>> = {
+    '6e': { ...baseMiddleHours },
+    '5e': { ...baseMiddleHours },
+    '4e': { ...baseMiddleHours, ESP: 2 },
+    '3e': { ...baseMiddleHours, ESP: 2, ECO: 2 },
+    // 2nde profile aligned with Acte 600 (L1-like) + preserved local subjects.
+    '2nde': {
+      CORAN: mode === 'overloaded' ? 2 : 1,
+      EDU_ISL: 1,
+      ARABE: mode === 'overloaded' ? 3 : 2,
+      FR: mode === 'overloaded' ? 5 : 4,
+      MATH: 3,
+      PC: 2,
+      SVT: 2,
+      HG: mode === 'overloaded' ? 4 : 3,
+      ANG: mode === 'overloaded' ? 3 : 2,
+      ESP: mode === 'overloaded' ? 3 : 2,
+      ECO: 1,
+      SS: 1,
+      SCI_PROJ: 1,
+      RENF: 1,
+    },
+    // 2nde_S profile aligned with Acte 600 scientific load (S2-like) + preserved local subjects.
+    '2nde_S': {
+      CORAN: mode === 'overloaded' ? 2 : 1,
+      EDU_ISL: 1,
+      ARABE: 1,
+      FR: mode === 'overloaded' ? 5 : 4,
+      MATH: mode === 'overloaded' ? 5 : 4,
+      PC: mode === 'overloaded' ? 5 : 4,
+      SVT: 2,
+      HG: mode === 'overloaded' ? 4 : 3,
+      ANG: mode === 'overloaded' ? 3 : 2,
+      ESP: mode === 'overloaded' ? 2 : 1,
+      ECO: 1,
+      SS: 1,
+      SCI_PROJ: 1,
+      RENF: 1,
+    },
   }
 
   const curriculum: any[] = []
   const assignments: any[] = []
   for (const cls of REAL_CLASSES) {
     for (const subject of REAL_SUBJECTS) {
-      const sessions = sessionsBySubject[subject]
+      const weeklyHours = hoursByClass[cls]?.[subject] ?? 1
       curriculum.push({
         school_class: cls,
         subject,
-        weekly_hours: sessions * 0.5,
-        sessions_per_week: sessions,
-        minutes_per_session: 30,
-        total_minutes_per_week: sessions * 30,
+        weekly_hours: weeklyHours,
+        sessions_per_week: weeklyHours,
+        minutes_per_session: 60,
+        total_minutes_per_week: weeklyHours * 60,
       })
       assignments.push({
         school_class: cls,
@@ -151,7 +228,8 @@ function buildRealisticCurriculumAndAssignments() {
   return { curriculum, assignments }
 }
 
-const REAL_L4_BUILD = buildRealisticCurriculumAndAssignments()
+const REAL_L4_BUILD = buildRealisticCurriculumAndAssignments('feasible')
+const REAL_L4_OVERLOADED_BUILD = buildRealisticCurriculumAndAssignments('overloaded')
 
 export const FORM_SCENARIOS: FormScenario[] = [
   {
@@ -347,8 +425,8 @@ export const FORM_SCENARIOS: FormScenario[] = [
     level: 'L4',
     label: 'Réaliste école complète',
     category: 'realistic',
-    description: 'Scénario terrain complet sans compromis: volumes, contraintes, indisponibilités, caps.',
-    expectedOutcome: 'Préfill massif fidèle au réel; prêt pour génération/diagnostic.',
+    description: 'Scénario terrain complet calibré pour rester générable avec contraintes réalistes.',
+    expectedOutcome: 'Préfill massif fidèle au réel; doit passer les préflags et lancer la génération.',
     schoolData: {
       name: 'École Réelle Référence',
       city: 'Dakar',
@@ -381,5 +459,45 @@ export const FORM_SCENARIOS: FormScenario[] = [
       ],
     },
     assignments: REAL_L4_BUILD.assignments,
+  },
+  {
+    id: 'r-l4-real-school-overloaded',
+    level: 'L4X',
+    label: 'Réaliste école complète (surchargée)',
+    category: 'realistic',
+    description: 'Version volontairement surchargée pour observer les blocages pré-solve et comportements de rupture.',
+    expectedOutcome: 'Doit être bloqué par les préflags (charges impossibles).',
+    schoolData: {
+      name: 'École Réelle Référence (Surchargée)',
+      city: 'Dakar',
+      academic_year: '2026-2027',
+      base_unit_minutes: 30,
+      days: buildRealisticDays(),
+      rooms: [
+        { name: 'R_CLASS_1', types: ['Standard'], capacity: 45 },
+        { name: 'R_CLASS_2', types: ['Standard'], capacity: 45 },
+        { name: 'R_CLASS_3', types: ['Standard'], capacity: 45 },
+        { name: 'R_LAB1', types: ['Laboratoire'], capacity: 25 },
+        { name: 'R_LANG1', types: ['Langue'], capacity: 30 },
+        { name: 'R_MOSQUE', types: ['Mosquée'], capacity: 200 },
+      ],
+      classes: REAL_CLASSES.map((name, i) => ({ name, level: i < 4 ? 'Collège' : 'Lycée', student_count: i < 4 ? 38 : 42 })),
+      teachers: REAL_TEACHERS,
+      curriculum: REAL_L4_OVERLOADED_BUILD.curriculum,
+      subjects: REAL_SUBJECTS.map((name) => ({ name, short_name: name.slice(0, 4), color: '#0d9488', needs_room: true })),
+      constraints: [
+        { id: 'C1', type: 'hard', category: 'teacher_no_overlap', description_fr: 'Pas de chevauchement enseignant', priority: 10, parameters: {} },
+        { id: 'C2', type: 'hard', category: 'class_no_overlap', description_fr: 'Pas de chevauchement classe', priority: 10, parameters: {} },
+        { id: 'C3', type: 'hard', category: 'ritual_slots_blocked', description_fr: 'Rituels verrouillés (Doua/BRK/L01/L02)', priority: 10, parameters: { slots: ['S00', 'BRK', 'B1', 'B2', 'L01', 'L02'] } },
+        { id: 'C4', type: 'hard', category: 'day_off', description_fr: 'Mercredi après-midi bloqué', priority: 10, parameters: { day: 'mercredi', session: 'Après-midi' } },
+        { id: 'C5', type: 'hard', category: 'teacher_subject_declared', description_fr: 'Matière enseignant déclarée', priority: 10, parameters: {} },
+        { id: 'C6', type: 'hard', category: 'teacher_calendar_declared', description_fr: 'Calendrier enseignant déclaré', priority: 10, parameters: {} },
+        { id: 'S1', type: 'soft', category: 'teacher_compact_schedule', description_fr: 'Minimiser les trous enseignant', priority: 5, parameters: {} },
+        { id: 'S2', type: 'soft', category: 'heavy_subjects_morning', description_fr: 'MATH avant 13:00', priority: 3, parameters: { subjects: ['MATH'], preferred_session: 'Matin' } },
+        { id: 'S3', type: 'soft', category: 'no_subject_back_to_back', description_fr: 'Même matière ≤ 4 consécutives', priority: 8, parameters: { max_consecutive: 4 } },
+        { id: 'S4', type: 'soft', category: 'balanced_daily_load', description_fr: 'Charge quotidienne équilibrée', priority: 4, parameters: { tolerance_slots: 2 } },
+      ],
+    },
+    assignments: REAL_L4_OVERLOADED_BUILD.assignments,
   },
 ]

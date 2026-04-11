@@ -31,7 +31,7 @@ export default function GenerationStep({
   const checklist        = getChecklistItems(data, assignments)
   const ready            = checklist.every(i => i.done)
   const missing          = getMissingAssignments(data, assignments)
-  const validationErrors = useMemo(() => validateHourBarriers(data), [data])
+  const validationErrors = useMemo(() => validateHourBarriers(data, assignments), [data, assignments])
   const hasErrors        = validationErrors.some(e => e.severity === 'error')
   const totalSessions    = useMemo(
     () => (data.days ?? []).reduce((acc, day) => acc + (day.sessions?.length ?? 0), 0),

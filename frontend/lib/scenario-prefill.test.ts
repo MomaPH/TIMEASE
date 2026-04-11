@@ -82,4 +82,54 @@ describe('applyScenarioPreset', () => {
     expect(diaw?.max_hours_per_week).toBe(28)
     expect(evral?.max_hours_per_week).toBe(20)
   })
+
+  it('aligns realistic curriculum hours with Senegal references while preserving non-typical subjects', () => {
+    const realistic = FORM_SCENARIOS.find((s) => s.id === 'r-l4-real-school')
+    expect(realistic).toBeTruthy()
+    if (!realistic) return
+
+    const curriculum = realistic.schoolData.curriculum ?? []
+    const subjects = new Set((realistic.schoolData.subjects ?? []).map((s: any) => s.name))
+
+    // Keep TIMEASE-specific non-typical subjects.
+    for (const subject of ['CORAN', 'EDU_ISL', 'SCI_PROJ', 'RENF', 'SS']) {
+      expect(subjects.has(subject)).toBe(true)
+    }
+
+    const findHours = (schoolClass: string, subject: string): number | undefined => {
+      const row = curriculum.find((c: any) => c.school_class === schoolClass && c.subject === subject)
+      return row?.weekly_hours
+    }
+
+    // Collège loads (realistic middle-cycle baseline, feasible profile).
+    expect(findHours('6e', 'FR')).toBe(4)
+    expect(findHours('6e', 'MATH')).toBe(4)
+    expect(findHours('6e', 'HG')).toBe(2)
+    expect(findHours('3e', 'ESP')).toBe(2)
+    expect(findHours('3e', 'ECO')).toBe(2)
+
+    // Lycée-aligned 2nde profiles (from official secondary credit table, adjusted to fit weekly capacity).
+    expect(findHours('2nde', 'FR')).toBe(4)
+    expect(findHours('2nde', 'MATH')).toBe(3)
+    expect(findHours('2nde', 'HG')).toBe(3)
+    expect(findHours('2nde_S', 'MATH')).toBe(4)
+    expect(findHours('2nde_S', 'PC')).toBe(4)
+    expect(findHours('2nde_S', 'FR')).toBe(4)
+  })
+
+  it('keeps an explicit overloaded realistic variant for breakage diagnostics', () => {
+    const overloaded = FORM_SCENARIOS.find((s) => s.id === 'r-l4-real-school-overloaded')
+    expect(overloaded).toBeTruthy()
+    if (!overloaded) return
+
+    const curriculum = overloaded.schoolData.curriculum ?? []
+    const totalByClass: Record<string, number> = {}
+    for (const entry of curriculum as any[]) {
+      const schoolClass = String(entry.school_class || '')
+      totalByClass[schoolClass] = (totalByClass[schoolClass] || 0) + Number(entry.weekly_hours || 0)
+    }
+
+    expect(totalByClass['2nde_S']).toBeGreaterThan(30)
+    expect(totalByClass['6e']).toBeGreaterThan(30)
+  })
 })
