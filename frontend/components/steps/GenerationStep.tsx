@@ -5,6 +5,7 @@ import type { SchoolData } from '@/lib/types'
 import { getChecklistItems, getMissingAssignments } from '@/lib/types'
 import { validateHourBarriers } from '@/lib/validation'
 import ValidationErrorPanel from '@/components/ValidationErrorPanel'
+import { useToast } from '@/components/Toast'
 
 interface Props {
   data: SchoolData
@@ -14,6 +15,7 @@ interface Props {
 }
 
 export default function GenerationStep({ data, assignments, onGenerate, isSolving }: Props) {
+  const { toast }       = useToast()
   const checklist        = getChecklistItems(data, assignments)
   const ready            = checklist.every(i => i.done)
   const missing          = getMissingAssignments(data, assignments)
@@ -33,6 +35,23 @@ export default function GenerationStep({ data, assignments, onGenerate, isSolvin
     { label: 'Programme',    count: data.curriculum?.length ?? 0 },
     { label: 'Contraintes',  count: data.constraints?.length ?? 0 },
   ]
+
+  function handleGenerateClick() {
+    if (isSolving) return
+
+    if (hasErrors) {
+      const firstError = validationErrors.find(e => e.severity === 'error')
+      toast(firstError?.message || 'Corrigez les erreurs avant de generer.', 'error')
+      return
+    }
+
+    if (!ready) {
+      toast('Completez les pre-requis avant de generer.', 'info')
+      return
+    }
+
+    onGenerate()
+  }
 
   return (
     <div className="space-y-5">
@@ -105,12 +124,12 @@ export default function GenerationStep({ data, assignments, onGenerate, isSolvin
 
       {/* Generate button */}
       <button
-        onClick={onGenerate}
-        disabled={!ready || isSolving || hasErrors}
+        onClick={handleGenerateClick}
+        disabled={isSolving}
         className={`w-full py-3 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition-all ${
           ready && !isSolving && !hasErrors
             ? 'bg-teal-600 hover:bg-teal-700 text-white shadow-md hover:shadow-lg'
-            : 'bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-600 cursor-not-allowed'
+            : 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-700'
         }`}
       >
         {isSolving ? (

@@ -1,12 +1,22 @@
-const BASE = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:8000'
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL?.trim() || ''
 
 function networkErrorMessage(): string {
-  return `Erreur reseau: impossible de joindre l'API (${BASE}). Verifiez que le backend est lance et que NEXT_PUBLIC_API_BASE_URL est correct.`
+  if (API_BASE) {
+    return `Erreur reseau: impossible de joindre l'API (${API_BASE}). Verifiez que l'URL est correcte et que le backend est lance.`
+  }
+  return "Erreur reseau: impossible de joindre l'API via /api (proxy frontend). Verifiez que backend et frontend sont bien demarres."
+}
+
+function buildApiUrl(path: string): string {
+  if (API_BASE) {
+    return `${API_BASE.replace(/\/$/, '')}${path}`
+  }
+  return path
 }
 
 async function request(path: string, init?: RequestInit): Promise<Response> {
   try {
-    return await fetch(`${BASE}${path}`, init)
+    return await fetch(buildApiUrl(path), init)
   } catch {
     throw new Error(networkErrorMessage())
   }

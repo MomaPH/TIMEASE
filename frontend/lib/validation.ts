@@ -20,6 +20,17 @@ interface DayMinutesSummary {
   invalidBreaks: number
 }
 
+interface TimeInterval {
+  start: number
+  end: number
+}
+
+function overlapMinutes(a: TimeInterval, b: TimeInterval): number {
+  const start = Math.max(a.start, b.start)
+  const end = Math.min(a.end, b.end)
+  return Math.max(0, end - start)
+}
+
 function curriculumEntryMinutes(entry: Record<string, any>): number {
   if (entry.total_minutes_per_week != null) {
     return Number(entry.total_minutes_per_week) || 0
@@ -34,12 +45,14 @@ function summarizeDayMinutes(day: DayConfig): DayMinutesSummary {
   let breakMinutes = 0
   let invalidSessions = 0
   let invalidBreaks = 0
+  const sessionIntervals: TimeInterval[] = []
 
   for (const session of day.sessions || []) {
     const start = timeToMinutes(session.start_time)
     const end = timeToMinutes(session.end_time)
     const delta = end - start
     sessionMinutes += delta
+    sessionIntervals.push({ start, end })
     if (delta <= 0) invalidSessions += 1
   }
 
@@ -47,7 +60,11 @@ function summarizeDayMinutes(day: DayConfig): DayMinutesSummary {
     const start = timeToMinutes(brk.start_time)
     const end = timeToMinutes(brk.end_time)
     const delta = end - start
-    breakMinutes += delta
+    let effectiveBreak = 0
+    for (const session of sessionIntervals) {
+      effectiveBreak += overlapMinutes({ start, end }, session)
+    }
+    breakMinutes += effectiveBreak
     if (delta <= 0) invalidBreaks += 1
   }
 

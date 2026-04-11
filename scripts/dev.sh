@@ -42,6 +42,9 @@ done
 
 mkdir -p "$LOG_DIR"
 
+# Reset logs on every run for easier diagnostics.
+find "$LOG_DIR" -maxdepth 1 -type f -name "*.log" -delete
+
 # Clean logs older than 1 day
 if [[ -f "$ROOT_DIR/scripts/clean_logs.sh" ]]; then
   "$ROOT_DIR/scripts/clean_logs.sh" >/dev/null 2>&1 || true
@@ -54,7 +57,7 @@ FRONTEND_ERR="$LOG_DIR/frontend-${RUN_ID}.err.log"
 
 BACKEND_PORT="${BACKEND_PORT:-$(find_free_port 8000)}"
 FRONTEND_PORT="${FRONTEND_PORT:-$(find_free_port 3000)}"
-API_BASE_URL="${API_BASE_URL:-http://localhost:${BACKEND_PORT}}"
+BACKEND_INTERNAL_URL="${BACKEND_INTERNAL_URL:-http://127.0.0.1:${BACKEND_PORT}}"
 
 BACKEND_PID=""
 FRONTEND_PID=""
@@ -95,7 +98,7 @@ if [[ "$MODE" == "once" ]]; then
   echo "Démarrage frontend → http://localhost:${FRONTEND_PORT}"
   (
     cd "$FRONTEND_DIR"
-    PORT="$FRONTEND_PORT" NEXT_PUBLIC_API_BASE_URL="$API_BASE_URL" npm run start
+    PORT="$FRONTEND_PORT" BACKEND_INTERNAL_URL="$BACKEND_INTERNAL_URL" npm run start
   ) >>"$FRONTEND_OUT" 2>>"$FRONTEND_ERR" &
   FRONTEND_PID="$!"
 else
@@ -118,7 +121,7 @@ else
   echo "Démarrage frontend → http://localhost:${FRONTEND_PORT}"
   (
     cd "$FRONTEND_DIR"
-    PORT="$FRONTEND_PORT" NEXT_PUBLIC_API_BASE_URL="$API_BASE_URL" npm run dev
+    PORT="$FRONTEND_PORT" BACKEND_INTERNAL_URL="$BACKEND_INTERNAL_URL" npm run dev
   ) >"$FRONTEND_OUT" 2>"$FRONTEND_ERR" &
   FRONTEND_PID="$!"
 fi

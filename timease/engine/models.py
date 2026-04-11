@@ -196,20 +196,6 @@ class TimeslotConfig:
                         f"l'heure de début ({brk.start_time})."
                     )
 
-                # Check break lies within some session
-                in_session = False
-                for sess in day_config.sessions:
-                    sess_start = _time_to_min(sess.start_time)
-                    sess_end = _time_to_min(sess.end_time)
-                    if brk_start >= sess_start and brk_end <= sess_end:
-                        in_session = True
-                        break
-                if not in_session:
-                    raise ValueError(
-                        f"Jour '{day_config.name}', pause '{brk.name}' ({brk.start_time}-{brk.end_time}) : "
-                        f"la pause doit être entièrement contenue dans une session."
-                    )
-
             # Check no overlapping breaks on same day
             for i, brk1 in enumerate(day_config.breaks):
                 for brk2 in day_config.breaks[i+1:]:
@@ -287,9 +273,9 @@ class SchoolClass:
 
     def validate(self) -> None:
         """Raise ValueError if the class data is internally inconsistent."""
-        if self.student_count <= 0:
+        if self.student_count < 0:
             raise ValueError(
-                f"La classe '{self.name}' doit avoir au moins un élève."
+                f"La classe '{self.name}' doit avoir un effectif nul ou positif."
             )
 
 

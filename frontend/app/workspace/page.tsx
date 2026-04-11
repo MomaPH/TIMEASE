@@ -39,13 +39,24 @@ function WorkspaceContent() {
 
   // ── Solve / generate ────────────────────────────────────────────────────────
   async function handleGenerate() {
-    if (!sessionId || isSolving) return
+    if (!sessionId) {
+      toast('Session indisponible. Verifiez la connexion backend puis reessayez.', 'error')
+      return
+    }
+    if (isSolving) return
+
     setIsSolving(true)
     try {
       const result = await solve(sessionId)
-      if (result.solved) {
+
+      const hasAssignments = Array.isArray(result.assignments) && result.assignments.length > 0
+      if (result.solved || hasAssignments) {
         setTimetable(result)
-        toast('Emploi du temps généré !')
+        if (result.status === 'PARTIAL') {
+          toast('Generation partielle terminee. Certaines sessions restent non placees.', 'info')
+        } else {
+          toast('Emploi du temps genere !')
+        }
         router.push('/results')
       } else if (result.status === 'INFEASIBLE') {
         toast(result.conflict_summary || 'Aucune solution trouvée.', 'error')
@@ -116,11 +127,19 @@ function WorkspaceContent() {
       {/* Solving overlay */}
       {isSolving && (
         <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center">
-          <div className="bg-white dark:bg-zinc-900 rounded-2xl shadow-xl px-8 py-6 flex flex-col items-center gap-3">
+          <div className="bg-white dark:bg-zinc-900 rounded-2xl shadow-xl px-8 py-6 flex flex-col items-center gap-3 min-w-[280px]">
             <Loader2 size={28} className="animate-spin text-indigo-500" />
-            <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
-              Génération en cours…
+            <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+              Generation en cours...
             </p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 text-center">
+              Construction des contraintes et recherche d'un planning valide.
+            </p>
+            <div className="flex items-center gap-1.5">
+              <span className="h-2 w-2 rounded-full bg-indigo-400 animate-pulse" />
+              <span className="h-2 w-2 rounded-full bg-indigo-400 animate-pulse [animation-delay:150ms]" />
+              <span className="h-2 w-2 rounded-full bg-indigo-400 animate-pulse [animation-delay:300ms]" />
+            </div>
           </div>
         </div>
       )}

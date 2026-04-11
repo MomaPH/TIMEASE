@@ -25,6 +25,46 @@ interface Props {
   onUpdateAssignments: (a: any[]) => void
 }
 
+function normalizeSubject(value: string): string {
+  return value.trim()
+}
+
+function parseSubjectsInput(raw: string): string[] {
+  const parts = raw
+    .split(/[,;\n]+/)
+    .map(normalizeSubject)
+    .filter(Boolean)
+
+  const seen = new Set<string>()
+  const result: string[] = []
+  for (const subject of parts) {
+    const key = subject.toLowerCase()
+    if (seen.has(key)) continue
+    seen.add(key)
+    result.push(subject)
+  }
+  return result
+}
+
+function getTeacherDeclaredSubjects(data: SchoolData): string[] {
+  const teachers = data.teachers ?? []
+  const seen = new Set<string>()
+  const result: string[] = []
+
+  for (const teacher of teachers) {
+    for (const subjectRaw of teacher.subjects ?? []) {
+      const subject = normalizeSubject(String(subjectRaw || ''))
+      if (!subject) continue
+      const key = subject.toLowerCase()
+      if (seen.has(key)) continue
+      seen.add(key)
+      result.push(subject)
+    }
+  }
+
+  return result
+}
+
 // ── Teacher section ───────────────────────────────────────────────────────────
 
 function TeachersSection({
@@ -53,6 +93,23 @@ function TeachersSection({
       // cascade rename in assignments
       if (oldName && oldName !== newName) {
         onUpdateAssignments(assignments.map(a => a.teacher === oldName ? { ...a, teacher: newName } : a))
+      }
+    } else if (field === 'subjects') {
+      const teacherName = String(teachers[idx]?.name || '')
+      const parsed = Array.isArray(val)
+        ? val.map(v => normalizeSubject(String(v))).filter(Boolean)
+        : parseSubjectsInput(String(val || ''))
+
+      onUpdateData({ ...data, teachers: teachers.map((t, i) => i === idx ? { ...t, subjects: parsed } : t) })
+
+      if (teacherName) {
+        const allowed = new Set(parsed.map(s => s.toLowerCase()))
+        onUpdateAssignments(
+          assignments.filter(a => {
+            if (a.teacher !== teacherName) return true
+            return allowed.has(String(a.subject || '').trim().toLowerCase())
+          })
+        )
       }
     } else {
       onUpdateData({ ...data, teachers: teachers.map((t, i) => i === idx ? { ...t, [field]: val } : t) })
@@ -98,8 +155,8 @@ function TeachersSection({
               />
               <input
                 value={(t.subjects ?? []).join(', ')}
-                onChange={e => updateTeacher(idx, 'subjects', e.target.value.split(',').map((s: string) => s.trim()).filter(Boolean))}
-                placeholder="Matières (virgule)"
+                onChange={e => updateTeacher(idx, 'subjects', parseSubjectsInput(e.target.value))}
+                placeholder="Matieres (ex: Maths, Physique, SVT)"
                 className="flex-1 min-w-0 px-2 py-1.5 text-xs border border-gray-200 dark:border-gray-700 rounded bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-1 focus:ring-teal-500"
               />
               <button onClick={() => deleteTeacher(idx)} className="text-gray-400 hover:text-red-500 transition-colors flex-shrink-0">
@@ -133,10 +190,28 @@ function ClassCard({
   onUpdateData: (d: SchoolData) => void
   onUpdateAssignments: (a: any[]) => void
 }) {
-  const teachers  = (data.teachers  ?? []).map((t: any) => t.name).filter(Boolean) as string[]
+  const teacherRecords = (data.teachers ?? []).filter((t: any) => (t.name ?? '').trim() !== '')
+  const teachers  = teacherRecords.map((t: any) => String(t.name))
+  const availableSubjects = getTeacherDeclaredSubjects(data)
   const curriculum = (data.curriculum ?? []).filter((c: any) => c.school_class === cls.name)
+  const selectedSubjects = new Set(
+    curriculum
+      .map((c: any) => normalizeSubject(String(c.subject || '')))
+      .filter(Boolean)
+      .map((s: string) => s.toLowerCase())
+  )
   const [copyOpen, setCopyOpen] = useState(false)
   const otherClasses = (data.classes ?? []).filter((c: any) => c.name !== cls.name).map((c: any) => c.name)
+
+  function getEligibleTeachersForSubject(subject: string): string[] {
+    const key = normalizeSubject(subject).toLowerCase()
+    if (!key) return []
+    return teacherRecords
+      .filter((t: any) =>
+        (t.subjects ?? []).some((s: string) => normalizeSubject(String(s)).toLowerCase() === key)
+      )
+      .map((t: any) => String(t.name))
+  }
 
   // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -173,6 +248,53 @@ function ClassCard({
       total_minutes_per_week: 120,
     }
     onUpdateData({ ...data, curriculum: [...(data.curriculum ?? []), newRow] })
+  }
+
+  function toggleClassSubject(subject: string, enabled: boolean) {
+    const allCurriculum = data.curriculum ?? []
+    const subjectNorm = normalizeSubject(subject)
+    const subjectKey = subjectNorm.toLowerCase()
+    const classRows = allCurriculum.filter((c: any) => c.school_class === cls.name)
+
+    const hasSubject = classRows.some(
+      (row: any) => normalizeSubject(String(row.subject || '')).toLowerCase() === subjectKey
+    )
+
+    let nextCurriculum = allCurriculum
+
+    if (enabled && !hasSubject) {
+      nextCurriculum = [
+        ...allCurriculum,
+        {
+          school_class: cls.name,
+          subject: subjectNorm,
+          weekly_hours: 2,
+          sessions_per_week: 2,
+          minutes_per_session: 60,
+          total_minutes_per_week: 120,
+        },
+      ]
+    }
+
+    if (!enabled) {
+      nextCurriculum = allCurriculum.filter((row: any) => {
+        if (row.school_class !== cls.name) return true
+        return normalizeSubject(String(row.subject || '')).toLowerCase() !== subjectKey
+      })
+    }
+
+    const nextSubjects = deriveSubjects({ ...data, curriculum: nextCurriculum })
+
+    const nextAssignments = assignments.filter((a: any) => {
+      if (a.school_class !== cls.name) return true
+      if (!enabled && normalizeSubject(String(a.subject || '')).toLowerCase() === subjectKey) {
+        return false
+      }
+      return true
+    })
+
+    onUpdateData({ ...data, curriculum: nextCurriculum, subjects: nextSubjects })
+    onUpdateAssignments(nextAssignments)
   }
 
   function updateCurriculumRow(globalIdx: number, field: string, val: string | number) {
@@ -288,21 +410,43 @@ function ClassCard({
 
       {/* Curriculum table */}
       <div className="p-3 bg-white dark:bg-gray-900 space-y-2">
+        <div className="space-y-1.5 pb-1">
+          <div className="text-xs font-medium text-gray-500 uppercase">Matières de la classe</div>
+          {availableSubjects.length === 0 ? (
+            <p className="text-xs text-gray-400 italic">Ajoutez d'abord des matières dans la section Enseignants.</p>
+          ) : (
+            <div className="flex flex-wrap gap-2">
+              {availableSubjects.map((subject) => {
+                const checked = selectedSubjects.has(subject.toLowerCase())
+                return (
+                  <label key={subject} className="inline-flex items-center gap-1.5 px-2 py-1 rounded-md border border-gray-200 dark:border-gray-700 text-xs text-gray-700 dark:text-gray-300">
+                    <input
+                      type="checkbox"
+                      checked={checked}
+                      onChange={e => toggleClassSubject(subject, e.target.checked)}
+                      className="h-3.5 w-3.5 rounded border-gray-300 text-teal-600 focus:ring-teal-500"
+                    />
+                    {subject}
+                  </label>
+                )
+              })}
+            </div>
+          )}
+        </div>
+
         {curriculum.length === 0 && (
           <p className="text-xs text-gray-400 italic">Aucune matière dans le programme.</p>
         )}
 
         {(data.curriculum ?? []).map((row: any, globalIdx: number) => {
           if (row.school_class !== cls.name) return null
+          const eligibleTeachers = getEligibleTeachersForSubject(String(row.subject || ''))
           const assignedTeacher = assignments.find(a => a.school_class === cls.name && a.subject === row.subject)?.teacher ?? ''
           return (
             <div key={globalIdx} className="flex gap-2 items-center">
-              <input
-                value={row.subject ?? ''}
-                onChange={e => updateCurriculumRow(globalIdx, 'subject', e.target.value)}
-                placeholder="Matière"
-                className="flex-1 min-w-0 px-2 py-1 text-xs border border-gray-200 dark:border-gray-700 rounded bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-1 focus:ring-teal-500"
-              />
+              <div className="flex-1 min-w-0 px-2 py-1 text-xs border border-gray-200 dark:border-gray-700 rounded bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-200">
+                {row.subject || 'Matiere'}
+              </div>
               <input
                 type="number"
                 min={1}
@@ -319,7 +463,7 @@ function ClassCard({
                 className="flex-1 min-w-0 px-2 py-1 text-xs border border-gray-200 dark:border-gray-700 rounded bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-1 focus:ring-teal-500"
               >
                 <option value="">Enseignant…</option>
-                {teachers.map(t => <option key={t} value={t}>{t}</option>)}
+                {eligibleTeachers.map(t => <option key={t} value={t}>{t}</option>)}
               </select>
               <button onClick={() => deleteCurriculumRow(globalIdx)} className="text-gray-400 hover:text-red-500 transition-colors flex-shrink-0">
                 <Trash2 size={12} />
@@ -328,9 +472,11 @@ function ClassCard({
           )
         })}
 
-        <button onClick={addCurriculumRow} className="flex items-center gap-1.5 text-xs text-teal-600 dark:text-teal-400 hover:text-teal-700 transition-colors">
-          <Plus size={13} /> Ajouter une matière
-        </button>
+        {availableSubjects.length === 0 && (
+          <button onClick={addCurriculumRow} className="flex items-center gap-1.5 text-xs text-teal-600 dark:text-teal-400 hover:text-teal-700 transition-colors">
+            <Plus size={13} /> Ajouter une matière
+          </button>
+        )}
 
         {/* Copy from class */}
         {otherClasses.length > 0 && (

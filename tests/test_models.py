@@ -121,18 +121,17 @@ class TestTeacherValidation:
 
 
 # ---------------------------------------------------------------------------
-# 4. SchoolClass validation — student_count <= 0
+# 4. SchoolClass validation — student_count < 0
 # ---------------------------------------------------------------------------
 
 class TestSchoolClassValidation:
-    def test_reject_zero_students(self) -> None:
+    def test_accept_zero_students(self) -> None:
         klass = SchoolClass(name="6ème A", level="6ème", student_count=0)
-        with pytest.raises(ValueError, match="élève"):
-            klass.validate()
+        klass.validate()  # must not raise
 
     def test_reject_negative_students(self) -> None:
         klass = SchoolClass(name="6ème A", level="6ème", student_count=-1)
-        with pytest.raises(ValueError, match="élève"):
+        with pytest.raises(ValueError, match="effectif"):
             klass.validate()
 
     def test_valid_class_does_not_raise(self) -> None:
@@ -508,15 +507,14 @@ class TestBreakConfig:
         # Should not raise
         tc.validate()
 
-    def test_break_outside_session_raises(self) -> None:
-        """validate() should reject breaks outside session bounds."""
+    def test_break_outside_session_is_allowed(self) -> None:
+        """validate() allows breaks outside session bounds."""
         sessions = [SessionConfig("Matin", "08:00", "12:00")]
         breaks = [BreakConfig("Invalid", "14:00", "14:30")]  # Outside morning
         days = [DayConfig("lundi", sessions, breaks)]
         tc = TimeslotConfig(days=days, base_unit_minutes=30)
 
-        with pytest.raises(ValueError, match="pause.*session"):
-            tc.validate()
+        tc.validate()  # must not raise
 
     def test_overlapping_breaks_raises(self) -> None:
         """validate() should reject overlapping breaks."""
