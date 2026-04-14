@@ -51,6 +51,47 @@ def _solver_flags_for_mode(solve_mode: str) -> tuple[bool, bool]:
     return (True, False)
 
 
+def _enforce_room_conflicts_for_mode(solve_mode: str) -> bool:
+    mode = (solve_mode or "balanced").strip().lower()
+    return mode != "fast"
+
+
+_SUPPORTED_HARD_CATEGORIES: set[str] = {
+    "start_time",
+    "start_time_exceptions",
+    "day_off",
+    "max_consecutive",
+    "subject_on_days",
+    "subject_not_on_days",
+    "subject_not_last_slot",
+    "ritual_slots_blocked",
+    "min_break_between",
+    "fixed_assignment",
+    "one_teacher_per_subject_per_class",
+    "min_sessions_per_day",
+    # Semantically covered elsewhere in TIMEASE pipeline.
+    "teacher_no_overlap",
+    "class_no_overlap",
+    "teacher_subject_declared",
+    "teacher_calendar_declared",
+}
+
+
+def _unsupported_hard_constraints(constraints: list) -> list[str]:
+    errors: list[str] = []
+    for c in constraints:
+        if getattr(c, "type", "") != "hard":
+            continue
+        cat = str(getattr(c, "category", "") or "")
+        if cat not in _SUPPORTED_HARD_CATEGORIES:
+            cid = str(getattr(c, "id", "") or "?")
+            errors.append(
+                f"Contrainte dure non supportée: '{cat}' (id={cid}). "
+                "Supprimez-la ou remplacez-la par une contrainte compatible."
+            )
+    return errors
+
+
 def _new_short_id(existing_ids: set[str], length: int) -> str:
     """Generate a collision-free short id for in-memory records."""
     while True:
@@ -157,6 +198,7 @@ def _norm_constraint(d: dict) -> dict:
         "subject_on_days": "hard",
         "subject_not_on_days": "hard",
         "subject_not_last_slot": "hard",
+        "ritual_slots_blocked": "hard",
         "min_break_between": "hard",
         "fixed_assignment": "hard",
         "one_teacher_per_subject_per_class": "hard",
@@ -898,6 +940,7 @@ def _run_solver_worker(payload: dict, out_q: "multiprocessing.Queue") -> None:
         timeout = int(payload["effective_timeout_seconds"])
         optimize_soft_constraints = bool(payload.get("optimize_soft_constraints", True))
         stop_at_first_solution = bool(payload.get("stop_at_first_solution", False))
+        enforce_room_conflicts = bool(payload.get("enforce_room_conflicts", True))
 
         school_obj = SchoolData(
             school=School(
@@ -919,6 +962,7 @@ def _run_solver_worker(payload: dict, out_q: "multiprocessing.Queue") -> None:
         )
 
         validation_errors = school_obj.validate()
+        validation_errors.extend(_unsupported_hard_constraints(school_obj.constraints))
         if validation_errors:
             summary = "**Erreurs de validation :**\n" + "\n".join(f"- {e}" for e in validation_errors)
             out_q.put({
@@ -935,6 +979,7 @@ def _run_solver_worker(payload: dict, out_q: "multiprocessing.Queue") -> None:
             timeout_seconds=timeout,
             optimize_soft_constraints=optimize_soft_constraints,
             stop_at_first_solution=stop_at_first_solution,
+            enforce_room_conflicts=enforce_room_conflicts,
         )
         api_wall_time = round(time.perf_counter() - wall_start, 3)
 
@@ -971,6 +1016,8 @@ def _run_solver_worker(payload: dict, out_q: "multiprocessing.Queue") -> None:
                     "effective_timeout_seconds": timeout,
                     "optimize_soft_constraints": optimize_soft_constraints,
                     "stop_at_first_solution": stop_at_first_solution,
+                    "enforce_room_conflicts": enforce_room_conflicts,
+                    "room_fallback_retry_used": False,
                     "api_wall_time_seconds": api_wall_time,
                 },
             })
@@ -998,6 +1045,8 @@ def _run_solver_worker(payload: dict, out_q: "multiprocessing.Queue") -> None:
                     "effective_timeout_seconds": timeout,
                     "optimize_soft_constraints": optimize_soft_constraints,
                     "stop_at_first_solution": stop_at_first_solution,
+                    "enforce_room_conflicts": enforce_room_conflicts,
+                    "room_fallback_retry_used": False,
                     "api_wall_time_seconds": api_wall_time,
                 },
             })
@@ -1014,6 +1063,8 @@ def _run_solver_worker(payload: dict, out_q: "multiprocessing.Queue") -> None:
                 "effective_timeout_seconds": timeout,
                 "optimize_soft_constraints": optimize_soft_constraints,
                 "stop_at_first_solution": stop_at_first_solution,
+                "enforce_room_conflicts": enforce_room_conflicts,
+                "room_fallback_retry_used": False,
                 "api_wall_time_seconds": api_wall_time,
             },
         })
@@ -1126,6 +1177,7 @@ def solve(sid: str, payload: dict = {}):
         )
 
         validation_errors = school_obj.validate()
+        validation_errors.extend(_unsupported_hard_constraints(school_obj.constraints))
         if validation_errors:
             conflict_summary = "**Erreurs de validation :**\n" + "\n".join(
                 f"- {e}" for e in validation_errors
@@ -1140,6 +1192,7 @@ def solve(sid: str, payload: dict = {}):
             adaptive_timeout=adaptive_timeout,
         )
         optimize_soft_constraints, stop_at_first_solution = _solver_flags_for_mode(solve_mode)
+        enforce_room_conflicts = _enforce_room_conflicts_for_mode(solve_mode)
         wall_start = time.perf_counter()
         logger.info(
             "Solve request started sid=%s request_id=%s mode=%s requested_timeout=%s adaptive_timeout=%s effective_timeout=%s optimize_soft=%s first_solution=%s",
@@ -1157,6 +1210,7 @@ def solve(sid: str, payload: dict = {}):
             timeout_seconds=effective_timeout,
             optimize_soft_constraints=optimize_soft_constraints,
             stop_at_first_solution=stop_at_first_solution,
+            enforce_room_conflicts=enforce_room_conflicts,
         )
         api_wall_time = round(time.perf_counter() - wall_start, 3)
         logger.info(
@@ -1201,6 +1255,8 @@ def solve(sid: str, payload: dict = {}):
                     "effective_timeout_seconds": effective_timeout,
                     "optimize_soft_constraints": optimize_soft_constraints,
                     "stop_at_first_solution": stop_at_first_solution,
+                    "enforce_room_conflicts": enforce_room_conflicts,
+                    "room_fallback_retry_used": False,
                     "api_wall_time_seconds": api_wall_time,
                 },
             }
@@ -1244,6 +1300,8 @@ def solve(sid: str, payload: dict = {}):
                 "effective_timeout_seconds": effective_timeout,
                 "optimize_soft_constraints": optimize_soft_constraints,
                 "stop_at_first_solution": stop_at_first_solution,
+                "enforce_room_conflicts": enforce_room_conflicts,
+                "room_fallback_retry_used": False,
                 "conflict_summary": summary,
                 "warnings": result.warnings,
                 "estimate": estimate,
@@ -1284,6 +1342,18 @@ def solve(sid: str, payload: dict = {}):
             "solved":            False,
             "conflict_summary":  conflict_summary,
             "conflict_reports":  structured_reports,
+            "diagnostics": {
+                "request_id": request_id,
+                "mode": solve_mode,
+                "requested_timeout_seconds": requested_timeout,
+                "adaptive_timeout_seconds": adaptive_timeout,
+                "effective_timeout_seconds": effective_timeout,
+                "optimize_soft_constraints": optimize_soft_constraints,
+                "stop_at_first_solution": stop_at_first_solution,
+                "enforce_room_conflicts": enforce_room_conflicts,
+                "room_fallback_retry_used": False,
+                "api_wall_time_seconds": api_wall_time,
+            },
         }
 
     except Exception as exc:

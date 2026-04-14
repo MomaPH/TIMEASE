@@ -366,6 +366,8 @@ class TestValidateWarnings:
 def _make_valid_result() -> tuple[TimetableResult, SchoolData]:
     """Return a minimal valid (result, school_data) pair for verify() tests."""
     sd = _minimal_school()
+    # Verify() tests use hour-long assignments; align slot granularity here.
+    sd.timeslot_config.base_unit_minutes = 60
     result = TimetableResult(
         assignments=[
             Assignment(
@@ -389,6 +391,13 @@ class TestTimetableResultVerify:
         result, sd = _make_valid_result()
         violations = result.verify(sd)
         assert violations == [], f"Unexpected violations: {violations}"
+
+    def test_teacher_qualification_ignores_case_and_spaces(self) -> None:
+        result, sd = _make_valid_result()
+        sd.teachers[0].subjects = ["  maths  "]
+        result.assignments[0].subject = "MATHS"
+        violations = result.verify(sd)
+        assert not any("n'est pas déclaré" in v for v in violations), violations
 
     def test_teacher_double_booked(self) -> None:
         result, sd = _make_valid_result()

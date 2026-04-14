@@ -536,6 +536,28 @@ class TestFixedAssignment:
 
 
 # ---------------------------------------------------------------------------
+# 12c. test_ritual_slots_blocked (H12)
+# ---------------------------------------------------------------------------
+
+class TestRitualSlotsBlocked:
+    def test_ritual_slots_blocked_removes_early_starts(self) -> None:
+        """H12 should block the first base slot and first afternoon slot each day."""
+        h12 = Constraint(
+            id="H12",
+            type="hard",
+            category="ritual_slots_blocked",
+            description_fr="Créneaux rituels bloqués.",
+            parameters={"slots": ["S00", "B2"]},
+        )
+        sd = _make_school(constraints=[h12])
+        result = TimetableSolver().solve(sd, timeout_seconds=FAST_TIMEOUT)
+        assert result.solved
+
+        for a in result.assignments:
+            assert a.start_time not in {"08:00"}
+
+
+# ---------------------------------------------------------------------------
 # 12b. test_min_sessions_per_day  (H11)
 # ---------------------------------------------------------------------------
 

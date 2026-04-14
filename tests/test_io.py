@@ -123,6 +123,50 @@ def test_import_rejects_unknown_teacher(tmp_path: Path) -> None:
     )
 
 
+def test_import_teacher_subjects_are_deduplicated_case_insensitive(tmp_path: Path) -> None:
+    """Teacher subjects from Excel should keep one normalized entry per label."""
+    from timease.io.excel_import import create_template, read_template
+
+    xlsx = tmp_path / "dedup-subjects.xlsx"
+    create_template(str(xlsx))
+
+    wb = load_workbook(str(xlsx))
+    ws_teachers = wb["Enseignants"]
+    ws_teachers.cell(row=2, column=1, value="Mme Test")
+    ws_teachers.cell(row=2, column=2, value="Maths, maths,  MATHS  , Physique")
+    ws_teachers.cell(row=2, column=3, value=18)
+
+    ws_subjects = wb["Matières"]
+    ws_subjects.cell(row=2, column=1, value="Maths")
+    ws_subjects.cell(row=2, column=2, value="M")
+    ws_subjects.cell(row=3, column=1, value="Physique")
+    ws_subjects.cell(row=3, column=2, value="P")
+
+    ws_classes = wb["Classes"]
+    ws_classes.cell(row=2, column=1, value="6ème A")
+    ws_classes.cell(row=2, column=2, value="6ème")
+    ws_classes.cell(row=2, column=3, value=30)
+
+    ws_assign = wb["Affectations"]
+    ws_assign.cell(row=2, column=1, value="Mme Test")
+    ws_assign.cell(row=2, column=2, value="Maths")
+    ws_assign.cell(row=2, column=3, value="6ème A")
+
+    ws_curr = wb["Programme"]
+    ws_curr.cell(row=2, column=1, value="6ème A")
+    ws_curr.cell(row=2, column=2, value="Maths")
+    ws_curr.cell(row=2, column=3, value=60)
+    ws_curr.cell(row=2, column=4, value=1)
+    ws_curr.cell(row=2, column=5, value=60)
+
+    wb.save(str(xlsx))
+
+    data, errors = read_template(str(xlsx))
+    assert not errors, errors
+    assert data is not None
+    assert data.teachers[0].subjects == ["Maths", "Physique"]
+
+
 # ---------------------------------------------------------------------------
 # Export tests  (reuse module-scoped dakar_result)
 # ---------------------------------------------------------------------------
@@ -281,10 +325,12 @@ def test_api_solve_mode_applies_timeout_cap_and_fast_flags(dakar_data: SchoolDat
         timeout_seconds=30,
         optimize_soft_constraints=True,
         stop_at_first_solution=False,
+        enforce_room_conflicts=True,
     ):
         seen["timeout"] = int(timeout_seconds)
         seen_flags["optimize_soft_constraints"] = bool(optimize_soft_constraints)
         seen_flags["stop_at_first_solution"] = bool(stop_at_first_solution)
+        seen_flags["enforce_room_conflicts"] = bool(enforce_room_conflicts)
         return TimetableResult(
             assignments=[],
             solved=False,
@@ -335,6 +381,7 @@ def test_api_solve_mode_applies_timeout_cap_and_fast_flags(dakar_data: SchoolDat
     assert body_fast["effective_timeout_seconds"] <= 60
     assert seen_flags["optimize_soft_constraints"] is False
     assert seen_flags["stop_at_first_solution"] is True
+    assert seen_flags["enforce_room_conflicts"] is False
 
 
 def test_api_job_lifecycle_create_cancel_delete(dakar_data: SchoolData) -> None:

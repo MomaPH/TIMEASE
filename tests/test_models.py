@@ -24,6 +24,7 @@ from timease.engine.models import (
     SessionConfig,
     Subject,
     Teacher,
+    TeacherAssignment,
     TimeslotConfig,
 )
 
@@ -118,6 +119,40 @@ class TestTeacherValidation:
     def test_valid_teacher_does_not_raise(self) -> None:
         teacher = Teacher(name="M. Test", subjects=["Maths"], max_hours_per_week=18)
         teacher.validate()  # must not raise
+
+    def test_qualification_is_case_and_space_tolerant(self) -> None:
+        teacher = Teacher(name="M. Test", subjects=["  Mathématiques  "], max_hours_per_week=18)
+        school = SchoolData(
+            school=School(name="Test School", academic_year="2026-2027", city="Dakar"),
+            timeslot_config=TimeslotConfig.from_simple(
+                day_names=["lundi"],
+                sessions=[SessionConfig("Matin", "08:00", "10:00")],
+                base_unit_minutes=60,
+            ),
+            subjects=[Subject(name="Mathématiques", short_name="Maths", color="#FFFFFF")],
+            teachers=[teacher],
+            classes=[SchoolClass(name="6ème A", level="6ème", student_count=30)],
+            rooms=[Room(name="Salle 1", capacity=40, types=["Salle standard"])],
+            curriculum=[
+                CurriculumEntry(
+                    school_class="6ème A",
+                    subject="Mathématiques",
+                    total_minutes_per_week=60,
+                    sessions_per_week=1,
+                    minutes_per_session=60,
+                )
+            ],
+            constraints=[],
+            teacher_assignments=[
+                TeacherAssignment(
+                    teacher="M. Test",
+                    subject=" mathématiques ",
+                    school_class="6ème A",
+                )
+            ],
+        )
+        errors = school.validate()
+        assert not any("qualifié" in e for e in errors), errors
 
 
 # ---------------------------------------------------------------------------

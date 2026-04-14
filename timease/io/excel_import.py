@@ -440,7 +440,17 @@ def _parse_teachers(wb: Any, errors: list[str]) -> list[Teacher]:
         if not nom:
             continue
         matieres_raw = _cell_str(ws.cell(row=r, column=2))
-        matieres = [m.strip() for m in matieres_raw.split(",") if m.strip()]
+        matieres_seen: set[str] = set()
+        matieres: list[str] = []
+        for raw_subject in matieres_raw.split(","):
+            subject = raw_subject.strip()
+            if not subject:
+                continue
+            key = subject.casefold()
+            if key in matieres_seen:
+                continue
+            matieres_seen.add(key)
+            matieres.append(subject)
         if not matieres:
             errors.append(f"Enseignants ligne {r} : matières manquantes pour « {nom} ».")
             continue

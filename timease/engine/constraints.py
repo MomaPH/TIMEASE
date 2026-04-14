@@ -196,9 +196,15 @@ class ConstraintBuilder:
             "subject_on_days":                   self._h5_domain_only,
             "subject_not_on_days":               self._h6_domain_only,
             "subject_not_last_slot":             self._h7_domain_only,
+            "ritual_slots_blocked":              self._h12_domain_only,
             "min_break_between":                 self._h8_min_break_between,
             "fixed_assignment":                  self._h9_fixed_assignment,
             "one_teacher_per_subject_per_class": self._h10_no_op,
+            "one_teacher_per_subject_class":     self._h10_no_op,
+            "teacher_no_overlap":                self._h13_no_op,
+            "class_no_overlap":                  self._h14_no_op,
+            "teacher_subject_declared":          self._h15_no_op,
+            "teacher_calendar_declared":         self._h16_no_op,
             "min_sessions_per_day":              self._h11_min_sessions_per_day,
         }
 
@@ -243,6 +249,9 @@ class ConstraintBuilder:
 
     def _h7_domain_only(self, c: Constraint, warnings: list[str]) -> None:
         logger.debug("[%s] subject_not_last_slot already applied via domain pre-filtering.", c.id)
+
+    def _h12_domain_only(self, c: Constraint, warnings: list[str]) -> None:
+        logger.debug("[%s] ritual_slots_blocked already applied via domain pre-filtering.", c.id)
 
     # ------------------------------------------------------------------
     # H2 — start_time_exceptions
@@ -518,6 +527,22 @@ class ConstraintBuilder:
 
     def _h10_no_op(self, c: Constraint, warnings: list[str]) -> None:
         """Satisfied automatically by teacher pre-assignment — nothing to add."""
+
+    def _h13_no_op(self, c: Constraint, warnings: list[str]) -> None:
+        """Already enforced by teacher interval no-overlap constraints."""
+        logger.debug("[%s] teacher_no_overlap enforced by core model.", c.id)
+
+    def _h14_no_op(self, c: Constraint, warnings: list[str]) -> None:
+        """Already enforced by class interval no-overlap constraints."""
+        logger.debug("[%s] class_no_overlap enforced by core model.", c.id)
+
+    def _h15_no_op(self, c: Constraint, warnings: list[str]) -> None:
+        """Covered by pre-assigned teacher/subject validation before solve."""
+        logger.debug("[%s] teacher_subject_declared validated in data prep.", c.id)
+
+    def _h16_no_op(self, c: Constraint, warnings: list[str]) -> None:
+        """Covered by teacher calendar + domain filtering in data prep."""
+        logger.debug("[%s] teacher_calendar_declared validated in data prep.", c.id)
 
     # ------------------------------------------------------------------
     # H11 — min_sessions_per_day

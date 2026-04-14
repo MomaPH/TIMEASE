@@ -17,6 +17,7 @@ The domain of each start_var is pre-filtered for:
       H5  subject_on_days     — subject restricted to listed days
       H6  subject_not_on_days — subject excluded from listed days
       H7  subject_not_last_slot — cannot occupy last slot of day
+      H12 ritual_slots_blocked  — block ritual-coded slots (S00/BRK/B1/B2/L01/L02)
 
 Room assignment uses one BoolVar per (session, eligible_room) pair, with
 add_exactly_one per session and add_no_overlap per room.
@@ -152,6 +153,8 @@ class TimetableSolver:
         timeout_seconds: int = DEFAULT_SOLVE_TIMEOUT_SECONDS,
         optimize_soft_constraints: bool = True,
         stop_at_first_solution: bool = False,
+        prefer_standard_rooms_for_general_subjects: bool = True,
+        enforce_room_conflicts: bool = True,
     ) -> TimetableResult:
         """Build and solve the model; return a TimetableResult.
 
@@ -247,12 +250,14 @@ class TimetableSolver:
         #   H5  subject_on_days
         #   H6  subject_not_on_days
         #   H7  subject_not_last_slot
+        #   H12 ritual_slots_blocked
         # ==================================================================
         global_min_start: str = "00:00"
         blocked_day_info: dict[str, set[str]] = {}  # day → {"all"} or session names
         subject_allowed_days: dict[str, set[str]] = {}
         subject_blocked_days: dict[str, set[str]] = {}
         subject_not_last: set[str] = set()
+        ritual_slot_codes: set[str] = set()
 
         for c in data.constraints:
             if c.type != "hard":
@@ -280,6 +285,10 @@ class TimetableSolver:
                 subj = p.get("subject", "")
                 if subj:
                     subject_not_last.add(subj)
+            elif cat == "ritual_slots_blocked":
+                slots = p.get("slots", [])
+                if isinstance(slots, list):
+                    ritual_slot_codes.update(str(slot).upper() for slot in slots)
 
         def _is_slot_blocked(day: str, s: int, end_s: int) -> bool:
             """Return True if slots [s, end_s) on *day* are blocked by any day_off."""
@@ -295,6 +304,40 @@ class TimetableSolver:
                 if so and start_t >= so.start_time and end_t <= so.end_time:
                     return True
             return False
+
+        # Map ritual slot codes to actual base-unit slot indices for each day.
+        # BRK has no schedulable slot in current modeling (breaks are removed), so
+        # it is effectively covered already by slot generation.
+        ritual_blocked_slots_by_day: dict[str, set[int]] = {}
+        if ritual_slot_codes:
+            for day, slots in day_slot_times.items():
+                blocked_indices: set[int] = set()
+                if not slots:
+                    ritual_blocked_slots_by_day[day] = blocked_indices
+                    continue
+
+                block_starts: list[int] = []
+                block_ends: list[int] = []
+                for idx in range(len(slots)):
+                    if idx == 0 or slots[idx - 1][1] != slots[idx][0]:
+                        block_starts.append(idx)
+                    if idx == len(slots) - 1 or slots[idx][1] != slots[idx + 1][0]:
+                        block_ends.append(idx)
+
+                if "S00" in ritual_slot_codes and block_starts:
+                    blocked_indices.add(block_starts[0])
+                if "B1" in ritual_slot_codes and block_ends:
+                    blocked_indices.add(block_ends[0])
+                if "B2" in ritual_slot_codes and len(block_starts) >= 2:
+                    blocked_indices.add(block_starts[1])
+                if "L01" in ritual_slot_codes and block_starts:
+                    blocked_indices.add(block_starts[-1])
+                if "L02" in ritual_slot_codes and block_starts:
+                    l02_idx = block_starts[-1] + 1
+                    if l02_idx < len(slots):
+                        blocked_indices.add(l02_idx)
+
+                ritual_blocked_slots_by_day[day] = blocked_indices
 
         # ==================================================================
         # Step 5 — Build _Session objects and compute start_var domains
@@ -334,7 +377,10 @@ class TimetableSolver:
                 subject = subject_map[entry.subject]
 
                 # Eligible rooms for this (class × subject)
-                # Phase D: Rooms are optional with soft room-type matching
+                # Phase D: Rooms are optional with soft room-type matching.
+                # For general subjects (no required_room_type), prefer standard
+                # rooms first but fall back to specialized rooms if needed to
+                # preserve feasibility in room-tight datasets.
                 eligible_room_idxs: list[int] = []
                 preferred_room_idxs: list[int] = []  # Rooms that match required_room_type
                 fallback_room_idxs: list[int] = []   # Rooms without required_room_type match
@@ -350,12 +396,15 @@ class TimetableSolver:
                                 # Soft matching: allow any room as fallback
                                 fallback_room_idxs.append(r_idx)
                         else:
-                            # Accept any room that has no specialized type.
-                            # This prevents lab/specialist rooms from being
-                            # assigned to general subjects.
-                            if any(rt in specialized_room_types for rt in room.types):
-                                continue
-                            preferred_room_idxs.append(r_idx)
+                            # For general subjects, default to standard-room preference.
+                            # In fallback mode we allow all capacity-compatible rooms.
+                            if prefer_standard_rooms_for_general_subjects:
+                                if any(rt in specialized_room_types for rt in room.types):
+                                    fallback_room_idxs.append(r_idx)
+                                else:
+                                    preferred_room_idxs.append(r_idx)
+                            else:
+                                preferred_room_idxs.append(r_idx)
 
                     # Phase D: Use preferred rooms first, fallback if none available
                     if preferred_room_idxs:
@@ -364,15 +413,27 @@ class TimetableSolver:
                         # Soft matching: use fallback rooms with a warning
                         eligible_room_idxs = fallback_room_idxs
                         if subject.required_room_type:
-                            warn_key = (school_class.name, entry.subject, subject.required_room_type)
                             warn_msg = (
                                 f"'{entry.subject}' pour '{school_class.name}' : "
                                 f"aucune salle de type '{subject.required_room_type}' n'est "
                                 f"disponible avec une capacité suffisante. "
                                 f"Les sessions seront placées dans une salle standard."
                             )
-                            if warn_msg not in solver_warnings:
-                                solver_warnings.append(warn_msg)
+                        else:
+                            if prefer_standard_rooms_for_general_subjects:
+                                warn_msg = (
+                                    f"'{entry.subject}' pour '{school_class.name}' : "
+                                    "aucune salle standard disponible avec une capacité suffisante. "
+                                    "Les sessions pourront utiliser une salle spécialisée."
+                                )
+                            else:
+                                warn_msg = (
+                                    f"'{entry.subject}' pour '{school_class.name}' : "
+                                    "mode de secours activé — toutes les salles compatibles en capacité "
+                                    "sont autorisées."
+                                )
+                        if warn_msg not in solver_warnings:
+                            solver_warnings.append(warn_msg)
 
                 # Phase D: Empty rooms list is valid - sessions can be scheduled without room
                 # When needs_room=True but no rooms defined, generate a warning
@@ -416,6 +477,12 @@ class TimetableSolver:
                                 continue
                             # H3 partial (session-block level)
                             if _is_slot_blocked(day, s, s + dur_slots_k):
+                                continue
+                            # H12 ritual blocked slots
+                            if any(
+                                slot_idx in ritual_blocked_slots_by_day.get(day, set())
+                                for slot_idx in range(s, s + dur_slots_k)
+                            ):
                                 continue
                             # H7
                             if entry.subject in subject_not_last:
@@ -510,6 +577,25 @@ class TimetableSolver:
             )
             start_vars[sess.idx] = var
 
+        # Symmetry breaking: interchangeable sessions with identical static
+        # characteristics and domains are ordered by start time.
+        interchangeable: dict[tuple, list[int]] = defaultdict(list)
+        for sess in sessions:
+            key = (
+                sess.class_name,
+                sess.subject_name,
+                sess.teacher_name,
+                sess.dur_slots,
+                tuple(session_domains[sess.idx]),
+            )
+            interchangeable[key].append(sess.idx)
+        for idxs in interchangeable.values():
+            if len(idxs) < 2:
+                continue
+            idxs.sort()
+            for left, right in zip(idxs, idxs[1:], strict=False):
+                model.add(start_vars[left] <= start_vars[right])
+
         # ==================================================================
         # Step 7 — Class and teacher no-overlap (global timeline)
         #
@@ -555,8 +641,9 @@ class TimetableSolver:
         room_bvars: dict[tuple[int, int], cp_model.IntVar] = {}
         room_intervals: dict[int, list[cp_model.IntervalVar]] = defaultdict(list)
 
-        # Skip room assignment entirely if no rooms are defined
-        if data.rooms:
+        # Skip room assignment entirely if no rooms are defined or when
+        # fast feasibility mode disables room coupling for speed.
+        if data.rooms and enforce_room_conflicts:
             for sess in sessions:
                 if not sess.needs_room:
                     continue
@@ -585,6 +672,70 @@ class TimetableSolver:
             for r_idx, ivars in room_intervals.items():
                 if len(ivars) > 1:
                     model.add_no_overlap(ivars)
+
+        # Constrained-first branching for feasibility speed.
+        ordered_session_vars = [
+            start_vars[s.idx]
+            for s in sorted(
+                sessions,
+                key=lambda s: (
+                    len(session_domains[s.idx]),
+                    -s.dur_slots,
+                    len(s.eligible_room_idxs) if s.needs_room else 9999,
+                    s.idx,
+                ),
+            )
+        ]
+        if ordered_session_vars:
+            model.add_decision_strategy(
+                ordered_session_vars,
+                cp_model.CHOOSE_MIN_DOMAIN_SIZE,
+                cp_model.SELECT_MIN_VALUE,
+            )
+        if room_bvars:
+            model.add_decision_strategy(
+                list(room_bvars.values()),
+                cp_model.CHOOSE_MIN_DOMAIN_SIZE,
+                cp_model.SELECT_MAX_VALUE,
+            )
+
+        if not optimize_soft_constraints:
+            # Fast feasible hint: greedy non-overlap placement by constrained order.
+            hinted_starts: dict[int, int] = {}
+            class_busy: dict[str, dict[str, list[tuple[int, int]]]] = defaultdict(lambda: defaultdict(list))
+            teacher_busy: dict[str, dict[str, list[tuple[int, int]]]] = defaultdict(lambda: defaultdict(list))
+            for sess in sorted(
+                sessions,
+                key=lambda s: (len(session_domains[s.idx]), -s.dur_slots, s.idx),
+            ):
+                for gpos in sorted(session_domains[sess.idx]):
+                    d_idx = gpos // n_slots_per_day
+                    s = gpos % n_slots_per_day
+                    day = day_names[d_idx]
+                    start_min = d_idx * 24 * 60 + (
+                        int(day_slot_times[day][s][0][:2]) * 60
+                        + int(day_slot_times[day][s][0][3:])
+                    )
+                    end_min = d_idx * 24 * 60 + (
+                        int(day_slot_times[day][s + sess.dur_slots - 1][1][:2]) * 60
+                        + int(day_slot_times[day][s + sess.dur_slots - 1][1][3:])
+                    )
+                    c_overlap = any(
+                        start_min < e and b < end_min
+                        for b, e in class_busy[sess.class_name][day]
+                    )
+                    t_overlap = any(
+                        start_min < e and b < end_min
+                        for b, e in teacher_busy[sess.teacher_name][day]
+                    )
+                    if c_overlap or t_overlap:
+                        continue
+                    hinted_starts[sess.idx] = gpos
+                    class_busy[sess.class_name][day].append((start_min, end_min))
+                    teacher_busy[sess.teacher_name][day].append((start_min, end_min))
+                    break
+            for i, gpos in hinted_starts.items():
+                model.add_hint(start_vars[i], gpos)
 
         logger.info(
             "Model vars: %d start_vars + %d room BoolVars = %d total",
@@ -667,6 +818,8 @@ class TimetableSolver:
         solver.parameters.max_time_in_seconds  = timeout_seconds
         solver.parameters.log_search_progress  = False
         solver.parameters.stop_after_first_solution = stop_at_first_solution
+        if not optimize_soft_constraints:
+            solver.parameters.search_branching = cp_model.FIXED_SEARCH
         n_workers = min(8, max(1, os.cpu_count() or 1))
         solver.parameters.num_search_workers   = n_workers
         build_time = time.perf_counter() - build_start
@@ -702,6 +855,40 @@ class TimetableSolver:
             )
 
         assignments: list[Assignment] = []
+        greedy_room_for_session: dict[int, str] = {}
+        if data.rooms and not enforce_room_conflicts:
+            room_busy: dict[int, dict[str, list[tuple[int, int]]]] = defaultdict(lambda: defaultdict(list))
+
+            def _to_min(hm: str) -> int:
+                h, m = hm.split(":")
+                return int(h) * 60 + int(m)
+
+            for sess in sorted(
+                sessions,
+                key=lambda s: (solver.value(start_vars[s.idx]), -s.dur_slots),
+            ):
+                if not sess.needs_room or not sess.eligible_room_idxs:
+                    continue
+                global_pos = solver.value(start_vars[sess.idx])
+                d_idx = global_pos // n_slots_per_day
+                s = global_pos % n_slots_per_day
+                day = day_names[d_idx]
+                start_time = day_slot_times[day][s][0]
+                end_time = day_slot_times[day][s + sess.dur_slots - 1][1]
+                start_min = _to_min(start_time)
+                end_min = _to_min(end_time)
+
+                for r_idx in sess.eligible_room_idxs:
+                    overlaps = any(
+                        start_min < e and b < end_min
+                        for b, e in room_busy[r_idx][day]
+                    )
+                    if overlaps:
+                        continue
+                    room_busy[r_idx][day].append((start_min, end_min))
+                    greedy_room_for_session[sess.idx] = data.rooms[r_idx].name
+                    break
+
         for sess in sessions:
             global_pos = solver.value(start_vars[sess.idx])
             d_idx      = global_pos // n_slots_per_day
@@ -711,12 +898,14 @@ class TimetableSolver:
             end_time   = day_slot_times[day][s + sess.dur_slots - 1][1]
 
             room_name: str | None = None
-            if sess.needs_room:
+            if sess.needs_room and enforce_room_conflicts:
                 for r_idx in sess.eligible_room_idxs:
                     bv = room_bvars.get((sess.idx, r_idx))
                     if bv is not None and solver.value(bv) == 1:
                         room_name = data.rooms[r_idx].name
                         break
+            elif sess.needs_room:
+                room_name = greedy_room_for_session.get(sess.idx)
 
             assignments.append(Assignment(
                 school_class=sess.class_name,

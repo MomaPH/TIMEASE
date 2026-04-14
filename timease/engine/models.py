@@ -10,6 +10,7 @@ from __future__ import annotations
 import dataclasses
 import json
 import logging
+from collections.abc import Iterable
 from collections import defaultdict
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
@@ -45,7 +46,8 @@ class ManualAssignmentValidator:
             teacher = teacher_map.get(assignment.teacher)
             if not teacher:
                 raise ValueError(f"Enseignant introuvable: {assignment.teacher}")
-            if assignment.subject not in teacher.subjects:
+            declared_subjects = _normalized_subjects(teacher.subjects)
+            if _normalize_subject_name(assignment.subject) not in declared_subjects:
                 raise ValueError(f"{teacher.name} n'est pas qualifié pour enseigner {assignment.subject}")
 
 # ---------------------------------------------------------------------------
@@ -64,6 +66,23 @@ def _time_to_min(t: str) -> int:
     """Convert 'HH:MM' to minutes since midnight."""
     h, m = t.split(":")
     return int(h) * 60 + int(m)
+
+
+def _normalize_subject_name(name: str) -> str:
+    """Normalize a subject name for stable cross-layer comparisons."""
+    return str(name or "").strip().casefold()
+
+
+def _normalized_subjects(subjects: Iterable[str] | None) -> set[str]:
+    """Build a normalized subject-name set from a subject collection."""
+    if not subjects:
+        return set()
+    normalized: set[str] = set()
+    for subject in subjects:
+        key = _normalize_subject_name(subject)
+        if key:
+            normalized.add(key)
+    return normalized
 
 
 # ---------------------------------------------------------------------------
@@ -529,7 +548,8 @@ class SchoolData:
 
             # Check teacher qualification
             teacher = teacher_map[ta.teacher]
-            if ta.subject not in teacher.subjects:
+            declared_subjects = _normalized_subjects(teacher.subjects)
+            if _normalize_subject_name(ta.subject) not in declared_subjects:
                 errors.append(
                     f"L'enseignant '{ta.teacher}' n'est pas qualifié pour "
                     f"enseigner '{ta.subject}' ({ta.school_class})."
@@ -692,7 +712,7 @@ class SchoolData:
             if c.type != "soft":
                 continue
             if c.category == "heavy_subjects_morning":
-                morning_subjects.update(c.parameters.get("subjects", []))
+                morning_subjects.update(_normalized_subjects(c.parameters.get("subjects", [])))
             elif c.category == "teacher_time_preference":
                 pref = c.parameters.get("preferred_session", "")
                 if "après" in pref.lower() or "apres" in pref.lower():
@@ -704,7 +724,10 @@ class SchoolData:
             teacher = next((t for t in self.teachers if t.name == t_name), None)
             if teacher is None:
                 continue
-            conflicts_with_morning = [s for s in teacher.subjects if s in morning_subjects]
+            conflicts_with_morning = [
+                s for s in teacher.subjects
+                if _normalize_subject_name(s) in morning_subjects
+            ]
             if conflicts_with_morning:
                 warnings.append(
                     f"L'enseignant '{t_name}' préfère l'après-midi (teacher_time_preference) "
@@ -771,7 +794,7 @@ class TimetableResult:
         class_level = {c.name: c.level for c in school_data.classes}
         class_students = {c.name: c.student_count for c in school_data.classes}
         room_capacity = {r.name: r.capacity for r in school_data.rooms}
-        teacher_subjects = {t.name: set(t.subjects) for t in school_data.teachers}
+        teacher_subjects = {t.name: _normalized_subjects(t.subjects) for t in school_data.teachers}
         teacher_unavailable = {t.name: t.unavailable_slots for t in school_data.teachers}
         teacher_max_min = {
             t.name: t.max_hours_per_week * 60 if t.max_hours_per_week is not None else None
@@ -843,7 +866,7 @@ class TimetableResult:
         # --- Teacher qualification respected in produced assignments ---
         for a in self.assignments:
             declared = teacher_subjects.get(a.teacher, set())
-            if declared and a.subject not in declared:
+            if declared and _normalize_subject_name(a.subject) not in declared:
                 violations.append(
                     f"L'enseignant '{a.teacher}' n'est pas déclaré pour '{a.subject}' "
                     f"({a.school_class}, {a.day} {a.start_time}–{a.end_time})."

@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Plus, Trash2, ChevronRight, ChevronDown, Info } from 'lucide-react'
 import type { SchoolData } from '@/lib/types'
 import { FORM_SCENARIOS } from '@/lib/test-scenarios'
@@ -239,6 +239,11 @@ function parseSubjectsInput(raw: string): string[] {
   return result
 }
 
+function subjectsEqual(left: string[], right: string[]): boolean {
+  if (left.length !== right.length) return false
+  return left.every((value, index) => value.toLowerCase() === right[index].toLowerCase())
+}
+
 function getTeacherDeclaredSubjects(data: SchoolData): string[] {
   const teachers = data.teachers ?? []
   const seen = new Set<string>()
@@ -273,9 +278,48 @@ function TeachersSection({
 }) {
   const teachers = data.teachers ?? []
   const [open, setOpen] = useState(teachers.length === 0)
+  const [subjectDrafts, setSubjectDrafts] = useState<string[]>(
+    teachers.map((teacher: any) => (teacher.subjects ?? []).join(', '))
+  )
+
+  useEffect(() => {
+    const canonicalSubjects = teachers.map((teacher: any) =>
+      (teacher.subjects ?? []).map((subject: any) => normalizeSubject(String(subject))).filter(Boolean)
+    )
+
+    setSubjectDrafts(previous => {
+      if (previous.length !== canonicalSubjects.length) {
+        return canonicalSubjects.map(subjects => subjects.join(', '))
+      }
+
+      let changed = false
+      const next = previous.map((draft, index) => {
+        const parsedDraft = parseSubjectsInput(draft)
+        if (subjectsEqual(parsedDraft, canonicalSubjects[index])) {
+          return draft
+        }
+        changed = true
+        return canonicalSubjects[index].join(', ')
+      })
+
+      return changed ? next : previous
+    })
+  }, [teachers])
+
+  function commitTeacherSubjects(idx: number) {
+    const raw = subjectDrafts[idx] ?? ''
+    updateTeacher(idx, 'subjects', raw)
+    const normalized = parseSubjectsInput(raw).join(', ')
+    setSubjectDrafts(previous => {
+      const next = [...previous]
+      next[idx] = normalized
+      return next
+    })
+  }
 
   function addTeacher() {
     onUpdateData({ ...data, teachers: [...teachers, { name: '', subjects: [] }] })
+    setSubjectDrafts(previous => [...previous, ''])
   }
 
   function updateTeacher(idx: number, field: string, val: string | string[]) {
@@ -312,6 +356,7 @@ function TeachersSection({
   function deleteTeacher(idx: number) {
     const deletedName = teachers[idx]?.name as string
     onUpdateData({ ...data, teachers: teachers.filter((_, i) => i !== idx) })
+    setSubjectDrafts(previous => previous.filter((_, i) => i !== idx))
     // remove assignments that reference the deleted teacher
     if (deletedName) {
       onUpdateAssignments(assignments.filter(a => a.teacher !== deletedName))
@@ -347,9 +392,24 @@ function TeachersSection({
                 className="flex-1 min-w-0 px-2 py-1.5 text-xs border border-gray-200 dark:border-gray-700 rounded bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-1 focus:ring-teal-500"
               />
               <input
-                value={(t.subjects ?? []).join(', ')}
-                onChange={e => updateTeacher(idx, 'subjects', parseSubjectsInput(e.target.value))}
-                placeholder="Matieres (ex: Maths, Physique, SVT)"
+                value={subjectDrafts[idx] ?? (t.subjects ?? []).join(', ')}
+                onChange={e => {
+                  const raw = e.target.value
+                  setSubjectDrafts(previous => {
+                    const next = [...previous]
+                    next[idx] = raw
+                    return next
+                  })
+                }}
+                onBlur={() => commitTeacherSubjects(idx)}
+                onKeyDown={e => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault()
+                    commitTeacherSubjects(idx)
+                    ;(e.currentTarget as HTMLInputElement).blur()
+                  }
+                }}
+                placeholder="Matières (ex: Maths, Physique, SVT)"
                 className="flex-1 min-w-0 px-2 py-1.5 text-xs border border-gray-200 dark:border-gray-700 rounded bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-1 focus:ring-teal-500"
               />
               <button onClick={() => deleteTeacher(idx)} className="text-gray-400 hover:text-red-500 transition-colors flex-shrink-0">
