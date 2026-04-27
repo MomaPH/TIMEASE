@@ -69,14 +69,6 @@ export async function getSession(sid: string) {
 }
 
 
-export async function uploadFile(sid: string, file: File) {
-  const form = new FormData()
-  form.append('file', file)
-  const res = await request(`/api/session/${sid}/upload`, { method: 'POST', body: form })
-  await ensureOk(res, 'Upload echoue')
-  return res.json()
-}
-
 export async function updateSchoolData(sid: string, data: any) {
   const res = await request(`/api/session/${sid}/school_data`, {
     method:  'PUT',
@@ -126,26 +118,6 @@ export type JobRecord = {
     summary: string
     diagnostics?: Record<string, any>
   } | null
-}
-
-export async function solve(
-  sid: string,
-  options?: { mode?: SolveMode; timeout?: number; requestId?: string },
-) {
-  const estimate = await getSolveEstimate(sid)
-  const mode = options?.mode ?? 'balanced'
-  const res = await request(`/api/session/${sid}/solve`, {
-    method:  'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      timeout: options?.timeout ?? estimate.suggested_timeout_seconds ?? 120,
-      mode,
-      request_id: options?.requestId ?? '',
-      estimate_score: estimate?.score ?? null,
-    }),
-  })
-  await ensureOk(res, 'Generation echouee')
-  return res.json()
 }
 
 export async function createSnapshot(
@@ -210,12 +182,6 @@ export async function listSolveJobs(sid: string): Promise<{ jobs: JobRecord[] }>
   return res.json()
 }
 
-export async function getSolveJob(sid: string, jobId: string): Promise<{ job: JobRecord }> {
-  const res = await request(`/api/session/${sid}/jobs/${jobId}`)
-  await ensureOk(res, 'Lecture du job echouee')
-  return res.json()
-}
-
 export async function cancelSolveJob(sid: string, jobId: string): Promise<{ job: JobRecord }> {
   const res = await request(`/api/session/${sid}/jobs/${jobId}/cancel`, { method: 'POST' })
   await ensureOk(res, 'Arret du job echoue')
@@ -231,19 +197,6 @@ export async function deleteSolveJob(sid: string, jobId: string): Promise<{ ok: 
 export async function getSolveEstimate(sid: string) {
   const res = await request(`/api/session/${sid}/solve-estimate`)
   await ensureOk(res, 'Estimation de generation echouee')
-  return res.json()
-}
-
-export async function restoreSession(
-  sid: string,
-  payload: { school_data?: any; teacher_assignments?: any[]; timetable_result?: any },
-) {
-  const res = await request(`/api/session/${sid}/restore`, {
-    method:  'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body:    JSON.stringify(payload),
-  })
-  await ensureOk(res, 'Restauration de session echouee')
   return res.json()
 }
 

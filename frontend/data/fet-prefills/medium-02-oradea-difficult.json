@@ -1,0 +1,3187 @@
+{
+  "school": {
+    "name": "FET import: FS-2008-2009-difficult",
+    "academic_year": "2026-2027",
+    "city": "Imported"
+  },
+  "timeslot_config": {
+    "days": [
+      {
+        "name": "Luni",
+        "sessions": [
+          {
+            "name": "Journée",
+            "start_time": "08:00",
+            "end_time": "15:00"
+          }
+        ],
+        "breaks": []
+      },
+      {
+        "name": "Marti",
+        "sessions": [
+          {
+            "name": "Journée",
+            "start_time": "08:00",
+            "end_time": "15:00"
+          }
+        ],
+        "breaks": []
+      },
+      {
+        "name": "Miercuri",
+        "sessions": [
+          {
+            "name": "Journée",
+            "start_time": "08:00",
+            "end_time": "15:00"
+          }
+        ],
+        "breaks": []
+      },
+      {
+        "name": "Joi",
+        "sessions": [
+          {
+            "name": "Journée",
+            "start_time": "08:00",
+            "end_time": "15:00"
+          }
+        ],
+        "breaks": []
+      },
+      {
+        "name": "Vineri",
+        "sessions": [
+          {
+            "name": "Journée",
+            "start_time": "08:00",
+            "end_time": "15:00"
+          }
+        ],
+        "breaks": []
+      }
+    ],
+    "base_unit_minutes": 60
+  },
+  "subjects": [
+    {
+      "name": "BIOLOGIE",
+      "short_name": "BIOLOGIE",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "CHIMIE",
+      "short_name": "CHIMIE",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "CIVICĂ",
+      "short_name": "CIVICĂ",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "DESEN",
+      "short_name": "DESEN",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "DESEN / MUZICĂ",
+      "short_name": "DESEN / MUZI",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "DIRIGENȚIE",
+      "short_name": "DIRIGENȚIE",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "ED. ECOLOGICĂ",
+      "short_name": "ED. ECOLOGIC",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "ED. FIZICĂ",
+      "short_name": "ED. FIZICĂ",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "ENGLEZĂ",
+      "short_name": "ENGLEZĂ",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "FIZICĂ",
+      "short_name": "FIZICĂ",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "GEOGRAFIE",
+      "short_name": "GEOGRAFIE",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "GERMANĂ",
+      "short_name": "GERMANĂ",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "INFORMATICĂ",
+      "short_name": "INFORMATICĂ",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "IST. MINORITAȚI",
+      "short_name": "IST. MINORIT",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "ISTORIE",
+      "short_name": "ISTORIE",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "LATINĂ",
+      "short_name": "LATINĂ",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "LOGICĂ",
+      "short_name": "LOGICĂ",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "MAGHIARĂ",
+      "short_name": "MAGHIARĂ",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "MATEMATICĂ",
+      "short_name": "MATEMATICĂ",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "MUZICĂ",
+      "short_name": "MUZICĂ",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "RELIGIE",
+      "short_name": "RELIGIE",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "ROMÂNĂ",
+      "short_name": "ROMÂNĂ",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "TEHNOLOGIE",
+      "short_name": "TEHNOLOGIE",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    }
+  ],
+  "teachers": [
+    {
+      "name": "Apati Timea",
+      "subjects": [
+        "CIVICĂ",
+        "GEOGRAFIE",
+        "IST. MINORITAȚI",
+        "ISTORIE"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Barta Florentina",
+      "subjects": [
+        "CIVICĂ",
+        "ISTORIE"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Biriș Mihaela",
+      "subjects": [
+        "CIVICĂ",
+        "ISTORIE"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Bota Cristian",
+      "subjects": [
+        "DIRIGENȚIE",
+        "LATINĂ",
+        "ROMÂNĂ"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Bozga Luminița",
+      "subjects": [
+        "MATEMATICĂ"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Conțiu Loredana",
+      "subjects": [
+        "MUZICĂ"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Corba Pavel",
+      "subjects": [
+        "ED. FIZICĂ"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Crețu Crina",
+      "subjects": [
+        "LOGICĂ"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Curea Cornelia",
+      "subjects": [
+        "ED. FIZICĂ"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Dărăban Elisabeta",
+      "subjects": [
+        "DIRIGENȚIE",
+        "ENGLEZĂ"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Füzesi Laura",
+      "subjects": [
+        "GEOGRAFIE"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Gacsádi Olga",
+      "subjects": [
+        "BIOLOGIE",
+        "DIRIGENȚIE"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Gîrba Sanda",
+      "subjects": [
+        "FIZICĂ"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Hanga Gheorghe",
+      "subjects": [
+        "CIVICĂ",
+        "DIRIGENȚIE",
+        "ED. ECOLOGICĂ",
+        "GEOGRAFIE",
+        "ISTORIE"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Hărăguș Isabela",
+      "subjects": [
+        "BIOLOGIE"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Iovanuț Maria",
+      "subjects": [
+        "DIRIGENȚIE",
+        "INFORMATICĂ",
+        "TEHNOLOGIE"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Kovacs Hajnalka",
+      "subjects": [
+        "DIRIGENȚIE",
+        "GERMANĂ"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Kötting Ilona",
+      "subjects": [
+        "RELIGIE"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Linca Marioara",
+      "subjects": [
+        "LATINĂ",
+        "ROMÂNĂ"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Linca Vasile",
+      "subjects": [
+        "MATEMATICĂ"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Lörincz Enikö",
+      "subjects": [
+        "MATEMATICĂ"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Manole Paulina",
+      "subjects": [
+        "ROMÂNĂ"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Morar Claudia",
+      "subjects": [
+        "DESEN / MUZICĂ",
+        "MUZICĂ"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Moț Anca",
+      "subjects": [
+        "DESEN"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Orosz Florentina",
+      "subjects": [
+        "GERMANĂ"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Petrișor Gheorghina",
+      "subjects": [
+        "DIRIGENȚIE",
+        "INFORMATICĂ",
+        "IST. MINORITAȚI",
+        "ISTORIE",
+        "RELIGIE"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Petruc Sandra",
+      "subjects": [
+        "DIRIGENȚIE",
+        "ENGLEZĂ"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Pop Dorel",
+      "subjects": [
+        "FIZICĂ",
+        "MATEMATICĂ"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Pășcuță Adina",
+      "subjects": [
+        "RELIGIE"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Schiszer Katalin",
+      "subjects": [
+        "GERMANĂ"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Sipos Marta",
+      "subjects": [
+        "DIRIGENȚIE",
+        "MAGHIARĂ"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Szakacs Eugen",
+      "subjects": [
+        "DIRIGENȚIE",
+        "FIZICĂ"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Szakáll Ildikó",
+      "subjects": [
+        "DIRIGENȚIE",
+        "MATEMATICĂ"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Szilagyi Judit",
+      "subjects": [
+        "RELIGIE"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Teaha Liana",
+      "subjects": [
+        "DIRIGENȚIE",
+        "ROMÂNĂ"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Veteși Adina",
+      "subjects": [
+        "ENGLEZĂ",
+        "LATINĂ",
+        "ROMÂNĂ"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Vid Corina",
+      "subjects": [
+        "INFORMATICĂ"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Wagner Erika",
+      "subjects": [
+        "CHIMIE",
+        "DIRIGENȚIE"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    }
+  ],
+  "classes": [
+    {
+      "name": "5A",
+      "level": "5A",
+      "student_count": 30
+    },
+    {
+      "name": "5B",
+      "level": "5B",
+      "student_count": 30
+    },
+    {
+      "name": "6A",
+      "level": "6A",
+      "student_count": 30
+    },
+    {
+      "name": "6B",
+      "level": "6B",
+      "student_count": 30
+    },
+    {
+      "name": "6C",
+      "level": "6C",
+      "student_count": 30
+    },
+    {
+      "name": "6D",
+      "level": "6D",
+      "student_count": 30
+    },
+    {
+      "name": "6b-catolici",
+      "level": "6b-catolici",
+      "student_count": 30
+    },
+    {
+      "name": "6b-reformati",
+      "level": "6b-reformati",
+      "student_count": 30
+    },
+    {
+      "name": "7A",
+      "level": "7A",
+      "student_count": 30
+    },
+    {
+      "name": "7B",
+      "level": "7B",
+      "student_count": 30
+    },
+    {
+      "name": "7C",
+      "level": "7C",
+      "student_count": 30
+    },
+    {
+      "name": "8A",
+      "level": "8A",
+      "student_count": 30
+    },
+    {
+      "name": "8B",
+      "level": "8B",
+      "student_count": 30
+    },
+    {
+      "name": "8C",
+      "level": "8C",
+      "student_count": 30
+    },
+    {
+      "name": "9A",
+      "level": "9A",
+      "student_count": 30
+    }
+  ],
+  "rooms": [
+    {
+      "name": "Informatica",
+      "capacity": 50,
+      "types": [
+        "Salle standard"
+      ]
+    }
+  ],
+  "curriculum": [
+    {
+      "school_class": "5A",
+      "subject": "BIOLOGIE",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "5A",
+      "subject": "DESEN",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "5A",
+      "subject": "DIRIGENȚIE",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "5A",
+      "subject": "ED. ECOLOGICĂ",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "5A",
+      "subject": "ED. FIZICĂ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "5A",
+      "subject": "ENGLEZĂ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "5A",
+      "subject": "GEOGRAFIE",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "5A",
+      "subject": "GERMANĂ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "5A",
+      "subject": "INFORMATICĂ",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "5A",
+      "subject": "ISTORIE",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "5A",
+      "subject": "MATEMATICĂ",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "5A",
+      "subject": "MUZICĂ",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "5A",
+      "subject": "RELIGIE",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "5A",
+      "subject": "ROMÂNĂ",
+      "total_minutes_per_week": 300,
+      "sessions_per_week": 5,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "5A",
+      "subject": "TEHNOLOGIE",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "5B",
+      "subject": "BIOLOGIE",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "5B",
+      "subject": "DESEN",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "5B",
+      "subject": "DIRIGENȚIE",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "5B",
+      "subject": "ED. FIZICĂ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "5B",
+      "subject": "ENGLEZĂ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "5B",
+      "subject": "GEOGRAFIE",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "5B",
+      "subject": "GERMANĂ",
+      "total_minutes_per_week": 300,
+      "sessions_per_week": 5,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "5B",
+      "subject": "INFORMATICĂ",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "5B",
+      "subject": "ISTORIE",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "5B",
+      "subject": "MATEMATICĂ",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "5B",
+      "subject": "MUZICĂ",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "5B",
+      "subject": "RELIGIE",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "5B",
+      "subject": "ROMÂNĂ",
+      "total_minutes_per_week": 300,
+      "sessions_per_week": 5,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "5B",
+      "subject": "TEHNOLOGIE",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "6A",
+      "subject": "BIOLOGIE",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "6A",
+      "subject": "DESEN",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "6A",
+      "subject": "DIRIGENȚIE",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "6A",
+      "subject": "ED. FIZICĂ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "6A",
+      "subject": "ENGLEZĂ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "6A",
+      "subject": "FIZICĂ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "6A",
+      "subject": "GEOGRAFIE",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "6A",
+      "subject": "GERMANĂ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "6A",
+      "subject": "INFORMATICĂ",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "6A",
+      "subject": "ISTORIE",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "6A",
+      "subject": "MATEMATICĂ",
+      "total_minutes_per_week": 300,
+      "sessions_per_week": 5,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "6A",
+      "subject": "MUZICĂ",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "6A",
+      "subject": "RELIGIE",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "6A",
+      "subject": "ROMÂNĂ",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "6A",
+      "subject": "TEHNOLOGIE",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "6B",
+      "subject": "BIOLOGIE",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "6B",
+      "subject": "DESEN",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "6B",
+      "subject": "DIRIGENȚIE",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "6B",
+      "subject": "ED. FIZICĂ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "6B",
+      "subject": "ENGLEZĂ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "6B",
+      "subject": "FIZICĂ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "6B",
+      "subject": "GEOGRAFIE",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "6B",
+      "subject": "INFORMATICĂ",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "6B",
+      "subject": "IST. MINORITAȚI",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "6B",
+      "subject": "ISTORIE",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "6B",
+      "subject": "MAGHIARĂ",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "6B",
+      "subject": "MATEMATICĂ",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "6B",
+      "subject": "MUZICĂ",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "6B",
+      "subject": "ROMÂNĂ",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "6B",
+      "subject": "TEHNOLOGIE",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "6C",
+      "subject": "BIOLOGIE",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "6C",
+      "subject": "DESEN",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "6C",
+      "subject": "DIRIGENȚIE",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "6C",
+      "subject": "ED. FIZICĂ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "6C",
+      "subject": "ENGLEZĂ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "6C",
+      "subject": "FIZICĂ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "6C",
+      "subject": "GEOGRAFIE",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "6C",
+      "subject": "GERMANĂ",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "6C",
+      "subject": "INFORMATICĂ",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "6C",
+      "subject": "IST. MINORITAȚI",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "6C",
+      "subject": "ISTORIE",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "6C",
+      "subject": "MATEMATICĂ",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "6C",
+      "subject": "MUZICĂ",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "6C",
+      "subject": "RELIGIE",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "6C",
+      "subject": "ROMÂNĂ",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "6C",
+      "subject": "TEHNOLOGIE",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "6D",
+      "subject": "BIOLOGIE",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "6D",
+      "subject": "DESEN",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "6D",
+      "subject": "DIRIGENȚIE",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "6D",
+      "subject": "ED. FIZICĂ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "6D",
+      "subject": "ENGLEZĂ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "6D",
+      "subject": "FIZICĂ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "6D",
+      "subject": "GEOGRAFIE",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "6D",
+      "subject": "GERMANĂ",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "6D",
+      "subject": "INFORMATICĂ",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "6D",
+      "subject": "IST. MINORITAȚI",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "6D",
+      "subject": "ISTORIE",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "6D",
+      "subject": "MATEMATICĂ",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "6D",
+      "subject": "MUZICĂ",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "6D",
+      "subject": "RELIGIE",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "6D",
+      "subject": "ROMÂNĂ",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "6D",
+      "subject": "TEHNOLOGIE",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "6b-catolici",
+      "subject": "RELIGIE",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "6b-reformati",
+      "subject": "RELIGIE",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "7A",
+      "subject": "BIOLOGIE",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "7A",
+      "subject": "CHIMIE",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "7A",
+      "subject": "CIVICĂ",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "7A",
+      "subject": "DESEN",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "7A",
+      "subject": "DIRIGENȚIE",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "7A",
+      "subject": "ED. FIZICĂ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "7A",
+      "subject": "ENGLEZĂ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "7A",
+      "subject": "FIZICĂ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "7A",
+      "subject": "GEOGRAFIE",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "7A",
+      "subject": "GERMANĂ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "7A",
+      "subject": "INFORMATICĂ",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "7A",
+      "subject": "ISTORIE",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "7A",
+      "subject": "MATEMATICĂ",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "7A",
+      "subject": "MUZICĂ",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "7A",
+      "subject": "RELIGIE",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "7A",
+      "subject": "ROMÂNĂ",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "7A",
+      "subject": "TEHNOLOGIE",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "7B",
+      "subject": "BIOLOGIE",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "7B",
+      "subject": "CHIMIE",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "7B",
+      "subject": "CIVICĂ",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "7B",
+      "subject": "DESEN",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "7B",
+      "subject": "DIRIGENȚIE",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "7B",
+      "subject": "ED. FIZICĂ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "7B",
+      "subject": "ENGLEZĂ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "7B",
+      "subject": "FIZICĂ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "7B",
+      "subject": "GEOGRAFIE",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "7B",
+      "subject": "INFORMATICĂ",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "7B",
+      "subject": "IST. MINORITAȚI",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "7B",
+      "subject": "ISTORIE",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "7B",
+      "subject": "MAGHIARĂ",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "7B",
+      "subject": "MATEMATICĂ",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "7B",
+      "subject": "MUZICĂ",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "7B",
+      "subject": "ROMÂNĂ",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "7B",
+      "subject": "TEHNOLOGIE",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "7C",
+      "subject": "BIOLOGIE",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "7C",
+      "subject": "CHIMIE",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "7C",
+      "subject": "CIVICĂ",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "7C",
+      "subject": "DESEN",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "7C",
+      "subject": "DIRIGENȚIE",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "7C",
+      "subject": "ED. FIZICĂ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "7C",
+      "subject": "ENGLEZĂ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "7C",
+      "subject": "FIZICĂ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "7C",
+      "subject": "GEOGRAFIE",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "7C",
+      "subject": "GERMANĂ",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "7C",
+      "subject": "INFORMATICĂ",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "7C",
+      "subject": "IST. MINORITAȚI",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "7C",
+      "subject": "ISTORIE",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "7C",
+      "subject": "MATEMATICĂ",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "7C",
+      "subject": "MUZICĂ",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "7C",
+      "subject": "RELIGIE",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "7C",
+      "subject": "ROMÂNĂ",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "7C",
+      "subject": "TEHNOLOGIE",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8A",
+      "subject": "BIOLOGIE",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8A",
+      "subject": "CHIMIE",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8A",
+      "subject": "CIVICĂ",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8A",
+      "subject": "DESEN / MUZICĂ",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8A",
+      "subject": "DIRIGENȚIE",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8A",
+      "subject": "ED. FIZICĂ",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8A",
+      "subject": "ENGLEZĂ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8A",
+      "subject": "FIZICĂ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8A",
+      "subject": "GEOGRAFIE",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8A",
+      "subject": "GERMANĂ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8A",
+      "subject": "ISTORIE",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8A",
+      "subject": "LATINĂ",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8A",
+      "subject": "MATEMATICĂ",
+      "total_minutes_per_week": 300,
+      "sessions_per_week": 5,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8A",
+      "subject": "RELIGIE",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8A",
+      "subject": "ROMÂNĂ",
+      "total_minutes_per_week": 300,
+      "sessions_per_week": 5,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8A",
+      "subject": "TEHNOLOGIE",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8B",
+      "subject": "BIOLOGIE",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8B",
+      "subject": "CHIMIE",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8B",
+      "subject": "CIVICĂ",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8B",
+      "subject": "DESEN / MUZICĂ",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8B",
+      "subject": "DIRIGENȚIE",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8B",
+      "subject": "ED. FIZICĂ",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8B",
+      "subject": "ENGLEZĂ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8B",
+      "subject": "FIZICĂ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8B",
+      "subject": "GEOGRAFIE",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8B",
+      "subject": "ISTORIE",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8B",
+      "subject": "LATINĂ",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8B",
+      "subject": "MAGHIARĂ",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8B",
+      "subject": "MATEMATICĂ",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8B",
+      "subject": "ROMÂNĂ",
+      "total_minutes_per_week": 300,
+      "sessions_per_week": 5,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8B",
+      "subject": "TEHNOLOGIE",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8C",
+      "subject": "BIOLOGIE",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8C",
+      "subject": "CHIMIE",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8C",
+      "subject": "CIVICĂ",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8C",
+      "subject": "DESEN / MUZICĂ",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8C",
+      "subject": "DIRIGENȚIE",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8C",
+      "subject": "ED. FIZICĂ",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8C",
+      "subject": "ENGLEZĂ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8C",
+      "subject": "FIZICĂ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8C",
+      "subject": "GEOGRAFIE",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8C",
+      "subject": "GERMANĂ",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8C",
+      "subject": "ISTORIE",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8C",
+      "subject": "LATINĂ",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8C",
+      "subject": "MATEMATICĂ",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8C",
+      "subject": "RELIGIE",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8C",
+      "subject": "ROMÂNĂ",
+      "total_minutes_per_week": 300,
+      "sessions_per_week": 5,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8C",
+      "subject": "TEHNOLOGIE",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9A",
+      "subject": "BIOLOGIE",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9A",
+      "subject": "CHIMIE",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9A",
+      "subject": "DESEN",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9A",
+      "subject": "DIRIGENȚIE",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9A",
+      "subject": "ED. FIZICĂ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9A",
+      "subject": "ENGLEZĂ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9A",
+      "subject": "FIZICĂ",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9A",
+      "subject": "GEOGRAFIE",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9A",
+      "subject": "GERMANĂ",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9A",
+      "subject": "INFORMATICĂ",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9A",
+      "subject": "ISTORIE",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9A",
+      "subject": "LOGICĂ",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9A",
+      "subject": "MATEMATICĂ",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9A",
+      "subject": "MUZICĂ",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9A",
+      "subject": "RELIGIE",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9A",
+      "subject": "ROMÂNĂ",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    }
+  ],
+  "constraints": [
+    {
+      "id": "C1",
+      "type": "hard",
+      "category": "teacher_no_overlap",
+      "description_fr": "Pas de chevauchement enseignant",
+      "priority": 10,
+      "parameters": {}
+    },
+    {
+      "id": "C2",
+      "type": "hard",
+      "category": "class_no_overlap",
+      "description_fr": "Pas de chevauchement classe",
+      "priority": 10,
+      "parameters": {}
+    },
+    {
+      "id": "C3",
+      "type": "hard",
+      "category": "teacher_subject_declared",
+      "description_fr": "Matière enseignant déclarée",
+      "priority": 10,
+      "parameters": {}
+    },
+    {
+      "id": "C4",
+      "type": "hard",
+      "category": "teacher_calendar_declared",
+      "description_fr": "Calendrier enseignant déclaré",
+      "priority": 10,
+      "parameters": {}
+    }
+  ],
+  "teacher_assignments": [
+    {
+      "teacher": "Gacsádi Olga",
+      "subject": "BIOLOGIE",
+      "school_class": "5A"
+    },
+    {
+      "teacher": "Moț Anca",
+      "subject": "DESEN",
+      "school_class": "5A"
+    },
+    {
+      "teacher": "Hanga Gheorghe",
+      "subject": "DIRIGENȚIE",
+      "school_class": "5A"
+    },
+    {
+      "teacher": "Hanga Gheorghe",
+      "subject": "ED. ECOLOGICĂ",
+      "school_class": "5A"
+    },
+    {
+      "teacher": "Curea Cornelia",
+      "subject": "ED. FIZICĂ",
+      "school_class": "5A"
+    },
+    {
+      "teacher": "Dărăban Elisabeta",
+      "subject": "ENGLEZĂ",
+      "school_class": "5A"
+    },
+    {
+      "teacher": "Hanga Gheorghe",
+      "subject": "GEOGRAFIE",
+      "school_class": "5A"
+    },
+    {
+      "teacher": "Orosz Florentina",
+      "subject": "GERMANĂ",
+      "school_class": "5A"
+    },
+    {
+      "teacher": "Iovanuț Maria",
+      "subject": "INFORMATICĂ",
+      "school_class": "5A"
+    },
+    {
+      "teacher": "Hanga Gheorghe",
+      "subject": "ISTORIE",
+      "school_class": "5A"
+    },
+    {
+      "teacher": "Linca Vasile",
+      "subject": "MATEMATICĂ",
+      "school_class": "5A"
+    },
+    {
+      "teacher": "Morar Claudia",
+      "subject": "MUZICĂ",
+      "school_class": "5A"
+    },
+    {
+      "teacher": "Pășcuță Adina",
+      "subject": "RELIGIE",
+      "school_class": "5A"
+    },
+    {
+      "teacher": "Bota Cristian",
+      "subject": "ROMÂNĂ",
+      "school_class": "5A"
+    },
+    {
+      "teacher": "Iovanuț Maria",
+      "subject": "TEHNOLOGIE",
+      "school_class": "5A"
+    },
+    {
+      "teacher": "Hărăguș Isabela",
+      "subject": "BIOLOGIE",
+      "school_class": "5B"
+    },
+    {
+      "teacher": "Moț Anca",
+      "subject": "DESEN",
+      "school_class": "5B"
+    },
+    {
+      "teacher": "Petrișor Gheorghina",
+      "subject": "DIRIGENȚIE",
+      "school_class": "5B"
+    },
+    {
+      "teacher": "Corba Pavel",
+      "subject": "ED. FIZICĂ",
+      "school_class": "5B"
+    },
+    {
+      "teacher": "Dărăban Elisabeta",
+      "subject": "ENGLEZĂ",
+      "school_class": "5B"
+    },
+    {
+      "teacher": "Füzesi Laura",
+      "subject": "GEOGRAFIE",
+      "school_class": "5B"
+    },
+    {
+      "teacher": "Kovacs Hajnalka",
+      "subject": "GERMANĂ",
+      "school_class": "5B"
+    },
+    {
+      "teacher": "Petrișor Gheorghina",
+      "subject": "INFORMATICĂ",
+      "school_class": "5B"
+    },
+    {
+      "teacher": "Petrișor Gheorghina",
+      "subject": "ISTORIE",
+      "school_class": "5B"
+    },
+    {
+      "teacher": "Szakáll Ildikó",
+      "subject": "MATEMATICĂ",
+      "school_class": "5B"
+    },
+    {
+      "teacher": "Conțiu Loredana",
+      "subject": "MUZICĂ",
+      "school_class": "5B"
+    },
+    {
+      "teacher": "Petrișor Gheorghina",
+      "subject": "RELIGIE",
+      "school_class": "5B"
+    },
+    {
+      "teacher": "Teaha Liana",
+      "subject": "ROMÂNĂ",
+      "school_class": "5B"
+    },
+    {
+      "teacher": "Iovanuț Maria",
+      "subject": "TEHNOLOGIE",
+      "school_class": "5B"
+    },
+    {
+      "teacher": "Gacsádi Olga",
+      "subject": "BIOLOGIE",
+      "school_class": "6A"
+    },
+    {
+      "teacher": "Moț Anca",
+      "subject": "DESEN",
+      "school_class": "6A"
+    },
+    {
+      "teacher": "Bota Cristian",
+      "subject": "DIRIGENȚIE",
+      "school_class": "6A"
+    },
+    {
+      "teacher": "Corba Pavel",
+      "subject": "ED. FIZICĂ",
+      "school_class": "6A"
+    },
+    {
+      "teacher": "Veteși Adina",
+      "subject": "ENGLEZĂ",
+      "school_class": "6A"
+    },
+    {
+      "teacher": "Pop Dorel",
+      "subject": "FIZICĂ",
+      "school_class": "6A"
+    },
+    {
+      "teacher": "Hanga Gheorghe",
+      "subject": "GEOGRAFIE",
+      "school_class": "6A"
+    },
+    {
+      "teacher": "Orosz Florentina",
+      "subject": "GERMANĂ",
+      "school_class": "6A"
+    },
+    {
+      "teacher": "Iovanuț Maria",
+      "subject": "INFORMATICĂ",
+      "school_class": "6A"
+    },
+    {
+      "teacher": "Barta Florentina",
+      "subject": "ISTORIE",
+      "school_class": "6A"
+    },
+    {
+      "teacher": "Pop Dorel",
+      "subject": "MATEMATICĂ",
+      "school_class": "6A"
+    },
+    {
+      "teacher": "Morar Claudia",
+      "subject": "MUZICĂ",
+      "school_class": "6A"
+    },
+    {
+      "teacher": "Pășcuță Adina",
+      "subject": "RELIGIE",
+      "school_class": "6A"
+    },
+    {
+      "teacher": "Bota Cristian",
+      "subject": "ROMÂNĂ",
+      "school_class": "6A"
+    },
+    {
+      "teacher": "Iovanuț Maria",
+      "subject": "TEHNOLOGIE",
+      "school_class": "6A"
+    },
+    {
+      "teacher": "Gacsádi Olga",
+      "subject": "BIOLOGIE",
+      "school_class": "6B"
+    },
+    {
+      "teacher": "Moț Anca",
+      "subject": "DESEN",
+      "school_class": "6B"
+    },
+    {
+      "teacher": "Sipos Marta",
+      "subject": "DIRIGENȚIE",
+      "school_class": "6B"
+    },
+    {
+      "teacher": "Corba Pavel",
+      "subject": "ED. FIZICĂ",
+      "school_class": "6B"
+    },
+    {
+      "teacher": "Dărăban Elisabeta",
+      "subject": "ENGLEZĂ",
+      "school_class": "6B"
+    },
+    {
+      "teacher": "Szakacs Eugen",
+      "subject": "FIZICĂ",
+      "school_class": "6B"
+    },
+    {
+      "teacher": "Apati Timea",
+      "subject": "GEOGRAFIE",
+      "school_class": "6B"
+    },
+    {
+      "teacher": "Iovanuț Maria",
+      "subject": "INFORMATICĂ",
+      "school_class": "6B"
+    },
+    {
+      "teacher": "Apati Timea",
+      "subject": "IST. MINORITAȚI",
+      "school_class": "6B"
+    },
+    {
+      "teacher": "Apati Timea",
+      "subject": "ISTORIE",
+      "school_class": "6B"
+    },
+    {
+      "teacher": "Sipos Marta",
+      "subject": "MAGHIARĂ",
+      "school_class": "6B"
+    },
+    {
+      "teacher": "Lörincz Enikö",
+      "subject": "MATEMATICĂ",
+      "school_class": "6B"
+    },
+    {
+      "teacher": "Morar Claudia",
+      "subject": "MUZICĂ",
+      "school_class": "6B"
+    },
+    {
+      "teacher": "Bota Cristian",
+      "subject": "ROMÂNĂ",
+      "school_class": "6B"
+    },
+    {
+      "teacher": "Iovanuț Maria",
+      "subject": "TEHNOLOGIE",
+      "school_class": "6B"
+    },
+    {
+      "teacher": "Hărăguș Isabela",
+      "subject": "BIOLOGIE",
+      "school_class": "6C"
+    },
+    {
+      "teacher": "Moț Anca",
+      "subject": "DESEN",
+      "school_class": "6C"
+    },
+    {
+      "teacher": "Szakáll Ildikó",
+      "subject": "DIRIGENȚIE",
+      "school_class": "6C"
+    },
+    {
+      "teacher": "Corba Pavel",
+      "subject": "ED. FIZICĂ",
+      "school_class": "6C"
+    },
+    {
+      "teacher": "Petruc Sandra",
+      "subject": "ENGLEZĂ",
+      "school_class": "6C"
+    },
+    {
+      "teacher": "Szakacs Eugen",
+      "subject": "FIZICĂ",
+      "school_class": "6C"
+    },
+    {
+      "teacher": "Füzesi Laura",
+      "subject": "GEOGRAFIE",
+      "school_class": "6C"
+    },
+    {
+      "teacher": "Schiszer Katalin",
+      "subject": "GERMANĂ",
+      "school_class": "6C"
+    },
+    {
+      "teacher": "Iovanuț Maria",
+      "subject": "INFORMATICĂ",
+      "school_class": "6C"
+    },
+    {
+      "teacher": "Petrișor Gheorghina",
+      "subject": "IST. MINORITAȚI",
+      "school_class": "6C"
+    },
+    {
+      "teacher": "Petrișor Gheorghina",
+      "subject": "ISTORIE",
+      "school_class": "6C"
+    },
+    {
+      "teacher": "Szakáll Ildikó",
+      "subject": "MATEMATICĂ",
+      "school_class": "6C"
+    },
+    {
+      "teacher": "Conțiu Loredana",
+      "subject": "MUZICĂ",
+      "school_class": "6C"
+    },
+    {
+      "teacher": "Petrișor Gheorghina",
+      "subject": "RELIGIE",
+      "school_class": "6C"
+    },
+    {
+      "teacher": "Linca Marioara",
+      "subject": "ROMÂNĂ",
+      "school_class": "6C"
+    },
+    {
+      "teacher": "Iovanuț Maria",
+      "subject": "TEHNOLOGIE",
+      "school_class": "6C"
+    },
+    {
+      "teacher": "Hărăguș Isabela",
+      "subject": "BIOLOGIE",
+      "school_class": "6D"
+    },
+    {
+      "teacher": "Moț Anca",
+      "subject": "DESEN",
+      "school_class": "6D"
+    },
+    {
+      "teacher": "Petruc Sandra",
+      "subject": "DIRIGENȚIE",
+      "school_class": "6D"
+    },
+    {
+      "teacher": "Corba Pavel",
+      "subject": "ED. FIZICĂ",
+      "school_class": "6D"
+    },
+    {
+      "teacher": "Petruc Sandra",
+      "subject": "ENGLEZĂ",
+      "school_class": "6D"
+    },
+    {
+      "teacher": "Szakacs Eugen",
+      "subject": "FIZICĂ",
+      "school_class": "6D"
+    },
+    {
+      "teacher": "Füzesi Laura",
+      "subject": "GEOGRAFIE",
+      "school_class": "6D"
+    },
+    {
+      "teacher": "Kovacs Hajnalka",
+      "subject": "GERMANĂ",
+      "school_class": "6D"
+    },
+    {
+      "teacher": "Iovanuț Maria",
+      "subject": "INFORMATICĂ",
+      "school_class": "6D"
+    },
+    {
+      "teacher": "Petrișor Gheorghina",
+      "subject": "IST. MINORITAȚI",
+      "school_class": "6D"
+    },
+    {
+      "teacher": "Petrișor Gheorghina",
+      "subject": "ISTORIE",
+      "school_class": "6D"
+    },
+    {
+      "teacher": "Szakáll Ildikó",
+      "subject": "MATEMATICĂ",
+      "school_class": "6D"
+    },
+    {
+      "teacher": "Conțiu Loredana",
+      "subject": "MUZICĂ",
+      "school_class": "6D"
+    },
+    {
+      "teacher": "Petrișor Gheorghina",
+      "subject": "RELIGIE",
+      "school_class": "6D"
+    },
+    {
+      "teacher": "Linca Marioara",
+      "subject": "ROMÂNĂ",
+      "school_class": "6D"
+    },
+    {
+      "teacher": "Iovanuț Maria",
+      "subject": "TEHNOLOGIE",
+      "school_class": "6D"
+    },
+    {
+      "teacher": "Kötting Ilona",
+      "subject": "RELIGIE",
+      "school_class": "6b-catolici"
+    },
+    {
+      "teacher": "Szilagyi Judit",
+      "subject": "RELIGIE",
+      "school_class": "6b-reformati"
+    },
+    {
+      "teacher": "Gacsádi Olga",
+      "subject": "BIOLOGIE",
+      "school_class": "7A"
+    },
+    {
+      "teacher": "Wagner Erika",
+      "subject": "CHIMIE",
+      "school_class": "7A"
+    },
+    {
+      "teacher": "Hanga Gheorghe",
+      "subject": "CIVICĂ",
+      "school_class": "7A"
+    },
+    {
+      "teacher": "Moț Anca",
+      "subject": "DESEN",
+      "school_class": "7A"
+    },
+    {
+      "teacher": "Dărăban Elisabeta",
+      "subject": "DIRIGENȚIE",
+      "school_class": "7A"
+    },
+    {
+      "teacher": "Corba Pavel",
+      "subject": "ED. FIZICĂ",
+      "school_class": "7A"
+    },
+    {
+      "teacher": "Dărăban Elisabeta",
+      "subject": "ENGLEZĂ",
+      "school_class": "7A"
+    },
+    {
+      "teacher": "Gîrba Sanda",
+      "subject": "FIZICĂ",
+      "school_class": "7A"
+    },
+    {
+      "teacher": "Hanga Gheorghe",
+      "subject": "GEOGRAFIE",
+      "school_class": "7A"
+    },
+    {
+      "teacher": "Orosz Florentina",
+      "subject": "GERMANĂ",
+      "school_class": "7A"
+    },
+    {
+      "teacher": "Iovanuț Maria",
+      "subject": "INFORMATICĂ",
+      "school_class": "7A"
+    },
+    {
+      "teacher": "Biriș Mihaela",
+      "subject": "ISTORIE",
+      "school_class": "7A"
+    },
+    {
+      "teacher": "Pop Dorel",
+      "subject": "MATEMATICĂ",
+      "school_class": "7A"
+    },
+    {
+      "teacher": "Morar Claudia",
+      "subject": "MUZICĂ",
+      "school_class": "7A"
+    },
+    {
+      "teacher": "Pășcuță Adina",
+      "subject": "RELIGIE",
+      "school_class": "7A"
+    },
+    {
+      "teacher": "Teaha Liana",
+      "subject": "ROMÂNĂ",
+      "school_class": "7A"
+    },
+    {
+      "teacher": "Iovanuț Maria",
+      "subject": "TEHNOLOGIE",
+      "school_class": "7A"
+    },
+    {
+      "teacher": "Gacsádi Olga",
+      "subject": "BIOLOGIE",
+      "school_class": "7B"
+    },
+    {
+      "teacher": "Wagner Erika",
+      "subject": "CHIMIE",
+      "school_class": "7B"
+    },
+    {
+      "teacher": "Apati Timea",
+      "subject": "CIVICĂ",
+      "school_class": "7B"
+    },
+    {
+      "teacher": "Moț Anca",
+      "subject": "DESEN",
+      "school_class": "7B"
+    },
+    {
+      "teacher": "Szakacs Eugen",
+      "subject": "DIRIGENȚIE",
+      "school_class": "7B"
+    },
+    {
+      "teacher": "Corba Pavel",
+      "subject": "ED. FIZICĂ",
+      "school_class": "7B"
+    },
+    {
+      "teacher": "Petruc Sandra",
+      "subject": "ENGLEZĂ",
+      "school_class": "7B"
+    },
+    {
+      "teacher": "Szakacs Eugen",
+      "subject": "FIZICĂ",
+      "school_class": "7B"
+    },
+    {
+      "teacher": "Apati Timea",
+      "subject": "GEOGRAFIE",
+      "school_class": "7B"
+    },
+    {
+      "teacher": "Iovanuț Maria",
+      "subject": "INFORMATICĂ",
+      "school_class": "7B"
+    },
+    {
+      "teacher": "Apati Timea",
+      "subject": "IST. MINORITAȚI",
+      "school_class": "7B"
+    },
+    {
+      "teacher": "Apati Timea",
+      "subject": "ISTORIE",
+      "school_class": "7B"
+    },
+    {
+      "teacher": "Sipos Marta",
+      "subject": "MAGHIARĂ",
+      "school_class": "7B"
+    },
+    {
+      "teacher": "Lörincz Enikö",
+      "subject": "MATEMATICĂ",
+      "school_class": "7B"
+    },
+    {
+      "teacher": "Morar Claudia",
+      "subject": "MUZICĂ",
+      "school_class": "7B"
+    },
+    {
+      "teacher": "Veteși Adina",
+      "subject": "ROMÂNĂ",
+      "school_class": "7B"
+    },
+    {
+      "teacher": "Iovanuț Maria",
+      "subject": "TEHNOLOGIE",
+      "school_class": "7B"
+    },
+    {
+      "teacher": "Hărăguș Isabela",
+      "subject": "BIOLOGIE",
+      "school_class": "7C"
+    },
+    {
+      "teacher": "Wagner Erika",
+      "subject": "CHIMIE",
+      "school_class": "7C"
+    },
+    {
+      "teacher": "Biriș Mihaela",
+      "subject": "CIVICĂ",
+      "school_class": "7C"
+    },
+    {
+      "teacher": "Moț Anca",
+      "subject": "DESEN",
+      "school_class": "7C"
+    },
+    {
+      "teacher": "Kovacs Hajnalka",
+      "subject": "DIRIGENȚIE",
+      "school_class": "7C"
+    },
+    {
+      "teacher": "Corba Pavel",
+      "subject": "ED. FIZICĂ",
+      "school_class": "7C"
+    },
+    {
+      "teacher": "Dărăban Elisabeta",
+      "subject": "ENGLEZĂ",
+      "school_class": "7C"
+    },
+    {
+      "teacher": "Szakacs Eugen",
+      "subject": "FIZICĂ",
+      "school_class": "7C"
+    },
+    {
+      "teacher": "Füzesi Laura",
+      "subject": "GEOGRAFIE",
+      "school_class": "7C"
+    },
+    {
+      "teacher": "Kovacs Hajnalka",
+      "subject": "GERMANĂ",
+      "school_class": "7C"
+    },
+    {
+      "teacher": "Iovanuț Maria",
+      "subject": "INFORMATICĂ",
+      "school_class": "7C"
+    },
+    {
+      "teacher": "Petrișor Gheorghina",
+      "subject": "IST. MINORITAȚI",
+      "school_class": "7C"
+    },
+    {
+      "teacher": "Petrișor Gheorghina",
+      "subject": "ISTORIE",
+      "school_class": "7C"
+    },
+    {
+      "teacher": "Szakáll Ildikó",
+      "subject": "MATEMATICĂ",
+      "school_class": "7C"
+    },
+    {
+      "teacher": "Morar Claudia",
+      "subject": "MUZICĂ",
+      "school_class": "7C"
+    },
+    {
+      "teacher": "Petrișor Gheorghina",
+      "subject": "RELIGIE",
+      "school_class": "7C"
+    },
+    {
+      "teacher": "Manole Paulina",
+      "subject": "ROMÂNĂ",
+      "school_class": "7C"
+    },
+    {
+      "teacher": "Iovanuț Maria",
+      "subject": "TEHNOLOGIE",
+      "school_class": "7C"
+    },
+    {
+      "teacher": "Gacsádi Olga",
+      "subject": "BIOLOGIE",
+      "school_class": "8A"
+    },
+    {
+      "teacher": "Wagner Erika",
+      "subject": "CHIMIE",
+      "school_class": "8A"
+    },
+    {
+      "teacher": "Hanga Gheorghe",
+      "subject": "CIVICĂ",
+      "school_class": "8A"
+    },
+    {
+      "teacher": "Morar Claudia",
+      "subject": "DESEN / MUZICĂ",
+      "school_class": "8A"
+    },
+    {
+      "teacher": "Iovanuț Maria",
+      "subject": "DIRIGENȚIE",
+      "school_class": "8A"
+    },
+    {
+      "teacher": "Corba Pavel",
+      "subject": "ED. FIZICĂ",
+      "school_class": "8A"
+    },
+    {
+      "teacher": "Petruc Sandra",
+      "subject": "ENGLEZĂ",
+      "school_class": "8A"
+    },
+    {
+      "teacher": "Gîrba Sanda",
+      "subject": "FIZICĂ",
+      "school_class": "8A"
+    },
+    {
+      "teacher": "Hanga Gheorghe",
+      "subject": "GEOGRAFIE",
+      "school_class": "8A"
+    },
+    {
+      "teacher": "Orosz Florentina",
+      "subject": "GERMANĂ",
+      "school_class": "8A"
+    },
+    {
+      "teacher": "Barta Florentina",
+      "subject": "ISTORIE",
+      "school_class": "8A"
+    },
+    {
+      "teacher": "Linca Marioara",
+      "subject": "LATINĂ",
+      "school_class": "8A"
+    },
+    {
+      "teacher": "Pop Dorel",
+      "subject": "MATEMATICĂ",
+      "school_class": "8A"
+    },
+    {
+      "teacher": "Pășcuță Adina",
+      "subject": "RELIGIE",
+      "school_class": "8A"
+    },
+    {
+      "teacher": "Teaha Liana",
+      "subject": "ROMÂNĂ",
+      "school_class": "8A"
+    },
+    {
+      "teacher": "Iovanuț Maria",
+      "subject": "TEHNOLOGIE",
+      "school_class": "8A"
+    },
+    {
+      "teacher": "Gacsádi Olga",
+      "subject": "BIOLOGIE",
+      "school_class": "8B"
+    },
+    {
+      "teacher": "Wagner Erika",
+      "subject": "CHIMIE",
+      "school_class": "8B"
+    },
+    {
+      "teacher": "Apati Timea",
+      "subject": "CIVICĂ",
+      "school_class": "8B"
+    },
+    {
+      "teacher": "Morar Claudia",
+      "subject": "DESEN / MUZICĂ",
+      "school_class": "8B"
+    },
+    {
+      "teacher": "Gacsádi Olga",
+      "subject": "DIRIGENȚIE",
+      "school_class": "8B"
+    },
+    {
+      "teacher": "Corba Pavel",
+      "subject": "ED. FIZICĂ",
+      "school_class": "8B"
+    },
+    {
+      "teacher": "Dărăban Elisabeta",
+      "subject": "ENGLEZĂ",
+      "school_class": "8B"
+    },
+    {
+      "teacher": "Szakacs Eugen",
+      "subject": "FIZICĂ",
+      "school_class": "8B"
+    },
+    {
+      "teacher": "Hanga Gheorghe",
+      "subject": "GEOGRAFIE",
+      "school_class": "8B"
+    },
+    {
+      "teacher": "Barta Florentina",
+      "subject": "ISTORIE",
+      "school_class": "8B"
+    },
+    {
+      "teacher": "Veteși Adina",
+      "subject": "LATINĂ",
+      "school_class": "8B"
+    },
+    {
+      "teacher": "Sipos Marta",
+      "subject": "MAGHIARĂ",
+      "school_class": "8B"
+    },
+    {
+      "teacher": "Lörincz Enikö",
+      "subject": "MATEMATICĂ",
+      "school_class": "8B"
+    },
+    {
+      "teacher": "Bota Cristian",
+      "subject": "ROMÂNĂ",
+      "school_class": "8B"
+    },
+    {
+      "teacher": "Iovanuț Maria",
+      "subject": "TEHNOLOGIE",
+      "school_class": "8B"
+    },
+    {
+      "teacher": "Hărăguș Isabela",
+      "subject": "BIOLOGIE",
+      "school_class": "8C"
+    },
+    {
+      "teacher": "Wagner Erika",
+      "subject": "CHIMIE",
+      "school_class": "8C"
+    },
+    {
+      "teacher": "Barta Florentina",
+      "subject": "CIVICĂ",
+      "school_class": "8C"
+    },
+    {
+      "teacher": "Morar Claudia",
+      "subject": "DESEN / MUZICĂ",
+      "school_class": "8C"
+    },
+    {
+      "teacher": "Wagner Erika",
+      "subject": "DIRIGENȚIE",
+      "school_class": "8C"
+    },
+    {
+      "teacher": "Corba Pavel",
+      "subject": "ED. FIZICĂ",
+      "school_class": "8C"
+    },
+    {
+      "teacher": "Petruc Sandra",
+      "subject": "ENGLEZĂ",
+      "school_class": "8C"
+    },
+    {
+      "teacher": "Szakacs Eugen",
+      "subject": "FIZICĂ",
+      "school_class": "8C"
+    },
+    {
+      "teacher": "Hanga Gheorghe",
+      "subject": "GEOGRAFIE",
+      "school_class": "8C"
+    },
+    {
+      "teacher": "Kovacs Hajnalka",
+      "subject": "GERMANĂ",
+      "school_class": "8C"
+    },
+    {
+      "teacher": "Barta Florentina",
+      "subject": "ISTORIE",
+      "school_class": "8C"
+    },
+    {
+      "teacher": "Bota Cristian",
+      "subject": "LATINĂ",
+      "school_class": "8C"
+    },
+    {
+      "teacher": "Szakáll Ildikó",
+      "subject": "MATEMATICĂ",
+      "school_class": "8C"
+    },
+    {
+      "teacher": "Petrișor Gheorghina",
+      "subject": "RELIGIE",
+      "school_class": "8C"
+    },
+    {
+      "teacher": "Manole Paulina",
+      "subject": "ROMÂNĂ",
+      "school_class": "8C"
+    },
+    {
+      "teacher": "Iovanuț Maria",
+      "subject": "TEHNOLOGIE",
+      "school_class": "8C"
+    },
+    {
+      "teacher": "Gacsádi Olga",
+      "subject": "BIOLOGIE",
+      "school_class": "9A"
+    },
+    {
+      "teacher": "Wagner Erika",
+      "subject": "CHIMIE",
+      "school_class": "9A"
+    },
+    {
+      "teacher": "Moț Anca",
+      "subject": "DESEN",
+      "school_class": "9A"
+    },
+    {
+      "teacher": "Teaha Liana",
+      "subject": "DIRIGENȚIE",
+      "school_class": "9A"
+    },
+    {
+      "teacher": "Curea Cornelia",
+      "subject": "ED. FIZICĂ",
+      "school_class": "9A"
+    },
+    {
+      "teacher": "Dărăban Elisabeta",
+      "subject": "ENGLEZĂ",
+      "school_class": "9A"
+    },
+    {
+      "teacher": "Szakacs Eugen",
+      "subject": "FIZICĂ",
+      "school_class": "9A"
+    },
+    {
+      "teacher": "Füzesi Laura",
+      "subject": "GEOGRAFIE",
+      "school_class": "9A"
+    },
+    {
+      "teacher": "Schiszer Katalin",
+      "subject": "GERMANĂ",
+      "school_class": "9A"
+    },
+    {
+      "teacher": "Vid Corina",
+      "subject": "INFORMATICĂ",
+      "school_class": "9A"
+    },
+    {
+      "teacher": "Petrișor Gheorghina",
+      "subject": "ISTORIE",
+      "school_class": "9A"
+    },
+    {
+      "teacher": "Crețu Crina",
+      "subject": "LOGICĂ",
+      "school_class": "9A"
+    },
+    {
+      "teacher": "Bozga Luminița",
+      "subject": "MATEMATICĂ",
+      "school_class": "9A"
+    },
+    {
+      "teacher": "Morar Claudia",
+      "subject": "MUZICĂ",
+      "school_class": "9A"
+    },
+    {
+      "teacher": "Petrișor Gheorghina",
+      "subject": "RELIGIE",
+      "school_class": "9A"
+    },
+    {
+      "teacher": "Teaha Liana",
+      "subject": "ROMÂNĂ",
+      "school_class": "9A"
+    }
+  ]
+}

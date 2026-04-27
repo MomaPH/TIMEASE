@@ -38,6 +38,32 @@ uv run pytest
 cd frontend && npm run build
 ```
 
+## Benchmarking (FET vs TIMEASE)
+
+Build a benchmark manifest from FET corpus:
+
+```bash
+uv run python scripts/benchmark/build_fet_manifest.py \
+  --input-dir /path/to/fet/examples \
+  --output-manifest scripts/benchmark/fet_manifest.json \
+  --exclude-generated
+```
+
+Run efficient side-by-side benchmark (parallel + cache + early-stop):
+
+```bash
+uv run python scripts/benchmark/run_fet_timease_benchmark.py \
+  --manifest scripts/benchmark/fet_manifest.json \
+  --fet-bin /path/to/fet-cl \
+  --output-dir /tmp/timease-bench \
+  --timeout-seconds 60 \
+  --tiers small,medium,hard \
+  --workers 4 \
+  --resume \
+  --early-stop-window 25 \
+  --early-stop-min-ratio 0.05
+```
+
 ## Project Layout
 
 ```

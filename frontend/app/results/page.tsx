@@ -4,16 +4,13 @@ import Link from 'next/link'
 import { FileDown, CalendarDays, Loader2, AlertTriangle, ArrowRight, CheckCircle2, Users, Building2, BookOpen } from 'lucide-react'
 import TimetableGrid from '@/components/TimetableGrid'
 import { useSession } from '@/hooks/useSession'
-import { useToast } from '@/components/Toast'
-import { restoreSession } from '@/lib/api'
 import type { TimetableAssignment, BreakSlot } from '@/lib/types'
 
-type TabId = 'class' | 'teacher' | 'room' | 'subject'
+type TabId = 'class' | 'teacher' | 'subject'
 
 const TABS: { id: TabId; label: string }[] = [
   { id: 'class',   label: 'Par classe' },
   { id: 'teacher', label: 'Par enseignant' },
-  { id: 'room',    label: 'Par salle' },
   { id: 'subject', label: 'Par matière' },
 ]
 
@@ -30,8 +27,7 @@ function GridSkeleton() {
 }
 
 export default function ResultsPage() {
-  const { sessionId, timetable, schoolData, assignments: sessionAssignments } = useSession()
-  const { toast }                 = useToast()
+  const { sessionId, timetable, schoolData } = useSession()
 
   const [activeTab, setActiveTab]     = useState<TabId>('class')
   const [selected, setSelected]       = useState<string>('')
@@ -42,7 +38,6 @@ export default function ResultsPage() {
   // ── Derived entity lists ───────────────────────────────────────────────────
   const classes  = useMemo(() => [...new Set(assignments.map(a => a.school_class))].sort(), [assignments])
   const teachers = useMemo(() => [...new Set(assignments.map(a => a.teacher))].sort(),      [assignments])
-  const rooms    = useMemo(() => [...new Set(assignments.map(a => a.room))].sort(),         [assignments])
   const subjects = useMemo(() => [...new Set(assignments.map(a => a.subject))].sort(),      [assignments])
 
   const days = useMemo<string[]>(() => {
@@ -53,9 +48,8 @@ export default function ResultsPage() {
   const options = useMemo(() => {
     if (activeTab === 'class')   return classes
     if (activeTab === 'teacher') return teachers
-    if (activeTab === 'room')    return rooms
     return subjects
-  }, [activeTab, classes, teachers, rooms, subjects])
+  }, [activeTab, classes, teachers, subjects])
 
   const resolvedSelected = options.includes(selected) ? selected : (options[0] ?? '')
 
@@ -63,7 +57,7 @@ export default function ResultsPage() {
     if (!resolvedSelected || activeTab === 'subject') return []
     if (activeTab === 'class')   return assignments.filter(a => a.school_class === resolvedSelected)
     if (activeTab === 'teacher') return assignments.filter(a => a.teacher      === resolvedSelected)
-    return                              assignments.filter(a => a.room         === resolvedSelected)
+    return []
   }, [assignments, activeTab, resolvedSelected])
 
   const subjectSummary = useMemo(() =>
@@ -97,8 +91,6 @@ export default function ResultsPage() {
         step: causeStep[g.cause] ?? undefined,
       }))
     }, [timetable])
-
-  const isPartial = !!(unscheduled.length > 0 || (timetable && !timetable.solved && assignments.length > 0))
 
   // ── Breaks from school data ─────────────────────────────────────────────────
   const breaks: BreakSlot[] = useMemo(() => {
@@ -174,9 +166,9 @@ export default function ResultsPage() {
             <div className="w-8 h-8 rounded-lg bg-amber-50 dark:bg-amber-950/50 flex items-center justify-center">
               <Building2 size={16} className="text-amber-600 dark:text-amber-400" />
             </div>
-            <span className="text-sm font-medium text-zinc-500 dark:text-zinc-400">Salles</span>
+            <span className="text-sm font-medium text-zinc-500 dark:text-zinc-400">Mode salles</span>
           </div>
-          <div className="text-2xl font-bold text-zinc-900 dark:text-white tracking-tight">{rooms.length}</div>
+          <div className="text-2xl font-bold text-zinc-900 dark:text-white tracking-tight">Manuel</div>
         </div>
         <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-5">
           <div className="flex items-center gap-3 mb-3">
@@ -267,8 +259,7 @@ export default function ResultsPage() {
             <label className="text-sm text-zinc-600 dark:text-zinc-400 whitespace-nowrap">
               {activeTab === 'class'   && 'Classe :'}
               {activeTab === 'teacher' && 'Enseignant :'}
-              {activeTab === 'room'    && 'Salle :'}
-            </label>
+             </label>
             {isLoading ? (
               <div className="h-9 w-40 bg-zinc-200 dark:bg-zinc-700 rounded-lg animate-pulse" />
             ) : (
@@ -287,7 +278,7 @@ export default function ResultsPage() {
               <GridSkeleton />
             ) : (
               <div className="p-4 min-w-[560px]">
-                <TimetableGrid assignments={filtered} days={days} view={activeTab as 'class' | 'teacher' | 'room'} breaks={breaks} />
+                <TimetableGrid assignments={filtered} days={days} view={activeTab as 'class' | 'teacher'} breaks={breaks} />
               </div>
             )}
           </div>

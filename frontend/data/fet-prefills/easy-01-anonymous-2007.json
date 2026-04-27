@@ -1,0 +1,2370 @@
+{
+  "school": {
+    "name": "FET import: anonymous-1-2007",
+    "academic_year": "2026-2027",
+    "city": "Imported"
+  },
+  "timeslot_config": {
+    "days": [
+      {
+        "name": "Monday",
+        "sessions": [
+          {
+            "name": "Journée",
+            "start_time": "08:00",
+            "end_time": "15:00"
+          }
+        ],
+        "breaks": []
+      },
+      {
+        "name": "Tuesday",
+        "sessions": [
+          {
+            "name": "Journée",
+            "start_time": "08:00",
+            "end_time": "15:00"
+          }
+        ],
+        "breaks": []
+      },
+      {
+        "name": "Wednesday",
+        "sessions": [
+          {
+            "name": "Journée",
+            "start_time": "08:00",
+            "end_time": "15:00"
+          }
+        ],
+        "breaks": []
+      },
+      {
+        "name": "Thursday",
+        "sessions": [
+          {
+            "name": "Journée",
+            "start_time": "08:00",
+            "end_time": "15:00"
+          }
+        ],
+        "breaks": []
+      },
+      {
+        "name": "Friday",
+        "sessions": [
+          {
+            "name": "Journée",
+            "start_time": "08:00",
+            "end_time": "15:00"
+          }
+        ],
+        "breaks": []
+      }
+    ],
+    "base_unit_minutes": 60
+  },
+  "subjects": [
+    {
+      "name": "Subject 100",
+      "short_name": "Subject 100",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": false
+    },
+    {
+      "name": "Subject 101",
+      "short_name": "Subject 101",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": false
+    },
+    {
+      "name": "Subject 102__d2",
+      "short_name": "Subject 102_",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": false
+    },
+    {
+      "name": "Subject 103",
+      "short_name": "Subject 103",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": false
+    },
+    {
+      "name": "Subject 104",
+      "short_name": "Subject 104",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": false
+    },
+    {
+      "name": "Subject 105__d5",
+      "short_name": "Subject 105_",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": false
+    },
+    {
+      "name": "Subject 106",
+      "short_name": "Subject 106",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": false
+    },
+    {
+      "name": "Subject 107",
+      "short_name": "Subject 107",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": false
+    },
+    {
+      "name": "Subject 108__d3",
+      "short_name": "Subject 108_",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": false
+    },
+    {
+      "name": "Subject 109",
+      "short_name": "Subject 109",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": false
+    },
+    {
+      "name": "Subject 10__d4",
+      "short_name": "Subject 10__",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": false
+    },
+    {
+      "name": "Subject 11",
+      "short_name": "Subject 11",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": false
+    },
+    {
+      "name": "Subject 110__d2",
+      "short_name": "Subject 110_",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": false
+    },
+    {
+      "name": "Subject 13",
+      "short_name": "Subject 13",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": false
+    },
+    {
+      "name": "Subject 14__d3",
+      "short_name": "Subject 14__",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": false
+    },
+    {
+      "name": "Subject 15",
+      "short_name": "Subject 15",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": false
+    },
+    {
+      "name": "Subject 16__d4",
+      "short_name": "Subject 16__",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": false
+    },
+    {
+      "name": "Subject 17",
+      "short_name": "Subject 17",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": false
+    },
+    {
+      "name": "Subject 18__d3",
+      "short_name": "Subject 18__",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": false
+    },
+    {
+      "name": "Subject 19",
+      "short_name": "Subject 19",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": false
+    },
+    {
+      "name": "Subject 2",
+      "short_name": "Subject 2",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": false
+    },
+    {
+      "name": "Subject 20",
+      "short_name": "Subject 20",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": false
+    },
+    {
+      "name": "Subject 21__d2",
+      "short_name": "Subject 21__",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": false
+    },
+    {
+      "name": "Subject 22__d3",
+      "short_name": "Subject 22__",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": false
+    },
+    {
+      "name": "Subject 23__d3",
+      "short_name": "Subject 23__",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": false
+    },
+    {
+      "name": "Subject 24__d5",
+      "short_name": "Subject 24__",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": false
+    },
+    {
+      "name": "Subject 25",
+      "short_name": "Subject 25",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": false
+    },
+    {
+      "name": "Subject 26__d5",
+      "short_name": "Subject 26__",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": false
+    },
+    {
+      "name": "Subject 27",
+      "short_name": "Subject 27",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": false
+    },
+    {
+      "name": "Subject 28__d3",
+      "short_name": "Subject 28__",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": false
+    },
+    {
+      "name": "Subject 29",
+      "short_name": "Subject 29",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": false
+    },
+    {
+      "name": "Subject 30__d3",
+      "short_name": "Subject 30__",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": false
+    },
+    {
+      "name": "Subject 31",
+      "short_name": "Subject 31",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": false
+    },
+    {
+      "name": "Subject 32",
+      "short_name": "Subject 32",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": false
+    },
+    {
+      "name": "Subject 33__d4",
+      "short_name": "Subject 33__",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": false
+    },
+    {
+      "name": "Subject 34",
+      "short_name": "Subject 34",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": false
+    },
+    {
+      "name": "Subject 35",
+      "short_name": "Subject 35",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": false
+    },
+    {
+      "name": "Subject 36__d4",
+      "short_name": "Subject 36__",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": false
+    },
+    {
+      "name": "Subject 37",
+      "short_name": "Subject 37",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": false
+    },
+    {
+      "name": "Subject 38__d4",
+      "short_name": "Subject 38__",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": false
+    },
+    {
+      "name": "Subject 39",
+      "short_name": "Subject 39",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": false
+    },
+    {
+      "name": "Subject 3__d2",
+      "short_name": "Subject 3__d",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": false
+    },
+    {
+      "name": "Subject 40",
+      "short_name": "Subject 40",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": false
+    },
+    {
+      "name": "Subject 42__d4",
+      "short_name": "Subject 42__",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": false
+    },
+    {
+      "name": "Subject 43",
+      "short_name": "Subject 43",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": false
+    },
+    {
+      "name": "Subject 44__d4",
+      "short_name": "Subject 44__",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": false
+    },
+    {
+      "name": "Subject 45",
+      "short_name": "Subject 45",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": false
+    },
+    {
+      "name": "Subject 46__d5",
+      "short_name": "Subject 46__",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": false
+    },
+    {
+      "name": "Subject 47",
+      "short_name": "Subject 47",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": false
+    },
+    {
+      "name": "Subject 48",
+      "short_name": "Subject 48",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": false
+    },
+    {
+      "name": "Subject 49__d2",
+      "short_name": "Subject 49__",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": false
+    },
+    {
+      "name": "Subject 50",
+      "short_name": "Subject 50",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": false
+    },
+    {
+      "name": "Subject 51__d2",
+      "short_name": "Subject 51__",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": false
+    },
+    {
+      "name": "Subject 52",
+      "short_name": "Subject 52",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": false
+    },
+    {
+      "name": "Subject 53__d3",
+      "short_name": "Subject 53__",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": false
+    },
+    {
+      "name": "Subject 54__d2",
+      "short_name": "Subject 54__",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": false
+    },
+    {
+      "name": "Subject 55__d2",
+      "short_name": "Subject 55__",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": false
+    },
+    {
+      "name": "Subject 56",
+      "short_name": "Subject 56",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": false
+    },
+    {
+      "name": "Subject 57",
+      "short_name": "Subject 57",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": false
+    },
+    {
+      "name": "Subject 58__d2",
+      "short_name": "Subject 58__",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": false
+    },
+    {
+      "name": "Subject 59",
+      "short_name": "Subject 59",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": false
+    },
+    {
+      "name": "Subject 60",
+      "short_name": "Subject 60",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": false
+    },
+    {
+      "name": "Subject 61",
+      "short_name": "Subject 61",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": false
+    },
+    {
+      "name": "Subject 62__d2",
+      "short_name": "Subject 62__",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": false
+    },
+    {
+      "name": "Subject 63",
+      "short_name": "Subject 63",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": false
+    },
+    {
+      "name": "Subject 64",
+      "short_name": "Subject 64",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": false
+    },
+    {
+      "name": "Subject 65__d2",
+      "short_name": "Subject 65__",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": false
+    },
+    {
+      "name": "Subject 66",
+      "short_name": "Subject 66",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": false
+    },
+    {
+      "name": "Subject 68__d3",
+      "short_name": "Subject 68__",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": false
+    },
+    {
+      "name": "Subject 69",
+      "short_name": "Subject 69",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": false
+    },
+    {
+      "name": "Subject 6__d2",
+      "short_name": "Subject 6__d",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": false
+    },
+    {
+      "name": "Subject 7",
+      "short_name": "Subject 7",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": false
+    },
+    {
+      "name": "Subject 70__d2",
+      "short_name": "Subject 70__",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": false
+    },
+    {
+      "name": "Subject 71",
+      "short_name": "Subject 71",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": false
+    },
+    {
+      "name": "Subject 72",
+      "short_name": "Subject 72",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": false
+    },
+    {
+      "name": "Subject 75",
+      "short_name": "Subject 75",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": false
+    },
+    {
+      "name": "Subject 76__d4",
+      "short_name": "Subject 76__",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": false
+    },
+    {
+      "name": "Subject 77",
+      "short_name": "Subject 77",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": false
+    },
+    {
+      "name": "Subject 78__d5",
+      "short_name": "Subject 78__",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": false
+    },
+    {
+      "name": "Subject 79",
+      "short_name": "Subject 79",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": false
+    },
+    {
+      "name": "Subject 80",
+      "short_name": "Subject 80",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": false
+    },
+    {
+      "name": "Subject 81__d2",
+      "short_name": "Subject 81__",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": false
+    },
+    {
+      "name": "Subject 82__d3",
+      "short_name": "Subject 82__",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": false
+    },
+    {
+      "name": "Subject 83__d2",
+      "short_name": "Subject 83__",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": false
+    },
+    {
+      "name": "Subject 84",
+      "short_name": "Subject 84",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": false
+    },
+    {
+      "name": "Subject 87__d2",
+      "short_name": "Subject 87__",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": false
+    },
+    {
+      "name": "Subject 88__d2",
+      "short_name": "Subject 88__",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": false
+    },
+    {
+      "name": "Subject 89__d3",
+      "short_name": "Subject 89__",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": false
+    },
+    {
+      "name": "Subject 91__d3",
+      "short_name": "Subject 91__",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": false
+    },
+    {
+      "name": "Subject 94__d2",
+      "short_name": "Subject 94__",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": false
+    },
+    {
+      "name": "Subject 95",
+      "short_name": "Subject 95",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": false
+    },
+    {
+      "name": "Subject 96__d2",
+      "short_name": "Subject 96__",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": false
+    },
+    {
+      "name": "Subject 99__d2",
+      "short_name": "Subject 99__",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": false
+    }
+  ],
+  "teachers": [
+    {
+      "name": "Teacher 1",
+      "subjects": [
+        "Subject 30__d3",
+        "Subject 31"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Teacher 10",
+      "subjects": [
+        "Subject 106",
+        "Subject 107",
+        "Subject 62__d2",
+        "Subject 63",
+        "Subject 72"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Teacher 11",
+      "subjects": [
+        "Subject 102__d2",
+        "Subject 44__d4",
+        "Subject 46__d5",
+        "Subject 78__d5"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Teacher 12",
+      "subjects": [
+        "Subject 23__d3",
+        "Subject 28__d3"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Teacher 13",
+      "subjects": [
+        "Subject 24__d5",
+        "Subject 26__d5",
+        "Subject 38__d4"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Teacher 14",
+      "subjects": [
+        "Subject 48"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Teacher 15",
+      "subjects": [
+        "Subject 54__d2"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Teacher 16",
+      "subjects": [
+        "Subject 109",
+        "Subject 2",
+        "Subject 35",
+        "Subject 36__d4",
+        "Subject 37",
+        "Subject 53__d3",
+        "Subject 71",
+        "Subject 76__d4"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Teacher 17",
+      "subjects": [
+        "Subject 17",
+        "Subject 19",
+        "Subject 75",
+        "Subject 82__d3"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Teacher 18",
+      "subjects": [
+        "Subject 13",
+        "Subject 14__d3",
+        "Subject 55__d2",
+        "Subject 56",
+        "Subject 58__d2",
+        "Subject 59",
+        "Subject 70__d2",
+        "Subject 89__d3"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Teacher 19",
+      "subjects": [
+        "Subject 105__d5"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Teacher 2",
+      "subjects": [
+        "Subject 3__d2"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Teacher 20",
+      "subjects": [
+        "Subject 22__d3",
+        "Subject 42__d4",
+        "Subject 43",
+        "Subject 95"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Teacher 21",
+      "subjects": [
+        "Subject 57",
+        "Subject 60",
+        "Subject 61",
+        "Subject 64"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Teacher 22",
+      "subjects": [
+        "Subject 100",
+        "Subject 101",
+        "Subject 81__d2",
+        "Subject 91__d3",
+        "Subject 96__d2",
+        "Subject 99__d2"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Teacher 23",
+      "subjects": [
+        "Subject 103",
+        "Subject 45",
+        "Subject 47",
+        "Subject 52",
+        "Subject 77",
+        "Subject 79",
+        "Subject 94__d2"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Teacher 24",
+      "subjects": [
+        "Subject 33__d4",
+        "Subject 34",
+        "Subject 66",
+        "Subject 68__d3",
+        "Subject 84"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Teacher 25",
+      "subjects": [
+        "Subject 15"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Teacher 26",
+      "subjects": [
+        "Subject 108__d3",
+        "Subject 16__d4",
+        "Subject 18__d3"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Teacher 3",
+      "subjects": [
+        "Subject 104",
+        "Subject 10__d4",
+        "Subject 11",
+        "Subject 25",
+        "Subject 27",
+        "Subject 49__d2",
+        "Subject 50",
+        "Subject 51__d2",
+        "Subject 6__d2",
+        "Subject 7"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Teacher 4",
+      "subjects": [
+        "Subject 29"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Teacher 6",
+      "subjects": [
+        "Subject 39",
+        "Subject 40"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Teacher 7",
+      "subjects": [
+        "Subject 110__d2"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Teacher 8",
+      "subjects": [
+        "Subject 21__d2",
+        "Subject 87__d2",
+        "Subject 88__d2"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Teacher 9",
+      "subjects": [
+        "Subject 20",
+        "Subject 32",
+        "Subject 65__d2",
+        "Subject 69",
+        "Subject 80",
+        "Subject 83__d2"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    }
+  ],
+  "classes": [
+    {
+      "name": "Students group 1_1",
+      "level": "Students group 1_1",
+      "student_count": 30
+    },
+    {
+      "name": "Students group 1_2",
+      "level": "Students group 1_2",
+      "student_count": 30
+    },
+    {
+      "name": "Students group 1_3",
+      "level": "Students group 1_3",
+      "student_count": 30
+    },
+    {
+      "name": "Students group 1_4",
+      "level": "Students group 1_4",
+      "student_count": 30
+    },
+    {
+      "name": "Students group 1_5",
+      "level": "Students group 1_5",
+      "student_count": 30
+    },
+    {
+      "name": "Students group 1_6",
+      "level": "Students group 1_6",
+      "student_count": 30
+    },
+    {
+      "name": "Students group 2_1",
+      "level": "Students group 2_1",
+      "student_count": 30
+    },
+    {
+      "name": "Students group 2_2",
+      "level": "Students group 2_2",
+      "student_count": 30
+    },
+    {
+      "name": "Students group 2_3",
+      "level": "Students group 2_3",
+      "student_count": 30
+    },
+    {
+      "name": "Students group 2_4",
+      "level": "Students group 2_4",
+      "student_count": 30
+    },
+    {
+      "name": "Students group 2_5",
+      "level": "Students group 2_5",
+      "student_count": 30
+    }
+  ],
+  "rooms": [],
+  "curriculum": [
+    {
+      "school_class": "Students group 1_1",
+      "subject": "Subject 102__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Students group 1_1",
+      "subject": "Subject 103",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Students group 1_1",
+      "subject": "Subject 110__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Students group 1_1",
+      "subject": "Subject 29",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Students group 1_1",
+      "subject": "Subject 3__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Students group 1_1",
+      "subject": "Subject 46__d5",
+      "total_minutes_per_week": 300,
+      "sessions_per_week": 1,
+      "minutes_per_session": 300
+    },
+    {
+      "school_class": "Students group 1_1",
+      "subject": "Subject 47",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Students group 1_1",
+      "subject": "Subject 48",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Students group 1_1",
+      "subject": "Subject 54__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Students group 1_1",
+      "subject": "Subject 64",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Students group 1_1",
+      "subject": "Subject 75",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Students group 1_1",
+      "subject": "Subject 78__d5",
+      "total_minutes_per_week": 300,
+      "sessions_per_week": 1,
+      "minutes_per_session": 300
+    },
+    {
+      "school_class": "Students group 1_1",
+      "subject": "Subject 79",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Students group 1_2",
+      "subject": "Subject 16__d4",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 1,
+      "minutes_per_session": 240
+    },
+    {
+      "school_class": "Students group 1_2",
+      "subject": "Subject 17",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Students group 1_2",
+      "subject": "Subject 18__d3",
+      "total_minutes_per_week": 360,
+      "sessions_per_week": 2,
+      "minutes_per_session": 180
+    },
+    {
+      "school_class": "Students group 1_2",
+      "subject": "Subject 19",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Students group 1_2",
+      "subject": "Subject 29",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Students group 1_2",
+      "subject": "Subject 3__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Students group 1_2",
+      "subject": "Subject 64",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Students group 1_2",
+      "subject": "Subject 75",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Students group 1_2",
+      "subject": "Subject 94__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Students group 1_3",
+      "subject": "Subject 100",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Students group 1_3",
+      "subject": "Subject 13",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Students group 1_3",
+      "subject": "Subject 14__d3",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 1,
+      "minutes_per_session": 180
+    },
+    {
+      "school_class": "Students group 1_3",
+      "subject": "Subject 21__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Students group 1_3",
+      "subject": "Subject 29",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Students group 1_3",
+      "subject": "Subject 83__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Students group 1_3",
+      "subject": "Subject 84",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Students group 1_3",
+      "subject": "Subject 89__d3",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 1,
+      "minutes_per_session": 180
+    },
+    {
+      "school_class": "Students group 1_3",
+      "subject": "Subject 91__d3",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 1,
+      "minutes_per_session": 180
+    },
+    {
+      "school_class": "Students group 1_3",
+      "subject": "Subject 95",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Students group 1_3",
+      "subject": "Subject 96__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Students group 1_3",
+      "subject": "Subject 99__d2",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 2,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Students group 1_4",
+      "subject": "Subject 23__d3",
+      "total_minutes_per_week": 360,
+      "sessions_per_week": 2,
+      "minutes_per_session": 180
+    },
+    {
+      "school_class": "Students group 1_4",
+      "subject": "Subject 28__d3",
+      "total_minutes_per_week": 360,
+      "sessions_per_week": 2,
+      "minutes_per_session": 180
+    },
+    {
+      "school_class": "Students group 1_4",
+      "subject": "Subject 29",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Students group 1_4",
+      "subject": "Subject 32",
+      "total_minutes_per_week": 360,
+      "sessions_per_week": 6,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Students group 1_4",
+      "subject": "Subject 60",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Students group 1_4",
+      "subject": "Subject 80",
+      "total_minutes_per_week": 360,
+      "sessions_per_week": 6,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Students group 1_5",
+      "subject": "Subject 10__d4",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 1,
+      "minutes_per_session": 240
+    },
+    {
+      "school_class": "Students group 1_5",
+      "subject": "Subject 11",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Students group 1_5",
+      "subject": "Subject 110__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Students group 1_5",
+      "subject": "Subject 29",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Students group 1_5",
+      "subject": "Subject 39",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Students group 1_5",
+      "subject": "Subject 40",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Students group 1_5",
+      "subject": "Subject 48",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Students group 1_5",
+      "subject": "Subject 49__d2",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 2,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Students group 1_5",
+      "subject": "Subject 50",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Students group 1_5",
+      "subject": "Subject 51__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Students group 1_5",
+      "subject": "Subject 57",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Students group 1_5",
+      "subject": "Subject 63",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Students group 1_5",
+      "subject": "Subject 6__d2",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 2,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Students group 1_5",
+      "subject": "Subject 7",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Students group 1_5",
+      "subject": "Subject 72",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Students group 1_6",
+      "subject": "Subject 15",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Students group 1_6",
+      "subject": "Subject 24__d5",
+      "total_minutes_per_week": 600,
+      "sessions_per_week": 2,
+      "minutes_per_session": 300
+    },
+    {
+      "school_class": "Students group 1_6",
+      "subject": "Subject 25",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Students group 1_6",
+      "subject": "Subject 29",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Students group 1_6",
+      "subject": "Subject 38__d4",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 1,
+      "minutes_per_session": 240
+    },
+    {
+      "school_class": "Students group 1_6",
+      "subject": "Subject 49__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Students group 1_6",
+      "subject": "Subject 54__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Students group 1_6",
+      "subject": "Subject 72",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Students group 1_6",
+      "subject": "Subject 87__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Students group 1_6",
+      "subject": "Subject 88__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Students group 2_1",
+      "subject": "Subject 108__d3",
+      "total_minutes_per_week": 360,
+      "sessions_per_week": 2,
+      "minutes_per_session": 180
+    },
+    {
+      "school_class": "Students group 2_1",
+      "subject": "Subject 109",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Students group 2_1",
+      "subject": "Subject 2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Students group 2_1",
+      "subject": "Subject 35",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Students group 2_1",
+      "subject": "Subject 36__d4",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 1,
+      "minutes_per_session": 240
+    },
+    {
+      "school_class": "Students group 2_1",
+      "subject": "Subject 37",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Students group 2_1",
+      "subject": "Subject 69",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Students group 2_1",
+      "subject": "Subject 71",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Students group 2_1",
+      "subject": "Subject 82__d3",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 1,
+      "minutes_per_session": 180
+    },
+    {
+      "school_class": "Students group 2_2",
+      "subject": "Subject 101",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Students group 2_2",
+      "subject": "Subject 22__d3",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 1,
+      "minutes_per_session": 180
+    },
+    {
+      "school_class": "Students group 2_2",
+      "subject": "Subject 42__d4",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 1,
+      "minutes_per_session": 240
+    },
+    {
+      "school_class": "Students group 2_2",
+      "subject": "Subject 43",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Students group 2_2",
+      "subject": "Subject 55__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Students group 2_2",
+      "subject": "Subject 56",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Students group 2_2",
+      "subject": "Subject 58__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Students group 2_2",
+      "subject": "Subject 59",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Students group 2_2",
+      "subject": "Subject 70__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Students group 2_2",
+      "subject": "Subject 81__d2",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 2,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Students group 2_3",
+      "subject": "Subject 20",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Students group 2_3",
+      "subject": "Subject 33__d4",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 1,
+      "minutes_per_session": 240
+    },
+    {
+      "school_class": "Students group 2_3",
+      "subject": "Subject 34",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Students group 2_3",
+      "subject": "Subject 53__d3",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 1,
+      "minutes_per_session": 180
+    },
+    {
+      "school_class": "Students group 2_3",
+      "subject": "Subject 65__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Students group 2_3",
+      "subject": "Subject 66",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Students group 2_3",
+      "subject": "Subject 68__d3",
+      "total_minutes_per_week": 360,
+      "sessions_per_week": 2,
+      "minutes_per_session": 180
+    },
+    {
+      "school_class": "Students group 2_4",
+      "subject": "Subject 105__d5",
+      "total_minutes_per_week": 300,
+      "sessions_per_week": 1,
+      "minutes_per_session": 300
+    },
+    {
+      "school_class": "Students group 2_4",
+      "subject": "Subject 30__d3",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 1,
+      "minutes_per_session": 180
+    },
+    {
+      "school_class": "Students group 2_4",
+      "subject": "Subject 31",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Students group 2_4",
+      "subject": "Subject 44__d4",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 1,
+      "minutes_per_session": 240
+    },
+    {
+      "school_class": "Students group 2_4",
+      "subject": "Subject 45",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Students group 2_4",
+      "subject": "Subject 52",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Students group 2_4",
+      "subject": "Subject 76__d4",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 1,
+      "minutes_per_session": 240
+    },
+    {
+      "school_class": "Students group 2_4",
+      "subject": "Subject 77",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Students group 2_5",
+      "subject": "Subject 104",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Students group 2_5",
+      "subject": "Subject 106",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Students group 2_5",
+      "subject": "Subject 107",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Students group 2_5",
+      "subject": "Subject 15",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Students group 2_5",
+      "subject": "Subject 26__d5",
+      "total_minutes_per_week": 600,
+      "sessions_per_week": 2,
+      "minutes_per_session": 300
+    },
+    {
+      "school_class": "Students group 2_5",
+      "subject": "Subject 27",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Students group 2_5",
+      "subject": "Subject 61",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Students group 2_5",
+      "subject": "Subject 62__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    }
+  ],
+  "constraints": [
+    {
+      "id": "C1",
+      "type": "hard",
+      "category": "teacher_no_overlap",
+      "description_fr": "Pas de chevauchement enseignant",
+      "priority": 10,
+      "parameters": {}
+    },
+    {
+      "id": "C2",
+      "type": "hard",
+      "category": "class_no_overlap",
+      "description_fr": "Pas de chevauchement classe",
+      "priority": 10,
+      "parameters": {}
+    },
+    {
+      "id": "C3",
+      "type": "hard",
+      "category": "teacher_subject_declared",
+      "description_fr": "Matière enseignant déclarée",
+      "priority": 10,
+      "parameters": {}
+    },
+    {
+      "id": "C4",
+      "type": "hard",
+      "category": "teacher_calendar_declared",
+      "description_fr": "Calendrier enseignant déclaré",
+      "priority": 10,
+      "parameters": {}
+    }
+  ],
+  "teacher_assignments": [
+    {
+      "teacher": "Teacher 11",
+      "subject": "Subject 102__d2",
+      "school_class": "Students group 1_1"
+    },
+    {
+      "teacher": "Teacher 23",
+      "subject": "Subject 103",
+      "school_class": "Students group 1_1"
+    },
+    {
+      "teacher": "Teacher 7",
+      "subject": "Subject 110__d2",
+      "school_class": "Students group 1_1"
+    },
+    {
+      "teacher": "Teacher 4",
+      "subject": "Subject 29",
+      "school_class": "Students group 1_1"
+    },
+    {
+      "teacher": "Teacher 2",
+      "subject": "Subject 3__d2",
+      "school_class": "Students group 1_1"
+    },
+    {
+      "teacher": "Teacher 11",
+      "subject": "Subject 46__d5",
+      "school_class": "Students group 1_1"
+    },
+    {
+      "teacher": "Teacher 23",
+      "subject": "Subject 47",
+      "school_class": "Students group 1_1"
+    },
+    {
+      "teacher": "Teacher 14",
+      "subject": "Subject 48",
+      "school_class": "Students group 1_1"
+    },
+    {
+      "teacher": "Teacher 15",
+      "subject": "Subject 54__d2",
+      "school_class": "Students group 1_1"
+    },
+    {
+      "teacher": "Teacher 21",
+      "subject": "Subject 64",
+      "school_class": "Students group 1_1"
+    },
+    {
+      "teacher": "Teacher 17",
+      "subject": "Subject 75",
+      "school_class": "Students group 1_1"
+    },
+    {
+      "teacher": "Teacher 11",
+      "subject": "Subject 78__d5",
+      "school_class": "Students group 1_1"
+    },
+    {
+      "teacher": "Teacher 23",
+      "subject": "Subject 79",
+      "school_class": "Students group 1_1"
+    },
+    {
+      "teacher": "Teacher 26",
+      "subject": "Subject 16__d4",
+      "school_class": "Students group 1_2"
+    },
+    {
+      "teacher": "Teacher 17",
+      "subject": "Subject 17",
+      "school_class": "Students group 1_2"
+    },
+    {
+      "teacher": "Teacher 26",
+      "subject": "Subject 18__d3",
+      "school_class": "Students group 1_2"
+    },
+    {
+      "teacher": "Teacher 17",
+      "subject": "Subject 19",
+      "school_class": "Students group 1_2"
+    },
+    {
+      "teacher": "Teacher 4",
+      "subject": "Subject 29",
+      "school_class": "Students group 1_2"
+    },
+    {
+      "teacher": "Teacher 2",
+      "subject": "Subject 3__d2",
+      "school_class": "Students group 1_2"
+    },
+    {
+      "teacher": "Teacher 21",
+      "subject": "Subject 64",
+      "school_class": "Students group 1_2"
+    },
+    {
+      "teacher": "Teacher 17",
+      "subject": "Subject 75",
+      "school_class": "Students group 1_2"
+    },
+    {
+      "teacher": "Teacher 23",
+      "subject": "Subject 94__d2",
+      "school_class": "Students group 1_2"
+    },
+    {
+      "teacher": "Teacher 22",
+      "subject": "Subject 100",
+      "school_class": "Students group 1_3"
+    },
+    {
+      "teacher": "Teacher 18",
+      "subject": "Subject 13",
+      "school_class": "Students group 1_3"
+    },
+    {
+      "teacher": "Teacher 18",
+      "subject": "Subject 14__d3",
+      "school_class": "Students group 1_3"
+    },
+    {
+      "teacher": "Teacher 8",
+      "subject": "Subject 21__d2",
+      "school_class": "Students group 1_3"
+    },
+    {
+      "teacher": "Teacher 4",
+      "subject": "Subject 29",
+      "school_class": "Students group 1_3"
+    },
+    {
+      "teacher": "Teacher 9",
+      "subject": "Subject 83__d2",
+      "school_class": "Students group 1_3"
+    },
+    {
+      "teacher": "Teacher 24",
+      "subject": "Subject 84",
+      "school_class": "Students group 1_3"
+    },
+    {
+      "teacher": "Teacher 18",
+      "subject": "Subject 89__d3",
+      "school_class": "Students group 1_3"
+    },
+    {
+      "teacher": "Teacher 22",
+      "subject": "Subject 91__d3",
+      "school_class": "Students group 1_3"
+    },
+    {
+      "teacher": "Teacher 20",
+      "subject": "Subject 95",
+      "school_class": "Students group 1_3"
+    },
+    {
+      "teacher": "Teacher 22",
+      "subject": "Subject 96__d2",
+      "school_class": "Students group 1_3"
+    },
+    {
+      "teacher": "Teacher 22",
+      "subject": "Subject 99__d2",
+      "school_class": "Students group 1_3"
+    },
+    {
+      "teacher": "Teacher 12",
+      "subject": "Subject 23__d3",
+      "school_class": "Students group 1_4"
+    },
+    {
+      "teacher": "Teacher 12",
+      "subject": "Subject 28__d3",
+      "school_class": "Students group 1_4"
+    },
+    {
+      "teacher": "Teacher 4",
+      "subject": "Subject 29",
+      "school_class": "Students group 1_4"
+    },
+    {
+      "teacher": "Teacher 9",
+      "subject": "Subject 32",
+      "school_class": "Students group 1_4"
+    },
+    {
+      "teacher": "Teacher 21",
+      "subject": "Subject 60",
+      "school_class": "Students group 1_4"
+    },
+    {
+      "teacher": "Teacher 9",
+      "subject": "Subject 80",
+      "school_class": "Students group 1_4"
+    },
+    {
+      "teacher": "Teacher 3",
+      "subject": "Subject 10__d4",
+      "school_class": "Students group 1_5"
+    },
+    {
+      "teacher": "Teacher 3",
+      "subject": "Subject 11",
+      "school_class": "Students group 1_5"
+    },
+    {
+      "teacher": "Teacher 7",
+      "subject": "Subject 110__d2",
+      "school_class": "Students group 1_5"
+    },
+    {
+      "teacher": "Teacher 4",
+      "subject": "Subject 29",
+      "school_class": "Students group 1_5"
+    },
+    {
+      "teacher": "Teacher 6",
+      "subject": "Subject 39",
+      "school_class": "Students group 1_5"
+    },
+    {
+      "teacher": "Teacher 6",
+      "subject": "Subject 40",
+      "school_class": "Students group 1_5"
+    },
+    {
+      "teacher": "Teacher 14",
+      "subject": "Subject 48",
+      "school_class": "Students group 1_5"
+    },
+    {
+      "teacher": "Teacher 3",
+      "subject": "Subject 49__d2",
+      "school_class": "Students group 1_5"
+    },
+    {
+      "teacher": "Teacher 3",
+      "subject": "Subject 50",
+      "school_class": "Students group 1_5"
+    },
+    {
+      "teacher": "Teacher 3",
+      "subject": "Subject 51__d2",
+      "school_class": "Students group 1_5"
+    },
+    {
+      "teacher": "Teacher 21",
+      "subject": "Subject 57",
+      "school_class": "Students group 1_5"
+    },
+    {
+      "teacher": "Teacher 10",
+      "subject": "Subject 63",
+      "school_class": "Students group 1_5"
+    },
+    {
+      "teacher": "Teacher 3",
+      "subject": "Subject 6__d2",
+      "school_class": "Students group 1_5"
+    },
+    {
+      "teacher": "Teacher 3",
+      "subject": "Subject 7",
+      "school_class": "Students group 1_5"
+    },
+    {
+      "teacher": "Teacher 10",
+      "subject": "Subject 72",
+      "school_class": "Students group 1_5"
+    },
+    {
+      "teacher": "Teacher 25",
+      "subject": "Subject 15",
+      "school_class": "Students group 1_6"
+    },
+    {
+      "teacher": "Teacher 13",
+      "subject": "Subject 24__d5",
+      "school_class": "Students group 1_6"
+    },
+    {
+      "teacher": "Teacher 3",
+      "subject": "Subject 25",
+      "school_class": "Students group 1_6"
+    },
+    {
+      "teacher": "Teacher 4",
+      "subject": "Subject 29",
+      "school_class": "Students group 1_6"
+    },
+    {
+      "teacher": "Teacher 13",
+      "subject": "Subject 38__d4",
+      "school_class": "Students group 1_6"
+    },
+    {
+      "teacher": "Teacher 3",
+      "subject": "Subject 49__d2",
+      "school_class": "Students group 1_6"
+    },
+    {
+      "teacher": "Teacher 15",
+      "subject": "Subject 54__d2",
+      "school_class": "Students group 1_6"
+    },
+    {
+      "teacher": "Teacher 10",
+      "subject": "Subject 72",
+      "school_class": "Students group 1_6"
+    },
+    {
+      "teacher": "Teacher 8",
+      "subject": "Subject 87__d2",
+      "school_class": "Students group 1_6"
+    },
+    {
+      "teacher": "Teacher 8",
+      "subject": "Subject 88__d2",
+      "school_class": "Students group 1_6"
+    },
+    {
+      "teacher": "Teacher 26",
+      "subject": "Subject 108__d3",
+      "school_class": "Students group 2_1"
+    },
+    {
+      "teacher": "Teacher 16",
+      "subject": "Subject 109",
+      "school_class": "Students group 2_1"
+    },
+    {
+      "teacher": "Teacher 16",
+      "subject": "Subject 2",
+      "school_class": "Students group 2_1"
+    },
+    {
+      "teacher": "Teacher 16",
+      "subject": "Subject 35",
+      "school_class": "Students group 2_1"
+    },
+    {
+      "teacher": "Teacher 16",
+      "subject": "Subject 36__d4",
+      "school_class": "Students group 2_1"
+    },
+    {
+      "teacher": "Teacher 16",
+      "subject": "Subject 37",
+      "school_class": "Students group 2_1"
+    },
+    {
+      "teacher": "Teacher 9",
+      "subject": "Subject 69",
+      "school_class": "Students group 2_1"
+    },
+    {
+      "teacher": "Teacher 16",
+      "subject": "Subject 71",
+      "school_class": "Students group 2_1"
+    },
+    {
+      "teacher": "Teacher 17",
+      "subject": "Subject 82__d3",
+      "school_class": "Students group 2_1"
+    },
+    {
+      "teacher": "Teacher 22",
+      "subject": "Subject 101",
+      "school_class": "Students group 2_2"
+    },
+    {
+      "teacher": "Teacher 20",
+      "subject": "Subject 22__d3",
+      "school_class": "Students group 2_2"
+    },
+    {
+      "teacher": "Teacher 20",
+      "subject": "Subject 42__d4",
+      "school_class": "Students group 2_2"
+    },
+    {
+      "teacher": "Teacher 20",
+      "subject": "Subject 43",
+      "school_class": "Students group 2_2"
+    },
+    {
+      "teacher": "Teacher 18",
+      "subject": "Subject 55__d2",
+      "school_class": "Students group 2_2"
+    },
+    {
+      "teacher": "Teacher 18",
+      "subject": "Subject 56",
+      "school_class": "Students group 2_2"
+    },
+    {
+      "teacher": "Teacher 18",
+      "subject": "Subject 58__d2",
+      "school_class": "Students group 2_2"
+    },
+    {
+      "teacher": "Teacher 18",
+      "subject": "Subject 59",
+      "school_class": "Students group 2_2"
+    },
+    {
+      "teacher": "Teacher 18",
+      "subject": "Subject 70__d2",
+      "school_class": "Students group 2_2"
+    },
+    {
+      "teacher": "Teacher 22",
+      "subject": "Subject 81__d2",
+      "school_class": "Students group 2_2"
+    },
+    {
+      "teacher": "Teacher 9",
+      "subject": "Subject 20",
+      "school_class": "Students group 2_3"
+    },
+    {
+      "teacher": "Teacher 24",
+      "subject": "Subject 33__d4",
+      "school_class": "Students group 2_3"
+    },
+    {
+      "teacher": "Teacher 24",
+      "subject": "Subject 34",
+      "school_class": "Students group 2_3"
+    },
+    {
+      "teacher": "Teacher 16",
+      "subject": "Subject 53__d3",
+      "school_class": "Students group 2_3"
+    },
+    {
+      "teacher": "Teacher 9",
+      "subject": "Subject 65__d2",
+      "school_class": "Students group 2_3"
+    },
+    {
+      "teacher": "Teacher 24",
+      "subject": "Subject 66",
+      "school_class": "Students group 2_3"
+    },
+    {
+      "teacher": "Teacher 24",
+      "subject": "Subject 68__d3",
+      "school_class": "Students group 2_3"
+    },
+    {
+      "teacher": "Teacher 19",
+      "subject": "Subject 105__d5",
+      "school_class": "Students group 2_4"
+    },
+    {
+      "teacher": "Teacher 1",
+      "subject": "Subject 30__d3",
+      "school_class": "Students group 2_4"
+    },
+    {
+      "teacher": "Teacher 1",
+      "subject": "Subject 31",
+      "school_class": "Students group 2_4"
+    },
+    {
+      "teacher": "Teacher 11",
+      "subject": "Subject 44__d4",
+      "school_class": "Students group 2_4"
+    },
+    {
+      "teacher": "Teacher 23",
+      "subject": "Subject 45",
+      "school_class": "Students group 2_4"
+    },
+    {
+      "teacher": "Teacher 23",
+      "subject": "Subject 52",
+      "school_class": "Students group 2_4"
+    },
+    {
+      "teacher": "Teacher 16",
+      "subject": "Subject 76__d4",
+      "school_class": "Students group 2_4"
+    },
+    {
+      "teacher": "Teacher 23",
+      "subject": "Subject 77",
+      "school_class": "Students group 2_4"
+    },
+    {
+      "teacher": "Teacher 3",
+      "subject": "Subject 104",
+      "school_class": "Students group 2_5"
+    },
+    {
+      "teacher": "Teacher 10",
+      "subject": "Subject 106",
+      "school_class": "Students group 2_5"
+    },
+    {
+      "teacher": "Teacher 10",
+      "subject": "Subject 107",
+      "school_class": "Students group 2_5"
+    },
+    {
+      "teacher": "Teacher 25",
+      "subject": "Subject 15",
+      "school_class": "Students group 2_5"
+    },
+    {
+      "teacher": "Teacher 13",
+      "subject": "Subject 26__d5",
+      "school_class": "Students group 2_5"
+    },
+    {
+      "teacher": "Teacher 3",
+      "subject": "Subject 27",
+      "school_class": "Students group 2_5"
+    },
+    {
+      "teacher": "Teacher 21",
+      "subject": "Subject 61",
+      "school_class": "Students group 2_5"
+    },
+    {
+      "teacher": "Teacher 10",
+      "subject": "Subject 62__d2",
+      "school_class": "Students group 2_5"
+    }
+  ]
+}

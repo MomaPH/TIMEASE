@@ -34,7 +34,11 @@ export function useSession() {
       if (stored) {
         const cachedTimetable = localStorage.getItem(timetableKey(stored))
         if (cachedTimetable) {
-          try { setTimetableState(JSON.parse(cachedTimetable)) } catch {}
+          try {
+            setTimetableState(JSON.parse(cachedTimetable))
+          } catch (error) {
+            setSessionError(getErrorMessage(error, "Cache local invalide pour l'emploi du temps."))
+          }
         }
 
         setSessionId(stored)
@@ -51,7 +55,8 @@ export function useSession() {
           }
           setSessionError(null)
           return
-        } catch {
+        } catch (error) {
+          setSessionError(getErrorMessage(error, 'Session locale expirée. Création d’une nouvelle session.'))
           // Fall through to create a new session.
         }
       }
@@ -86,7 +91,12 @@ export function useSession() {
     setSchoolData(newData)
     const sid = localStorage.getItem(SESSION_KEY)
     if (sid) {
-      try { await apiUpdateSchoolData(sid, newData) } catch {}
+      try {
+        await apiUpdateSchoolData(sid, newData)
+        setSessionError(null)
+      } catch (error) {
+        setSessionError(getErrorMessage(error, 'Synchronisation des données école impossible.'))
+      }
     }
   }, [])
 
@@ -94,7 +104,12 @@ export function useSession() {
     setAssignments(newAssignments)
     const sid = localStorage.getItem(SESSION_KEY)
     if (sid) {
-      try { await apiUpdateAssignments(sid, newAssignments) } catch {}
+      try {
+        await apiUpdateAssignments(sid, newAssignments)
+        setSessionError(null)
+      } catch (error) {
+        setSessionError(getErrorMessage(error, 'Synchronisation des affectations impossible.'))
+      }
     }
   }, [])
 
@@ -113,8 +128,11 @@ export function useSession() {
       .then(data => {
         setSchoolData(data.school_data || {})
         setAssignments(data.teacher_assignments || [])
+        setSessionError(null)
       })
-      .catch(() => {})
+      .catch(error => {
+        setSessionError(getErrorMessage(error, 'Rafraîchissement de session impossible.'))
+      })
   }, [sessionId])
 
   const resetSession = useCallback(async () => {

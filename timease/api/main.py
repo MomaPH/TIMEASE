@@ -47,13 +47,14 @@ def _resolve_mode_timeout(
 def _solver_flags_for_mode(solve_mode: str) -> tuple[bool, bool]:
     mode = (solve_mode or "balanced").strip().lower()
     if mode == "fast":
-        return (False, True)  # optimize_soft_constraints, stop_at_first_solution
+        return (False, False)  # optimize_soft_constraints, stop_at_first_solution
     return (True, False)
 
 
 def _enforce_room_conflicts_for_mode(solve_mode: str) -> bool:
-    mode = (solve_mode or "balanced").strip().lower()
-    return mode != "fast"
+    # Product decision: solver focuses on pedagogical scheduling
+    # (class/teacher/time). Room assignment is handled manually by schools.
+    return False
 
 
 _SUPPORTED_HARD_CATEGORIES: set[str] = {
@@ -75,6 +76,118 @@ _SUPPORTED_HARD_CATEGORIES: set[str] = {
     "teacher_subject_declared",
     "teacher_calendar_declared",
 }
+
+
+def _constraint_parameter_errors(constraints: list) -> list[str]:
+    errors: list[str] = []
+    for c in constraints:
+        category = str(getattr(c, "category", "") or "")
+        params = getattr(c, "parameters", {}) or {}
+        cid = str(getattr(c, "id", "") or "?")
+        if not isinstance(params, dict):
+            errors.append(
+                f"Contrainte '{category}' (id={cid}) invalide: paramètres non valides."
+            )
+            continue
+
+        if category == "max_consecutive":
+            if "max_hours" not in params:
+                errors.append(
+                    f"Contrainte '{category}' (id={cid}) invalide: champ 'max_hours' requis."
+                )
+            else:
+                try:
+                    if int(params["max_hours"]) <= 0:
+                        raise ValueError
+                except Exception:
+                    errors.append(
+                        f"Contrainte '{category}' (id={cid}) invalide: 'max_hours' doit être un entier > 0."
+                    )
+        elif category == "min_sessions_per_day":
+            if "min_sessions" not in params:
+                errors.append(
+                    f"Contrainte '{category}' (id={cid}) invalide: champ 'min_sessions' requis."
+                )
+            else:
+                try:
+                    if int(params["min_sessions"]) <= 0:
+                        raise ValueError
+                except Exception:
+                    errors.append(
+                        f"Contrainte '{category}' (id={cid}) invalide: 'min_sessions' doit être un entier > 0."
+                    )
+        elif category in {"subject_on_days", "subject_not_on_days"}:
+            subject = str(params.get("subject", "")).strip()
+            days = params.get("days")
+            if not subject:
+                errors.append(
+                    f"Contrainte '{category}' (id={cid}) invalide: champ 'subject' requis."
+                )
+            if not isinstance(days, list) or len(days) == 0:
+                errors.append(
+                    f"Contrainte '{category}' (id={cid}) invalide: champ 'days' doit être une liste non vide."
+                )
+        elif category == "subject_not_last_slot":
+            subject = str(params.get("subject", "")).strip()
+            if not subject:
+                errors.append(
+                    f"Contrainte '{category}' (id={cid}) invalide: champ 'subject' requis."
+                )
+        elif category == "min_break_between":
+            subject = str(params.get("subject", "")).strip()
+            has_slots = "min_break_slots" in params
+            has_minutes = "min_break_minutes" in params
+            if not subject:
+                errors.append(
+                    f"Contrainte '{category}' (id={cid}) invalide: champ 'subject' requis."
+                )
+            if not has_slots and not has_minutes:
+                errors.append(
+                    f"Contrainte '{category}' (id={cid}) invalide: champ 'min_break_slots' ou 'min_break_minutes' requis."
+                )
+        elif category == "fixed_assignment":
+            required = ("class", "subject", "day", "slot_start")
+            missing = [k for k in required if not str(params.get(k, "")).strip()]
+            if missing:
+                errors.append(
+                    f"Contrainte '{category}' (id={cid}) invalide: champs requis manquants {', '.join(missing)}."
+                )
+        elif category == "start_time":
+            if not str(params.get("hour", "")).strip():
+                errors.append(
+                    f"Contrainte '{category}' (id={cid}) invalide: champ 'hour' requis."
+                )
+        elif category == "day_off":
+            if not str(params.get("day", "")).strip():
+                errors.append(
+                    f"Contrainte '{category}' (id={cid}) invalide: champ 'day' requis."
+                )
+            if not str(params.get("session", "")).strip():
+                errors.append(
+                    f"Contrainte '{category}' (id={cid}) invalide: champ 'session' requis."
+                )
+        elif category == "teacher_time_preference":
+            if not str(params.get("teacher", "")).strip():
+                errors.append(
+                    f"Contrainte '{category}' (id={cid}) invalide: champ 'teacher' requis."
+                )
+            pref = str(params.get("preferred_session", "")).strip()
+            if pref not in {"Matin", "Après-midi", "Apres-midi"}:
+                errors.append(
+                    f"Contrainte '{category}' (id={cid}) invalide: 'preferred_session' doit être 'Matin' ou 'Après-midi'."
+                )
+        elif category == "teacher_day_off":
+            if not str(params.get("teacher", "")).strip() or not str(params.get("day", "")).strip():
+                errors.append(
+                    f"Contrainte '{category}' (id={cid}) invalide: champs 'teacher' et 'day' requis."
+                )
+        elif category == "heavy_subjects_morning":
+            subjects = params.get("subjects")
+            if not isinstance(subjects, list) or len(subjects) == 0:
+                errors.append(
+                    f"Contrainte '{category}' (id={cid}) invalide: champ 'subjects' doit être une liste non vide."
+                )
+    return errors
 
 
 def _unsupported_hard_constraints(constraints: list) -> list[str]:
@@ -327,6 +440,37 @@ def _build_job_report(
     }
 
 
+def _build_solve_diagnostics(
+    *,
+    request_id: str,
+    mode: str,
+    requested_timeout_seconds: int,
+    adaptive_timeout_seconds: int | None,
+    effective_timeout_seconds: int | None,
+    optimize_soft_constraints: bool | None,
+    stop_at_first_solution: bool | None,
+    enforce_room_conflicts: bool | None,
+    api_wall_time_seconds: float | None = None,
+    solver: dict | None = None,
+) -> dict:
+    diagnostics = {
+        "request_id": request_id,
+        "mode": mode,
+        "requested_timeout_seconds": requested_timeout_seconds,
+        "adaptive_timeout_seconds": adaptive_timeout_seconds,
+        "effective_timeout_seconds": effective_timeout_seconds,
+        "optimize_soft_constraints": optimize_soft_constraints,
+        "stop_at_first_solution": stop_at_first_solution,
+        "enforce_room_conflicts": enforce_room_conflicts,
+        "room_fallback_retry_used": False,
+    }
+    if api_wall_time_seconds is not None:
+        diagnostics["api_wall_time_seconds"] = api_wall_time_seconds
+    if solver is not None:
+        diagnostics["solver"] = solver
+    return diagnostics
+
+
 def _report_from_worker_payload(payload: dict, job: dict) -> dict:
     status = str(payload.get("status", "")).strip().upper()
     conflict_summary = str(payload.get("conflict_summary", "") or "").strip()
@@ -336,6 +480,9 @@ def _report_from_worker_payload(payload: dict, job: dict) -> dict:
         "effective_timeout_seconds": job.get("effective_timeout_seconds"),
         "solve_time_seconds": payload.get("solve_time"),
     }
+    payload_diagnostics = payload.get("diagnostics")
+    if isinstance(payload_diagnostics, dict):
+        diagnostics.update(payload_diagnostics)
 
     if status == "OPTIMAL":
         return _build_job_report(
@@ -713,6 +860,7 @@ def create_job(sid: str, payload: dict):
         adaptive_timeout=adaptive_timeout,
     )
     optimize_soft_constraints, stop_at_first_solution = _solver_flags_for_mode(solve_mode)
+    enforce_room_conflicts = _enforce_room_conflicts_for_mode(solve_mode)
 
     existing_job_ids = {str(j.get("id", "")) for j in jobs}
     job_id = _new_short_id(existing_job_ids, 10)
@@ -728,6 +876,7 @@ def create_job(sid: str, payload: dict):
         "effective_timeout_seconds": effective_timeout,
         "optimize_soft_constraints": optimize_soft_constraints,
         "stop_at_first_solution": stop_at_first_solution,
+        "enforce_room_conflicts": enforce_room_conflicts,
         "created_at": now,
         "started_at": now,
         "finished_at": None,
@@ -747,8 +896,10 @@ def create_job(sid: str, payload: dict):
             "requested_timeout_seconds": requested_timeout,
             "adaptive_timeout_seconds": adaptive_timeout,
             "effective_timeout_seconds": effective_timeout,
+            "request_id": request_id,
             "optimize_soft_constraints": optimize_soft_constraints,
             "stop_at_first_solution": stop_at_first_solution,
+            "enforce_room_conflicts": enforce_room_conflicts,
         }, out_q),
         daemon=True,
     )
@@ -855,22 +1006,32 @@ async def upload_file(sid: str, file: UploadFile = File(...)):
         try:
             from timease.io.excel_import import read_template
             school_data_obj, errors = read_template(tmp_path)
-            if school_data_obj and not errors:
-                sd_dict = dataclasses.asdict(school_data_obj)
-                sessions[sid]["school_data"] = sd_dict
-                sessions[sid]["teacher_assignments"] = [
-                    {"teacher": ta.teacher, "subject": ta.subject, "school_class": ta.school_class}
-                    for ta in school_data_obj.teacher_assignments
-                ]
-                os.unlink(tmp_path)
-                return {
-                    "type":        "direct_import",
-                    "success":     True,
-                    "school_data": sessions[sid]["school_data"],
-                    "teacher_assignments": sessions[sid]["teacher_assignments"],
-                }
-        except Exception:
-            pass
+        except Exception as exc:
+            os.unlink(tmp_path)
+            logger.exception("Excel import failed sid=%s filename=%s", sid, file.filename)
+            raise HTTPException(400, f"Import Excel impossible: {str(exc)}") from exc
+
+        if errors:
+            os.unlink(tmp_path)
+            raise HTTPException(400, "Import Excel invalide: " + " | ".join(errors[:5]))
+
+        if school_data_obj:
+            sd_dict = dataclasses.asdict(school_data_obj)
+            sessions[sid]["school_data"] = sd_dict
+            sessions[sid]["teacher_assignments"] = [
+                {"teacher": ta.teacher, "subject": ta.subject, "school_class": ta.school_class}
+                for ta in school_data_obj.teacher_assignments
+            ]
+            os.unlink(tmp_path)
+            return {
+                "type":        "direct_import",
+                "success":     True,
+                "school_data": sessions[sid]["school_data"],
+                "teacher_assignments": sessions[sid]["teacher_assignments"],
+            }
+
+        os.unlink(tmp_path)
+        raise HTTPException(400, "Import Excel impossible: aucune donnée valide détectée.")
 
     from timease.io.file_parser import extract_content
     text, ftype = extract_content(tmp_path)
@@ -940,7 +1101,7 @@ def _run_solver_worker(payload: dict, out_q: "multiprocessing.Queue") -> None:
         timeout = int(payload["effective_timeout_seconds"])
         optimize_soft_constraints = bool(payload.get("optimize_soft_constraints", True))
         stop_at_first_solution = bool(payload.get("stop_at_first_solution", False))
-        enforce_room_conflicts = bool(payload.get("enforce_room_conflicts", True))
+        enforce_room_conflicts = bool(payload.get("enforce_room_conflicts", False))
 
         school_obj = SchoolData(
             school=School(
@@ -956,13 +1117,14 @@ def _run_solver_worker(payload: dict, out_q: "multiprocessing.Queue") -> None:
             curriculum=[CurriculumEntry(**_norm_curriculum(e)) for e in sd.get("curriculum", [])],
             constraints=[Constraint(**_norm_constraint(c)) for c in sd.get("constraints", [])],
             teacher_assignments=[
-                TeacherAssignment(**_pick(a, ["teacher", "subject", "school_class"]))
+                TeacherAssignment(**_pick(a, ["teacher", "subject", "school_class", "room"]))
                 for a in ta
             ],
         )
 
         validation_errors = school_obj.validate()
         validation_errors.extend(_unsupported_hard_constraints(school_obj.constraints))
+        validation_errors.extend(_constraint_parameter_errors(school_obj.constraints))
         if validation_errors:
             summary = "**Erreurs de validation :**\n" + "\n".join(f"- {e}" for e in validation_errors)
             out_q.put({
@@ -1009,17 +1171,17 @@ def _run_solver_worker(payload: dict, out_q: "multiprocessing.Queue") -> None:
                 "warnings": result.warnings,
                 "unscheduled": result.unscheduled_sessions,
                 "unscheduled_groups": unscheduled_grouped,
-                "diagnostics": {
-                    "mode": payload.get("solve_mode", "balanced"),
-                    "requested_timeout_seconds": payload.get("requested_timeout_seconds", 0),
-                    "adaptive_timeout_seconds": payload.get("adaptive_timeout_seconds", timeout),
-                    "effective_timeout_seconds": timeout,
-                    "optimize_soft_constraints": optimize_soft_constraints,
-                    "stop_at_first_solution": stop_at_first_solution,
-                    "enforce_room_conflicts": enforce_room_conflicts,
-                    "room_fallback_retry_used": False,
-                    "api_wall_time_seconds": api_wall_time,
-                },
+                "diagnostics": _build_solve_diagnostics(
+                    request_id=str(payload.get("request_id", "") or ""),
+                    mode=str(payload.get("solve_mode", "balanced")),
+                    requested_timeout_seconds=int(payload.get("requested_timeout_seconds", 0) or 0),
+                    adaptive_timeout_seconds=int(payload.get("adaptive_timeout_seconds", timeout) or timeout),
+                    effective_timeout_seconds=timeout,
+                    optimize_soft_constraints=optimize_soft_constraints,
+                    stop_at_first_solution=stop_at_first_solution,
+                    enforce_room_conflicts=enforce_room_conflicts,
+                    api_wall_time_seconds=api_wall_time,
+                ),
             })
             return
 
@@ -1038,17 +1200,17 @@ def _run_solver_worker(payload: dict, out_q: "multiprocessing.Queue") -> None:
                     "Limite de calcul atteinte avant de trouver une solution. "
                     "Essayez de simplifier certaines contraintes dures ou de relancer."
                 ),
-                "diagnostics": {
-                    "mode": payload.get("solve_mode", "balanced"),
-                    "requested_timeout_seconds": payload.get("requested_timeout_seconds", 0),
-                    "adaptive_timeout_seconds": payload.get("adaptive_timeout_seconds", timeout),
-                    "effective_timeout_seconds": timeout,
-                    "optimize_soft_constraints": optimize_soft_constraints,
-                    "stop_at_first_solution": stop_at_first_solution,
-                    "enforce_room_conflicts": enforce_room_conflicts,
-                    "room_fallback_retry_used": False,
-                    "api_wall_time_seconds": api_wall_time,
-                },
+                "diagnostics": _build_solve_diagnostics(
+                    request_id=str(payload.get("request_id", "") or ""),
+                    mode=str(payload.get("solve_mode", "balanced")),
+                    requested_timeout_seconds=int(payload.get("requested_timeout_seconds", 0) or 0),
+                    adaptive_timeout_seconds=int(payload.get("adaptive_timeout_seconds", timeout) or timeout),
+                    effective_timeout_seconds=timeout,
+                    optimize_soft_constraints=optimize_soft_constraints,
+                    stop_at_first_solution=stop_at_first_solution,
+                    enforce_room_conflicts=enforce_room_conflicts,
+                    api_wall_time_seconds=api_wall_time,
+                ),
             })
             return
 
@@ -1056,24 +1218,35 @@ def _run_solver_worker(payload: dict, out_q: "multiprocessing.Queue") -> None:
             "status": "INFEASIBLE",
             "solved": False,
             "conflict_summary": "Aucune solution trouvée avec les données actuelles.",
-            "diagnostics": {
-                "mode": payload.get("solve_mode", "balanced"),
-                "requested_timeout_seconds": payload.get("requested_timeout_seconds", 0),
-                "adaptive_timeout_seconds": payload.get("adaptive_timeout_seconds", timeout),
-                "effective_timeout_seconds": timeout,
-                "optimize_soft_constraints": optimize_soft_constraints,
-                "stop_at_first_solution": stop_at_first_solution,
-                "enforce_room_conflicts": enforce_room_conflicts,
-                "room_fallback_retry_used": False,
-                "api_wall_time_seconds": api_wall_time,
-            },
+            "diagnostics": _build_solve_diagnostics(
+                request_id=str(payload.get("request_id", "") or ""),
+                mode=str(payload.get("solve_mode", "balanced")),
+                requested_timeout_seconds=int(payload.get("requested_timeout_seconds", 0) or 0),
+                adaptive_timeout_seconds=int(payload.get("adaptive_timeout_seconds", timeout) or timeout),
+                effective_timeout_seconds=timeout,
+                optimize_soft_constraints=optimize_soft_constraints,
+                stop_at_first_solution=stop_at_first_solution,
+                enforce_room_conflicts=enforce_room_conflicts,
+                api_wall_time_seconds=api_wall_time,
+            ),
         })
     except Exception as exc:
+        logger.exception("Solver worker failed request_id=%s", payload.get("request_id", "-"))
         out_q.put({
             "status": "ERROR",
             "solved": False,
             "errors": [str(exc)],
             "conflict_summary": str(exc),
+            "diagnostics": _build_solve_diagnostics(
+                request_id=str(payload.get("request_id", "") or ""),
+                mode=str(payload.get("solve_mode", "balanced")),
+                requested_timeout_seconds=int(payload.get("requested_timeout_seconds", 0) or 0),
+                adaptive_timeout_seconds=int(payload.get("adaptive_timeout_seconds", 0) or 0),
+                effective_timeout_seconds=int(payload.get("effective_timeout_seconds", 0) or 0),
+                optimize_soft_constraints=bool(payload.get("optimize_soft_constraints", True)),
+                stop_at_first_solution=bool(payload.get("stop_at_first_solution", False)),
+                enforce_room_conflicts=bool(payload.get("enforce_room_conflicts", False)),
+            ),
         })
 
 
@@ -1099,6 +1272,7 @@ def _poll_jobs(sid: str) -> None:
             if not out_q.empty():
                 payload = out_q.get_nowait()
         except Exception:
+            logger.exception("Reading worker queue failed sid=%s job_id=%s", sid, job.get("id", ""))
             payload = None
 
         if payload is None:
@@ -1171,18 +1345,34 @@ def solve(sid: str, payload: dict = {}):
             curriculum=[CurriculumEntry(**_norm_curriculum(e)) for e in sd.get("curriculum", [])],
             constraints=[Constraint(**_norm_constraint(c)) for c in sd.get("constraints", [])],
             teacher_assignments=[
-                TeacherAssignment(**_pick(a, ["teacher", "subject", "school_class"]))
+                TeacherAssignment(**_pick(a, ["teacher", "subject", "school_class", "room"]))
                 for a in ta
             ],
         )
 
         validation_errors = school_obj.validate()
         validation_errors.extend(_unsupported_hard_constraints(school_obj.constraints))
+        validation_errors.extend(_constraint_parameter_errors(school_obj.constraints))
         if validation_errors:
             conflict_summary = "**Erreurs de validation :**\n" + "\n".join(
                 f"- {e}" for e in validation_errors
             )
-            return {"status": "INFEASIBLE", "solved": False, "conflict_summary": conflict_summary, "errors": validation_errors}
+            return {
+                "status": "INFEASIBLE",
+                "solved": False,
+                "conflict_summary": conflict_summary,
+                "errors": validation_errors,
+                "diagnostics": _build_solve_diagnostics(
+                    request_id=request_id,
+                    mode=solve_mode,
+                    requested_timeout_seconds=requested_timeout,
+                    adaptive_timeout_seconds=None,
+                    effective_timeout_seconds=None,
+                    optimize_soft_constraints=None,
+                    stop_at_first_solution=None,
+                    enforce_room_conflicts=None,
+                ),
+            }
 
         estimate = _estimate_solve_complexity(sd, ta)
         adaptive_timeout = int(estimate.get("suggested_timeout_seconds", 120))
@@ -1248,16 +1438,18 @@ def solve(sid: str, payload: dict = {}):
                 "unscheduled":   result.unscheduled_sessions,
                 "unscheduled_groups": unscheduled_grouped,
                 "diagnostics": {
-                    "request_id": request_id,
-                    "mode": solve_mode,
-                    "requested_timeout_seconds": requested_timeout,
-                    "adaptive_timeout_seconds": adaptive_timeout,
-                    "effective_timeout_seconds": effective_timeout,
-                    "optimize_soft_constraints": optimize_soft_constraints,
-                    "stop_at_first_solution": stop_at_first_solution,
-                    "enforce_room_conflicts": enforce_room_conflicts,
-                    "room_fallback_retry_used": False,
-                    "api_wall_time_seconds": api_wall_time,
+                    **_build_solve_diagnostics(
+                        request_id=request_id,
+                        mode=solve_mode,
+                        requested_timeout_seconds=requested_timeout,
+                        adaptive_timeout_seconds=adaptive_timeout,
+                        effective_timeout_seconds=effective_timeout,
+                        optimize_soft_constraints=optimize_soft_constraints,
+                        stop_at_first_solution=stop_at_first_solution,
+                        enforce_room_conflicts=enforce_room_conflicts,
+                        api_wall_time_seconds=api_wall_time,
+                        solver=result.solver_diagnostics,
+                    )
                 },
             }
             sessions[sid]["timetable_result"] = timetable
@@ -1305,6 +1497,19 @@ def solve(sid: str, payload: dict = {}):
                 "conflict_summary": summary,
                 "warnings": result.warnings,
                 "estimate": estimate,
+                "solver_diagnostics": result.solver_diagnostics,
+                "diagnostics": _build_solve_diagnostics(
+                    request_id=request_id,
+                    mode=solve_mode,
+                    requested_timeout_seconds=requested_timeout,
+                    adaptive_timeout_seconds=adaptive_timeout,
+                    effective_timeout_seconds=effective_timeout,
+                    optimize_soft_constraints=optimize_soft_constraints,
+                    stop_at_first_solution=stop_at_first_solution,
+                    enforce_room_conflicts=enforce_room_conflicts,
+                    api_wall_time_seconds=api_wall_time,
+                    solver=result.solver_diagnostics,
+                ),
             }
 
         # Infeasible — run conflict analyzer
@@ -1318,7 +1523,11 @@ def solve(sid: str, payload: dict = {}):
             conflict_summary = _format_conflicts_fr(reports)
             structured_reports = [_dc.asdict(r) for r in reports]
         except Exception:
-            pass
+            logger.exception(
+                "Conflict analyzer failed sid=%s request_id=%s",
+                sid,
+                request_id or "-",
+            )
 
         sessions[sid]["last_conflict_reports"] = structured_reports
 
@@ -1342,22 +1551,43 @@ def solve(sid: str, payload: dict = {}):
             "solved":            False,
             "conflict_summary":  conflict_summary,
             "conflict_reports":  structured_reports,
-            "diagnostics": {
-                "request_id": request_id,
-                "mode": solve_mode,
-                "requested_timeout_seconds": requested_timeout,
-                "adaptive_timeout_seconds": adaptive_timeout,
-                "effective_timeout_seconds": effective_timeout,
-                "optimize_soft_constraints": optimize_soft_constraints,
-                "stop_at_first_solution": stop_at_first_solution,
-                "enforce_room_conflicts": enforce_room_conflicts,
-                "room_fallback_retry_used": False,
-                "api_wall_time_seconds": api_wall_time,
-            },
+            "diagnostics": _build_solve_diagnostics(
+                request_id=request_id,
+                mode=solve_mode,
+                requested_timeout_seconds=requested_timeout,
+                adaptive_timeout_seconds=adaptive_timeout,
+                effective_timeout_seconds=effective_timeout,
+                optimize_soft_constraints=optimize_soft_constraints,
+                stop_at_first_solution=stop_at_first_solution,
+                enforce_room_conflicts=enforce_room_conflicts,
+                api_wall_time_seconds=api_wall_time,
+                solver=result.solver_diagnostics,
+            ),
         }
 
     except Exception as exc:
-        return {"status": "ERROR", "solved": False, "errors": [str(exc)], "conflict_summary": str(exc)}
+        logger.exception(
+            "Solve endpoint failed sid=%s request_id=%s mode=%s",
+            sid,
+            request_id or "-",
+            solve_mode,
+        )
+        return {
+            "status": "ERROR",
+            "solved": False,
+            "errors": [str(exc)],
+            "conflict_summary": str(exc),
+            "diagnostics": _build_solve_diagnostics(
+                request_id=request_id,
+                mode=solve_mode,
+                requested_timeout_seconds=requested_timeout,
+                adaptive_timeout_seconds=None,
+                effective_timeout_seconds=None,
+                optimize_soft_constraints=None,
+                stop_at_first_solution=None,
+                enforce_room_conflicts=None,
+            ),
+        }
 
 
 # ── Export ─────────────────────────────────────────────────────────────────────

@@ -333,6 +333,27 @@ class TestRoomTypeMatch:
                 )
 
 
+class TestRoomPreassignment:
+    def test_preassigned_room_is_honored(self) -> None:
+        sd = _make_school()
+        target_room = sd.rooms[0].name
+        sd.teacher_assignments = [
+            TeacherAssignment("Prof Maths",    "Mathématiques", "6ème", room=target_room),
+            TeacherAssignment("Prof Français", "Français",      "6ème"),
+            TeacherAssignment("Prof SVT",      "SVT",           "6ème"),
+            TeacherAssignment("Prof Maths",    "Mathématiques", "5ème"),
+            TeacherAssignment("Prof Français", "Français",      "5ème"),
+            TeacherAssignment("Prof SVT",      "SVT",           "5ème"),
+        ]
+        result = TimetableSolver().solve(sd, timeout_seconds=FAST_TIMEOUT)
+        assert result.solved is True
+        for a in result.assignments:
+            if a.school_class == "6ème" and a.subject == "Mathématiques":
+                assert a.room == target_room, (
+                    f"Preassigned room '{target_room}' not honored: got '{a.room}'"
+                )
+
+
 # ---------------------------------------------------------------------------
 # 10. test_impossible_scenario
 # ---------------------------------------------------------------------------
@@ -353,6 +374,21 @@ class TestImpossibleScenario:
         )
         result = TimetableSolver().solve(sd, timeout_seconds=5)
         assert result.solved is False
+
+    def test_timeout_in_fast_mode_returns_partial_via_greedy_fallback(self) -> None:
+        """Fast feasibility mode should emit partial assignments when CP-SAT times out."""
+        sd = _make_school()
+        result = TimetableSolver().solve(
+            sd,
+            timeout_seconds=0,
+            optimize_soft_constraints=False,
+            stop_at_first_solution=True,
+        )
+        assert result.solved is False
+        assert result.partial is True
+        assert len(result.assignments) > 0
+        assert any("glouton" in w.lower() for w in result.warnings)
+        assert isinstance(result.solver_diagnostics, dict)
 
     def test_conflicts_returned_when_unsolved(self) -> None:
         """When infeasible, conflicts list is populated."""
@@ -625,6 +661,47 @@ class TestMinSessionsPerDay:
         sd = _make_school(constraints=[])
         result = TimetableSolver().solve(sd, timeout_seconds=FAST_TIMEOUT)
         assert result.solved  # must still solve
+
+
+# ---------------------------------------------------------------------------
+# 12d. test_max_consecutive (H4)
+# ---------------------------------------------------------------------------
+
+class TestMaxConsecutive:
+    def test_h4_limits_daily_consecutive_load(self) -> None:
+        """H4 max_hours=2 should prevent any class from exceeding 2 consecutive hours."""
+        h4 = Constraint(
+            id="H4",
+            type="hard",
+            category="max_consecutive",
+            description_fr="Maximum 2 heures consécutives.",
+            parameters={"max_hours": 2},
+        )
+        sd = _make_school(constraints=[h4])
+        result = TimetableSolver().solve(sd, timeout_seconds=FAST_TIMEOUT)
+        assert result.solved
+
+        for cls in sd.classes:
+            cls_assignments = [a for a in result.assignments if a.school_class == cls.name]
+            by_day: dict[str, list[Assignment]] = {}
+            for a in cls_assignments:
+                by_day.setdefault(a.day, []).append(a)
+            for day, rows in by_day.items():
+                rows_sorted = sorted(rows, key=lambda a: _to_min(a.start_time))
+                run_minutes = 0
+                prev_end = None
+                for a in rows_sorted:
+                    a_start = _to_min(a.start_time)
+                    a_end = _to_min(a.end_time)
+                    duration = a_end - a_start
+                    if prev_end is not None and a_start == prev_end:
+                        run_minutes += duration
+                    else:
+                        run_minutes = duration
+                    prev_end = a_end
+                    assert run_minutes <= 120, (
+                        f"{cls.name} exceeds H4 on {day}: {run_minutes} minutes consecutives"
+                    )
 
 
 # ---------------------------------------------------------------------------

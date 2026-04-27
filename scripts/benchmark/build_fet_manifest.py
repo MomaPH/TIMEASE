@@ -61,6 +61,12 @@ def main() -> int:
         default=0,
         help="Optional cap on number of cases (0 = all)",
     )
+    parser.add_argument(
+        "--exclude-generated",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help="Exclude *_data_and_timetable.fet generated artifacts",
+    )
     args = parser.parse_args()
 
     input_dir = Path(args.input_dir)
@@ -70,6 +76,9 @@ def main() -> int:
     fet_files = sorted(input_dir.rglob("*.fet"))
     if not fet_files:
         raise SystemExit(f"No .fet files found under {input_dir}")
+
+    if args.exclude_generated:
+        fet_files = [p for p in fet_files if not p.name.endswith("_data_and_timetable.fet")]
 
     if args.max_cases > 0:
         fet_files = fet_files[: args.max_cases]

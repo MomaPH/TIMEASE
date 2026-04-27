@@ -343,10 +343,12 @@ def test_api_solve_mode_applies_timeout_cap_and_fast_flags(dakar_data: SchoolDat
 
     client = TestClient(app)
     sid = client.post("/api/session").json()["session_id"]
+    school_data = dataclasses.asdict(dakar_data)
+    school_data["constraints"] = []
     client.post(
         f"/api/session/{sid}/restore",
         json={
-            "school_data": dataclasses.asdict(dakar_data),
+            "school_data": school_data,
             "teacher_assignments": [
                 {
                     "teacher": ta.teacher,
@@ -380,7 +382,7 @@ def test_api_solve_mode_applies_timeout_cap_and_fast_flags(dakar_data: SchoolDat
     assert seen["timeout"] <= 60
     assert body_fast["effective_timeout_seconds"] <= 60
     assert seen_flags["optimize_soft_constraints"] is False
-    assert seen_flags["stop_at_first_solution"] is True
+    assert seen_flags["stop_at_first_solution"] is False
     assert seen_flags["enforce_room_conflicts"] is False
 
 
@@ -624,3 +626,133 @@ def test_file_parser_unknown_format(tmp_path: Path) -> None:
     assert "non supporté" in content.lower(), (
         f"Expected 'non supporté' in content, got: {content!r}"
     )
+
+
+def test_api_upload_excel_errors_are_exposed() -> None:
+    from fastapi.testclient import TestClient
+    from timease.api.main import app
+
+    client = TestClient(app)
+    sid = client.post("/api/session").json()["session_id"]
+    bad_content = b"not a real xlsx file"
+    res = client.post(
+        f"/api/session/{sid}/upload",
+        files={"file": ("bad.xlsx", bad_content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")},
+    )
+
+    assert res.status_code == 400
+    detail = str(res.json().get("detail", "")).lower()
+    assert "import excel" in detail
+
+
+def test_api_solve_timeout_includes_diagnostics(dakar_data: SchoolData, monkeypatch: pytest.MonkeyPatch) -> None:
+    from fastapi.testclient import TestClient
+    from timease.api.main import app
+    from timease.engine.models import SchoolData as EngineSchoolData, TimetableResult
+    from timease.engine.solver import TimetableSolver
+
+    def fake_solve(
+        self,
+        data,  # noqa: ANN001
+        timeout_seconds=30,
+        optimize_soft_constraints=True,
+        stop_at_first_solution=False,
+        enforce_room_conflicts=True,
+    ):
+        return TimetableResult(
+            assignments=[],
+            solved=False,
+            solve_time_seconds=float(max(1, timeout_seconds - 1)),
+            conflicts=[{"reason": "UNKNOWN"}],
+        )
+
+    monkeypatch.setattr(TimetableSolver, "solve", fake_solve)
+    monkeypatch.setattr(EngineSchoolData, "validate", lambda self: [])
+
+    client = TestClient(app)
+    sid = client.post("/api/session").json()["session_id"]
+    school_data = dataclasses.asdict(dakar_data)
+    school_data["constraints"] = []
+    client.post(
+        f"/api/session/{sid}/restore",
+        json={
+            "school_data": school_data,
+            "teacher_assignments": [
+                {
+                    "teacher": ta.teacher,
+                    "subject": ta.subject,
+                    "school_class": ta.school_class,
+                }
+                for ta in dakar_data.teacher_assignments
+            ],
+        },
+    )
+    res = client.post(
+        f"/api/session/{sid}/solve",
+        json={"mode": "fast", "request_id": "diag-timeout"},
+    )
+    assert res.status_code == 200
+    body = res.json()
+    assert body["status"] == "TIMEOUT"
+    assert isinstance(body.get("diagnostics"), dict)
+    assert body["diagnostics"]["request_id"] == "diag-timeout"
+    assert body["diagnostics"]["enforce_room_conflicts"] is False
+
+
+def test_api_solve_rejects_invalid_constraint_parameters() -> None:
+    from fastapi.testclient import TestClient
+    from timease.api.main import app
+
+    client = TestClient(app)
+    sid = client.post("/api/session").json()["session_id"]
+
+    client.put(
+        f"/api/session/{sid}/school_data",
+        json={
+            "name": "Test Invalid Constraint",
+            "city": "Dakar",
+            "academic_year": "2026-2027",
+            "base_unit_minutes": 60,
+            "days": [
+                {
+                    "name": "lundi",
+                    "sessions": [{"name": "Matin", "start_time": "08:00", "end_time": "12:00"}],
+                    "breaks": [],
+                }
+            ],
+            "classes": [{"name": "6e A", "level": "Collège", "student_count": 30}],
+            "teachers": [{"name": "Mme Test", "subjects": ["Mathématiques"], "max_hours_per_week": 10}],
+            "subjects": [{"name": "Mathématiques", "short_name": "MATH", "color": "#0d9488", "needs_room": False}],
+            "rooms": [],
+            "curriculum": [
+                {
+                    "school_class": "6e A",
+                    "subject": "Mathématiques",
+                    "total_minutes_per_week": 120,
+                    "sessions_per_week": 2,
+                    "minutes_per_session": 60,
+                }
+            ],
+            "constraints": [
+                {
+                    "id": "H4-invalid",
+                    "type": "hard",
+                    "category": "max_consecutive",
+                    "description_fr": "Max consécutif sans paramètre",
+                    "priority": 5,
+                    "parameters": {},
+                }
+            ],
+        },
+    )
+    client.put(
+        f"/api/session/{sid}/assignments",
+        json={"assignments": [{"teacher": "Mme Test", "subject": "Mathématiques", "school_class": "6e A"}]},
+    )
+
+    res = client.post(f"/api/session/{sid}/solve", json={"mode": "balanced", "request_id": "invalid-params"})
+    assert res.status_code == 200
+    body = res.json()
+    assert body["status"] == "INFEASIBLE"
+    details = " ".join(body.get("errors", []))
+    assert "max_hours" in details

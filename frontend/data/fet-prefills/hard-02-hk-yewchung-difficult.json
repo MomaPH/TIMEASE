@@ -1,0 +1,7295 @@
+{
+  "school": {
+    "name": "FET import: 2008-09-difficult",
+    "academic_year": "2026-2027",
+    "city": "Imported"
+  },
+  "timeslot_config": {
+    "days": [
+      {
+        "name": "Monday",
+        "sessions": [
+          {
+            "name": "Journée",
+            "start_time": "08:00",
+            "end_time": "17:00"
+          }
+        ],
+        "breaks": []
+      },
+      {
+        "name": "Tuesday",
+        "sessions": [
+          {
+            "name": "Journée",
+            "start_time": "08:00",
+            "end_time": "17:00"
+          }
+        ],
+        "breaks": []
+      },
+      {
+        "name": "Wednesday",
+        "sessions": [
+          {
+            "name": "Journée",
+            "start_time": "08:00",
+            "end_time": "17:00"
+          }
+        ],
+        "breaks": []
+      },
+      {
+        "name": "Thursday",
+        "sessions": [
+          {
+            "name": "Journée",
+            "start_time": "08:00",
+            "end_time": "17:00"
+          }
+        ],
+        "breaks": []
+      },
+      {
+        "name": "Friday",
+        "sessions": [
+          {
+            "name": "Journée",
+            "start_time": "08:00",
+            "end_time": "17:00"
+          }
+        ],
+        "breaks": []
+      }
+    ],
+    "base_unit_minutes": 60
+  },
+  "subjects": [
+    {
+      "name": "Art",
+      "short_name": "Art",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Art__d2",
+      "short_name": "Art__d2",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Biology",
+      "short_name": "Biology",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Biology__d2",
+      "short_name": "Biology__d2",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Business",
+      "short_name": "Business",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Business__d2",
+      "short_name": "Business__d2",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "CAS",
+      "short_name": "CAS",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Chemistry",
+      "short_name": "Chemistry",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Chemistry@Sapna_Lakhani",
+      "short_name": "Chemistry@Sa",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Chemistry@Tony_Crossan__d2",
+      "short_name": "Chemistry@To",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Chemistry__d2",
+      "short_name": "Chemistry__d",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Chinese",
+      "short_name": "Chinese",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Chinese__d2",
+      "short_name": "Chinese__d2",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "DT",
+      "short_name": "DT",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "DT__d2",
+      "short_name": "DT__d2",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Drama",
+      "short_name": "Drama",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Drama__d2",
+      "short_name": "Drama__d2",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "EE",
+      "short_name": "EE",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Economics",
+      "short_name": "Economics",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Economics__d2",
+      "short_name": "Economics__d",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "English",
+      "short_name": "English",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "English Lit.",
+      "short_name": "English Lit.",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "English Lit.__d2",
+      "short_name": "English Lit.",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Environ.Sys.",
+      "short_name": "Environ.Sys.",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Environ.Sys.__d2",
+      "short_name": "Environ.Sys.",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "French",
+      "short_name": "French",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "French__d2",
+      "short_name": "French__d2",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Geography",
+      "short_name": "Geography",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Geography__d2",
+      "short_name": "Geography__d",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Global Persp",
+      "short_name": "Global Persp",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Global Persp__d2",
+      "short_name": "Global Persp",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "History",
+      "short_name": "History",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "History__d2",
+      "short_name": "History__d2",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "IT",
+      "short_name": "IT",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "IT__d2",
+      "short_name": "IT__d2",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Math",
+      "short_name": "Math",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Math__d2",
+      "short_name": "Math__d2",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Music",
+      "short_name": "Music",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Music__d2",
+      "short_name": "Music__d2",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "PE",
+      "short_name": "PE",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "PE-Sen",
+      "short_name": "PE-Sen",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "PE-Sen__d2",
+      "short_name": "PE-Sen__d2",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "PSHE",
+      "short_name": "PSHE",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Physics",
+      "short_name": "Physics",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Physics@AUTO_Y11_Physics_2_Physics",
+      "short_name": "Physics@AUTO",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Physics@AUTO_Y11_Physics_2_Physics__d2",
+      "short_name": "Physics@AUTO",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Physics@Derek_Eyre",
+      "short_name": "Physics@Dere",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Physics@Derek_Eyre__d2",
+      "short_name": "Physics@Dere",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Physics__d2",
+      "short_name": "Physics__d2",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Pyschology",
+      "short_name": "Pyschology",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Pyschology__d2",
+      "short_name": "Pyschology__",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Science",
+      "short_name": "Science",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Science@Archana_Relan",
+      "short_name": "Science@Arch",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Science@Tony_Crossan__d2",
+      "short_name": "Science@Tony",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Science__d2",
+      "short_name": "Science__d2",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "TOK__d2",
+      "short_name": "TOK__d2",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Theatre",
+      "short_name": "Theatre",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Theatre__d2",
+      "short_name": "Theatre__d2",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Void",
+      "short_name": "Void",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Void@AUTO_Y10_Block_Void",
+      "short_name": "Void@AUTO_Y1",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Void@AUTO_Y10_Block_Void__d2",
+      "short_name": "Void@AUTO_Y1",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Void@PSHE",
+      "short_name": "Void@PSHE",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Void__d2",
+      "short_name": "Void__d2",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    }
+  ],
+  "teachers": [
+    {
+      "name": "AUTO_Y10_Block_English",
+      "subjects": [
+        "English"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "AUTO_Y10_Block_Void",
+      "subjects": [
+        "Void@AUTO_Y10_Block_Void",
+        "Void@AUTO_Y10_Block_Void__d2"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "AUTO_Y11_Block_English",
+      "subjects": [
+        "English"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "AUTO_Y11_Block_Void",
+      "subjects": [
+        "Void",
+        "Void__d2"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "AUTO_Y11_Physics_2_Physics",
+      "subjects": [
+        "Physics@AUTO_Y11_Physics_2_Physics",
+        "Physics@AUTO_Y11_Physics_2_Physics__d2"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "AUTO_Y12_Block_Void",
+      "subjects": [
+        "Void",
+        "Void__d2"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "AUTO_Y12_CAS_CAS",
+      "subjects": [
+        "CAS"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "AUTO_Y12_EE_EE",
+      "subjects": [
+        "EE"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "AUTO_Y12_TOK_TOK",
+      "subjects": [
+        "TOK__d2"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "AUTO_Y13_Block_Void",
+      "subjects": [
+        "Void",
+        "Void__d2"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "AUTO_Y13_CAS_CAS",
+      "subjects": [
+        "CAS"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "AUTO_Y13_EE_EE",
+      "subjects": [
+        "EE"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Andrew Pybus",
+      "subjects": [
+        "DT",
+        "DT__d2"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Archana Relan",
+      "subjects": [
+        "Biology",
+        "Biology__d2",
+        "Environ.Sys.",
+        "Environ.Sys.__d2",
+        "Science",
+        "Science@Archana_Relan",
+        "Science__d2"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Art New",
+      "subjects": [
+        "Art",
+        "Art__d2"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "B.L. Poh",
+      "subjects": [
+        "Chemistry",
+        "Chemistry__d2",
+        "Physics",
+        "Physics__d2"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Bernard Chan",
+      "subjects": [
+        "Math"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "CT Leung",
+      "subjects": [
+        "Physics",
+        "Physics__d2"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Christine Cheung",
+      "subjects": [
+        "Chinese",
+        "Chinese__d2"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "David Rowlands",
+      "subjects": [
+        "Drama",
+        "English"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Denis Foster",
+      "subjects": [
+        "PSHE"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Derek Eyre",
+      "subjects": [
+        "Physics",
+        "Physics@Derek_Eyre",
+        "Physics@Derek_Eyre__d2",
+        "Physics__d2"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Eng Joey",
+      "subjects": [
+        "English"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Eng-X Thea",
+      "subjects": [
+        "Drama"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Eng-Y",
+      "subjects": [
+        "Drama",
+        "English"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Eng-Z",
+      "subjects": [
+        "Drama"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Flavio Jacquin",
+      "subjects": [
+        "DT",
+        "DT__d2"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "French",
+      "subjects": [
+        "French",
+        "French__d2"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Geo New",
+      "subjects": [
+        "Geography",
+        "Geography__d2"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Grace Das",
+      "subjects": [
+        "Biology",
+        "Biology__d2",
+        "Environ.Sys.",
+        "Environ.Sys.__d2",
+        "Science",
+        "Science__d2"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Hist New",
+      "subjects": [
+        "History",
+        "History__d2"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Jacques Thomass",
+      "subjects": [
+        "Art",
+        "Art__d2"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "James Briggs",
+      "subjects": [
+        "Math"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "James Chapman",
+      "subjects": [
+        "Geography",
+        "Geography__d2",
+        "History",
+        "History__d2"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Jean-Pierre Brossard",
+      "subjects": [
+        "Biology",
+        "Biology__d2",
+        "Science",
+        "Science__d2"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Jennifer Poh",
+      "subjects": [
+        "Music",
+        "Music__d2"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Jeremy Sampson",
+      "subjects": [
+        "English",
+        "English Lit.",
+        "English Lit.__d2",
+        "TOK__d2"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Jill Cartledge",
+      "subjects": [
+        "English"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "John Greenhill",
+      "subjects": [
+        "English"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "John Tait",
+      "subjects": [
+        "Drama",
+        "English"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Jon Dwyer",
+      "subjects": [
+        "IT",
+        "IT__d2",
+        "PE-Sen"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Joyce Ho",
+      "subjects": [
+        "Biology",
+        "Biology__d2",
+        "Science",
+        "Science__d2"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Juliette Simms",
+      "subjects": [
+        "Drama",
+        "Drama__d2",
+        "Theatre",
+        "Theatre__d2"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Karen Tee",
+      "subjects": [
+        "Math",
+        "Math__d2"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Lam Wai Chu",
+      "subjects": [
+        "Chinese",
+        "Chinese__d2"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Lorraine Chow",
+      "subjects": [
+        "Music"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Mandy Yeung",
+      "subjects": [
+        "Chinese",
+        "Chinese__d2"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Margaret Chou",
+      "subjects": [
+        "Chinese",
+        "Chinese__d2"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Math NT1",
+      "subjects": [
+        "Math"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Math NT2",
+      "subjects": [
+        "Math"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Neisha Pratt",
+      "subjects": [
+        "Geography",
+        "Geography__d2"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Ophelia Bou",
+      "subjects": [
+        "Drama",
+        "English",
+        "Geography",
+        "Geography__d2"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "PE New",
+      "subjects": [
+        "PE"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "PSHE",
+      "subjects": [
+        "Void@PSHE"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Paul Thompson",
+      "subjects": [
+        "Art",
+        "Art__d2"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Pravin Bhardwaj",
+      "subjects": [
+        "Business",
+        "Business__d2"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Rasika K",
+      "subjects": [
+        "Geography",
+        "Pyschology",
+        "Pyschology__d2"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Roger Crosby",
+      "subjects": [
+        "Economics",
+        "Economics__d2",
+        "History"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Sachin Das",
+      "subjects": [
+        "Global Persp",
+        "Global Persp__d2",
+        "History",
+        "History__d2"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Samantha Mcllwraith",
+      "subjects": [
+        "PE",
+        "PE-Sen",
+        "PE-Sen__d2"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Sandra Hon",
+      "subjects": [
+        "Chinese",
+        "Chinese__d2"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Sapna Lakhani",
+      "subjects": [
+        "Chemistry",
+        "Chemistry@Sapna_Lakhani",
+        "Chemistry__d2"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Science New",
+      "subjects": [
+        "Science",
+        "Science__d2"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Sophie Chan",
+      "subjects": [
+        "Chinese",
+        "Chinese__d2"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Stella Leung",
+      "subjects": [
+        "Economics",
+        "Economics__d2"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Steve Gear",
+      "subjects": [
+        "PE",
+        "PE-Sen",
+        "PE-Sen__d2"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Tim Gotterson",
+      "subjects": [
+        "DT",
+        "DT__d2"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Tony Crossan",
+      "subjects": [
+        "Chemistry",
+        "Chemistry@Tony_Crossan__d2",
+        "Chemistry__d2",
+        "Science",
+        "Science@Tony_Crossan__d2",
+        "Science__d2"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "Yuen Yushun",
+      "subjects": [
+        "Math",
+        "Math__d2"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    }
+  ],
+  "classes": [
+    {
+      "name": "8A",
+      "level": "8A",
+      "student_count": 30
+    },
+    {
+      "name": "8B",
+      "level": "8B",
+      "student_count": 30
+    },
+    {
+      "name": "8C",
+      "level": "8C",
+      "student_count": 30
+    },
+    {
+      "name": "8D",
+      "level": "8D",
+      "student_count": 30
+    },
+    {
+      "name": "8E",
+      "level": "8E",
+      "student_count": 30
+    },
+    {
+      "name": "8F",
+      "level": "8F",
+      "student_count": 30
+    },
+    {
+      "name": "9A",
+      "level": "9A",
+      "student_count": 30
+    },
+    {
+      "name": "9B",
+      "level": "9B",
+      "student_count": 30
+    },
+    {
+      "name": "9C",
+      "level": "9C",
+      "student_count": 30
+    },
+    {
+      "name": "9D",
+      "level": "9D",
+      "student_count": 30
+    },
+    {
+      "name": "9E",
+      "level": "9E",
+      "student_count": 30
+    },
+    {
+      "name": "9F",
+      "level": "9F",
+      "student_count": 30
+    },
+    {
+      "name": "Y10",
+      "level": "Y10",
+      "student_count": 30
+    },
+    {
+      "name": "Y10-A.Math-1",
+      "level": "Y10-A.Math-1",
+      "student_count": 30
+    },
+    {
+      "name": "Y10-Art-1",
+      "level": "Y10-Art-1",
+      "student_count": 30
+    },
+    {
+      "name": "Y10-Art-2",
+      "level": "Y10-Art-2",
+      "student_count": 30
+    },
+    {
+      "name": "Y10-Bio-1",
+      "level": "Y10-Bio-1",
+      "student_count": 30
+    },
+    {
+      "name": "Y10-Bio-2",
+      "level": "Y10-Bio-2",
+      "student_count": 30
+    },
+    {
+      "name": "Y10-Bio-3",
+      "level": "Y10-Bio-3",
+      "student_count": 30
+    },
+    {
+      "name": "Y10-Biz-1",
+      "level": "Y10-Biz-1",
+      "student_count": 30
+    },
+    {
+      "name": "Y10-Block",
+      "level": "Y10-Block",
+      "student_count": 30
+    },
+    {
+      "name": "Y10-Chem-1",
+      "level": "Y10-Chem-1",
+      "student_count": 30
+    },
+    {
+      "name": "Y10-Chem-2",
+      "level": "Y10-Chem-2",
+      "student_count": 30
+    },
+    {
+      "name": "Y10-Chem-3",
+      "level": "Y10-Chem-3",
+      "student_count": 30
+    },
+    {
+      "name": "Y10-DT-1",
+      "level": "Y10-DT-1",
+      "student_count": 30
+    },
+    {
+      "name": "Y10-DT-2",
+      "level": "Y10-DT-2",
+      "student_count": 30
+    },
+    {
+      "name": "Y10-Drama-1",
+      "level": "Y10-Drama-1",
+      "student_count": 30
+    },
+    {
+      "name": "Y10-Econ-1",
+      "level": "Y10-Econ-1",
+      "student_count": 30
+    },
+    {
+      "name": "Y10-Econ-2",
+      "level": "Y10-Econ-2",
+      "student_count": 30
+    },
+    {
+      "name": "Y10-Econ-3",
+      "level": "Y10-Econ-3",
+      "student_count": 30
+    },
+    {
+      "name": "Y10-French-1",
+      "level": "Y10-French-1",
+      "student_count": 30
+    },
+    {
+      "name": "Y10-Geo-1",
+      "level": "Y10-Geo-1",
+      "student_count": 30
+    },
+    {
+      "name": "Y10-Geo-2",
+      "level": "Y10-Geo-2",
+      "student_count": 30
+    },
+    {
+      "name": "Y10-GlobalP-1",
+      "level": "Y10-GlobalP-1",
+      "student_count": 30
+    },
+    {
+      "name": "Y10-Hist-1",
+      "level": "Y10-Hist-1",
+      "student_count": 30
+    },
+    {
+      "name": "Y10-IT-1",
+      "level": "Y10-IT-1",
+      "student_count": 30
+    },
+    {
+      "name": "Y10-IT-2",
+      "level": "Y10-IT-2",
+      "student_count": 30
+    },
+    {
+      "name": "Y10-Music-1",
+      "level": "Y10-Music-1",
+      "student_count": 30
+    },
+    {
+      "name": "Y10-PE-1",
+      "level": "Y10-PE-1",
+      "student_count": 30
+    },
+    {
+      "name": "Y10-Physics-1",
+      "level": "Y10-Physics-1",
+      "student_count": 30
+    },
+    {
+      "name": "Y10-Physics-2",
+      "level": "Y10-Physics-2",
+      "student_count": 30
+    },
+    {
+      "name": "Y10-Physics-3",
+      "level": "Y10-Physics-3",
+      "student_count": 30
+    },
+    {
+      "name": "Y11",
+      "level": "Y11",
+      "student_count": 30
+    },
+    {
+      "name": "Y11-A.Math-1",
+      "level": "Y11-A.Math-1",
+      "student_count": 30
+    },
+    {
+      "name": "Y11-Art-1",
+      "level": "Y11-Art-1",
+      "student_count": 30
+    },
+    {
+      "name": "Y11-Art-2",
+      "level": "Y11-Art-2",
+      "student_count": 30
+    },
+    {
+      "name": "Y11-Art-3",
+      "level": "Y11-Art-3",
+      "student_count": 30
+    },
+    {
+      "name": "Y11-Bio-1",
+      "level": "Y11-Bio-1",
+      "student_count": 30
+    },
+    {
+      "name": "Y11-Bio-2",
+      "level": "Y11-Bio-2",
+      "student_count": 30
+    },
+    {
+      "name": "Y11-Bio-3",
+      "level": "Y11-Bio-3",
+      "student_count": 30
+    },
+    {
+      "name": "Y11-Biz-1",
+      "level": "Y11-Biz-1",
+      "student_count": 30
+    },
+    {
+      "name": "Y11-Biz-2",
+      "level": "Y11-Biz-2",
+      "student_count": 30
+    },
+    {
+      "name": "Y11-Block",
+      "level": "Y11-Block",
+      "student_count": 30
+    },
+    {
+      "name": "Y11-Chem-1",
+      "level": "Y11-Chem-1",
+      "student_count": 30
+    },
+    {
+      "name": "Y11-Chem-2",
+      "level": "Y11-Chem-2",
+      "student_count": 30
+    },
+    {
+      "name": "Y11-Chem-3",
+      "level": "Y11-Chem-3",
+      "student_count": 30
+    },
+    {
+      "name": "Y11-DT-1",
+      "level": "Y11-DT-1",
+      "student_count": 30
+    },
+    {
+      "name": "Y11-DT-2",
+      "level": "Y11-DT-2",
+      "student_count": 30
+    },
+    {
+      "name": "Y11-Drama-1",
+      "level": "Y11-Drama-1",
+      "student_count": 30
+    },
+    {
+      "name": "Y11-Econ-1",
+      "level": "Y11-Econ-1",
+      "student_count": 30
+    },
+    {
+      "name": "Y11-Econ-2",
+      "level": "Y11-Econ-2",
+      "student_count": 30
+    },
+    {
+      "name": "Y11-Eng.Lit.-1",
+      "level": "Y11-Eng.Lit.-1",
+      "student_count": 30
+    },
+    {
+      "name": "Y11-French-1",
+      "level": "Y11-French-1",
+      "student_count": 30
+    },
+    {
+      "name": "Y11-Geo-1",
+      "level": "Y11-Geo-1",
+      "student_count": 30
+    },
+    {
+      "name": "Y11-Geo-2",
+      "level": "Y11-Geo-2",
+      "student_count": 30
+    },
+    {
+      "name": "Y11-Hist-1",
+      "level": "Y11-Hist-1",
+      "student_count": 30
+    },
+    {
+      "name": "Y11-IT-1",
+      "level": "Y11-IT-1",
+      "student_count": 30
+    },
+    {
+      "name": "Y11-IT-2",
+      "level": "Y11-IT-2",
+      "student_count": 30
+    },
+    {
+      "name": "Y11-Music-1",
+      "level": "Y11-Music-1",
+      "student_count": 30
+    },
+    {
+      "name": "Y11-PE-1",
+      "level": "Y11-PE-1",
+      "student_count": 30
+    },
+    {
+      "name": "Y11-Physics-1",
+      "level": "Y11-Physics-1",
+      "student_count": 30
+    },
+    {
+      "name": "Y11-Physics-2",
+      "level": "Y11-Physics-2",
+      "student_count": 30
+    },
+    {
+      "name": "Y11-Physics-3",
+      "level": "Y11-Physics-3",
+      "student_count": 30
+    },
+    {
+      "name": "Y12",
+      "level": "Y12",
+      "student_count": 30
+    },
+    {
+      "name": "Y12-Art",
+      "level": "Y12-Art",
+      "student_count": 30
+    },
+    {
+      "name": "Y12-Bio-1",
+      "level": "Y12-Bio-1",
+      "student_count": 30
+    },
+    {
+      "name": "Y12-Biz",
+      "level": "Y12-Biz",
+      "student_count": 30
+    },
+    {
+      "name": "Y12-Block",
+      "level": "Y12-Block",
+      "student_count": 30
+    },
+    {
+      "name": "Y12-CAS",
+      "level": "Y12-CAS",
+      "student_count": 30
+    },
+    {
+      "name": "Y12-Chem-1",
+      "level": "Y12-Chem-1",
+      "student_count": 30
+    },
+    {
+      "name": "Y12-Chem-2",
+      "level": "Y12-Chem-2",
+      "student_count": 30
+    },
+    {
+      "name": "Y12-DT",
+      "level": "Y12-DT",
+      "student_count": 30
+    },
+    {
+      "name": "Y12-EE",
+      "level": "Y12-EE",
+      "student_count": 30
+    },
+    {
+      "name": "Y12-Econ-1",
+      "level": "Y12-Econ-1",
+      "student_count": 30
+    },
+    {
+      "name": "Y12-Econ-2",
+      "level": "Y12-Econ-2",
+      "student_count": 30
+    },
+    {
+      "name": "Y12-Env-1",
+      "level": "Y12-Env-1",
+      "student_count": 30
+    },
+    {
+      "name": "Y12-Env-2",
+      "level": "Y12-Env-2",
+      "student_count": 30
+    },
+    {
+      "name": "Y12-French",
+      "level": "Y12-French",
+      "student_count": 30
+    },
+    {
+      "name": "Y12-Geo-1",
+      "level": "Y12-Geo-1",
+      "student_count": 30
+    },
+    {
+      "name": "Y12-Geo-2",
+      "level": "Y12-Geo-2",
+      "student_count": 30
+    },
+    {
+      "name": "Y12-Hist",
+      "level": "Y12-Hist",
+      "student_count": 30
+    },
+    {
+      "name": "Y12-Music",
+      "level": "Y12-Music",
+      "student_count": 30
+    },
+    {
+      "name": "Y12-PE",
+      "level": "Y12-PE",
+      "student_count": 30
+    },
+    {
+      "name": "Y12-Physics-1",
+      "level": "Y12-Physics-1",
+      "student_count": 30
+    },
+    {
+      "name": "Y12-Physics-2",
+      "level": "Y12-Physics-2",
+      "student_count": 30
+    },
+    {
+      "name": "Y12-Psych",
+      "level": "Y12-Psych",
+      "student_count": 30
+    },
+    {
+      "name": "Y12-TOK",
+      "level": "Y12-TOK",
+      "student_count": 30
+    },
+    {
+      "name": "Y12-Threatre",
+      "level": "Y12-Threatre",
+      "student_count": 30
+    },
+    {
+      "name": "Y13",
+      "level": "Y13",
+      "student_count": 30
+    },
+    {
+      "name": "Y13-Art",
+      "level": "Y13-Art",
+      "student_count": 30
+    },
+    {
+      "name": "Y13-Bio-1",
+      "level": "Y13-Bio-1",
+      "student_count": 30
+    },
+    {
+      "name": "Y13-Biz",
+      "level": "Y13-Biz",
+      "student_count": 30
+    },
+    {
+      "name": "Y13-Block",
+      "level": "Y13-Block",
+      "student_count": 30
+    },
+    {
+      "name": "Y13-CAS",
+      "level": "Y13-CAS",
+      "student_count": 30
+    },
+    {
+      "name": "Y13-Chem-1",
+      "level": "Y13-Chem-1",
+      "student_count": 30
+    },
+    {
+      "name": "Y13-Chem-2",
+      "level": "Y13-Chem-2",
+      "student_count": 30
+    },
+    {
+      "name": "Y13-DT",
+      "level": "Y13-DT",
+      "student_count": 30
+    },
+    {
+      "name": "Y13-EE",
+      "level": "Y13-EE",
+      "student_count": 30
+    },
+    {
+      "name": "Y13-Econ-1",
+      "level": "Y13-Econ-1",
+      "student_count": 30
+    },
+    {
+      "name": "Y13-Econ-2",
+      "level": "Y13-Econ-2",
+      "student_count": 30
+    },
+    {
+      "name": "Y13-Env-1",
+      "level": "Y13-Env-1",
+      "student_count": 30
+    },
+    {
+      "name": "Y13-French",
+      "level": "Y13-French",
+      "student_count": 30
+    },
+    {
+      "name": "Y13-Geo-1",
+      "level": "Y13-Geo-1",
+      "student_count": 30
+    },
+    {
+      "name": "Y13-Geo-2",
+      "level": "Y13-Geo-2",
+      "student_count": 30
+    },
+    {
+      "name": "Y13-Hist",
+      "level": "Y13-Hist",
+      "student_count": 30
+    },
+    {
+      "name": "Y13-PE",
+      "level": "Y13-PE",
+      "student_count": 30
+    },
+    {
+      "name": "Y13-Physics-1",
+      "level": "Y13-Physics-1",
+      "student_count": 30
+    },
+    {
+      "name": "Y13-Physics-2",
+      "level": "Y13-Physics-2",
+      "student_count": 30
+    },
+    {
+      "name": "Y13-Psych",
+      "level": "Y13-Psych",
+      "student_count": 30
+    },
+    {
+      "name": "Y13-TOK",
+      "level": "Y13-TOK",
+      "student_count": 30
+    },
+    {
+      "name": "Y7A",
+      "level": "Y7A",
+      "student_count": 30
+    },
+    {
+      "name": "Y7B",
+      "level": "Y7B",
+      "student_count": 30
+    },
+    {
+      "name": "Y7C",
+      "level": "Y7C",
+      "student_count": 30
+    },
+    {
+      "name": "Y7D",
+      "level": "Y7D",
+      "student_count": 30
+    },
+    {
+      "name": "Y7E",
+      "level": "Y7E",
+      "student_count": 30
+    },
+    {
+      "name": "Y7IEP",
+      "level": "Y7IEP",
+      "student_count": 30
+    },
+    {
+      "name": "Y8",
+      "level": "Y8",
+      "student_count": 30
+    },
+    {
+      "name": "Y9",
+      "level": "Y9",
+      "student_count": 30
+    },
+    {
+      "name": "void-9",
+      "level": "void-9",
+      "student_count": 30
+    }
+  ],
+  "rooms": [
+    {
+      "name": "A004",
+      "capacity": 26,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "A033a",
+      "capacity": 26,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "A033b",
+      "capacity": 26,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "A034",
+      "capacity": 26,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "A035",
+      "capacity": 26,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "A203",
+      "capacity": 26,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "A204",
+      "capacity": 26,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "A205",
+      "capacity": 26,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "A206",
+      "capacity": 26,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "A207",
+      "capacity": 26,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "A208",
+      "capacity": 26,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "A218",
+      "capacity": 26,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "A219",
+      "capacity": 26,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "A220",
+      "capacity": 26,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "A303",
+      "capacity": 26,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "A304",
+      "capacity": 26,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "A305",
+      "capacity": 26,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "A306",
+      "capacity": 26,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "A307",
+      "capacity": 26,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "A308",
+      "capacity": 26,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "A320",
+      "capacity": 26,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "A329",
+      "capacity": 26,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "A330",
+      "capacity": 26,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "A332",
+      "capacity": 26,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "A333",
+      "capacity": 26,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "A403",
+      "capacity": 26,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "A404",
+      "capacity": 26,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "A405",
+      "capacity": 26,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "A406",
+      "capacity": 26,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "A407",
+      "capacity": 26,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "A408",
+      "capacity": 26,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "A418",
+      "capacity": 26,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "A419",
+      "capacity": 26,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "A420",
+      "capacity": 26,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "A423",
+      "capacity": 26,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "A424",
+      "capacity": 26,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "A431",
+      "capacity": 26,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "A432",
+      "capacity": 26,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "A433",
+      "capacity": 26,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "A434",
+      "capacity": 26,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "A503",
+      "capacity": 26,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "A504",
+      "capacity": 26,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "A505",
+      "capacity": 26,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "A506",
+      "capacity": 26,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "A507",
+      "capacity": 26,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "A508",
+      "capacity": 26,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "A518",
+      "capacity": 26,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "A519",
+      "capacity": 26,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "A520",
+      "capacity": 26,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "B026",
+      "capacity": 26,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "B033a",
+      "capacity": 26,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "B033b",
+      "capacity": 26,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "B303",
+      "capacity": 26,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "B306",
+      "capacity": 26,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "B307",
+      "capacity": 26,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "B309",
+      "capacity": 26,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "B310",
+      "capacity": 26,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "B403",
+      "capacity": 26,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "B406",
+      "capacity": 26,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "B425",
+      "capacity": 26,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "B503",
+      "capacity": 26,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "B603",
+      "capacity": 26,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "B604",
+      "capacity": 26,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "B611",
+      "capacity": 26,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "B613",
+      "capacity": 26,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "B617",
+      "capacity": 26,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "B619",
+      "capacity": 26,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "Lunch",
+      "capacity": 15000,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "Gym",
+      "capacity": 15000,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "Roof",
+      "capacity": 15000,
+      "types": [
+        "Salle standard"
+      ]
+    }
+  ],
+  "curriculum": [
+    {
+      "school_class": "8A",
+      "subject": "Art__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "8A",
+      "subject": "Chinese",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8A",
+      "subject": "Chinese__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "8A",
+      "subject": "DT__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "8A",
+      "subject": "Drama",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8A",
+      "subject": "English",
+      "total_minutes_per_week": 360,
+      "sessions_per_week": 6,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8A",
+      "subject": "Geography",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8A",
+      "subject": "History",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8A",
+      "subject": "Music",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8A",
+      "subject": "PE",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8A",
+      "subject": "PSHE",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8A",
+      "subject": "Science",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8A",
+      "subject": "Science__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "8B",
+      "subject": "Art__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "8B",
+      "subject": "DT__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "8B",
+      "subject": "Drama",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8B",
+      "subject": "Geography",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8B",
+      "subject": "History",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8B",
+      "subject": "PE",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8B",
+      "subject": "PSHE",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8B",
+      "subject": "Science",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8B",
+      "subject": "Science__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "8C",
+      "subject": "Art__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "8C",
+      "subject": "DT__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "8C",
+      "subject": "Drama",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8C",
+      "subject": "Geography",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8C",
+      "subject": "History",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8C",
+      "subject": "Music",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8C",
+      "subject": "PE",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8C",
+      "subject": "PSHE",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8C",
+      "subject": "Science",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8C",
+      "subject": "Science__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "8D",
+      "subject": "Art__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "8D",
+      "subject": "Chinese",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8D",
+      "subject": "Chinese__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "8D",
+      "subject": "DT__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "8D",
+      "subject": "Drama",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8D",
+      "subject": "English",
+      "total_minutes_per_week": 360,
+      "sessions_per_week": 6,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8D",
+      "subject": "Geography",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8D",
+      "subject": "History",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8D",
+      "subject": "PE",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8D",
+      "subject": "PSHE",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8D",
+      "subject": "Science",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8D",
+      "subject": "Science__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "8E",
+      "subject": "Art__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "8E",
+      "subject": "DT__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "8E",
+      "subject": "Drama",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8E",
+      "subject": "Geography",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8E",
+      "subject": "History",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8E",
+      "subject": "Music",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8E",
+      "subject": "PE",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8E",
+      "subject": "PSHE",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8E",
+      "subject": "Science",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8E",
+      "subject": "Science__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "8F",
+      "subject": "Art__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "8F",
+      "subject": "DT__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "8F",
+      "subject": "Drama",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8F",
+      "subject": "Geography",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8F",
+      "subject": "History",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8F",
+      "subject": "PE",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8F",
+      "subject": "PSHE",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8F",
+      "subject": "Science",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8F",
+      "subject": "Science__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "9A",
+      "subject": "Art__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "9A",
+      "subject": "Chinese",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9A",
+      "subject": "Chinese__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "9A",
+      "subject": "DT__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "9A",
+      "subject": "Drama",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9A",
+      "subject": "English",
+      "total_minutes_per_week": 360,
+      "sessions_per_week": 6,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9A",
+      "subject": "Geography",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9A",
+      "subject": "History",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9A",
+      "subject": "Music",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9A",
+      "subject": "PE",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9A",
+      "subject": "PSHE",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9A",
+      "subject": "Science",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9A",
+      "subject": "Science__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "9B",
+      "subject": "Art__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "9B",
+      "subject": "DT__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "9B",
+      "subject": "Drama",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9B",
+      "subject": "Geography",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9B",
+      "subject": "History",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9B",
+      "subject": "PE",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9B",
+      "subject": "PSHE",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9B",
+      "subject": "Science",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9B",
+      "subject": "Science__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "9C",
+      "subject": "Art__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "9C",
+      "subject": "DT__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "9C",
+      "subject": "Drama",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9C",
+      "subject": "Geography",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9C",
+      "subject": "History",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9C",
+      "subject": "Music",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9C",
+      "subject": "PE",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9C",
+      "subject": "PSHE",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9C",
+      "subject": "Science",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9C",
+      "subject": "Science__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "9D",
+      "subject": "Art__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "9D",
+      "subject": "Chinese",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9D",
+      "subject": "Chinese__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "9D",
+      "subject": "DT__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "9D",
+      "subject": "Drama",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9D",
+      "subject": "English",
+      "total_minutes_per_week": 360,
+      "sessions_per_week": 6,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9D",
+      "subject": "Geography",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9D",
+      "subject": "History",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9D",
+      "subject": "PE",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9D",
+      "subject": "PSHE",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9D",
+      "subject": "Science",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9D",
+      "subject": "Science__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "9E",
+      "subject": "Art__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "9E",
+      "subject": "DT__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "9E",
+      "subject": "Drama",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9E",
+      "subject": "Geography",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9E",
+      "subject": "History",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9E",
+      "subject": "Music",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9E",
+      "subject": "PE",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9E",
+      "subject": "PSHE",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9E",
+      "subject": "Science",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9E",
+      "subject": "Science__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "9F",
+      "subject": "Art__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "9F",
+      "subject": "DT__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "9F",
+      "subject": "Drama",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9F",
+      "subject": "Geography",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9F",
+      "subject": "History",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9F",
+      "subject": "PE",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9F",
+      "subject": "PSHE",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9F",
+      "subject": "Science",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9F",
+      "subject": "Science__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y10",
+      "subject": "Chinese",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y10",
+      "subject": "Chinese__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y10",
+      "subject": "English",
+      "total_minutes_per_week": 360,
+      "sessions_per_week": 6,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y10",
+      "subject": "Math",
+      "total_minutes_per_week": 300,
+      "sessions_per_week": 5,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y10-A.Math-1",
+      "subject": "Math",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y10-A.Math-1",
+      "subject": "Math__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y10-Art-1",
+      "subject": "Art",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y10-Art-1",
+      "subject": "Art__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y10-Art-2",
+      "subject": "Art",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y10-Art-2",
+      "subject": "Art__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y10-Bio-1",
+      "subject": "Biology",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y10-Bio-1",
+      "subject": "Biology__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y10-Bio-2",
+      "subject": "Biology",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y10-Bio-2",
+      "subject": "Biology__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y10-Bio-3",
+      "subject": "Biology",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y10-Bio-3",
+      "subject": "Biology__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y10-Biz-1",
+      "subject": "Business",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y10-Biz-1",
+      "subject": "Business__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y10-Block",
+      "subject": "English",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y10-Block",
+      "subject": "Void@AUTO_Y10_Block_Void",
+      "total_minutes_per_week": 1260,
+      "sessions_per_week": 21,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y10-Block",
+      "subject": "Void@AUTO_Y10_Block_Void__d2",
+      "total_minutes_per_week": 600,
+      "sessions_per_week": 5,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y10-Block",
+      "subject": "Void@PSHE",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y10-Chem-1",
+      "subject": "Chemistry",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y10-Chem-1",
+      "subject": "Chemistry__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y10-Chem-2",
+      "subject": "Chemistry",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y10-Chem-2",
+      "subject": "Chemistry__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y10-Chem-3",
+      "subject": "Chemistry@Sapna_Lakhani",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y10-Chem-3",
+      "subject": "Chemistry@Tony_Crossan__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y10-DT-1",
+      "subject": "DT",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y10-DT-1",
+      "subject": "DT__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y10-DT-2",
+      "subject": "DT",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y10-DT-2",
+      "subject": "DT__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y10-Drama-1",
+      "subject": "Drama",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y10-Drama-1",
+      "subject": "Drama__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y10-Econ-1",
+      "subject": "Economics",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y10-Econ-1",
+      "subject": "Economics__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y10-Econ-2",
+      "subject": "Economics",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y10-Econ-2",
+      "subject": "Economics__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y10-Econ-3",
+      "subject": "Economics",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y10-Econ-3",
+      "subject": "Economics__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y10-French-1",
+      "subject": "French",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y10-French-1",
+      "subject": "French__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y10-Geo-1",
+      "subject": "Geography",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y10-Geo-1",
+      "subject": "Geography__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y10-Geo-2",
+      "subject": "Geography",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y10-Geo-2",
+      "subject": "Geography__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y10-GlobalP-1",
+      "subject": "Global Persp",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y10-GlobalP-1",
+      "subject": "Global Persp__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y10-Hist-1",
+      "subject": "History",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y10-Hist-1",
+      "subject": "History__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y10-IT-1",
+      "subject": "IT",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y10-IT-1",
+      "subject": "IT__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y10-IT-2",
+      "subject": "IT",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y10-IT-2",
+      "subject": "IT__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y10-Music-1",
+      "subject": "Music",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y10-Music-1",
+      "subject": "Music__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y10-PE-1",
+      "subject": "PE-Sen",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y10-PE-1",
+      "subject": "PE-Sen__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y10-Physics-1",
+      "subject": "Physics",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y10-Physics-1",
+      "subject": "Physics__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y10-Physics-2",
+      "subject": "Physics",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y10-Physics-2",
+      "subject": "Physics__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y10-Physics-3",
+      "subject": "Physics",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y10-Physics-3",
+      "subject": "Physics__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y11",
+      "subject": "Chinese",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y11",
+      "subject": "Chinese__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y11",
+      "subject": "English",
+      "total_minutes_per_week": 360,
+      "sessions_per_week": 6,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y11",
+      "subject": "Math",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y11-A.Math-1",
+      "subject": "Math",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y11-A.Math-1",
+      "subject": "Math__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y11-Art-1",
+      "subject": "Art",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y11-Art-1",
+      "subject": "Art__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y11-Art-2",
+      "subject": "Art",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y11-Art-2",
+      "subject": "Art__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y11-Art-3",
+      "subject": "Art",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y11-Art-3",
+      "subject": "Art__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y11-Bio-1",
+      "subject": "Biology",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y11-Bio-1",
+      "subject": "Biology__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y11-Bio-2",
+      "subject": "Biology",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y11-Bio-2",
+      "subject": "Biology__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y11-Bio-3",
+      "subject": "Biology",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y11-Bio-3",
+      "subject": "Biology__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y11-Biz-1",
+      "subject": "Business",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y11-Biz-1",
+      "subject": "Business__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y11-Biz-2",
+      "subject": "Business",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y11-Biz-2",
+      "subject": "Business__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y11-Block",
+      "subject": "English",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y11-Block",
+      "subject": "Void",
+      "total_minutes_per_week": 1320,
+      "sessions_per_week": 22,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y11-Block",
+      "subject": "Void__d2",
+      "total_minutes_per_week": 720,
+      "sessions_per_week": 6,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y11-Chem-1",
+      "subject": "Chemistry",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y11-Chem-1",
+      "subject": "Chemistry__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y11-Chem-2",
+      "subject": "Chemistry",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y11-Chem-2",
+      "subject": "Chemistry__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y11-Chem-3",
+      "subject": "Chemistry",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y11-Chem-3",
+      "subject": "Chemistry__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y11-DT-1",
+      "subject": "DT",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y11-DT-1",
+      "subject": "DT__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y11-DT-2",
+      "subject": "DT",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y11-DT-2",
+      "subject": "DT__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y11-Drama-1",
+      "subject": "Drama",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y11-Drama-1",
+      "subject": "Drama__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y11-Econ-1",
+      "subject": "Economics",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y11-Econ-1",
+      "subject": "Economics__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y11-Econ-2",
+      "subject": "Economics",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y11-Econ-2",
+      "subject": "Economics__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y11-Eng.Lit.-1",
+      "subject": "English Lit.",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y11-Eng.Lit.-1",
+      "subject": "English Lit.__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y11-French-1",
+      "subject": "French",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y11-French-1",
+      "subject": "French__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y11-Geo-1",
+      "subject": "Geography",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y11-Geo-1",
+      "subject": "Geography__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y11-Geo-2",
+      "subject": "Geography",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y11-Geo-2",
+      "subject": "Geography__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y11-Hist-1",
+      "subject": "History",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y11-Hist-1",
+      "subject": "History__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y11-IT-1",
+      "subject": "IT",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y11-IT-1",
+      "subject": "IT__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y11-IT-2",
+      "subject": "IT",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y11-IT-2",
+      "subject": "IT__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y11-Music-1",
+      "subject": "Music",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y11-Music-1",
+      "subject": "Music__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y11-PE-1",
+      "subject": "PE-Sen",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y11-PE-1",
+      "subject": "PE-Sen__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y11-Physics-1",
+      "subject": "Physics",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y11-Physics-1",
+      "subject": "Physics__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y11-Physics-2",
+      "subject": "Physics@AUTO_Y11_Physics_2_Physics",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y11-Physics-2",
+      "subject": "Physics@AUTO_Y11_Physics_2_Physics__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y11-Physics-2",
+      "subject": "Physics@Derek_Eyre",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y11-Physics-2",
+      "subject": "Physics@Derek_Eyre__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y11-Physics-3",
+      "subject": "Physics",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y11-Physics-3",
+      "subject": "Physics__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y12",
+      "subject": "Chinese",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y12",
+      "subject": "Chinese__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y12",
+      "subject": "English",
+      "total_minutes_per_week": 300,
+      "sessions_per_week": 5,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y12",
+      "subject": "Math",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y12",
+      "subject": "Math__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y12-Art",
+      "subject": "Art",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y12-Art",
+      "subject": "Art__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y12-Bio-1",
+      "subject": "Biology",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y12-Bio-1",
+      "subject": "Biology__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y12-Biz",
+      "subject": "Business",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y12-Biz",
+      "subject": "Business__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y12-Block",
+      "subject": "Void",
+      "total_minutes_per_week": 1380,
+      "sessions_per_week": 23,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y12-Block",
+      "subject": "Void__d2",
+      "total_minutes_per_week": 720,
+      "sessions_per_week": 6,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y12-CAS",
+      "subject": "CAS",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y12-Chem-1",
+      "subject": "Chemistry",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y12-Chem-1",
+      "subject": "Chemistry__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y12-Chem-2",
+      "subject": "Chemistry",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y12-Chem-2",
+      "subject": "Chemistry__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y12-DT",
+      "subject": "DT",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y12-DT",
+      "subject": "DT__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y12-EE",
+      "subject": "EE",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y12-Econ-1",
+      "subject": "Economics",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y12-Econ-1",
+      "subject": "Economics__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y12-Econ-2",
+      "subject": "Economics",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y12-Econ-2",
+      "subject": "Economics__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y12-Env-1",
+      "subject": "Environ.Sys.",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y12-Env-1",
+      "subject": "Environ.Sys.__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y12-Env-2",
+      "subject": "Environ.Sys.",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y12-Env-2",
+      "subject": "Environ.Sys.__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y12-French",
+      "subject": "French",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y12-French",
+      "subject": "French__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y12-Geo-1",
+      "subject": "Geography",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y12-Geo-1",
+      "subject": "Geography__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y12-Geo-2",
+      "subject": "Geography",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y12-Geo-2",
+      "subject": "Geography__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y12-Hist",
+      "subject": "History",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y12-Hist",
+      "subject": "History__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y12-Music",
+      "subject": "Music",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y12-Music",
+      "subject": "Music__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y12-PE",
+      "subject": "PE-Sen",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y12-Physics-1",
+      "subject": "Physics",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y12-Physics-1",
+      "subject": "Physics__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y12-Physics-2",
+      "subject": "Physics",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y12-Physics-2",
+      "subject": "Physics__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y12-Psych",
+      "subject": "Pyschology",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y12-Psych",
+      "subject": "Pyschology__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y12-TOK",
+      "subject": "TOK__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y12-Threatre",
+      "subject": "Theatre",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y12-Threatre",
+      "subject": "Theatre__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y13",
+      "subject": "Chinese",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y13",
+      "subject": "Chinese__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y13",
+      "subject": "English",
+      "total_minutes_per_week": 300,
+      "sessions_per_week": 5,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y13",
+      "subject": "Math",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y13",
+      "subject": "Math__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y13-Art",
+      "subject": "Art",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y13-Art",
+      "subject": "Art__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y13-Bio-1",
+      "subject": "Biology",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y13-Bio-1",
+      "subject": "Biology__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y13-Biz",
+      "subject": "Business",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y13-Biz",
+      "subject": "Business__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y13-Block",
+      "subject": "Void",
+      "total_minutes_per_week": 1380,
+      "sessions_per_week": 23,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y13-Block",
+      "subject": "Void__d2",
+      "total_minutes_per_week": 720,
+      "sessions_per_week": 6,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y13-CAS",
+      "subject": "CAS",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y13-Chem-1",
+      "subject": "Chemistry",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y13-Chem-1",
+      "subject": "Chemistry__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y13-Chem-2",
+      "subject": "Chemistry",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y13-Chem-2",
+      "subject": "Chemistry__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y13-DT",
+      "subject": "DT",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y13-DT",
+      "subject": "DT__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y13-EE",
+      "subject": "EE",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y13-Econ-1",
+      "subject": "Economics",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y13-Econ-1",
+      "subject": "Economics__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y13-Econ-2",
+      "subject": "Economics",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y13-Econ-2",
+      "subject": "Economics__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y13-Env-1",
+      "subject": "Environ.Sys.",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y13-Env-1",
+      "subject": "Environ.Sys.__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y13-French",
+      "subject": "French",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y13-French",
+      "subject": "French__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y13-Geo-1",
+      "subject": "Geography",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y13-Geo-1",
+      "subject": "Geography__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y13-Geo-2",
+      "subject": "Geography",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y13-Geo-2",
+      "subject": "Geography__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y13-Hist",
+      "subject": "History",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y13-Hist",
+      "subject": "History__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y13-PE",
+      "subject": "PE-Sen",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y13-Physics-1",
+      "subject": "Physics",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y13-Physics-1",
+      "subject": "Physics__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y13-Physics-2",
+      "subject": "Physics",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y13-Physics-2",
+      "subject": "Physics__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y13-Psych",
+      "subject": "Pyschology",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y13-Psych",
+      "subject": "Pyschology__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y13-TOK",
+      "subject": "TOK__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y7A",
+      "subject": "Art__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y7A",
+      "subject": "Chinese",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y7A",
+      "subject": "Chinese__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y7A",
+      "subject": "DT__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y7A",
+      "subject": "Drama",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y7A",
+      "subject": "English",
+      "total_minutes_per_week": 360,
+      "sessions_per_week": 6,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y7A",
+      "subject": "Geography",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y7A",
+      "subject": "History",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y7A",
+      "subject": "Math",
+      "total_minutes_per_week": 300,
+      "sessions_per_week": 5,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y7A",
+      "subject": "Music",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y7A",
+      "subject": "PE",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y7A",
+      "subject": "PSHE",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y7A",
+      "subject": "Science",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y7A",
+      "subject": "Science__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y7B",
+      "subject": "Art__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y7B",
+      "subject": "DT__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y7B",
+      "subject": "Drama",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y7B",
+      "subject": "English",
+      "total_minutes_per_week": 360,
+      "sessions_per_week": 6,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y7B",
+      "subject": "Geography",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y7B",
+      "subject": "History",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y7B",
+      "subject": "Math",
+      "total_minutes_per_week": 300,
+      "sessions_per_week": 5,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y7B",
+      "subject": "PE",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y7B",
+      "subject": "PSHE",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y7B",
+      "subject": "Science@Archana_Relan",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y7B",
+      "subject": "Science@Tony_Crossan__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y7C",
+      "subject": "Art__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y7C",
+      "subject": "Chinese",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y7C",
+      "subject": "Chinese__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y7C",
+      "subject": "DT__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y7C",
+      "subject": "Drama",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y7C",
+      "subject": "English",
+      "total_minutes_per_week": 360,
+      "sessions_per_week": 6,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y7C",
+      "subject": "Geography",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y7C",
+      "subject": "History",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y7C",
+      "subject": "Math",
+      "total_minutes_per_week": 300,
+      "sessions_per_week": 5,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y7C",
+      "subject": "PE",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y7C",
+      "subject": "PSHE",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y7C",
+      "subject": "Science",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y7C",
+      "subject": "Science__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y7D",
+      "subject": "Art__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y7D",
+      "subject": "DT__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y7D",
+      "subject": "Drama",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y7D",
+      "subject": "English",
+      "total_minutes_per_week": 360,
+      "sessions_per_week": 6,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y7D",
+      "subject": "Geography",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y7D",
+      "subject": "History",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y7D",
+      "subject": "Math",
+      "total_minutes_per_week": 300,
+      "sessions_per_week": 5,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y7D",
+      "subject": "Music",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y7D",
+      "subject": "PE",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y7D",
+      "subject": "PSHE",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y7D",
+      "subject": "Science",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y7D",
+      "subject": "Science__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y7E",
+      "subject": "Art__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y7E",
+      "subject": "DT__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y7E",
+      "subject": "Drama",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y7E",
+      "subject": "English",
+      "total_minutes_per_week": 360,
+      "sessions_per_week": 6,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y7E",
+      "subject": "Geography",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y7E",
+      "subject": "History",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y7E",
+      "subject": "Math",
+      "total_minutes_per_week": 300,
+      "sessions_per_week": 5,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y7E",
+      "subject": "PE",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y7E",
+      "subject": "PSHE",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y7E",
+      "subject": "Science",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y7E",
+      "subject": "Science__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "Y7IEP",
+      "subject": "Science",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y8",
+      "subject": "Math",
+      "total_minutes_per_week": 300,
+      "sessions_per_week": 5,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Y9",
+      "subject": "Math",
+      "total_minutes_per_week": 300,
+      "sessions_per_week": 5,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "void-9",
+      "subject": "English",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    }
+  ],
+  "constraints": [
+    {
+      "id": "C1",
+      "type": "hard",
+      "category": "teacher_no_overlap",
+      "description_fr": "Pas de chevauchement enseignant",
+      "priority": 10,
+      "parameters": {}
+    },
+    {
+      "id": "C2",
+      "type": "hard",
+      "category": "class_no_overlap",
+      "description_fr": "Pas de chevauchement classe",
+      "priority": 10,
+      "parameters": {}
+    },
+    {
+      "id": "C3",
+      "type": "hard",
+      "category": "teacher_subject_declared",
+      "description_fr": "Matière enseignant déclarée",
+      "priority": 10,
+      "parameters": {}
+    },
+    {
+      "id": "C4",
+      "type": "hard",
+      "category": "teacher_calendar_declared",
+      "description_fr": "Calendrier enseignant déclaré",
+      "priority": 10,
+      "parameters": {}
+    }
+  ],
+  "teacher_assignments": [
+    {
+      "teacher": "Paul Thompson",
+      "subject": "Art__d2",
+      "school_class": "8A"
+    },
+    {
+      "teacher": "Sophie Chan",
+      "subject": "Chinese",
+      "school_class": "8A"
+    },
+    {
+      "teacher": "Sophie Chan",
+      "subject": "Chinese__d2",
+      "school_class": "8A"
+    },
+    {
+      "teacher": "Flavio Jacquin",
+      "subject": "DT__d2",
+      "school_class": "8A"
+    },
+    {
+      "teacher": "Juliette Simms",
+      "subject": "Drama",
+      "school_class": "8A"
+    },
+    {
+      "teacher": "Ophelia Bou",
+      "subject": "English",
+      "school_class": "8A"
+    },
+    {
+      "teacher": "James Chapman",
+      "subject": "Geography",
+      "school_class": "8A"
+    },
+    {
+      "teacher": "Sachin Das",
+      "subject": "History",
+      "school_class": "8A"
+    },
+    {
+      "teacher": "Lorraine Chow",
+      "subject": "Music",
+      "school_class": "8A"
+    },
+    {
+      "teacher": "Samantha Mcllwraith",
+      "subject": "PE",
+      "school_class": "8A"
+    },
+    {
+      "teacher": "Denis Foster",
+      "subject": "PSHE",
+      "school_class": "8A"
+    },
+    {
+      "teacher": "Joyce Ho",
+      "subject": "Science",
+      "school_class": "8A"
+    },
+    {
+      "teacher": "Joyce Ho",
+      "subject": "Science__d2",
+      "school_class": "8A"
+    },
+    {
+      "teacher": "Paul Thompson",
+      "subject": "Art__d2",
+      "school_class": "8B"
+    },
+    {
+      "teacher": "Flavio Jacquin",
+      "subject": "DT__d2",
+      "school_class": "8B"
+    },
+    {
+      "teacher": "Juliette Simms",
+      "subject": "Drama",
+      "school_class": "8B"
+    },
+    {
+      "teacher": "James Chapman",
+      "subject": "Geography",
+      "school_class": "8B"
+    },
+    {
+      "teacher": "Sachin Das",
+      "subject": "History",
+      "school_class": "8B"
+    },
+    {
+      "teacher": "Steve Gear",
+      "subject": "PE",
+      "school_class": "8B"
+    },
+    {
+      "teacher": "Denis Foster",
+      "subject": "PSHE",
+      "school_class": "8B"
+    },
+    {
+      "teacher": "Joyce Ho",
+      "subject": "Science",
+      "school_class": "8B"
+    },
+    {
+      "teacher": "Joyce Ho",
+      "subject": "Science__d2",
+      "school_class": "8B"
+    },
+    {
+      "teacher": "Paul Thompson",
+      "subject": "Art__d2",
+      "school_class": "8C"
+    },
+    {
+      "teacher": "Flavio Jacquin",
+      "subject": "DT__d2",
+      "school_class": "8C"
+    },
+    {
+      "teacher": "Juliette Simms",
+      "subject": "Drama",
+      "school_class": "8C"
+    },
+    {
+      "teacher": "James Chapman",
+      "subject": "Geography",
+      "school_class": "8C"
+    },
+    {
+      "teacher": "Sachin Das",
+      "subject": "History",
+      "school_class": "8C"
+    },
+    {
+      "teacher": "Lorraine Chow",
+      "subject": "Music",
+      "school_class": "8C"
+    },
+    {
+      "teacher": "Samantha Mcllwraith",
+      "subject": "PE",
+      "school_class": "8C"
+    },
+    {
+      "teacher": "Denis Foster",
+      "subject": "PSHE",
+      "school_class": "8C"
+    },
+    {
+      "teacher": "Grace Das",
+      "subject": "Science",
+      "school_class": "8C"
+    },
+    {
+      "teacher": "Grace Das",
+      "subject": "Science__d2",
+      "school_class": "8C"
+    },
+    {
+      "teacher": "Art New",
+      "subject": "Art__d2",
+      "school_class": "8D"
+    },
+    {
+      "teacher": "Lam Wai Chu",
+      "subject": "Chinese",
+      "school_class": "8D"
+    },
+    {
+      "teacher": "Lam Wai Chu",
+      "subject": "Chinese__d2",
+      "school_class": "8D"
+    },
+    {
+      "teacher": "Tim Gotterson",
+      "subject": "DT__d2",
+      "school_class": "8D"
+    },
+    {
+      "teacher": "Juliette Simms",
+      "subject": "Drama",
+      "school_class": "8D"
+    },
+    {
+      "teacher": "Eng Joey",
+      "subject": "English",
+      "school_class": "8D"
+    },
+    {
+      "teacher": "Rasika K",
+      "subject": "Geography",
+      "school_class": "8D"
+    },
+    {
+      "teacher": "Hist New",
+      "subject": "History",
+      "school_class": "8D"
+    },
+    {
+      "teacher": "Steve Gear",
+      "subject": "PE",
+      "school_class": "8D"
+    },
+    {
+      "teacher": "Denis Foster",
+      "subject": "PSHE",
+      "school_class": "8D"
+    },
+    {
+      "teacher": "Grace Das",
+      "subject": "Science",
+      "school_class": "8D"
+    },
+    {
+      "teacher": "Grace Das",
+      "subject": "Science__d2",
+      "school_class": "8D"
+    },
+    {
+      "teacher": "Art New",
+      "subject": "Art__d2",
+      "school_class": "8E"
+    },
+    {
+      "teacher": "Tim Gotterson",
+      "subject": "DT__d2",
+      "school_class": "8E"
+    },
+    {
+      "teacher": "Juliette Simms",
+      "subject": "Drama",
+      "school_class": "8E"
+    },
+    {
+      "teacher": "Geo New",
+      "subject": "Geography",
+      "school_class": "8E"
+    },
+    {
+      "teacher": "Hist New",
+      "subject": "History",
+      "school_class": "8E"
+    },
+    {
+      "teacher": "Lorraine Chow",
+      "subject": "Music",
+      "school_class": "8E"
+    },
+    {
+      "teacher": "Samantha Mcllwraith",
+      "subject": "PE",
+      "school_class": "8E"
+    },
+    {
+      "teacher": "Denis Foster",
+      "subject": "PSHE",
+      "school_class": "8E"
+    },
+    {
+      "teacher": "Science New",
+      "subject": "Science",
+      "school_class": "8E"
+    },
+    {
+      "teacher": "Science New",
+      "subject": "Science__d2",
+      "school_class": "8E"
+    },
+    {
+      "teacher": "Art New",
+      "subject": "Art__d2",
+      "school_class": "8F"
+    },
+    {
+      "teacher": "Tim Gotterson",
+      "subject": "DT__d2",
+      "school_class": "8F"
+    },
+    {
+      "teacher": "Juliette Simms",
+      "subject": "Drama",
+      "school_class": "8F"
+    },
+    {
+      "teacher": "Geo New",
+      "subject": "Geography",
+      "school_class": "8F"
+    },
+    {
+      "teacher": "Hist New",
+      "subject": "History",
+      "school_class": "8F"
+    },
+    {
+      "teacher": "Steve Gear",
+      "subject": "PE",
+      "school_class": "8F"
+    },
+    {
+      "teacher": "Denis Foster",
+      "subject": "PSHE",
+      "school_class": "8F"
+    },
+    {
+      "teacher": "Science New",
+      "subject": "Science",
+      "school_class": "8F"
+    },
+    {
+      "teacher": "Science New",
+      "subject": "Science__d2",
+      "school_class": "8F"
+    },
+    {
+      "teacher": "Paul Thompson",
+      "subject": "Art__d2",
+      "school_class": "9A"
+    },
+    {
+      "teacher": "Christine Cheung",
+      "subject": "Chinese",
+      "school_class": "9A"
+    },
+    {
+      "teacher": "Christine Cheung",
+      "subject": "Chinese__d2",
+      "school_class": "9A"
+    },
+    {
+      "teacher": "Flavio Jacquin",
+      "subject": "DT__d2",
+      "school_class": "9A"
+    },
+    {
+      "teacher": "Eng-Z",
+      "subject": "Drama",
+      "school_class": "9A"
+    },
+    {
+      "teacher": "Eng-Y",
+      "subject": "English",
+      "school_class": "9A"
+    },
+    {
+      "teacher": "James Chapman",
+      "subject": "Geography",
+      "school_class": "9A"
+    },
+    {
+      "teacher": "Hist New",
+      "subject": "History",
+      "school_class": "9A"
+    },
+    {
+      "teacher": "Lorraine Chow",
+      "subject": "Music",
+      "school_class": "9A"
+    },
+    {
+      "teacher": "Samantha Mcllwraith",
+      "subject": "PE",
+      "school_class": "9A"
+    },
+    {
+      "teacher": "Denis Foster",
+      "subject": "PSHE",
+      "school_class": "9A"
+    },
+    {
+      "teacher": "Tony Crossan",
+      "subject": "Science",
+      "school_class": "9A"
+    },
+    {
+      "teacher": "Tony Crossan",
+      "subject": "Science__d2",
+      "school_class": "9A"
+    },
+    {
+      "teacher": "Art New",
+      "subject": "Art__d2",
+      "school_class": "9B"
+    },
+    {
+      "teacher": "Tim Gotterson",
+      "subject": "DT__d2",
+      "school_class": "9B"
+    },
+    {
+      "teacher": "Eng-Z",
+      "subject": "Drama",
+      "school_class": "9B"
+    },
+    {
+      "teacher": "Geo New",
+      "subject": "Geography",
+      "school_class": "9B"
+    },
+    {
+      "teacher": "James Chapman",
+      "subject": "History",
+      "school_class": "9B"
+    },
+    {
+      "teacher": "Steve Gear",
+      "subject": "PE",
+      "school_class": "9B"
+    },
+    {
+      "teacher": "Denis Foster",
+      "subject": "PSHE",
+      "school_class": "9B"
+    },
+    {
+      "teacher": "Tony Crossan",
+      "subject": "Science",
+      "school_class": "9B"
+    },
+    {
+      "teacher": "Tony Crossan",
+      "subject": "Science__d2",
+      "school_class": "9B"
+    },
+    {
+      "teacher": "Paul Thompson",
+      "subject": "Art__d2",
+      "school_class": "9C"
+    },
+    {
+      "teacher": "Tim Gotterson",
+      "subject": "DT__d2",
+      "school_class": "9C"
+    },
+    {
+      "teacher": "Eng-Z",
+      "subject": "Drama",
+      "school_class": "9C"
+    },
+    {
+      "teacher": "Geo New",
+      "subject": "Geography",
+      "school_class": "9C"
+    },
+    {
+      "teacher": "Roger Crosby",
+      "subject": "History",
+      "school_class": "9C"
+    },
+    {
+      "teacher": "Lorraine Chow",
+      "subject": "Music",
+      "school_class": "9C"
+    },
+    {
+      "teacher": "Steve Gear",
+      "subject": "PE",
+      "school_class": "9C"
+    },
+    {
+      "teacher": "Denis Foster",
+      "subject": "PSHE",
+      "school_class": "9C"
+    },
+    {
+      "teacher": "Jean-Pierre Brossard",
+      "subject": "Science",
+      "school_class": "9C"
+    },
+    {
+      "teacher": "Jean-Pierre Brossard",
+      "subject": "Science__d2",
+      "school_class": "9C"
+    },
+    {
+      "teacher": "Art New",
+      "subject": "Art__d2",
+      "school_class": "9D"
+    },
+    {
+      "teacher": "Christine Cheung",
+      "subject": "Chinese",
+      "school_class": "9D"
+    },
+    {
+      "teacher": "Christine Cheung",
+      "subject": "Chinese__d2",
+      "school_class": "9D"
+    },
+    {
+      "teacher": "Andrew Pybus",
+      "subject": "DT__d2",
+      "school_class": "9D"
+    },
+    {
+      "teacher": "Eng-Z",
+      "subject": "Drama",
+      "school_class": "9D"
+    },
+    {
+      "teacher": "Jill Cartledge",
+      "subject": "English",
+      "school_class": "9D"
+    },
+    {
+      "teacher": "Geo New",
+      "subject": "Geography",
+      "school_class": "9D"
+    },
+    {
+      "teacher": "Hist New",
+      "subject": "History",
+      "school_class": "9D"
+    },
+    {
+      "teacher": "Steve Gear",
+      "subject": "PE",
+      "school_class": "9D"
+    },
+    {
+      "teacher": "Denis Foster",
+      "subject": "PSHE",
+      "school_class": "9D"
+    },
+    {
+      "teacher": "Jean-Pierre Brossard",
+      "subject": "Science",
+      "school_class": "9D"
+    },
+    {
+      "teacher": "Jean-Pierre Brossard",
+      "subject": "Science__d2",
+      "school_class": "9D"
+    },
+    {
+      "teacher": "Art New",
+      "subject": "Art__d2",
+      "school_class": "9E"
+    },
+    {
+      "teacher": "Andrew Pybus",
+      "subject": "DT__d2",
+      "school_class": "9E"
+    },
+    {
+      "teacher": "Eng-Z",
+      "subject": "Drama",
+      "school_class": "9E"
+    },
+    {
+      "teacher": "Geo New",
+      "subject": "Geography",
+      "school_class": "9E"
+    },
+    {
+      "teacher": "Hist New",
+      "subject": "History",
+      "school_class": "9E"
+    },
+    {
+      "teacher": "Lorraine Chow",
+      "subject": "Music",
+      "school_class": "9E"
+    },
+    {
+      "teacher": "PE New",
+      "subject": "PE",
+      "school_class": "9E"
+    },
+    {
+      "teacher": "Denis Foster",
+      "subject": "PSHE",
+      "school_class": "9E"
+    },
+    {
+      "teacher": "Archana Relan",
+      "subject": "Science",
+      "school_class": "9E"
+    },
+    {
+      "teacher": "Archana Relan",
+      "subject": "Science__d2",
+      "school_class": "9E"
+    },
+    {
+      "teacher": "Art New",
+      "subject": "Art__d2",
+      "school_class": "9F"
+    },
+    {
+      "teacher": "Andrew Pybus",
+      "subject": "DT__d2",
+      "school_class": "9F"
+    },
+    {
+      "teacher": "Eng-Z",
+      "subject": "Drama",
+      "school_class": "9F"
+    },
+    {
+      "teacher": "Geo New",
+      "subject": "Geography",
+      "school_class": "9F"
+    },
+    {
+      "teacher": "Hist New",
+      "subject": "History",
+      "school_class": "9F"
+    },
+    {
+      "teacher": "Samantha Mcllwraith",
+      "subject": "PE",
+      "school_class": "9F"
+    },
+    {
+      "teacher": "Denis Foster",
+      "subject": "PSHE",
+      "school_class": "9F"
+    },
+    {
+      "teacher": "Science New",
+      "subject": "Science",
+      "school_class": "9F"
+    },
+    {
+      "teacher": "Science New",
+      "subject": "Science__d2",
+      "school_class": "9F"
+    },
+    {
+      "teacher": "Christine Cheung",
+      "subject": "Chinese",
+      "school_class": "Y10"
+    },
+    {
+      "teacher": "Christine Cheung",
+      "subject": "Chinese__d2",
+      "school_class": "Y10"
+    },
+    {
+      "teacher": "David Rowlands",
+      "subject": "English",
+      "school_class": "Y10"
+    },
+    {
+      "teacher": "James Briggs",
+      "subject": "Math",
+      "school_class": "Y10"
+    },
+    {
+      "teacher": "Karen Tee",
+      "subject": "Math",
+      "school_class": "Y10-A.Math-1"
+    },
+    {
+      "teacher": "Karen Tee",
+      "subject": "Math__d2",
+      "school_class": "Y10-A.Math-1"
+    },
+    {
+      "teacher": "Jacques Thomass",
+      "subject": "Art",
+      "school_class": "Y10-Art-1"
+    },
+    {
+      "teacher": "Jacques Thomass",
+      "subject": "Art__d2",
+      "school_class": "Y10-Art-1"
+    },
+    {
+      "teacher": "Paul Thompson",
+      "subject": "Art",
+      "school_class": "Y10-Art-2"
+    },
+    {
+      "teacher": "Paul Thompson",
+      "subject": "Art__d2",
+      "school_class": "Y10-Art-2"
+    },
+    {
+      "teacher": "Archana Relan",
+      "subject": "Biology",
+      "school_class": "Y10-Bio-1"
+    },
+    {
+      "teacher": "Archana Relan",
+      "subject": "Biology__d2",
+      "school_class": "Y10-Bio-1"
+    },
+    {
+      "teacher": "Grace Das",
+      "subject": "Biology",
+      "school_class": "Y10-Bio-2"
+    },
+    {
+      "teacher": "Grace Das",
+      "subject": "Biology__d2",
+      "school_class": "Y10-Bio-2"
+    },
+    {
+      "teacher": "Grace Das",
+      "subject": "Biology",
+      "school_class": "Y10-Bio-3"
+    },
+    {
+      "teacher": "Grace Das",
+      "subject": "Biology__d2",
+      "school_class": "Y10-Bio-3"
+    },
+    {
+      "teacher": "Pravin Bhardwaj",
+      "subject": "Business",
+      "school_class": "Y10-Biz-1"
+    },
+    {
+      "teacher": "Pravin Bhardwaj",
+      "subject": "Business__d2",
+      "school_class": "Y10-Biz-1"
+    },
+    {
+      "teacher": "AUTO_Y10_Block_English",
+      "subject": "English",
+      "school_class": "Y10-Block"
+    },
+    {
+      "teacher": "AUTO_Y10_Block_Void",
+      "subject": "Void@AUTO_Y10_Block_Void",
+      "school_class": "Y10-Block"
+    },
+    {
+      "teacher": "AUTO_Y10_Block_Void",
+      "subject": "Void@AUTO_Y10_Block_Void__d2",
+      "school_class": "Y10-Block"
+    },
+    {
+      "teacher": "PSHE",
+      "subject": "Void@PSHE",
+      "school_class": "Y10-Block"
+    },
+    {
+      "teacher": "B.L. Poh",
+      "subject": "Chemistry",
+      "school_class": "Y10-Chem-1"
+    },
+    {
+      "teacher": "B.L. Poh",
+      "subject": "Chemistry__d2",
+      "school_class": "Y10-Chem-1"
+    },
+    {
+      "teacher": "B.L. Poh",
+      "subject": "Chemistry",
+      "school_class": "Y10-Chem-2"
+    },
+    {
+      "teacher": "B.L. Poh",
+      "subject": "Chemistry__d2",
+      "school_class": "Y10-Chem-2"
+    },
+    {
+      "teacher": "Sapna Lakhani",
+      "subject": "Chemistry@Sapna_Lakhani",
+      "school_class": "Y10-Chem-3"
+    },
+    {
+      "teacher": "Tony Crossan",
+      "subject": "Chemistry@Tony_Crossan__d2",
+      "school_class": "Y10-Chem-3"
+    },
+    {
+      "teacher": "Flavio Jacquin",
+      "subject": "DT",
+      "school_class": "Y10-DT-1"
+    },
+    {
+      "teacher": "Flavio Jacquin",
+      "subject": "DT__d2",
+      "school_class": "Y10-DT-1"
+    },
+    {
+      "teacher": "Flavio Jacquin",
+      "subject": "DT",
+      "school_class": "Y10-DT-2"
+    },
+    {
+      "teacher": "Flavio Jacquin",
+      "subject": "DT__d2",
+      "school_class": "Y10-DT-2"
+    },
+    {
+      "teacher": "Juliette Simms",
+      "subject": "Drama",
+      "school_class": "Y10-Drama-1"
+    },
+    {
+      "teacher": "Juliette Simms",
+      "subject": "Drama__d2",
+      "school_class": "Y10-Drama-1"
+    },
+    {
+      "teacher": "Roger Crosby",
+      "subject": "Economics",
+      "school_class": "Y10-Econ-1"
+    },
+    {
+      "teacher": "Roger Crosby",
+      "subject": "Economics__d2",
+      "school_class": "Y10-Econ-1"
+    },
+    {
+      "teacher": "Roger Crosby",
+      "subject": "Economics",
+      "school_class": "Y10-Econ-2"
+    },
+    {
+      "teacher": "Roger Crosby",
+      "subject": "Economics__d2",
+      "school_class": "Y10-Econ-2"
+    },
+    {
+      "teacher": "Stella Leung",
+      "subject": "Economics",
+      "school_class": "Y10-Econ-3"
+    },
+    {
+      "teacher": "Stella Leung",
+      "subject": "Economics__d2",
+      "school_class": "Y10-Econ-3"
+    },
+    {
+      "teacher": "French",
+      "subject": "French",
+      "school_class": "Y10-French-1"
+    },
+    {
+      "teacher": "French",
+      "subject": "French__d2",
+      "school_class": "Y10-French-1"
+    },
+    {
+      "teacher": "James Chapman",
+      "subject": "Geography",
+      "school_class": "Y10-Geo-1"
+    },
+    {
+      "teacher": "James Chapman",
+      "subject": "Geography__d2",
+      "school_class": "Y10-Geo-1"
+    },
+    {
+      "teacher": "Geo New",
+      "subject": "Geography",
+      "school_class": "Y10-Geo-2"
+    },
+    {
+      "teacher": "Geo New",
+      "subject": "Geography__d2",
+      "school_class": "Y10-Geo-2"
+    },
+    {
+      "teacher": "Sachin Das",
+      "subject": "Global Persp",
+      "school_class": "Y10-GlobalP-1"
+    },
+    {
+      "teacher": "Sachin Das",
+      "subject": "Global Persp__d2",
+      "school_class": "Y10-GlobalP-1"
+    },
+    {
+      "teacher": "Hist New",
+      "subject": "History",
+      "school_class": "Y10-Hist-1"
+    },
+    {
+      "teacher": "Hist New",
+      "subject": "History__d2",
+      "school_class": "Y10-Hist-1"
+    },
+    {
+      "teacher": "Jon Dwyer",
+      "subject": "IT",
+      "school_class": "Y10-IT-1"
+    },
+    {
+      "teacher": "Jon Dwyer",
+      "subject": "IT__d2",
+      "school_class": "Y10-IT-1"
+    },
+    {
+      "teacher": "Jon Dwyer",
+      "subject": "IT",
+      "school_class": "Y10-IT-2"
+    },
+    {
+      "teacher": "Jon Dwyer",
+      "subject": "IT__d2",
+      "school_class": "Y10-IT-2"
+    },
+    {
+      "teacher": "Jennifer Poh",
+      "subject": "Music",
+      "school_class": "Y10-Music-1"
+    },
+    {
+      "teacher": "Jennifer Poh",
+      "subject": "Music__d2",
+      "school_class": "Y10-Music-1"
+    },
+    {
+      "teacher": "Samantha Mcllwraith",
+      "subject": "PE-Sen",
+      "school_class": "Y10-PE-1"
+    },
+    {
+      "teacher": "Samantha Mcllwraith",
+      "subject": "PE-Sen__d2",
+      "school_class": "Y10-PE-1"
+    },
+    {
+      "teacher": "Derek Eyre",
+      "subject": "Physics",
+      "school_class": "Y10-Physics-1"
+    },
+    {
+      "teacher": "Derek Eyre",
+      "subject": "Physics__d2",
+      "school_class": "Y10-Physics-1"
+    },
+    {
+      "teacher": "CT Leung",
+      "subject": "Physics",
+      "school_class": "Y10-Physics-2"
+    },
+    {
+      "teacher": "CT Leung",
+      "subject": "Physics__d2",
+      "school_class": "Y10-Physics-2"
+    },
+    {
+      "teacher": "CT Leung",
+      "subject": "Physics",
+      "school_class": "Y10-Physics-3"
+    },
+    {
+      "teacher": "CT Leung",
+      "subject": "Physics__d2",
+      "school_class": "Y10-Physics-3"
+    },
+    {
+      "teacher": "Christine Cheung",
+      "subject": "Chinese",
+      "school_class": "Y11"
+    },
+    {
+      "teacher": "Christine Cheung",
+      "subject": "Chinese__d2",
+      "school_class": "Y11"
+    },
+    {
+      "teacher": "Jeremy Sampson",
+      "subject": "English",
+      "school_class": "Y11"
+    },
+    {
+      "teacher": "James Briggs",
+      "subject": "Math",
+      "school_class": "Y11"
+    },
+    {
+      "teacher": "Yuen Yushun",
+      "subject": "Math",
+      "school_class": "Y11-A.Math-1"
+    },
+    {
+      "teacher": "Yuen Yushun",
+      "subject": "Math__d2",
+      "school_class": "Y11-A.Math-1"
+    },
+    {
+      "teacher": "Jacques Thomass",
+      "subject": "Art",
+      "school_class": "Y11-Art-1"
+    },
+    {
+      "teacher": "Jacques Thomass",
+      "subject": "Art__d2",
+      "school_class": "Y11-Art-1"
+    },
+    {
+      "teacher": "Paul Thompson",
+      "subject": "Art",
+      "school_class": "Y11-Art-2"
+    },
+    {
+      "teacher": "Paul Thompson",
+      "subject": "Art__d2",
+      "school_class": "Y11-Art-2"
+    },
+    {
+      "teacher": "Art New",
+      "subject": "Art",
+      "school_class": "Y11-Art-3"
+    },
+    {
+      "teacher": "Art New",
+      "subject": "Art__d2",
+      "school_class": "Y11-Art-3"
+    },
+    {
+      "teacher": "Joyce Ho",
+      "subject": "Biology",
+      "school_class": "Y11-Bio-1"
+    },
+    {
+      "teacher": "Joyce Ho",
+      "subject": "Biology__d2",
+      "school_class": "Y11-Bio-1"
+    },
+    {
+      "teacher": "Joyce Ho",
+      "subject": "Biology",
+      "school_class": "Y11-Bio-2"
+    },
+    {
+      "teacher": "Joyce Ho",
+      "subject": "Biology__d2",
+      "school_class": "Y11-Bio-2"
+    },
+    {
+      "teacher": "Jean-Pierre Brossard",
+      "subject": "Biology",
+      "school_class": "Y11-Bio-3"
+    },
+    {
+      "teacher": "Jean-Pierre Brossard",
+      "subject": "Biology__d2",
+      "school_class": "Y11-Bio-3"
+    },
+    {
+      "teacher": "Pravin Bhardwaj",
+      "subject": "Business",
+      "school_class": "Y11-Biz-1"
+    },
+    {
+      "teacher": "Pravin Bhardwaj",
+      "subject": "Business__d2",
+      "school_class": "Y11-Biz-1"
+    },
+    {
+      "teacher": "Pravin Bhardwaj",
+      "subject": "Business",
+      "school_class": "Y11-Biz-2"
+    },
+    {
+      "teacher": "Pravin Bhardwaj",
+      "subject": "Business__d2",
+      "school_class": "Y11-Biz-2"
+    },
+    {
+      "teacher": "AUTO_Y11_Block_English",
+      "subject": "English",
+      "school_class": "Y11-Block"
+    },
+    {
+      "teacher": "AUTO_Y11_Block_Void",
+      "subject": "Void",
+      "school_class": "Y11-Block"
+    },
+    {
+      "teacher": "AUTO_Y11_Block_Void",
+      "subject": "Void__d2",
+      "school_class": "Y11-Block"
+    },
+    {
+      "teacher": "Sapna Lakhani",
+      "subject": "Chemistry",
+      "school_class": "Y11-Chem-1"
+    },
+    {
+      "teacher": "Sapna Lakhani",
+      "subject": "Chemistry__d2",
+      "school_class": "Y11-Chem-1"
+    },
+    {
+      "teacher": "Sapna Lakhani",
+      "subject": "Chemistry",
+      "school_class": "Y11-Chem-2"
+    },
+    {
+      "teacher": "Sapna Lakhani",
+      "subject": "Chemistry__d2",
+      "school_class": "Y11-Chem-2"
+    },
+    {
+      "teacher": "B.L. Poh",
+      "subject": "Chemistry",
+      "school_class": "Y11-Chem-3"
+    },
+    {
+      "teacher": "B.L. Poh",
+      "subject": "Chemistry__d2",
+      "school_class": "Y11-Chem-3"
+    },
+    {
+      "teacher": "Tim Gotterson",
+      "subject": "DT",
+      "school_class": "Y11-DT-1"
+    },
+    {
+      "teacher": "Tim Gotterson",
+      "subject": "DT__d2",
+      "school_class": "Y11-DT-1"
+    },
+    {
+      "teacher": "Andrew Pybus",
+      "subject": "DT",
+      "school_class": "Y11-DT-2"
+    },
+    {
+      "teacher": "Andrew Pybus",
+      "subject": "DT__d2",
+      "school_class": "Y11-DT-2"
+    },
+    {
+      "teacher": "Juliette Simms",
+      "subject": "Drama",
+      "school_class": "Y11-Drama-1"
+    },
+    {
+      "teacher": "Juliette Simms",
+      "subject": "Drama__d2",
+      "school_class": "Y11-Drama-1"
+    },
+    {
+      "teacher": "Stella Leung",
+      "subject": "Economics",
+      "school_class": "Y11-Econ-1"
+    },
+    {
+      "teacher": "Stella Leung",
+      "subject": "Economics__d2",
+      "school_class": "Y11-Econ-1"
+    },
+    {
+      "teacher": "Stella Leung",
+      "subject": "Economics",
+      "school_class": "Y11-Econ-2"
+    },
+    {
+      "teacher": "Stella Leung",
+      "subject": "Economics__d2",
+      "school_class": "Y11-Econ-2"
+    },
+    {
+      "teacher": "Jeremy Sampson",
+      "subject": "English Lit.",
+      "school_class": "Y11-Eng.Lit.-1"
+    },
+    {
+      "teacher": "Jeremy Sampson",
+      "subject": "English Lit.__d2",
+      "school_class": "Y11-Eng.Lit.-1"
+    },
+    {
+      "teacher": "French",
+      "subject": "French",
+      "school_class": "Y11-French-1"
+    },
+    {
+      "teacher": "French",
+      "subject": "French__d2",
+      "school_class": "Y11-French-1"
+    },
+    {
+      "teacher": "Neisha Pratt",
+      "subject": "Geography",
+      "school_class": "Y11-Geo-1"
+    },
+    {
+      "teacher": "Neisha Pratt",
+      "subject": "Geography__d2",
+      "school_class": "Y11-Geo-1"
+    },
+    {
+      "teacher": "Ophelia Bou",
+      "subject": "Geography",
+      "school_class": "Y11-Geo-2"
+    },
+    {
+      "teacher": "Ophelia Bou",
+      "subject": "Geography__d2",
+      "school_class": "Y11-Geo-2"
+    },
+    {
+      "teacher": "Sachin Das",
+      "subject": "History",
+      "school_class": "Y11-Hist-1"
+    },
+    {
+      "teacher": "Sachin Das",
+      "subject": "History__d2",
+      "school_class": "Y11-Hist-1"
+    },
+    {
+      "teacher": "Jon Dwyer",
+      "subject": "IT",
+      "school_class": "Y11-IT-1"
+    },
+    {
+      "teacher": "Jon Dwyer",
+      "subject": "IT__d2",
+      "school_class": "Y11-IT-1"
+    },
+    {
+      "teacher": "Jon Dwyer",
+      "subject": "IT",
+      "school_class": "Y11-IT-2"
+    },
+    {
+      "teacher": "Jon Dwyer",
+      "subject": "IT__d2",
+      "school_class": "Y11-IT-2"
+    },
+    {
+      "teacher": "Jennifer Poh",
+      "subject": "Music",
+      "school_class": "Y11-Music-1"
+    },
+    {
+      "teacher": "Jennifer Poh",
+      "subject": "Music__d2",
+      "school_class": "Y11-Music-1"
+    },
+    {
+      "teacher": "Steve Gear",
+      "subject": "PE-Sen",
+      "school_class": "Y11-PE-1"
+    },
+    {
+      "teacher": "Steve Gear",
+      "subject": "PE-Sen__d2",
+      "school_class": "Y11-PE-1"
+    },
+    {
+      "teacher": "CT Leung",
+      "subject": "Physics",
+      "school_class": "Y11-Physics-1"
+    },
+    {
+      "teacher": "CT Leung",
+      "subject": "Physics__d2",
+      "school_class": "Y11-Physics-1"
+    },
+    {
+      "teacher": "AUTO_Y11_Physics_2_Physics",
+      "subject": "Physics@AUTO_Y11_Physics_2_Physics",
+      "school_class": "Y11-Physics-2"
+    },
+    {
+      "teacher": "AUTO_Y11_Physics_2_Physics",
+      "subject": "Physics@AUTO_Y11_Physics_2_Physics__d2",
+      "school_class": "Y11-Physics-2"
+    },
+    {
+      "teacher": "Derek Eyre",
+      "subject": "Physics@Derek_Eyre",
+      "school_class": "Y11-Physics-2"
+    },
+    {
+      "teacher": "Derek Eyre",
+      "subject": "Physics@Derek_Eyre__d2",
+      "school_class": "Y11-Physics-2"
+    },
+    {
+      "teacher": "B.L. Poh",
+      "subject": "Physics",
+      "school_class": "Y11-Physics-3"
+    },
+    {
+      "teacher": "B.L. Poh",
+      "subject": "Physics__d2",
+      "school_class": "Y11-Physics-3"
+    },
+    {
+      "teacher": "Margaret Chou",
+      "subject": "Chinese",
+      "school_class": "Y12"
+    },
+    {
+      "teacher": "Margaret Chou",
+      "subject": "Chinese__d2",
+      "school_class": "Y12"
+    },
+    {
+      "teacher": "John Greenhill",
+      "subject": "English",
+      "school_class": "Y12"
+    },
+    {
+      "teacher": "Yuen Yushun",
+      "subject": "Math",
+      "school_class": "Y12"
+    },
+    {
+      "teacher": "Yuen Yushun",
+      "subject": "Math__d2",
+      "school_class": "Y12"
+    },
+    {
+      "teacher": "Paul Thompson",
+      "subject": "Art",
+      "school_class": "Y12-Art"
+    },
+    {
+      "teacher": "Paul Thompson",
+      "subject": "Art__d2",
+      "school_class": "Y12-Art"
+    },
+    {
+      "teacher": "Jean-Pierre Brossard",
+      "subject": "Biology",
+      "school_class": "Y12-Bio-1"
+    },
+    {
+      "teacher": "Jean-Pierre Brossard",
+      "subject": "Biology__d2",
+      "school_class": "Y12-Bio-1"
+    },
+    {
+      "teacher": "Pravin Bhardwaj",
+      "subject": "Business",
+      "school_class": "Y12-Biz"
+    },
+    {
+      "teacher": "Pravin Bhardwaj",
+      "subject": "Business__d2",
+      "school_class": "Y12-Biz"
+    },
+    {
+      "teacher": "AUTO_Y12_Block_Void",
+      "subject": "Void",
+      "school_class": "Y12-Block"
+    },
+    {
+      "teacher": "AUTO_Y12_Block_Void",
+      "subject": "Void__d2",
+      "school_class": "Y12-Block"
+    },
+    {
+      "teacher": "AUTO_Y12_CAS_CAS",
+      "subject": "CAS",
+      "school_class": "Y12-CAS"
+    },
+    {
+      "teacher": "Sapna Lakhani",
+      "subject": "Chemistry",
+      "school_class": "Y12-Chem-1"
+    },
+    {
+      "teacher": "Sapna Lakhani",
+      "subject": "Chemistry__d2",
+      "school_class": "Y12-Chem-1"
+    },
+    {
+      "teacher": "Tony Crossan",
+      "subject": "Chemistry",
+      "school_class": "Y12-Chem-2"
+    },
+    {
+      "teacher": "Tony Crossan",
+      "subject": "Chemistry__d2",
+      "school_class": "Y12-Chem-2"
+    },
+    {
+      "teacher": "Flavio Jacquin",
+      "subject": "DT",
+      "school_class": "Y12-DT"
+    },
+    {
+      "teacher": "Flavio Jacquin",
+      "subject": "DT__d2",
+      "school_class": "Y12-DT"
+    },
+    {
+      "teacher": "AUTO_Y12_EE_EE",
+      "subject": "EE",
+      "school_class": "Y12-EE"
+    },
+    {
+      "teacher": "Roger Crosby",
+      "subject": "Economics",
+      "school_class": "Y12-Econ-1"
+    },
+    {
+      "teacher": "Roger Crosby",
+      "subject": "Economics__d2",
+      "school_class": "Y12-Econ-1"
+    },
+    {
+      "teacher": "Stella Leung",
+      "subject": "Economics",
+      "school_class": "Y12-Econ-2"
+    },
+    {
+      "teacher": "Stella Leung",
+      "subject": "Economics__d2",
+      "school_class": "Y12-Econ-2"
+    },
+    {
+      "teacher": "Archana Relan",
+      "subject": "Environ.Sys.",
+      "school_class": "Y12-Env-1"
+    },
+    {
+      "teacher": "Archana Relan",
+      "subject": "Environ.Sys.__d2",
+      "school_class": "Y12-Env-1"
+    },
+    {
+      "teacher": "Grace Das",
+      "subject": "Environ.Sys.",
+      "school_class": "Y12-Env-2"
+    },
+    {
+      "teacher": "Grace Das",
+      "subject": "Environ.Sys.__d2",
+      "school_class": "Y12-Env-2"
+    },
+    {
+      "teacher": "French",
+      "subject": "French",
+      "school_class": "Y12-French"
+    },
+    {
+      "teacher": "French",
+      "subject": "French__d2",
+      "school_class": "Y12-French"
+    },
+    {
+      "teacher": "Neisha Pratt",
+      "subject": "Geography",
+      "school_class": "Y12-Geo-1"
+    },
+    {
+      "teacher": "Neisha Pratt",
+      "subject": "Geography__d2",
+      "school_class": "Y12-Geo-1"
+    },
+    {
+      "teacher": "Geo New",
+      "subject": "Geography",
+      "school_class": "Y12-Geo-2"
+    },
+    {
+      "teacher": "Geo New",
+      "subject": "Geography__d2",
+      "school_class": "Y12-Geo-2"
+    },
+    {
+      "teacher": "Hist New",
+      "subject": "History",
+      "school_class": "Y12-Hist"
+    },
+    {
+      "teacher": "Hist New",
+      "subject": "History__d2",
+      "school_class": "Y12-Hist"
+    },
+    {
+      "teacher": "Jennifer Poh",
+      "subject": "Music",
+      "school_class": "Y12-Music"
+    },
+    {
+      "teacher": "Jennifer Poh",
+      "subject": "Music__d2",
+      "school_class": "Y12-Music"
+    },
+    {
+      "teacher": "Jon Dwyer",
+      "subject": "PE-Sen",
+      "school_class": "Y12-PE"
+    },
+    {
+      "teacher": "Derek Eyre",
+      "subject": "Physics",
+      "school_class": "Y12-Physics-1"
+    },
+    {
+      "teacher": "Derek Eyre",
+      "subject": "Physics__d2",
+      "school_class": "Y12-Physics-1"
+    },
+    {
+      "teacher": "CT Leung",
+      "subject": "Physics",
+      "school_class": "Y12-Physics-2"
+    },
+    {
+      "teacher": "CT Leung",
+      "subject": "Physics__d2",
+      "school_class": "Y12-Physics-2"
+    },
+    {
+      "teacher": "Rasika K",
+      "subject": "Pyschology",
+      "school_class": "Y12-Psych"
+    },
+    {
+      "teacher": "Rasika K",
+      "subject": "Pyschology__d2",
+      "school_class": "Y12-Psych"
+    },
+    {
+      "teacher": "AUTO_Y12_TOK_TOK",
+      "subject": "TOK__d2",
+      "school_class": "Y12-TOK"
+    },
+    {
+      "teacher": "Juliette Simms",
+      "subject": "Theatre",
+      "school_class": "Y12-Threatre"
+    },
+    {
+      "teacher": "Juliette Simms",
+      "subject": "Theatre__d2",
+      "school_class": "Y12-Threatre"
+    },
+    {
+      "teacher": "Mandy Yeung",
+      "subject": "Chinese",
+      "school_class": "Y13"
+    },
+    {
+      "teacher": "Mandy Yeung",
+      "subject": "Chinese__d2",
+      "school_class": "Y13"
+    },
+    {
+      "teacher": "John Greenhill",
+      "subject": "English",
+      "school_class": "Y13"
+    },
+    {
+      "teacher": "Yuen Yushun",
+      "subject": "Math",
+      "school_class": "Y13"
+    },
+    {
+      "teacher": "Yuen Yushun",
+      "subject": "Math__d2",
+      "school_class": "Y13"
+    },
+    {
+      "teacher": "Jacques Thomass",
+      "subject": "Art",
+      "school_class": "Y13-Art"
+    },
+    {
+      "teacher": "Jacques Thomass",
+      "subject": "Art__d2",
+      "school_class": "Y13-Art"
+    },
+    {
+      "teacher": "Joyce Ho",
+      "subject": "Biology",
+      "school_class": "Y13-Bio-1"
+    },
+    {
+      "teacher": "Joyce Ho",
+      "subject": "Biology__d2",
+      "school_class": "Y13-Bio-1"
+    },
+    {
+      "teacher": "Pravin Bhardwaj",
+      "subject": "Business",
+      "school_class": "Y13-Biz"
+    },
+    {
+      "teacher": "Pravin Bhardwaj",
+      "subject": "Business__d2",
+      "school_class": "Y13-Biz"
+    },
+    {
+      "teacher": "AUTO_Y13_Block_Void",
+      "subject": "Void",
+      "school_class": "Y13-Block"
+    },
+    {
+      "teacher": "AUTO_Y13_Block_Void",
+      "subject": "Void__d2",
+      "school_class": "Y13-Block"
+    },
+    {
+      "teacher": "AUTO_Y13_CAS_CAS",
+      "subject": "CAS",
+      "school_class": "Y13-CAS"
+    },
+    {
+      "teacher": "B.L. Poh",
+      "subject": "Chemistry",
+      "school_class": "Y13-Chem-1"
+    },
+    {
+      "teacher": "B.L. Poh",
+      "subject": "Chemistry__d2",
+      "school_class": "Y13-Chem-1"
+    },
+    {
+      "teacher": "Sapna Lakhani",
+      "subject": "Chemistry",
+      "school_class": "Y13-Chem-2"
+    },
+    {
+      "teacher": "Sapna Lakhani",
+      "subject": "Chemistry__d2",
+      "school_class": "Y13-Chem-2"
+    },
+    {
+      "teacher": "Andrew Pybus",
+      "subject": "DT",
+      "school_class": "Y13-DT"
+    },
+    {
+      "teacher": "Andrew Pybus",
+      "subject": "DT__d2",
+      "school_class": "Y13-DT"
+    },
+    {
+      "teacher": "AUTO_Y13_EE_EE",
+      "subject": "EE",
+      "school_class": "Y13-EE"
+    },
+    {
+      "teacher": "Roger Crosby",
+      "subject": "Economics",
+      "school_class": "Y13-Econ-1"
+    },
+    {
+      "teacher": "Roger Crosby",
+      "subject": "Economics__d2",
+      "school_class": "Y13-Econ-1"
+    },
+    {
+      "teacher": "Stella Leung",
+      "subject": "Economics",
+      "school_class": "Y13-Econ-2"
+    },
+    {
+      "teacher": "Stella Leung",
+      "subject": "Economics__d2",
+      "school_class": "Y13-Econ-2"
+    },
+    {
+      "teacher": "Archana Relan",
+      "subject": "Environ.Sys.",
+      "school_class": "Y13-Env-1"
+    },
+    {
+      "teacher": "Archana Relan",
+      "subject": "Environ.Sys.__d2",
+      "school_class": "Y13-Env-1"
+    },
+    {
+      "teacher": "French",
+      "subject": "French",
+      "school_class": "Y13-French"
+    },
+    {
+      "teacher": "French",
+      "subject": "French__d2",
+      "school_class": "Y13-French"
+    },
+    {
+      "teacher": "Neisha Pratt",
+      "subject": "Geography",
+      "school_class": "Y13-Geo-1"
+    },
+    {
+      "teacher": "Neisha Pratt",
+      "subject": "Geography__d2",
+      "school_class": "Y13-Geo-1"
+    },
+    {
+      "teacher": "Neisha Pratt",
+      "subject": "Geography",
+      "school_class": "Y13-Geo-2"
+    },
+    {
+      "teacher": "Neisha Pratt",
+      "subject": "Geography__d2",
+      "school_class": "Y13-Geo-2"
+    },
+    {
+      "teacher": "James Chapman",
+      "subject": "History",
+      "school_class": "Y13-Hist"
+    },
+    {
+      "teacher": "James Chapman",
+      "subject": "History__d2",
+      "school_class": "Y13-Hist"
+    },
+    {
+      "teacher": "Jon Dwyer",
+      "subject": "PE-Sen",
+      "school_class": "Y13-PE"
+    },
+    {
+      "teacher": "Derek Eyre",
+      "subject": "Physics",
+      "school_class": "Y13-Physics-1"
+    },
+    {
+      "teacher": "Derek Eyre",
+      "subject": "Physics__d2",
+      "school_class": "Y13-Physics-1"
+    },
+    {
+      "teacher": "CT Leung",
+      "subject": "Physics",
+      "school_class": "Y13-Physics-2"
+    },
+    {
+      "teacher": "CT Leung",
+      "subject": "Physics__d2",
+      "school_class": "Y13-Physics-2"
+    },
+    {
+      "teacher": "Rasika K",
+      "subject": "Pyschology",
+      "school_class": "Y13-Psych"
+    },
+    {
+      "teacher": "Rasika K",
+      "subject": "Pyschology__d2",
+      "school_class": "Y13-Psych"
+    },
+    {
+      "teacher": "Jeremy Sampson",
+      "subject": "TOK__d2",
+      "school_class": "Y13-TOK"
+    },
+    {
+      "teacher": "Jacques Thomass",
+      "subject": "Art__d2",
+      "school_class": "Y7A"
+    },
+    {
+      "teacher": "Sandra Hon",
+      "subject": "Chinese",
+      "school_class": "Y7A"
+    },
+    {
+      "teacher": "Sandra Hon",
+      "subject": "Chinese__d2",
+      "school_class": "Y7A"
+    },
+    {
+      "teacher": "Andrew Pybus",
+      "subject": "DT__d2",
+      "school_class": "Y7A"
+    },
+    {
+      "teacher": "Ophelia Bou",
+      "subject": "Drama",
+      "school_class": "Y7A"
+    },
+    {
+      "teacher": "Ophelia Bou",
+      "subject": "English",
+      "school_class": "Y7A"
+    },
+    {
+      "teacher": "Rasika K",
+      "subject": "Geography",
+      "school_class": "Y7A"
+    },
+    {
+      "teacher": "Sachin Das",
+      "subject": "History",
+      "school_class": "Y7A"
+    },
+    {
+      "teacher": "Bernard Chan",
+      "subject": "Math",
+      "school_class": "Y7A"
+    },
+    {
+      "teacher": "Lorraine Chow",
+      "subject": "Music",
+      "school_class": "Y7A"
+    },
+    {
+      "teacher": "Samantha Mcllwraith",
+      "subject": "PE",
+      "school_class": "Y7A"
+    },
+    {
+      "teacher": "Denis Foster",
+      "subject": "PSHE",
+      "school_class": "Y7A"
+    },
+    {
+      "teacher": "Tony Crossan",
+      "subject": "Science",
+      "school_class": "Y7A"
+    },
+    {
+      "teacher": "Tony Crossan",
+      "subject": "Science__d2",
+      "school_class": "Y7A"
+    },
+    {
+      "teacher": "Jacques Thomass",
+      "subject": "Art__d2",
+      "school_class": "Y7B"
+    },
+    {
+      "teacher": "Tim Gotterson",
+      "subject": "DT__d2",
+      "school_class": "Y7B"
+    },
+    {
+      "teacher": "John Tait",
+      "subject": "Drama",
+      "school_class": "Y7B"
+    },
+    {
+      "teacher": "John Tait",
+      "subject": "English",
+      "school_class": "Y7B"
+    },
+    {
+      "teacher": "Rasika K",
+      "subject": "Geography",
+      "school_class": "Y7B"
+    },
+    {
+      "teacher": "Sachin Das",
+      "subject": "History",
+      "school_class": "Y7B"
+    },
+    {
+      "teacher": "Math NT1",
+      "subject": "Math",
+      "school_class": "Y7B"
+    },
+    {
+      "teacher": "Steve Gear",
+      "subject": "PE",
+      "school_class": "Y7B"
+    },
+    {
+      "teacher": "Denis Foster",
+      "subject": "PSHE",
+      "school_class": "Y7B"
+    },
+    {
+      "teacher": "Archana Relan",
+      "subject": "Science@Archana_Relan",
+      "school_class": "Y7B"
+    },
+    {
+      "teacher": "Tony Crossan",
+      "subject": "Science@Tony_Crossan__d2",
+      "school_class": "Y7B"
+    },
+    {
+      "teacher": "Jacques Thomass",
+      "subject": "Art__d2",
+      "school_class": "Y7C"
+    },
+    {
+      "teacher": "Mandy Yeung",
+      "subject": "Chinese",
+      "school_class": "Y7C"
+    },
+    {
+      "teacher": "Mandy Yeung",
+      "subject": "Chinese__d2",
+      "school_class": "Y7C"
+    },
+    {
+      "teacher": "Andrew Pybus",
+      "subject": "DT__d2",
+      "school_class": "Y7C"
+    },
+    {
+      "teacher": "David Rowlands",
+      "subject": "Drama",
+      "school_class": "Y7C"
+    },
+    {
+      "teacher": "David Rowlands",
+      "subject": "English",
+      "school_class": "Y7C"
+    },
+    {
+      "teacher": "Rasika K",
+      "subject": "Geography",
+      "school_class": "Y7C"
+    },
+    {
+      "teacher": "Sachin Das",
+      "subject": "History",
+      "school_class": "Y7C"
+    },
+    {
+      "teacher": "Math NT2",
+      "subject": "Math",
+      "school_class": "Y7C"
+    },
+    {
+      "teacher": "Samantha Mcllwraith",
+      "subject": "PE",
+      "school_class": "Y7C"
+    },
+    {
+      "teacher": "Denis Foster",
+      "subject": "PSHE",
+      "school_class": "Y7C"
+    },
+    {
+      "teacher": "Jean-Pierre Brossard",
+      "subject": "Science",
+      "school_class": "Y7C"
+    },
+    {
+      "teacher": "Jean-Pierre Brossard",
+      "subject": "Science__d2",
+      "school_class": "Y7C"
+    },
+    {
+      "teacher": "Art New",
+      "subject": "Art__d2",
+      "school_class": "Y7D"
+    },
+    {
+      "teacher": "Tim Gotterson",
+      "subject": "DT__d2",
+      "school_class": "Y7D"
+    },
+    {
+      "teacher": "Eng-X Thea",
+      "subject": "Drama",
+      "school_class": "Y7D"
+    },
+    {
+      "teacher": "Eng Joey",
+      "subject": "English",
+      "school_class": "Y7D"
+    },
+    {
+      "teacher": "Rasika K",
+      "subject": "Geography",
+      "school_class": "Y7D"
+    },
+    {
+      "teacher": "Sachin Das",
+      "subject": "History",
+      "school_class": "Y7D"
+    },
+    {
+      "teacher": "Math NT1",
+      "subject": "Math",
+      "school_class": "Y7D"
+    },
+    {
+      "teacher": "Lorraine Chow",
+      "subject": "Music",
+      "school_class": "Y7D"
+    },
+    {
+      "teacher": "Steve Gear",
+      "subject": "PE",
+      "school_class": "Y7D"
+    },
+    {
+      "teacher": "Denis Foster",
+      "subject": "PSHE",
+      "school_class": "Y7D"
+    },
+    {
+      "teacher": "Science New",
+      "subject": "Science",
+      "school_class": "Y7D"
+    },
+    {
+      "teacher": "Science New",
+      "subject": "Science__d2",
+      "school_class": "Y7D"
+    },
+    {
+      "teacher": "Art New",
+      "subject": "Art__d2",
+      "school_class": "Y7E"
+    },
+    {
+      "teacher": "Tim Gotterson",
+      "subject": "DT__d2",
+      "school_class": "Y7E"
+    },
+    {
+      "teacher": "Eng-Y",
+      "subject": "Drama",
+      "school_class": "Y7E"
+    },
+    {
+      "teacher": "Eng-Y",
+      "subject": "English",
+      "school_class": "Y7E"
+    },
+    {
+      "teacher": "James Chapman",
+      "subject": "Geography",
+      "school_class": "Y7E"
+    },
+    {
+      "teacher": "Sachin Das",
+      "subject": "History",
+      "school_class": "Y7E"
+    },
+    {
+      "teacher": "Math NT2",
+      "subject": "Math",
+      "school_class": "Y7E"
+    },
+    {
+      "teacher": "Samantha Mcllwraith",
+      "subject": "PE",
+      "school_class": "Y7E"
+    },
+    {
+      "teacher": "Denis Foster",
+      "subject": "PSHE",
+      "school_class": "Y7E"
+    },
+    {
+      "teacher": "Science New",
+      "subject": "Science",
+      "school_class": "Y7E"
+    },
+    {
+      "teacher": "Science New",
+      "subject": "Science__d2",
+      "school_class": "Y7E"
+    },
+    {
+      "teacher": "Science New",
+      "subject": "Science",
+      "school_class": "Y7IEP"
+    },
+    {
+      "teacher": "James Briggs",
+      "subject": "Math",
+      "school_class": "Y8"
+    },
+    {
+      "teacher": "James Briggs",
+      "subject": "Math",
+      "school_class": "Y9"
+    },
+    {
+      "teacher": "David Rowlands",
+      "subject": "English",
+      "school_class": "void-9"
+    }
+  ]
+}

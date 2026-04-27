@@ -1,0 +1,6812 @@
+{
+  "school": {
+    "name": "FET import: Bethlen_2007_2008",
+    "academic_year": "2026-2027",
+    "city": "Imported"
+  },
+  "timeslot_config": {
+    "days": [
+      {
+        "name": "Hétfő",
+        "sessions": [
+          {
+            "name": "Journée",
+            "start_time": "08:00",
+            "end_time": "17:00"
+          }
+        ],
+        "breaks": []
+      },
+      {
+        "name": "Kedd",
+        "sessions": [
+          {
+            "name": "Journée",
+            "start_time": "08:00",
+            "end_time": "17:00"
+          }
+        ],
+        "breaks": []
+      },
+      {
+        "name": "Szerda",
+        "sessions": [
+          {
+            "name": "Journée",
+            "start_time": "08:00",
+            "end_time": "17:00"
+          }
+        ],
+        "breaks": []
+      },
+      {
+        "name": "Csütörtök",
+        "sessions": [
+          {
+            "name": "Journée",
+            "start_time": "08:00",
+            "end_time": "17:00"
+          }
+        ],
+        "breaks": []
+      },
+      {
+        "name": "Péntek",
+        "sessions": [
+          {
+            "name": "Journée",
+            "start_time": "08:00",
+            "end_time": "17:00"
+          }
+        ],
+        "breaks": []
+      }
+    ],
+    "base_unit_minutes": 60
+  },
+  "subjects": [
+    {
+      "name": "1. nyelv",
+      "short_name": "1. nyelv",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "1. nyelv@DEBE",
+      "short_name": "1. nyelv@DEB",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "1. nyelv@JEER",
+      "short_name": "1. nyelv@JEE",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "1. nyelv@JSZK",
+      "short_name": "1. nyelv@JSZ",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "1. nyelv@KENE",
+      "short_name": "1. nyelv@KEN",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "1. nyelv@LENE",
+      "short_name": "1. nyelv@LEN",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "1. nyelv@MOAL",
+      "short_name": "1. nyelv@MOA",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "2. nyelv",
+      "short_name": "2. nyelv",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Angol-sáv@JEER__d2",
+      "short_name": "Angol-sáv@JE",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Angol-sáv@MOAL",
+      "short_name": "Angol-sáv@MO",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Biológia",
+      "short_name": "Biológia",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Biológia-sáv",
+      "short_name": "Biológia-sáv",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Biológia-sáv__d2",
+      "short_name": "Biológia-sáv",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Egyházi ének",
+      "short_name": "Egyházi ének",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Filozófia",
+      "short_name": "Filozófia",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Fizika",
+      "short_name": "Fizika",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Fizika-sáv",
+      "short_name": "Fizika-sáv",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Fizika-sáv__d2",
+      "short_name": "Fizika-sáv__",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Földrajz",
+      "short_name": "Földrajz",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Földrajz-sáv",
+      "short_name": "Földrajz-sáv",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Földrajz-sáv__d2",
+      "short_name": "Földrajz-sáv",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Hittan",
+      "short_name": "Hittan",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Informatika",
+      "short_name": "Informatika",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Informatika-sáv",
+      "short_name": "Informatika-",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Informatika-sáv__d2",
+      "short_name": "Informatika-",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Kémia",
+      "short_name": "Kémia",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Kémia-sáv",
+      "short_name": "Kémia-sáv",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Kémia-sáv__d2",
+      "short_name": "Kémia-sáv__d",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Lyukasóra",
+      "short_name": "Lyukasóra",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Magyar",
+      "short_name": "Magyar",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Magyar-sáv",
+      "short_name": "Magyar-sáv",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Magyar-sáv__d2",
+      "short_name": "Magyar-sáv__",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Magyar__d2",
+      "short_name": "Magyar__d2",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Matematika",
+      "short_name": "Matematika",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Matematika-sáv",
+      "short_name": "Matematika-s",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Matematika-sáv__d2",
+      "short_name": "Matematika-s",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Osztályfőnöki",
+      "short_name": "Osztályfőnök",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Rajz",
+      "short_name": "Rajz",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Testnevelés",
+      "short_name": "Testnevelés",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Történelem",
+      "short_name": "Történelem",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Történelem-sáv",
+      "short_name": "Történelem-s",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Történelem-sáv__d2",
+      "short_name": "Történelem-s",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Életvitel",
+      "short_name": "Életvitel",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Ének",
+      "short_name": "Ének",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    }
+  ],
+  "teachers": [
+    {
+      "name": "AUTO_12D1_1biosz_2kemia_SZZS_NBCS_Lyukas_ra",
+      "subjects": [
+        "Lyukasóra"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "AUTO_12D2_1biosz_2kemia_DENE_NBCS_Lyukas_ra",
+      "subjects": [
+        "Lyukasóra"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "AZNE",
+      "subjects": [
+        "Matematika"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "BAIM",
+      "subjects": [
+        "Testnevelés"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "BEGE",
+      "subjects": [
+        "Informatika"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "BEJA",
+      "subjects": [
+        "Fizika",
+        "Matematika",
+        "Osztályfőnöki"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "BINE",
+      "subjects": [
+        "2. nyelv",
+        "Osztályfőnöki",
+        "Történelem",
+        "Történelem-sáv",
+        "Történelem-sáv__d2"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "BOEV",
+      "subjects": [
+        "2. nyelv",
+        "Magyar",
+        "Osztályfőnöki"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "BVNE",
+      "subjects": [
+        "Matematika",
+        "Osztályfőnöki"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "CESA",
+      "subjects": [
+        "2. nyelv",
+        "Osztályfőnöki",
+        "Történelem",
+        "Történelem-sáv",
+        "Történelem-sáv__d2"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "CSMA",
+      "subjects": [
+        "1. nyelv",
+        "Magyar",
+        "Magyar__d2",
+        "Osztályfőnöki"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "CSNE",
+      "subjects": [
+        "1. nyelv",
+        "Magyar",
+        "Magyar__d2",
+        "Osztályfőnöki"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "DEBE",
+      "subjects": [
+        "1. nyelv",
+        "1. nyelv@DEBE"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "DENE",
+      "subjects": [
+        "2. nyelv",
+        "Magyar",
+        "Magyar-sáv",
+        "Magyar-sáv__d2",
+        "Osztályfőnöki"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "DOMI",
+      "subjects": [
+        "Hittan"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "EDIT",
+      "subjects": [
+        "Hittan"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "FAMA",
+      "subjects": [
+        "Hittan"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "FINE",
+      "subjects": [
+        "Matematika"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "FRNE",
+      "subjects": [
+        "Biológia",
+        "Biológia-sáv",
+        "Biológia-sáv__d2"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "FUER",
+      "subjects": [
+        "Rajz"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "GULA",
+      "subjects": [
+        "Matematika"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "HAEN",
+      "subjects": [
+        "2. nyelv",
+        "Filozófia"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "JANE",
+      "subjects": [
+        "2. nyelv"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "JEER",
+      "subjects": [
+        "1. nyelv",
+        "1. nyelv@JEER",
+        "Angol-sáv@JEER__d2"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "JONE",
+      "subjects": [
+        "Biológia",
+        "Biológia-sáv",
+        "Biológia-sáv__d2",
+        "Kémia",
+        "Osztályfőnöki",
+        "Életvitel"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "JSZK",
+      "subjects": [
+        "1. nyelv@JSZK",
+        "Magyar",
+        "Magyar-sáv",
+        "Magyar-sáv__d2",
+        "Osztályfőnöki"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "KENE",
+      "subjects": [
+        "1. nyelv",
+        "1. nyelv@KENE"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "KIGA",
+      "subjects": [
+        "Biológia",
+        "Kémia",
+        "Kémia-sáv",
+        "Kémia-sáv__d2",
+        "Életvitel"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "KINE",
+      "subjects": [
+        "2. nyelv",
+        "Magyar",
+        "Osztályfőnöki"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "KMNE",
+      "subjects": [
+        "Fizika",
+        "Matematika",
+        "Matematika-sáv",
+        "Matematika-sáv__d2",
+        "Osztályfőnöki"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "KOER",
+      "subjects": [
+        "1. nyelv"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "KOKA",
+      "subjects": [
+        "2. nyelv",
+        "Történelem"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "KRED",
+      "subjects": [
+        "1. nyelv"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "LENE",
+      "subjects": [
+        "1. nyelv",
+        "1. nyelv@LENE",
+        "Történelem"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "LTIS",
+      "subjects": [
+        "Fizika",
+        "Matematika",
+        "Matematika-sáv",
+        "Matematika-sáv__d2",
+        "Osztályfőnöki"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "MIOR",
+      "subjects": [
+        "Földrajz"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "MOAL",
+      "subjects": [
+        "1. nyelv@MOAL",
+        "Angol-sáv@MOAL"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "MOLA",
+      "subjects": [
+        "Informatika",
+        "Matematika"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "MOTU",
+      "subjects": [
+        "2. nyelv",
+        "Egyházi ének",
+        "Ének"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "MPNE",
+      "subjects": [
+        "1. nyelv",
+        "Osztályfőnöki"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "NATI",
+      "subjects": [
+        "Fizika",
+        "Fizika-sáv",
+        "Fizika-sáv__d2",
+        "Matematika",
+        "Osztályfőnöki"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "NAZO",
+      "subjects": [
+        "Hittan"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "NBCS",
+      "subjects": [
+        "Hittan"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "PEZS",
+      "subjects": [
+        "Rajz"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "PINE",
+      "subjects": [
+        "2. nyelv",
+        "Történelem",
+        "Történelem-sáv",
+        "Történelem-sáv__d2"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "POGE",
+      "subjects": [
+        "Testnevelés"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "PRGY",
+      "subjects": [
+        "Biológia",
+        "Informatika",
+        "Informatika-sáv",
+        "Informatika-sáv__d2",
+        "Matematika",
+        "Osztályfőnöki"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "RANE",
+      "subjects": [
+        "2. nyelv",
+        "Magyar",
+        "Magyar__d2",
+        "Osztályfőnöki"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "RINE",
+      "subjects": [
+        "Matematika",
+        "Matematika-sáv",
+        "Matematika-sáv__d2"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "SAAN",
+      "subjects": [
+        "Biológia",
+        "Kémia"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "SIFE",
+      "subjects": [
+        "Magyar",
+        "Magyar-sáv",
+        "Magyar-sáv__d2",
+        "Osztályfőnöki"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "SINE",
+      "subjects": [
+        "Magyar",
+        "Osztályfőnöki",
+        "Történelem",
+        "Történelem-sáv",
+        "Történelem-sáv__d2"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "SZIT",
+      "subjects": [
+        "Biológia",
+        "Kémia",
+        "Kémia-sáv",
+        "Kémia-sáv__d2"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "SZZS",
+      "subjects": [
+        "2. nyelv"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "TANE",
+      "subjects": [
+        "Magyar",
+        "Ének"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "UDZS",
+      "subjects": [
+        "Fizika",
+        "Matematika",
+        "Matematika-sáv",
+        "Matematika-sáv__d2"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "VIPA",
+      "subjects": [
+        "Földrajz",
+        "Földrajz-sáv",
+        "Földrajz-sáv__d2",
+        "Történelem"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    }
+  ],
+  "classes": [
+    {
+      "name": "10.A",
+      "level": "10.A",
+      "student_count": 30
+    },
+    {
+      "name": "10.B",
+      "level": "10.B",
+      "student_count": 30
+    },
+    {
+      "name": "10.C",
+      "level": "10.C",
+      "student_count": 30
+    },
+    {
+      "name": "10.D",
+      "level": "10.D",
+      "student_count": 30
+    },
+    {
+      "name": "10A1-FAMA-RANE",
+      "level": "10A1-FAMA-RANE",
+      "student_count": 30
+    },
+    {
+      "name": "10A1-NAZO-DENE",
+      "level": "10A1-NAZO-DENE",
+      "student_count": 30
+    },
+    {
+      "name": "10A1-NAZO-JANE",
+      "level": "10A1-NAZO-JANE",
+      "student_count": 30
+    },
+    {
+      "name": "10A2-FAMA-JANE",
+      "level": "10A2-FAMA-JANE",
+      "student_count": 30
+    },
+    {
+      "name": "10A2-NAZO-DENE",
+      "level": "10A2-NAZO-DENE",
+      "student_count": 30
+    },
+    {
+      "name": "10A2-NAZO-MOTU",
+      "level": "10A2-NAZO-MOTU",
+      "student_count": 30
+    },
+    {
+      "name": "10Bmf-NBCS-KRED-KOKA",
+      "level": "10Bmf-NBCS-KRED-KOKA",
+      "student_count": 30
+    },
+    {
+      "name": "10Bmt-FAMA-KRED-RANE",
+      "level": "10Bmt-FAMA-KRED-RANE",
+      "student_count": 30
+    },
+    {
+      "name": "10Bmt-NBCS-JEER-BOEV",
+      "level": "10Bmt-NBCS-JEER-BOEV",
+      "student_count": 30
+    },
+    {
+      "name": "10Bmt-NBCS-JEER-JANE",
+      "level": "10Bmt-NBCS-JEER-JANE",
+      "student_count": 30
+    },
+    {
+      "name": "10Bmt-NBCS-JEER-KINE",
+      "level": "10Bmt-NBCS-JEER-KINE",
+      "student_count": 30
+    },
+    {
+      "name": "10Bmt-NBCS-JEER-KOKA",
+      "level": "10Bmt-NBCS-JEER-KOKA",
+      "student_count": 30
+    },
+    {
+      "name": "10Bmt-NBCS-KOER-JANE",
+      "level": "10Bmt-NBCS-KOER-JANE",
+      "student_count": 30
+    },
+    {
+      "name": "10Cbk-EDIT-KRED-bk",
+      "level": "10Cbk-EDIT-KRED-bk",
+      "student_count": 30
+    },
+    {
+      "name": "10Cbk-NBCS-KRED-bk",
+      "level": "10Cbk-NBCS-KRED-bk",
+      "student_count": 30
+    },
+    {
+      "name": "10Cspa-NBCS-spa-DENE",
+      "level": "10Cspa-NBCS-spa-DENE",
+      "student_count": 30
+    },
+    {
+      "name": "10DFAMA-JANE",
+      "level": "10DFAMA-JANE",
+      "student_count": 30
+    },
+    {
+      "name": "10DFAMA-SZZS",
+      "level": "10DFAMA-SZZS",
+      "student_count": 30
+    },
+    {
+      "name": "10DNBCS-SZZS",
+      "level": "10DNBCS-SZZS",
+      "student_count": 30
+    },
+    {
+      "name": "11.B",
+      "level": "11.B",
+      "student_count": 30
+    },
+    {
+      "name": "11.C",
+      "level": "11.C",
+      "student_count": 30
+    },
+    {
+      "name": "11.D",
+      "level": "11.D",
+      "student_count": 30
+    },
+    {
+      "name": "11.E",
+      "level": "11.E",
+      "student_count": 30
+    },
+    {
+      "name": "11B1-1foldrajz-2tori-NAZO-DENE",
+      "level": "11B1-1foldrajz-2tori-NAZO-DENE",
+      "student_count": 30
+    },
+    {
+      "name": "11B1-1kemia-2biologia-FAMA-RANE",
+      "level": "11B1-1kemia-2biologia-FAMA-RANE",
+      "student_count": 30
+    },
+    {
+      "name": "11B1-1magyar-2angol-FAMA-KINE",
+      "level": "11B1-1magyar-2angol-FAMA-KINE",
+      "student_count": 30
+    },
+    {
+      "name": "11B1-1magyar-2angol-FAMA-SZZS",
+      "level": "11B1-1magyar-2angol-FAMA-SZZS",
+      "student_count": 30
+    },
+    {
+      "name": "11B1-1matek-2fizika-FAMA-SZZS",
+      "level": "11B1-1matek-2fizika-FAMA-SZZS",
+      "student_count": 30
+    },
+    {
+      "name": "11B1-1matek-2tori-NAZO-HAEN",
+      "level": "11B1-1matek-2tori-NAZO-HAEN",
+      "student_count": 30
+    },
+    {
+      "name": "11B1-1nincs-2tori-FAMA-PINE",
+      "level": "11B1-1nincs-2tori-FAMA-PINE",
+      "student_count": 30
+    },
+    {
+      "name": "11B2-1foldrajz-2angol-NAZO-HAEN",
+      "level": "11B2-1foldrajz-2angol-NAZO-HAEN",
+      "student_count": 30
+    },
+    {
+      "name": "11Cmf-1foldrajz-2fizika-DOMI-SZZS",
+      "level": "11Cmf-1foldrajz-2fizika-DOMI-SZZS",
+      "student_count": 30
+    },
+    {
+      "name": "11Cmf-1foldrajz-2fizika-NAZO-KINE",
+      "level": "11Cmf-1foldrajz-2fizika-NAZO-KINE",
+      "student_count": 30
+    },
+    {
+      "name": "11Cmf-1magyar-2angol-NAZO-HAEN",
+      "level": "11Cmf-1magyar-2angol-NAZO-HAEN",
+      "student_count": 30
+    },
+    {
+      "name": "11Cmf-1magyar-2tori-DOMI-PINE",
+      "level": "11Cmf-1magyar-2tori-DOMI-PINE",
+      "student_count": 30
+    },
+    {
+      "name": "11Cmf-mf-1matek-2fizika-NAZO-DENE",
+      "level": "11Cmf-mf-1matek-2fizika-NAZO-DENE",
+      "student_count": 30
+    },
+    {
+      "name": "11Cspa-1biosz-2angol-NAZO-RANE",
+      "level": "11Cspa-1biosz-2angol-NAZO-RANE",
+      "student_count": 30
+    },
+    {
+      "name": "11D1-1biosz-2kemia-1HAEN-FAMA",
+      "level": "11D1-1biosz-2kemia-1HAEN-FAMA",
+      "student_count": 30
+    },
+    {
+      "name": "11D1-1biosz-2kemia-1HAEN-NAZO",
+      "level": "11D1-1biosz-2kemia-1HAEN-NAZO",
+      "student_count": 30
+    },
+    {
+      "name": "11D2-1foldrajz-2biosz-1HAEN-FAMA",
+      "level": "11D2-1foldrajz-2biosz-1HAEN-FAMA",
+      "student_count": 30
+    },
+    {
+      "name": "11D2-1foldrajz-2biosz-2HAEN-NAZO",
+      "level": "11D2-1foldrajz-2biosz-2HAEN-NAZO",
+      "student_count": 30
+    },
+    {
+      "name": "11D2-1kemia-2biosz-2HAEN-FAMA",
+      "level": "11D2-1kemia-2biosz-2HAEN-FAMA",
+      "student_count": 30
+    },
+    {
+      "name": "11E1-BINE-FAMA",
+      "level": "11E1-BINE-FAMA",
+      "student_count": 30
+    },
+    {
+      "name": "11E1-KOKA-FAMA",
+      "level": "11E1-KOKA-FAMA",
+      "student_count": 30
+    },
+    {
+      "name": "11E2-BINE-FAMA",
+      "level": "11E2-BINE-FAMA",
+      "student_count": 30
+    },
+    {
+      "name": "11E2-KOKA-NBCS",
+      "level": "11E2-KOKA-NBCS",
+      "student_count": 30
+    },
+    {
+      "name": "12.A",
+      "level": "12.A",
+      "student_count": 30
+    },
+    {
+      "name": "12.B",
+      "level": "12.B",
+      "student_count": 30
+    },
+    {
+      "name": "12.C",
+      "level": "12.C",
+      "student_count": 30
+    },
+    {
+      "name": "12.D",
+      "level": "12.D",
+      "student_count": 30
+    },
+    {
+      "name": "12A1-1biosz-2fizika-NAZO-SZZS",
+      "level": "12A1-1biosz-2fizika-NAZO-SZZS",
+      "student_count": 30
+    },
+    {
+      "name": "12A1-1biosz-2kemia-FAMA-RANE",
+      "level": "12A1-1biosz-2kemia-FAMA-RANE",
+      "student_count": 30
+    },
+    {
+      "name": "12A1-1biosz-2tori-FAMA-RANE",
+      "level": "12A1-1biosz-2tori-FAMA-RANE",
+      "student_count": 30
+    },
+    {
+      "name": "12A1-1magyar-2tori-FAMA-HAEN",
+      "level": "12A1-1magyar-2tori-FAMA-HAEN",
+      "student_count": 30
+    },
+    {
+      "name": "12A1-1matek-2fizika-FAMA-SZZS",
+      "level": "12A1-1matek-2fizika-FAMA-SZZS",
+      "student_count": 30
+    },
+    {
+      "name": "12A1-1matek-2info-FAMA-SZZS",
+      "level": "12A1-1matek-2info-FAMA-SZZS",
+      "student_count": 30
+    },
+    {
+      "name": "12A2-1biosz-2kemia-FAMA-HAEN",
+      "level": "12A2-1biosz-2kemia-FAMA-HAEN",
+      "student_count": 30
+    },
+    {
+      "name": "12A2-1matek-2tori-NAZO-RANE",
+      "level": "12A2-1matek-2tori-NAZO-RANE",
+      "student_count": 30
+    },
+    {
+      "name": "12Bmf-LTIS-2fizika-NAZO-LENE-KINE-LTIS-MOLA",
+      "level": "12Bmf-LTIS-2fizika-NAZO-LENE-KINE-LTIS-MOLA",
+      "student_count": 30
+    },
+    {
+      "name": "12Bmf-LTIS-2fizika-NAZO-LENE-KOKA-LTIS-MOLA",
+      "level": "12Bmf-LTIS-2fizika-NAZO-LENE-KOKA-LTIS-MOLA",
+      "student_count": 30
+    },
+    {
+      "name": "12Bmt-1biosz-2tori-FAMA-LENE-KINE-GULA-PRGY",
+      "level": "12Bmt-1biosz-2tori-FAMA-LENE-KINE-GULA-PRGY",
+      "student_count": 30
+    },
+    {
+      "name": "12Bmt-1biosz-2tori-NAZO-LENE-SZZS-GULA-PRGY",
+      "level": "12Bmt-1biosz-2tori-NAZO-LENE-SZZS-GULA-PRGY",
+      "student_count": 30
+    },
+    {
+      "name": "12Bmt-1magyar-2tori-NAZO-KOER-BINE-GULA-PRGY",
+      "level": "12Bmt-1magyar-2tori-NAZO-KOER-BINE-GULA-PRGY",
+      "student_count": 30
+    },
+    {
+      "name": "12Bmt-1magyar-2tori-NAZO-LENE-KINE-GULA-PRGY",
+      "level": "12Bmt-1magyar-2tori-NAZO-LENE-KINE-GULA-PRGY",
+      "student_count": 30
+    },
+    {
+      "name": "12Bmt-LTIS-2tori-NAZO-KOER-BINE-LTIS-MOLA",
+      "level": "12Bmt-LTIS-2tori-NAZO-KOER-BINE-LTIS-MOLA",
+      "student_count": 30
+    },
+    {
+      "name": "12Cbk-1biosz-2info-KENE-NBCS-BOEV",
+      "level": "12Cbk-1biosz-2info-KENE-NBCS-BOEV",
+      "student_count": 30
+    },
+    {
+      "name": "12Cbk-1biosz-2kemia-KENE-FAMA-BOEV",
+      "level": "12Cbk-1biosz-2kemia-KENE-FAMA-BOEV",
+      "student_count": 30
+    },
+    {
+      "name": "12Cspa-1magyar-2tori-DEBE-NBCS-BINE",
+      "level": "12Cspa-1magyar-2tori-DEBE-NBCS-BINE",
+      "student_count": 30
+    },
+    {
+      "name": "12D1-1biosz-2kemia-SZZS-NBCS",
+      "level": "12D1-1biosz-2kemia-SZZS-NBCS",
+      "student_count": 30
+    },
+    {
+      "name": "12D1-1biosz-2tori-DENE-NBCS",
+      "level": "12D1-1biosz-2tori-DENE-NBCS",
+      "student_count": 30
+    },
+    {
+      "name": "12D1-1foci-2tori-KINE-NBCS",
+      "level": "12D1-1foci-2tori-KINE-NBCS",
+      "student_count": 30
+    },
+    {
+      "name": "12D1-1magyar-2tori-KINE-DOMI",
+      "level": "12D1-1magyar-2tori-KINE-DOMI",
+      "student_count": 30
+    },
+    {
+      "name": "12D2-1biosz-2kemia-DENE-NBCS",
+      "level": "12D2-1biosz-2kemia-DENE-NBCS",
+      "student_count": 30
+    },
+    {
+      "name": "5.A",
+      "level": "5.A",
+      "student_count": 30
+    },
+    {
+      "name": "5A1-EDIT",
+      "level": "5A1-EDIT",
+      "student_count": 30
+    },
+    {
+      "name": "5A1-NAZO",
+      "level": "5A1-NAZO",
+      "student_count": 30
+    },
+    {
+      "name": "5A2-NAZO",
+      "level": "5A2-NAZO",
+      "student_count": 30
+    },
+    {
+      "name": "6.A",
+      "level": "6.A",
+      "student_count": 30
+    },
+    {
+      "name": "6A1-DOMI",
+      "level": "6A1-DOMI",
+      "student_count": 30
+    },
+    {
+      "name": "6A1-NAZO",
+      "level": "6A1-NAZO",
+      "student_count": 30
+    },
+    {
+      "name": "6A2-DOMI",
+      "level": "6A2-DOMI",
+      "student_count": 30
+    },
+    {
+      "name": "7.A",
+      "level": "7.A",
+      "student_count": 30
+    },
+    {
+      "name": "7.A-DOMI-SZZS",
+      "level": "7.A-DOMI-SZZS",
+      "student_count": 30
+    },
+    {
+      "name": "7.A-NAZO-KINÉ",
+      "level": "7.A-NAZO-KINÉ",
+      "student_count": 30
+    },
+    {
+      "name": "7.A-NAZO-SZZS",
+      "level": "7.A-NAZO-SZZS",
+      "student_count": 30
+    },
+    {
+      "name": "8.A",
+      "level": "8.A",
+      "student_count": 30
+    },
+    {
+      "name": "8A1-FAMA-CESA",
+      "level": "8A1-FAMA-CESA",
+      "student_count": 30
+    },
+    {
+      "name": "8A1-FAMA-RANE",
+      "level": "8A1-FAMA-RANE",
+      "student_count": 30
+    },
+    {
+      "name": "8A1-NAZO-CESA",
+      "level": "8A1-NAZO-CESA",
+      "student_count": 30
+    },
+    {
+      "name": "8A1-NAZO-JANE",
+      "level": "8A1-NAZO-JANE",
+      "student_count": 30
+    },
+    {
+      "name": "8A2-FAMA-CESA",
+      "level": "8A2-FAMA-CESA",
+      "student_count": 30
+    },
+    {
+      "name": "9.A",
+      "level": "9.A",
+      "student_count": 30
+    },
+    {
+      "name": "9.B",
+      "level": "9.B",
+      "student_count": 30
+    },
+    {
+      "name": "9.C",
+      "level": "9.C",
+      "student_count": 30
+    },
+    {
+      "name": "9A1-DOMI-1-KOKA-BEGE",
+      "level": "9A1-DOMI-1-KOKA-BEGE",
+      "student_count": 30
+    },
+    {
+      "name": "9A1-NAZO-1-KOKA-BEGE",
+      "level": "9A1-NAZO-1-KOKA-BEGE",
+      "student_count": 30
+    },
+    {
+      "name": "9A1-NAZO-1-KOKA-MOLA",
+      "level": "9A1-NAZO-1-KOKA-MOLA",
+      "student_count": 30
+    },
+    {
+      "name": "9A1-NAZO-1-PINE-BEGE",
+      "level": "9A1-NAZO-1-PINE-BEGE",
+      "student_count": 30
+    },
+    {
+      "name": "9A1-NAZO-1-RANE-BEGE",
+      "level": "9A1-NAZO-1-RANE-BEGE",
+      "student_count": 30
+    },
+    {
+      "name": "9A2-EDIT-JEER-BOEV-BEGE",
+      "level": "9A2-EDIT-JEER-BOEV-BEGE",
+      "student_count": 30
+    },
+    {
+      "name": "9A2-NAZO-JEER-BOEV-BEGE",
+      "level": "9A2-NAZO-JEER-BOEV-BEGE",
+      "student_count": 30
+    },
+    {
+      "name": "9Bbk-bkNAZO-JEER-HAEN-mMOLA-SAAN",
+      "level": "9Bbk-bkNAZO-JEER-HAEN-mMOLA-SAAN",
+      "student_count": 30
+    },
+    {
+      "name": "9Bbk-bkNAZO-LENE-BOEV-mBEJA-JONE",
+      "level": "9Bbk-bkNAZO-LENE-BOEV-mBEJA-JONE",
+      "student_count": 30
+    },
+    {
+      "name": "9Bspa-spaFAMA-spa-SZZS-mBEJA-spa",
+      "level": "9Bspa-spaFAMA-spa-SZZS-mBEJA-spa",
+      "student_count": 30
+    },
+    {
+      "name": "9Bspa-spaNAZO-spa-BINE-mBEJA-spa",
+      "level": "9Bspa-spaNAZO-spa-BINE-mBEJA-spa",
+      "student_count": 30
+    },
+    {
+      "name": "9Bspa-spaNAZO-spa-KINE-mBEJA-spa",
+      "level": "9Bspa-spaNAZO-spa-KINE-mBEJA-spa",
+      "student_count": 30
+    },
+    {
+      "name": "9Cmf-CSMA-NAZO-BINE",
+      "level": "9Cmf-CSMA-NAZO-BINE",
+      "student_count": 30
+    },
+    {
+      "name": "9Cmf-LENE-FAMA-SZZS",
+      "level": "9Cmf-LENE-FAMA-SZZS",
+      "student_count": 30
+    },
+    {
+      "name": "9Cmt-CSMA-NAZO-BINE",
+      "level": "9Cmt-CSMA-NAZO-BINE",
+      "student_count": 30
+    },
+    {
+      "name": "9Cmt-CSMA-NAZO-SZZS",
+      "level": "9Cmt-CSMA-NAZO-SZZS",
+      "student_count": 30
+    }
+  ],
+  "rooms": [
+    {
+      "name": "1E1",
+      "capacity": 36,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "1E3",
+      "capacity": 34,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "1E4",
+      "capacity": 28,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "1E5",
+      "capacity": 38,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "1E6",
+      "capacity": 22,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "1UD",
+      "capacity": 30,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "1UT",
+      "capacity": 34,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "BIE",
+      "capacity": 36,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "BIL",
+      "capacity": 24,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "BOD",
+      "capacity": 36,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "F1",
+      "capacity": 32,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "F2",
+      "capacity": 38,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "F3",
+      "capacity": 30,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "F4",
+      "capacity": 28,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "F5",
+      "capacity": 38,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "F6",
+      "capacity": 24,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "FIE",
+      "capacity": 36,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "FIL",
+      "capacity": 30,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "FIT",
+      "capacity": 12,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "FUD",
+      "capacity": 30,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "FUT",
+      "capacity": 30,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "KTK",
+      "capacity": 8,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "KÉM",
+      "capacity": 36,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "MÉD",
+      "capacity": 40,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "N1",
+      "capacity": 21,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "N2",
+      "capacity": 16,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "OLV",
+      "capacity": 36,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "SZB",
+      "capacity": 18,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "SZJ",
+      "capacity": 20,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "SZÁM",
+      "capacity": 43,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "ZEN",
+      "capacity": 36,
+      "types": [
+        "Salle standard"
+      ]
+    }
+  ],
+  "curriculum": [
+    {
+      "school_class": "10.A",
+      "subject": "1. nyelv@JEER",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "10.A",
+      "subject": "1. nyelv@MOAL",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "10.A",
+      "subject": "Biológia",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "10.A",
+      "subject": "Fizika",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "10.A",
+      "subject": "Földrajz",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "10.A",
+      "subject": "Kémia",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "10.A",
+      "subject": "Magyar",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "10.A",
+      "subject": "Magyar__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "10.A",
+      "subject": "Matematika",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "10.A",
+      "subject": "Osztályfőnöki",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "10.A",
+      "subject": "Rajz",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "10.A",
+      "subject": "Testnevelés",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "10.A",
+      "subject": "Történelem",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "10.A",
+      "subject": "Ének",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "10.B",
+      "subject": "Biológia",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "10.B",
+      "subject": "Földrajz",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "10.B",
+      "subject": "Kémia",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "10.B",
+      "subject": "Osztályfőnöki",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "10.B",
+      "subject": "Rajz",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "10.B",
+      "subject": "Testnevelés",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "10.B",
+      "subject": "Ének",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "10.C",
+      "subject": "Fizika",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "10.C",
+      "subject": "Földrajz",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "10.C",
+      "subject": "Magyar",
+      "total_minutes_per_week": 300,
+      "sessions_per_week": 5,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "10.C",
+      "subject": "Osztályfőnöki",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "10.C",
+      "subject": "Rajz",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "10.C",
+      "subject": "Testnevelés",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "10.C",
+      "subject": "Történelem",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "10.C",
+      "subject": "Ének",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "10.D",
+      "subject": "1. nyelv@JEER",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "10.D",
+      "subject": "1. nyelv@MOAL",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "10.D",
+      "subject": "Fizika",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "10.D",
+      "subject": "Földrajz",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "10.D",
+      "subject": "Informatika",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "10.D",
+      "subject": "Kémia",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "10.D",
+      "subject": "Magyar",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "10.D",
+      "subject": "Matematika",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "10.D",
+      "subject": "Osztályfőnöki",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "10.D",
+      "subject": "Testnevelés",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "10.D",
+      "subject": "Történelem",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "10.D",
+      "subject": "Ének",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "10A1-FAMA-RANE",
+      "subject": "2. nyelv",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "10A1-NAZO-DENE",
+      "subject": "2. nyelv",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "10A1-NAZO-DENE",
+      "subject": "Hittan",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "10A1-NAZO-DENE",
+      "subject": "Informatika",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "10A1-NAZO-JANE",
+      "subject": "2. nyelv",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "10A2-FAMA-JANE",
+      "subject": "Hittan",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "10A2-NAZO-DENE",
+      "subject": "Informatika",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "10A2-NAZO-MOTU",
+      "subject": "2. nyelv",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "10Bmf-NBCS-KRED-KOKA",
+      "subject": "Fizika",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "10Bmf-NBCS-KRED-KOKA",
+      "subject": "Informatika",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "10Bmf-NBCS-KRED-KOKA",
+      "subject": "Magyar",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "10Bmf-NBCS-KRED-KOKA",
+      "subject": "Magyar__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "10Bmf-NBCS-KRED-KOKA",
+      "subject": "Matematika",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "10Bmf-NBCS-KRED-KOKA",
+      "subject": "Történelem",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "10Bmt-FAMA-KRED-RANE",
+      "subject": "1. nyelv",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "10Bmt-FAMA-KRED-RANE",
+      "subject": "Hittan",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "10Bmt-NBCS-JEER-BOEV",
+      "subject": "2. nyelv",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "10Bmt-NBCS-JEER-JANE",
+      "subject": "1. nyelv",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "10Bmt-NBCS-JEER-JANE",
+      "subject": "Fizika",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "10Bmt-NBCS-JEER-JANE",
+      "subject": "Hittan",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "10Bmt-NBCS-JEER-JANE",
+      "subject": "Informatika",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "10Bmt-NBCS-JEER-JANE",
+      "subject": "Magyar",
+      "total_minutes_per_week": 300,
+      "sessions_per_week": 5,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "10Bmt-NBCS-JEER-JANE",
+      "subject": "Matematika",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "10Bmt-NBCS-JEER-JANE",
+      "subject": "Történelem",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "10Bmt-NBCS-JEER-KINE",
+      "subject": "2. nyelv",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "10Bmt-NBCS-JEER-KOKA",
+      "subject": "2. nyelv",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "10Bmt-NBCS-KOER-JANE",
+      "subject": "1. nyelv",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "10Cbk-EDIT-KRED-bk",
+      "subject": "Hittan",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "10Cbk-NBCS-KRED-bk",
+      "subject": "Biológia",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "10Cbk-NBCS-KRED-bk",
+      "subject": "Informatika",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "10Cbk-NBCS-KRED-bk",
+      "subject": "Kémia",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "10Cbk-NBCS-KRED-bk",
+      "subject": "Matematika",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "10Cspa-NBCS-spa-DENE",
+      "subject": "1. nyelv@LENE",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "10Cspa-NBCS-spa-DENE",
+      "subject": "1. nyelv@MOAL",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "10Cspa-NBCS-spa-DENE",
+      "subject": "Biológia",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "10Cspa-NBCS-spa-DENE",
+      "subject": "Informatika",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "10Cspa-NBCS-spa-DENE",
+      "subject": "Kémia",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "10Cspa-NBCS-spa-DENE",
+      "subject": "Matematika",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "10DFAMA-JANE",
+      "subject": "2. nyelv",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "10DFAMA-JANE",
+      "subject": "Hittan",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "10DFAMA-SZZS",
+      "subject": "2. nyelv",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "10DNBCS-SZZS",
+      "subject": "Hittan",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "11.B",
+      "subject": "Biológia",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "11.B",
+      "subject": "Filozófia",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "11.B",
+      "subject": "Magyar",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "11.B",
+      "subject": "Matematika",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "11.B",
+      "subject": "Osztályfőnöki",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "11.B",
+      "subject": "Rajz",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "11.B",
+      "subject": "Testnevelés",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "11.B",
+      "subject": "Történelem",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "11.C",
+      "subject": "Biológia",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "11.C",
+      "subject": "Filozófia",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "11.C",
+      "subject": "Magyar",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "11.C",
+      "subject": "Osztályfőnöki",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "11.C",
+      "subject": "Rajz",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "11.C",
+      "subject": "Testnevelés",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "11.C",
+      "subject": "Történelem",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "11.D",
+      "subject": "Filozófia",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "11.D",
+      "subject": "Fizika",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "11.D",
+      "subject": "Magyar",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "11.D",
+      "subject": "Osztályfőnöki",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "11.D",
+      "subject": "Rajz",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "11.D",
+      "subject": "Testnevelés",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "11.D",
+      "subject": "Történelem",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "11.E",
+      "subject": "Biológia",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "11.E",
+      "subject": "Fizika",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "11.E",
+      "subject": "Földrajz",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "11.E",
+      "subject": "Kémia",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "11.E",
+      "subject": "Magyar",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "11.E",
+      "subject": "Magyar__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "11.E",
+      "subject": "Matematika",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "11.E",
+      "subject": "Osztályfőnöki",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "11.E",
+      "subject": "Rajz",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "11.E",
+      "subject": "Testnevelés",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "11.E",
+      "subject": "Történelem",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "11.E",
+      "subject": "Ének",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "11B1-1foldrajz-2tori-NAZO-DENE",
+      "subject": "1. nyelv@KENE",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "11B1-1foldrajz-2tori-NAZO-DENE",
+      "subject": "1. nyelv@MOAL",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "11B1-1foldrajz-2tori-NAZO-DENE",
+      "subject": "2. nyelv",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "11B1-1foldrajz-2tori-NAZO-DENE",
+      "subject": "Fizika",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "11B1-1foldrajz-2tori-NAZO-DENE",
+      "subject": "Földrajz-sáv",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "11B1-1foldrajz-2tori-NAZO-DENE",
+      "subject": "Földrajz-sáv__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "11B1-1foldrajz-2tori-NAZO-DENE",
+      "subject": "Hittan",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "11B1-1foldrajz-2tori-NAZO-DENE",
+      "subject": "Informatika",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "11B1-1foldrajz-2tori-NAZO-DENE",
+      "subject": "Történelem-sáv",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "11B1-1foldrajz-2tori-NAZO-DENE",
+      "subject": "Történelem-sáv__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "11B1-1kemia-2biologia-FAMA-RANE",
+      "subject": "2. nyelv",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "11B1-1kemia-2biologia-FAMA-RANE",
+      "subject": "Biológia-sáv",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "11B1-1kemia-2biologia-FAMA-RANE",
+      "subject": "Biológia-sáv__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "11B1-1kemia-2biologia-FAMA-RANE",
+      "subject": "Hittan",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "11B1-1kemia-2biologia-FAMA-RANE",
+      "subject": "Kémia-sáv",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "11B1-1kemia-2biologia-FAMA-RANE",
+      "subject": "Kémia-sáv__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "11B1-1magyar-2angol-FAMA-KINE",
+      "subject": "2. nyelv",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "11B1-1magyar-2angol-FAMA-KINE",
+      "subject": "Angol-sáv@JEER__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "11B1-1magyar-2angol-FAMA-KINE",
+      "subject": "Angol-sáv@MOAL",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "11B1-1magyar-2angol-FAMA-KINE",
+      "subject": "Magyar-sáv",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "11B1-1magyar-2angol-FAMA-KINE",
+      "subject": "Magyar-sáv__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "11B1-1magyar-2angol-FAMA-SZZS",
+      "subject": "2. nyelv",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "11B1-1matek-2fizika-FAMA-SZZS",
+      "subject": "Fizika",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "11B1-1matek-2fizika-FAMA-SZZS",
+      "subject": "Matematika-sáv",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "11B1-1matek-2fizika-FAMA-SZZS",
+      "subject": "Matematika-sáv__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "11B1-1matek-2tori-NAZO-HAEN",
+      "subject": "2. nyelv",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "11B1-1nincs-2tori-FAMA-PINE",
+      "subject": "2. nyelv",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "11B2-1foldrajz-2angol-NAZO-HAEN",
+      "subject": "1. nyelv",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "11B2-1foldrajz-2angol-NAZO-HAEN",
+      "subject": "Informatika",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "11Cmf-1foldrajz-2fizika-DOMI-SZZS",
+      "subject": "Hittan",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "11Cmf-1foldrajz-2fizika-NAZO-KINE",
+      "subject": "1. nyelv",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "11Cmf-1foldrajz-2fizika-NAZO-KINE",
+      "subject": "Fizika-sáv",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "11Cmf-1foldrajz-2fizika-NAZO-KINE",
+      "subject": "Fizika-sáv__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "11Cmf-1foldrajz-2fizika-NAZO-KINE",
+      "subject": "Informatika",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "11Cmf-1foldrajz-2fizika-NAZO-KINE",
+      "subject": "Matematika",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "11Cmf-1magyar-2angol-NAZO-HAEN",
+      "subject": "Fizika",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "11Cmf-1magyar-2angol-NAZO-HAEN",
+      "subject": "Magyar-sáv",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "11Cmf-1magyar-2angol-NAZO-HAEN",
+      "subject": "Magyar-sáv__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "11Cmf-1magyar-2tori-DOMI-PINE",
+      "subject": "Történelem-sáv",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "11Cmf-1magyar-2tori-DOMI-PINE",
+      "subject": "Történelem-sáv__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "11Cmf-mf-1matek-2fizika-NAZO-DENE",
+      "subject": "Matematika-sáv",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "11Cmf-mf-1matek-2fizika-NAZO-DENE",
+      "subject": "Matematika-sáv__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "11Cspa-1biosz-2angol-NAZO-RANE",
+      "subject": "1. nyelv",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "11Cspa-1biosz-2angol-NAZO-RANE",
+      "subject": "Informatika",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "11Cspa-1biosz-2angol-NAZO-RANE",
+      "subject": "Matematika",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "11D1-1biosz-2kemia-1HAEN-FAMA",
+      "subject": "1. nyelv",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "11D1-1biosz-2kemia-1HAEN-FAMA",
+      "subject": "Biológia",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "11D1-1biosz-2kemia-1HAEN-FAMA",
+      "subject": "Biológia-sáv",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "11D1-1biosz-2kemia-1HAEN-FAMA",
+      "subject": "Biológia-sáv__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "11D1-1biosz-2kemia-1HAEN-FAMA",
+      "subject": "Hittan",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "11D1-1biosz-2kemia-1HAEN-FAMA",
+      "subject": "Informatika",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "11D1-1biosz-2kemia-1HAEN-FAMA",
+      "subject": "Matematika",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "11D1-1biosz-2kemia-1HAEN-NAZO",
+      "subject": "Hittan",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "11D2-1foldrajz-2biosz-1HAEN-FAMA",
+      "subject": "1. nyelv",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "11D2-1foldrajz-2biosz-1HAEN-FAMA",
+      "subject": "Biológia",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "11D2-1foldrajz-2biosz-1HAEN-FAMA",
+      "subject": "Biológia-sáv",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "11D2-1foldrajz-2biosz-1HAEN-FAMA",
+      "subject": "Biológia-sáv__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "11D2-1foldrajz-2biosz-1HAEN-FAMA",
+      "subject": "Informatika",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "11D2-1foldrajz-2biosz-1HAEN-FAMA",
+      "subject": "Matematika",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "11D2-1foldrajz-2biosz-2HAEN-NAZO",
+      "subject": "2. nyelv",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "11D2-1kemia-2biosz-2HAEN-FAMA",
+      "subject": "Kémia-sáv",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "11D2-1kemia-2biosz-2HAEN-FAMA",
+      "subject": "Kémia-sáv__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "11E1-BINE-FAMA",
+      "subject": "1. nyelv@JSZK",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "11E1-BINE-FAMA",
+      "subject": "1. nyelv@MOAL",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "11E1-BINE-FAMA",
+      "subject": "2. nyelv",
+      "total_minutes_per_week": 300,
+      "sessions_per_week": 5,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "11E1-BINE-FAMA",
+      "subject": "Hittan",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "11E1-KOKA-FAMA",
+      "subject": "2. nyelv",
+      "total_minutes_per_week": 300,
+      "sessions_per_week": 5,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "11E2-BINE-FAMA",
+      "subject": "1. nyelv@DEBE",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "11E2-BINE-FAMA",
+      "subject": "1. nyelv@MOAL",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "11E2-KOKA-NBCS",
+      "subject": "Hittan",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "12.A",
+      "subject": "Biológia",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "12.A",
+      "subject": "Filozófia",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "12.A",
+      "subject": "Fizika",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "12.A",
+      "subject": "Magyar",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "12.A",
+      "subject": "Magyar__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "12.A",
+      "subject": "Osztályfőnöki",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "12.A",
+      "subject": "Testnevelés",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "12.A",
+      "subject": "Történelem",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "12.B",
+      "subject": "Biológia",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "12.B",
+      "subject": "Filozófia",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "12.B",
+      "subject": "Fizika",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "12.B",
+      "subject": "Osztályfőnöki",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "12.B",
+      "subject": "Testnevelés",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "12.C",
+      "subject": "Filozófia",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "12.C",
+      "subject": "Fizika",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "12.C",
+      "subject": "Magyar",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "12.C",
+      "subject": "Osztályfőnöki",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "12.C",
+      "subject": "Testnevelés",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "12.C",
+      "subject": "Történelem",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "12.D",
+      "subject": "Biológia",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "12.D",
+      "subject": "Fizika",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "12.D",
+      "subject": "Magyar",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "12.D",
+      "subject": "Matematika",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "12.D",
+      "subject": "Osztályfőnöki",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "12.D",
+      "subject": "Rajz",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "12.D",
+      "subject": "Testnevelés",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "12.D",
+      "subject": "Történelem",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "12A1-1biosz-2fizika-NAZO-SZZS",
+      "subject": "1. nyelv",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "12A1-1biosz-2fizika-NAZO-SZZS",
+      "subject": "2. nyelv",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "12A1-1biosz-2fizika-NAZO-SZZS",
+      "subject": "Biológia-sáv",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "12A1-1biosz-2fizika-NAZO-SZZS",
+      "subject": "Biológia-sáv__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "12A1-1biosz-2fizika-NAZO-SZZS",
+      "subject": "Fizika-sáv",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "12A1-1biosz-2fizika-NAZO-SZZS",
+      "subject": "Fizika-sáv__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "12A1-1biosz-2fizika-NAZO-SZZS",
+      "subject": "Hittan",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "12A1-1biosz-2fizika-NAZO-SZZS",
+      "subject": "Informatika",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "12A1-1biosz-2fizika-NAZO-SZZS",
+      "subject": "Matematika",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "12A1-1biosz-2kemia-FAMA-RANE",
+      "subject": "Hittan",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "12A1-1biosz-2kemia-FAMA-RANE",
+      "subject": "Kémia-sáv",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "12A1-1biosz-2kemia-FAMA-RANE",
+      "subject": "Kémia-sáv__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "12A1-1biosz-2tori-FAMA-RANE",
+      "subject": "Történelem-sáv",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "12A1-1biosz-2tori-FAMA-RANE",
+      "subject": "Történelem-sáv__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "12A1-1magyar-2tori-FAMA-HAEN",
+      "subject": "2. nyelv",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "12A1-1magyar-2tori-FAMA-HAEN",
+      "subject": "Magyar-sáv",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "12A1-1magyar-2tori-FAMA-HAEN",
+      "subject": "Magyar-sáv__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "12A1-1matek-2fizika-FAMA-SZZS",
+      "subject": "Matematika-sáv",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "12A1-1matek-2fizika-FAMA-SZZS",
+      "subject": "Matematika-sáv__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "12A1-1matek-2info-FAMA-SZZS",
+      "subject": "Informatika-sáv",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "12A1-1matek-2info-FAMA-SZZS",
+      "subject": "Informatika-sáv__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "12A2-1biosz-2kemia-FAMA-HAEN",
+      "subject": "1. nyelv",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "12A2-1biosz-2kemia-FAMA-HAEN",
+      "subject": "Informatika",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "12A2-1biosz-2kemia-FAMA-HAEN",
+      "subject": "Matematika",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "12A2-1matek-2tori-NAZO-RANE",
+      "subject": "2. nyelv",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "12Bmf-LTIS-2fizika-NAZO-LENE-KINE-LTIS-MOLA",
+      "subject": "Magyar",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "12Bmf-LTIS-2fizika-NAZO-LENE-KINE-LTIS-MOLA",
+      "subject": "Történelem",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "12Bmf-LTIS-2fizika-NAZO-LENE-KOKA-LTIS-MOLA",
+      "subject": "2. nyelv",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "12Bmt-1biosz-2tori-FAMA-LENE-KINE-GULA-PRGY",
+      "subject": "1. nyelv",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "12Bmt-1biosz-2tori-FAMA-LENE-KINE-GULA-PRGY",
+      "subject": "2. nyelv",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "12Bmt-1biosz-2tori-FAMA-LENE-KINE-GULA-PRGY",
+      "subject": "Hittan",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "12Bmt-1biosz-2tori-FAMA-LENE-KINE-GULA-PRGY",
+      "subject": "Magyar",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "12Bmt-1biosz-2tori-FAMA-LENE-KINE-GULA-PRGY",
+      "subject": "Történelem",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "12Bmt-1biosz-2tori-NAZO-LENE-SZZS-GULA-PRGY",
+      "subject": "2. nyelv",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "12Bmt-1biosz-2tori-NAZO-LENE-SZZS-GULA-PRGY",
+      "subject": "Informatika",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "12Bmt-1biosz-2tori-NAZO-LENE-SZZS-GULA-PRGY",
+      "subject": "Matematika",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "12Bmt-1magyar-2tori-NAZO-KOER-BINE-GULA-PRGY",
+      "subject": "1. nyelv",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "12Bmt-1magyar-2tori-NAZO-KOER-BINE-GULA-PRGY",
+      "subject": "2. nyelv",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "12Bmt-1magyar-2tori-NAZO-LENE-KINE-GULA-PRGY",
+      "subject": "Hittan",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "12Bmt-1magyar-2tori-NAZO-LENE-KINE-GULA-PRGY",
+      "subject": "Magyar-sáv",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "12Bmt-1magyar-2tori-NAZO-LENE-KINE-GULA-PRGY",
+      "subject": "Magyar-sáv__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "12Bmt-1magyar-2tori-NAZO-LENE-KINE-GULA-PRGY",
+      "subject": "Történelem-sáv",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "12Bmt-1magyar-2tori-NAZO-LENE-KINE-GULA-PRGY",
+      "subject": "Történelem-sáv__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "12Bmt-LTIS-2tori-NAZO-KOER-BINE-LTIS-MOLA",
+      "subject": "Informatika",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "12Bmt-LTIS-2tori-NAZO-KOER-BINE-LTIS-MOLA",
+      "subject": "Matematika",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "12Bmt-LTIS-2tori-NAZO-KOER-BINE-LTIS-MOLA",
+      "subject": "Matematika-sáv",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "12Bmt-LTIS-2tori-NAZO-KOER-BINE-LTIS-MOLA",
+      "subject": "Matematika-sáv__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "12Cbk-1biosz-2info-KENE-NBCS-BOEV",
+      "subject": "1. nyelv",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "12Cbk-1biosz-2info-KENE-NBCS-BOEV",
+      "subject": "2. nyelv",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "12Cbk-1biosz-2info-KENE-NBCS-BOEV",
+      "subject": "Biológia",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "12Cbk-1biosz-2info-KENE-NBCS-BOEV",
+      "subject": "Biológia-sáv",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "12Cbk-1biosz-2info-KENE-NBCS-BOEV",
+      "subject": "Biológia-sáv__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "12Cbk-1biosz-2info-KENE-NBCS-BOEV",
+      "subject": "Hittan",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "12Cbk-1biosz-2info-KENE-NBCS-BOEV",
+      "subject": "Informatika",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "12Cbk-1biosz-2info-KENE-NBCS-BOEV",
+      "subject": "Matematika",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "12Cbk-1biosz-2kemia-KENE-FAMA-BOEV",
+      "subject": "Hittan",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "12Cspa-1magyar-2tori-DEBE-NBCS-BINE",
+      "subject": "1. nyelv",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "12Cspa-1magyar-2tori-DEBE-NBCS-BINE",
+      "subject": "Biológia",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "12Cspa-1magyar-2tori-DEBE-NBCS-BINE",
+      "subject": "Informatika",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "12Cspa-1magyar-2tori-DEBE-NBCS-BINE",
+      "subject": "Matematika",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "12D1-1biosz-2kemia-SZZS-NBCS",
+      "subject": "1. nyelv",
+      "total_minutes_per_week": 300,
+      "sessions_per_week": 5,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "12D1-1biosz-2kemia-SZZS-NBCS",
+      "subject": "2. nyelv",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "12D1-1biosz-2kemia-SZZS-NBCS",
+      "subject": "Hittan",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "12D1-1biosz-2kemia-SZZS-NBCS",
+      "subject": "Lyukasóra",
+      "total_minutes_per_week": 300,
+      "sessions_per_week": 5,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "12D1-1biosz-2tori-DENE-NBCS",
+      "subject": "2. nyelv",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "12D1-1foci-2tori-KINE-NBCS",
+      "subject": "2. nyelv",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "12D1-1magyar-2tori-KINE-DOMI",
+      "subject": "Hittan",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "12D2-1biosz-2kemia-DENE-NBCS",
+      "subject": "1. nyelv",
+      "total_minutes_per_week": 300,
+      "sessions_per_week": 5,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "12D2-1biosz-2kemia-DENE-NBCS",
+      "subject": "Lyukasóra",
+      "total_minutes_per_week": 300,
+      "sessions_per_week": 5,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "5.A",
+      "subject": "Biológia",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "5.A",
+      "subject": "Egyházi ének",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "5.A",
+      "subject": "Magyar",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "5.A",
+      "subject": "Matematika",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "5.A",
+      "subject": "Osztályfőnöki",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "5.A",
+      "subject": "Rajz",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "5.A",
+      "subject": "Testnevelés",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "5.A",
+      "subject": "Történelem",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "5.A",
+      "subject": "Életvitel",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "5.A",
+      "subject": "Ének",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "5A1-EDIT",
+      "subject": "Hittan",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "5A1-NAZO",
+      "subject": "1. nyelv",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "5A1-NAZO",
+      "subject": "2. nyelv",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "5A1-NAZO",
+      "subject": "Hittan",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "5A2-NAZO",
+      "subject": "1. nyelv",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "5A2-NAZO",
+      "subject": "2. nyelv",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "6.A",
+      "subject": "2. nyelv",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "6.A",
+      "subject": "Biológia",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "6.A",
+      "subject": "Magyar",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "6.A",
+      "subject": "Matematika",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "6.A",
+      "subject": "Osztályfőnöki",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "6.A",
+      "subject": "Rajz",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "6.A",
+      "subject": "Testnevelés",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "6.A",
+      "subject": "Történelem",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "6.A",
+      "subject": "Életvitel",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "6.A",
+      "subject": "Ének",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "6A1-DOMI",
+      "subject": "1. nyelv",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "6A1-DOMI",
+      "subject": "Hittan",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "6A1-DOMI",
+      "subject": "Informatika",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "6A1-NAZO",
+      "subject": "Hittan",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "6A2-DOMI",
+      "subject": "1. nyelv",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "6A2-DOMI",
+      "subject": "Informatika",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "7.A",
+      "subject": "1. nyelv",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "7.A",
+      "subject": "Biológia",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "7.A",
+      "subject": "Fizika",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "7.A",
+      "subject": "Földrajz",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "7.A",
+      "subject": "Informatika",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "7.A",
+      "subject": "Kémia",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "7.A",
+      "subject": "Magyar",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "7.A",
+      "subject": "Matematika",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "7.A",
+      "subject": "Osztályfőnöki",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "7.A",
+      "subject": "Rajz",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "7.A",
+      "subject": "Testnevelés",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "7.A",
+      "subject": "Történelem",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "7.A",
+      "subject": "Ének",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "7.A-DOMI-SZZS",
+      "subject": "Hittan",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "7.A-NAZO-KINÉ",
+      "subject": "2. nyelv",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "7.A-NAZO-SZZS",
+      "subject": "2. nyelv",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "7.A-NAZO-SZZS",
+      "subject": "Hittan",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8.A",
+      "subject": "Biológia",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8.A",
+      "subject": "Fizika",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8.A",
+      "subject": "Földrajz",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8.A",
+      "subject": "Kémia",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8.A",
+      "subject": "Magyar",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8.A",
+      "subject": "Matematika",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8.A",
+      "subject": "Osztályfőnöki",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8.A",
+      "subject": "Rajz",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8.A",
+      "subject": "Testnevelés",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8.A",
+      "subject": "Történelem",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8.A",
+      "subject": "Ének",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8A1-FAMA-CESA",
+      "subject": "1. nyelv",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8A1-FAMA-CESA",
+      "subject": "2. nyelv",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8A1-FAMA-CESA",
+      "subject": "Hittan",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8A1-FAMA-CESA",
+      "subject": "Informatika",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8A1-FAMA-RANE",
+      "subject": "2. nyelv",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8A1-NAZO-CESA",
+      "subject": "Hittan",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8A1-NAZO-JANE",
+      "subject": "2. nyelv",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8A2-FAMA-CESA",
+      "subject": "1. nyelv",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "8A2-FAMA-CESA",
+      "subject": "Informatika",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9.A",
+      "subject": "Egyházi ének",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9.A",
+      "subject": "Földrajz",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9.A",
+      "subject": "Magyar",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9.A",
+      "subject": "Magyar__d2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 1,
+      "minutes_per_session": 120
+    },
+    {
+      "school_class": "9.A",
+      "subject": "Osztályfőnöki",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9.A",
+      "subject": "Rajz",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9.A",
+      "subject": "Testnevelés",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9.A",
+      "subject": "Ének",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9.B",
+      "subject": "Egyházi ének",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9.B",
+      "subject": "Földrajz",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9.B",
+      "subject": "Magyar",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9.B",
+      "subject": "Osztályfőnöki",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9.B",
+      "subject": "Rajz",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9.B",
+      "subject": "Testnevelés",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9.B",
+      "subject": "Ének",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9.C",
+      "subject": "Egyházi ének",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9.C",
+      "subject": "Földrajz",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9.C",
+      "subject": "Osztályfőnöki",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9.C",
+      "subject": "Rajz",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9.C",
+      "subject": "Testnevelés",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9.C",
+      "subject": "Ének",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9A1-DOMI-1-KOKA-BEGE",
+      "subject": "Hittan",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9A1-NAZO-1-KOKA-BEGE",
+      "subject": "1. nyelv@DEBE",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9A1-NAZO-1-KOKA-BEGE",
+      "subject": "1. nyelv@MOAL",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9A1-NAZO-1-KOKA-BEGE",
+      "subject": "2. nyelv",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9A1-NAZO-1-KOKA-BEGE",
+      "subject": "Fizika",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9A1-NAZO-1-KOKA-BEGE",
+      "subject": "Hittan",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9A1-NAZO-1-KOKA-BEGE",
+      "subject": "Informatika",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9A1-NAZO-1-KOKA-BEGE",
+      "subject": "Kémia",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9A1-NAZO-1-KOKA-BEGE",
+      "subject": "Matematika",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9A1-NAZO-1-KOKA-BEGE",
+      "subject": "Történelem",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9A1-NAZO-1-KOKA-MOLA",
+      "subject": "Informatika",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9A1-NAZO-1-PINE-BEGE",
+      "subject": "2. nyelv",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9A1-NAZO-1-RANE-BEGE",
+      "subject": "2. nyelv",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9A2-EDIT-JEER-BOEV-BEGE",
+      "subject": "Hittan",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9A2-NAZO-JEER-BOEV-BEGE",
+      "subject": "1. nyelv",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9A2-NAZO-JEER-BOEV-BEGE",
+      "subject": "Biológia",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9A2-NAZO-JEER-BOEV-BEGE",
+      "subject": "Fizika",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9A2-NAZO-JEER-BOEV-BEGE",
+      "subject": "Kémia",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9A2-NAZO-JEER-BOEV-BEGE",
+      "subject": "Matematika",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9A2-NAZO-JEER-BOEV-BEGE",
+      "subject": "Történelem",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9Bbk-bkNAZO-JEER-HAEN-mMOLA-SAAN",
+      "subject": "2. nyelv",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9Bbk-bkNAZO-JEER-HAEN-mMOLA-SAAN",
+      "subject": "Biológia",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9Bbk-bkNAZO-JEER-HAEN-mMOLA-SAAN",
+      "subject": "Informatika",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9Bbk-bkNAZO-JEER-HAEN-mMOLA-SAAN",
+      "subject": "Kémia",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9Bbk-bkNAZO-LENE-BOEV-mBEJA-JONE",
+      "subject": "2. nyelv",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9Bbk-bkNAZO-LENE-BOEV-mBEJA-JONE",
+      "subject": "Matematika",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9Bspa-spaFAMA-spa-SZZS-mBEJA-spa",
+      "subject": "2. nyelv",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9Bspa-spaFAMA-spa-SZZS-mBEJA-spa",
+      "subject": "Hittan",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9Bspa-spaNAZO-spa-BINE-mBEJA-spa",
+      "subject": "1. nyelv@DEBE",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9Bspa-spaNAZO-spa-BINE-mBEJA-spa",
+      "subject": "1. nyelv@MOAL",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9Bspa-spaNAZO-spa-BINE-mBEJA-spa",
+      "subject": "2. nyelv",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9Bspa-spaNAZO-spa-BINE-mBEJA-spa",
+      "subject": "Hittan",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9Bspa-spaNAZO-spa-BINE-mBEJA-spa",
+      "subject": "Informatika",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9Bspa-spaNAZO-spa-BINE-mBEJA-spa",
+      "subject": "Történelem",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9Bspa-spaNAZO-spa-KINE-mBEJA-spa",
+      "subject": "2. nyelv",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9Cmf-CSMA-NAZO-BINE",
+      "subject": "1. nyelv",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9Cmf-CSMA-NAZO-BINE",
+      "subject": "Fizika",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9Cmf-CSMA-NAZO-BINE",
+      "subject": "Informatika",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9Cmf-CSMA-NAZO-BINE",
+      "subject": "Kémia",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9Cmf-CSMA-NAZO-BINE",
+      "subject": "Magyar",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9Cmf-CSMA-NAZO-BINE",
+      "subject": "Matematika",
+      "total_minutes_per_week": 300,
+      "sessions_per_week": 5,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9Cmf-LENE-FAMA-SZZS",
+      "subject": "1. nyelv",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9Cmt-CSMA-NAZO-BINE",
+      "subject": "Fizika",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9Cmt-CSMA-NAZO-BINE",
+      "subject": "Magyar",
+      "total_minutes_per_week": 360,
+      "sessions_per_week": 6,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9Cmt-CSMA-NAZO-BINE",
+      "subject": "Matematika",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9Cmt-CSMA-NAZO-BINE",
+      "subject": "Történelem",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9Cmt-CSMA-NAZO-SZZS",
+      "subject": "Informatika",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "9Cmt-CSMA-NAZO-SZZS",
+      "subject": "Kémia",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    }
+  ],
+  "constraints": [
+    {
+      "id": "C1",
+      "type": "hard",
+      "category": "teacher_no_overlap",
+      "description_fr": "Pas de chevauchement enseignant",
+      "priority": 10,
+      "parameters": {}
+    },
+    {
+      "id": "C2",
+      "type": "hard",
+      "category": "class_no_overlap",
+      "description_fr": "Pas de chevauchement classe",
+      "priority": 10,
+      "parameters": {}
+    },
+    {
+      "id": "C3",
+      "type": "hard",
+      "category": "teacher_subject_declared",
+      "description_fr": "Matière enseignant déclarée",
+      "priority": 10,
+      "parameters": {}
+    },
+    {
+      "id": "C4",
+      "type": "hard",
+      "category": "teacher_calendar_declared",
+      "description_fr": "Calendrier enseignant déclaré",
+      "priority": 10,
+      "parameters": {}
+    }
+  ],
+  "teacher_assignments": [
+    {
+      "teacher": "JEER",
+      "subject": "1. nyelv@JEER",
+      "school_class": "10.A"
+    },
+    {
+      "teacher": "MOAL",
+      "subject": "1. nyelv@MOAL",
+      "school_class": "10.A"
+    },
+    {
+      "teacher": "SZIT",
+      "subject": "Biológia",
+      "school_class": "10.A"
+    },
+    {
+      "teacher": "NATI",
+      "subject": "Fizika",
+      "school_class": "10.A"
+    },
+    {
+      "teacher": "VIPA",
+      "subject": "Földrajz",
+      "school_class": "10.A"
+    },
+    {
+      "teacher": "SZIT",
+      "subject": "Kémia",
+      "school_class": "10.A"
+    },
+    {
+      "teacher": "CSNE",
+      "subject": "Magyar",
+      "school_class": "10.A"
+    },
+    {
+      "teacher": "CSNE",
+      "subject": "Magyar__d2",
+      "school_class": "10.A"
+    },
+    {
+      "teacher": "BVNE",
+      "subject": "Matematika",
+      "school_class": "10.A"
+    },
+    {
+      "teacher": "BVNE",
+      "subject": "Osztályfőnöki",
+      "school_class": "10.A"
+    },
+    {
+      "teacher": "PEZS",
+      "subject": "Rajz",
+      "school_class": "10.A"
+    },
+    {
+      "teacher": "POGE",
+      "subject": "Testnevelés",
+      "school_class": "10.A"
+    },
+    {
+      "teacher": "PINE",
+      "subject": "Történelem",
+      "school_class": "10.A"
+    },
+    {
+      "teacher": "TANE",
+      "subject": "Ének",
+      "school_class": "10.A"
+    },
+    {
+      "teacher": "PRGY",
+      "subject": "Biológia",
+      "school_class": "10.B"
+    },
+    {
+      "teacher": "MIOR",
+      "subject": "Földrajz",
+      "school_class": "10.B"
+    },
+    {
+      "teacher": "SZIT",
+      "subject": "Kémia",
+      "school_class": "10.B"
+    },
+    {
+      "teacher": "PRGY",
+      "subject": "Osztályfőnöki",
+      "school_class": "10.B"
+    },
+    {
+      "teacher": "PEZS",
+      "subject": "Rajz",
+      "school_class": "10.B"
+    },
+    {
+      "teacher": "BAIM",
+      "subject": "Testnevelés",
+      "school_class": "10.B"
+    },
+    {
+      "teacher": "MOTU",
+      "subject": "Ének",
+      "school_class": "10.B"
+    },
+    {
+      "teacher": "BEJA",
+      "subject": "Fizika",
+      "school_class": "10.C"
+    },
+    {
+      "teacher": "MIOR",
+      "subject": "Földrajz",
+      "school_class": "10.C"
+    },
+    {
+      "teacher": "DENE",
+      "subject": "Magyar",
+      "school_class": "10.C"
+    },
+    {
+      "teacher": "DENE",
+      "subject": "Osztályfőnöki",
+      "school_class": "10.C"
+    },
+    {
+      "teacher": "PEZS",
+      "subject": "Rajz",
+      "school_class": "10.C"
+    },
+    {
+      "teacher": "BAIM",
+      "subject": "Testnevelés",
+      "school_class": "10.C"
+    },
+    {
+      "teacher": "PINE",
+      "subject": "Történelem",
+      "school_class": "10.C"
+    },
+    {
+      "teacher": "MOTU",
+      "subject": "Ének",
+      "school_class": "10.C"
+    },
+    {
+      "teacher": "JEER",
+      "subject": "1. nyelv@JEER",
+      "school_class": "10.D"
+    },
+    {
+      "teacher": "MOAL",
+      "subject": "1. nyelv@MOAL",
+      "school_class": "10.D"
+    },
+    {
+      "teacher": "BEJA",
+      "subject": "Fizika",
+      "school_class": "10.D"
+    },
+    {
+      "teacher": "VIPA",
+      "subject": "Földrajz",
+      "school_class": "10.D"
+    },
+    {
+      "teacher": "PRGY",
+      "subject": "Informatika",
+      "school_class": "10.D"
+    },
+    {
+      "teacher": "SZIT",
+      "subject": "Kémia",
+      "school_class": "10.D"
+    },
+    {
+      "teacher": "BOEV",
+      "subject": "Magyar",
+      "school_class": "10.D"
+    },
+    {
+      "teacher": "RINE",
+      "subject": "Matematika",
+      "school_class": "10.D"
+    },
+    {
+      "teacher": "BOEV",
+      "subject": "Osztályfőnöki",
+      "school_class": "10.D"
+    },
+    {
+      "teacher": "BAIM",
+      "subject": "Testnevelés",
+      "school_class": "10.D"
+    },
+    {
+      "teacher": "SINE",
+      "subject": "Történelem",
+      "school_class": "10.D"
+    },
+    {
+      "teacher": "TANE",
+      "subject": "Ének",
+      "school_class": "10.D"
+    },
+    {
+      "teacher": "RANE",
+      "subject": "2. nyelv",
+      "school_class": "10A1-FAMA-RANE"
+    },
+    {
+      "teacher": "DENE",
+      "subject": "2. nyelv",
+      "school_class": "10A1-NAZO-DENE"
+    },
+    {
+      "teacher": "NAZO",
+      "subject": "Hittan",
+      "school_class": "10A1-NAZO-DENE"
+    },
+    {
+      "teacher": "MOLA",
+      "subject": "Informatika",
+      "school_class": "10A1-NAZO-DENE"
+    },
+    {
+      "teacher": "JANE",
+      "subject": "2. nyelv",
+      "school_class": "10A1-NAZO-JANE"
+    },
+    {
+      "teacher": "FAMA",
+      "subject": "Hittan",
+      "school_class": "10A2-FAMA-JANE"
+    },
+    {
+      "teacher": "PRGY",
+      "subject": "Informatika",
+      "school_class": "10A2-NAZO-DENE"
+    },
+    {
+      "teacher": "MOTU",
+      "subject": "2. nyelv",
+      "school_class": "10A2-NAZO-MOTU"
+    },
+    {
+      "teacher": "BEJA",
+      "subject": "Fizika",
+      "school_class": "10Bmf-NBCS-KRED-KOKA"
+    },
+    {
+      "teacher": "MOLA",
+      "subject": "Informatika",
+      "school_class": "10Bmf-NBCS-KRED-KOKA"
+    },
+    {
+      "teacher": "CSNE",
+      "subject": "Magyar",
+      "school_class": "10Bmf-NBCS-KRED-KOKA"
+    },
+    {
+      "teacher": "CSNE",
+      "subject": "Magyar__d2",
+      "school_class": "10Bmf-NBCS-KRED-KOKA"
+    },
+    {
+      "teacher": "PRGY",
+      "subject": "Matematika",
+      "school_class": "10Bmf-NBCS-KRED-KOKA"
+    },
+    {
+      "teacher": "KOKA",
+      "subject": "Történelem",
+      "school_class": "10Bmf-NBCS-KRED-KOKA"
+    },
+    {
+      "teacher": "KRED",
+      "subject": "1. nyelv",
+      "school_class": "10Bmt-FAMA-KRED-RANE"
+    },
+    {
+      "teacher": "FAMA",
+      "subject": "Hittan",
+      "school_class": "10Bmt-FAMA-KRED-RANE"
+    },
+    {
+      "teacher": "BOEV",
+      "subject": "2. nyelv",
+      "school_class": "10Bmt-NBCS-JEER-BOEV"
+    },
+    {
+      "teacher": "JEER",
+      "subject": "1. nyelv",
+      "school_class": "10Bmt-NBCS-JEER-JANE"
+    },
+    {
+      "teacher": "UDZS",
+      "subject": "Fizika",
+      "school_class": "10Bmt-NBCS-JEER-JANE"
+    },
+    {
+      "teacher": "NBCS",
+      "subject": "Hittan",
+      "school_class": "10Bmt-NBCS-JEER-JANE"
+    },
+    {
+      "teacher": "PRGY",
+      "subject": "Informatika",
+      "school_class": "10Bmt-NBCS-JEER-JANE"
+    },
+    {
+      "teacher": "JSZK",
+      "subject": "Magyar",
+      "school_class": "10Bmt-NBCS-JEER-JANE"
+    },
+    {
+      "teacher": "RINE",
+      "subject": "Matematika",
+      "school_class": "10Bmt-NBCS-JEER-JANE"
+    },
+    {
+      "teacher": "LENE",
+      "subject": "Történelem",
+      "school_class": "10Bmt-NBCS-JEER-JANE"
+    },
+    {
+      "teacher": "KINE",
+      "subject": "2. nyelv",
+      "school_class": "10Bmt-NBCS-JEER-KINE"
+    },
+    {
+      "teacher": "KOKA",
+      "subject": "2. nyelv",
+      "school_class": "10Bmt-NBCS-JEER-KOKA"
+    },
+    {
+      "teacher": "KOER",
+      "subject": "1. nyelv",
+      "school_class": "10Bmt-NBCS-KOER-JANE"
+    },
+    {
+      "teacher": "EDIT",
+      "subject": "Hittan",
+      "school_class": "10Cbk-EDIT-KRED-bk"
+    },
+    {
+      "teacher": "JONE",
+      "subject": "Biológia",
+      "school_class": "10Cbk-NBCS-KRED-bk"
+    },
+    {
+      "teacher": "BEGE",
+      "subject": "Informatika",
+      "school_class": "10Cbk-NBCS-KRED-bk"
+    },
+    {
+      "teacher": "SZIT",
+      "subject": "Kémia",
+      "school_class": "10Cbk-NBCS-KRED-bk"
+    },
+    {
+      "teacher": "RINE",
+      "subject": "Matematika",
+      "school_class": "10Cbk-NBCS-KRED-bk"
+    },
+    {
+      "teacher": "LENE",
+      "subject": "1. nyelv@LENE",
+      "school_class": "10Cspa-NBCS-spa-DENE"
+    },
+    {
+      "teacher": "MOAL",
+      "subject": "1. nyelv@MOAL",
+      "school_class": "10Cspa-NBCS-spa-DENE"
+    },
+    {
+      "teacher": "SZIT",
+      "subject": "Biológia",
+      "school_class": "10Cspa-NBCS-spa-DENE"
+    },
+    {
+      "teacher": "BEGE",
+      "subject": "Informatika",
+      "school_class": "10Cspa-NBCS-spa-DENE"
+    },
+    {
+      "teacher": "JONE",
+      "subject": "Kémia",
+      "school_class": "10Cspa-NBCS-spa-DENE"
+    },
+    {
+      "teacher": "FINE",
+      "subject": "Matematika",
+      "school_class": "10Cspa-NBCS-spa-DENE"
+    },
+    {
+      "teacher": "JANE",
+      "subject": "2. nyelv",
+      "school_class": "10DFAMA-JANE"
+    },
+    {
+      "teacher": "FAMA",
+      "subject": "Hittan",
+      "school_class": "10DFAMA-JANE"
+    },
+    {
+      "teacher": "SZZS",
+      "subject": "2. nyelv",
+      "school_class": "10DFAMA-SZZS"
+    },
+    {
+      "teacher": "NBCS",
+      "subject": "Hittan",
+      "school_class": "10DNBCS-SZZS"
+    },
+    {
+      "teacher": "KIGA",
+      "subject": "Biológia",
+      "school_class": "11.B"
+    },
+    {
+      "teacher": "HAEN",
+      "subject": "Filozófia",
+      "school_class": "11.B"
+    },
+    {
+      "teacher": "SIFE",
+      "subject": "Magyar",
+      "school_class": "11.B"
+    },
+    {
+      "teacher": "FINE",
+      "subject": "Matematika",
+      "school_class": "11.B"
+    },
+    {
+      "teacher": "SIFE",
+      "subject": "Osztályfőnöki",
+      "school_class": "11.B"
+    },
+    {
+      "teacher": "FUER",
+      "subject": "Rajz",
+      "school_class": "11.B"
+    },
+    {
+      "teacher": "POGE",
+      "subject": "Testnevelés",
+      "school_class": "11.B"
+    },
+    {
+      "teacher": "PINE",
+      "subject": "Történelem",
+      "school_class": "11.B"
+    },
+    {
+      "teacher": "KIGA",
+      "subject": "Biológia",
+      "school_class": "11.C"
+    },
+    {
+      "teacher": "HAEN",
+      "subject": "Filozófia",
+      "school_class": "11.C"
+    },
+    {
+      "teacher": "TANE",
+      "subject": "Magyar",
+      "school_class": "11.C"
+    },
+    {
+      "teacher": "KMNE",
+      "subject": "Osztályfőnöki",
+      "school_class": "11.C"
+    },
+    {
+      "teacher": "FUER",
+      "subject": "Rajz",
+      "school_class": "11.C"
+    },
+    {
+      "teacher": "BAIM",
+      "subject": "Testnevelés",
+      "school_class": "11.C"
+    },
+    {
+      "teacher": "PINE",
+      "subject": "Történelem",
+      "school_class": "11.C"
+    },
+    {
+      "teacher": "HAEN",
+      "subject": "Filozófia",
+      "school_class": "11.D"
+    },
+    {
+      "teacher": "BEJA",
+      "subject": "Fizika",
+      "school_class": "11.D"
+    },
+    {
+      "teacher": "BOEV",
+      "subject": "Magyar",
+      "school_class": "11.D"
+    },
+    {
+      "teacher": "BEJA",
+      "subject": "Osztályfőnöki",
+      "school_class": "11.D"
+    },
+    {
+      "teacher": "PEZS",
+      "subject": "Rajz",
+      "school_class": "11.D"
+    },
+    {
+      "teacher": "POGE",
+      "subject": "Testnevelés",
+      "school_class": "11.D"
+    },
+    {
+      "teacher": "VIPA",
+      "subject": "Történelem",
+      "school_class": "11.D"
+    },
+    {
+      "teacher": "KIGA",
+      "subject": "Biológia",
+      "school_class": "11.E"
+    },
+    {
+      "teacher": "UDZS",
+      "subject": "Fizika",
+      "school_class": "11.E"
+    },
+    {
+      "teacher": "VIPA",
+      "subject": "Földrajz",
+      "school_class": "11.E"
+    },
+    {
+      "teacher": "KIGA",
+      "subject": "Kémia",
+      "school_class": "11.E"
+    },
+    {
+      "teacher": "RANE",
+      "subject": "Magyar",
+      "school_class": "11.E"
+    },
+    {
+      "teacher": "RANE",
+      "subject": "Magyar__d2",
+      "school_class": "11.E"
+    },
+    {
+      "teacher": "UDZS",
+      "subject": "Matematika",
+      "school_class": "11.E"
+    },
+    {
+      "teacher": "RANE",
+      "subject": "Osztályfőnöki",
+      "school_class": "11.E"
+    },
+    {
+      "teacher": "PEZS",
+      "subject": "Rajz",
+      "school_class": "11.E"
+    },
+    {
+      "teacher": "BAIM",
+      "subject": "Testnevelés",
+      "school_class": "11.E"
+    },
+    {
+      "teacher": "CESA",
+      "subject": "Történelem",
+      "school_class": "11.E"
+    },
+    {
+      "teacher": "TANE",
+      "subject": "Ének",
+      "school_class": "11.E"
+    },
+    {
+      "teacher": "KENE",
+      "subject": "1. nyelv@KENE",
+      "school_class": "11B1-1foldrajz-2tori-NAZO-DENE"
+    },
+    {
+      "teacher": "MOAL",
+      "subject": "1. nyelv@MOAL",
+      "school_class": "11B1-1foldrajz-2tori-NAZO-DENE"
+    },
+    {
+      "teacher": "DENE",
+      "subject": "2. nyelv",
+      "school_class": "11B1-1foldrajz-2tori-NAZO-DENE"
+    },
+    {
+      "teacher": "UDZS",
+      "subject": "Fizika",
+      "school_class": "11B1-1foldrajz-2tori-NAZO-DENE"
+    },
+    {
+      "teacher": "VIPA",
+      "subject": "Földrajz-sáv",
+      "school_class": "11B1-1foldrajz-2tori-NAZO-DENE"
+    },
+    {
+      "teacher": "VIPA",
+      "subject": "Földrajz-sáv__d2",
+      "school_class": "11B1-1foldrajz-2tori-NAZO-DENE"
+    },
+    {
+      "teacher": "NAZO",
+      "subject": "Hittan",
+      "school_class": "11B1-1foldrajz-2tori-NAZO-DENE"
+    },
+    {
+      "teacher": "MOLA",
+      "subject": "Informatika",
+      "school_class": "11B1-1foldrajz-2tori-NAZO-DENE"
+    },
+    {
+      "teacher": "SINE",
+      "subject": "Történelem-sáv",
+      "school_class": "11B1-1foldrajz-2tori-NAZO-DENE"
+    },
+    {
+      "teacher": "SINE",
+      "subject": "Történelem-sáv__d2",
+      "school_class": "11B1-1foldrajz-2tori-NAZO-DENE"
+    },
+    {
+      "teacher": "RANE",
+      "subject": "2. nyelv",
+      "school_class": "11B1-1kemia-2biologia-FAMA-RANE"
+    },
+    {
+      "teacher": "JONE",
+      "subject": "Biológia-sáv",
+      "school_class": "11B1-1kemia-2biologia-FAMA-RANE"
+    },
+    {
+      "teacher": "JONE",
+      "subject": "Biológia-sáv__d2",
+      "school_class": "11B1-1kemia-2biologia-FAMA-RANE"
+    },
+    {
+      "teacher": "FAMA",
+      "subject": "Hittan",
+      "school_class": "11B1-1kemia-2biologia-FAMA-RANE"
+    },
+    {
+      "teacher": "KIGA",
+      "subject": "Kémia-sáv",
+      "school_class": "11B1-1kemia-2biologia-FAMA-RANE"
+    },
+    {
+      "teacher": "KIGA",
+      "subject": "Kémia-sáv__d2",
+      "school_class": "11B1-1kemia-2biologia-FAMA-RANE"
+    },
+    {
+      "teacher": "KINE",
+      "subject": "2. nyelv",
+      "school_class": "11B1-1magyar-2angol-FAMA-KINE"
+    },
+    {
+      "teacher": "JEER",
+      "subject": "Angol-sáv@JEER__d2",
+      "school_class": "11B1-1magyar-2angol-FAMA-KINE"
+    },
+    {
+      "teacher": "MOAL",
+      "subject": "Angol-sáv@MOAL",
+      "school_class": "11B1-1magyar-2angol-FAMA-KINE"
+    },
+    {
+      "teacher": "SIFE",
+      "subject": "Magyar-sáv",
+      "school_class": "11B1-1magyar-2angol-FAMA-KINE"
+    },
+    {
+      "teacher": "SIFE",
+      "subject": "Magyar-sáv__d2",
+      "school_class": "11B1-1magyar-2angol-FAMA-KINE"
+    },
+    {
+      "teacher": "SZZS",
+      "subject": "2. nyelv",
+      "school_class": "11B1-1magyar-2angol-FAMA-SZZS"
+    },
+    {
+      "teacher": "NATI",
+      "subject": "Fizika",
+      "school_class": "11B1-1matek-2fizika-FAMA-SZZS"
+    },
+    {
+      "teacher": "UDZS",
+      "subject": "Matematika-sáv",
+      "school_class": "11B1-1matek-2fizika-FAMA-SZZS"
+    },
+    {
+      "teacher": "UDZS",
+      "subject": "Matematika-sáv__d2",
+      "school_class": "11B1-1matek-2fizika-FAMA-SZZS"
+    },
+    {
+      "teacher": "HAEN",
+      "subject": "2. nyelv",
+      "school_class": "11B1-1matek-2tori-NAZO-HAEN"
+    },
+    {
+      "teacher": "PINE",
+      "subject": "2. nyelv",
+      "school_class": "11B1-1nincs-2tori-FAMA-PINE"
+    },
+    {
+      "teacher": "KOER",
+      "subject": "1. nyelv",
+      "school_class": "11B2-1foldrajz-2angol-NAZO-HAEN"
+    },
+    {
+      "teacher": "BEGE",
+      "subject": "Informatika",
+      "school_class": "11B2-1foldrajz-2angol-NAZO-HAEN"
+    },
+    {
+      "teacher": "DOMI",
+      "subject": "Hittan",
+      "school_class": "11Cmf-1foldrajz-2fizika-DOMI-SZZS"
+    },
+    {
+      "teacher": "KENE",
+      "subject": "1. nyelv",
+      "school_class": "11Cmf-1foldrajz-2fizika-NAZO-KINE"
+    },
+    {
+      "teacher": "NATI",
+      "subject": "Fizika-sáv",
+      "school_class": "11Cmf-1foldrajz-2fizika-NAZO-KINE"
+    },
+    {
+      "teacher": "NATI",
+      "subject": "Fizika-sáv__d2",
+      "school_class": "11Cmf-1foldrajz-2fizika-NAZO-KINE"
+    },
+    {
+      "teacher": "MOLA",
+      "subject": "Informatika",
+      "school_class": "11Cmf-1foldrajz-2fizika-NAZO-KINE"
+    },
+    {
+      "teacher": "KMNE",
+      "subject": "Matematika",
+      "school_class": "11Cmf-1foldrajz-2fizika-NAZO-KINE"
+    },
+    {
+      "teacher": "KMNE",
+      "subject": "Fizika",
+      "school_class": "11Cmf-1magyar-2angol-NAZO-HAEN"
+    },
+    {
+      "teacher": "DENE",
+      "subject": "Magyar-sáv",
+      "school_class": "11Cmf-1magyar-2angol-NAZO-HAEN"
+    },
+    {
+      "teacher": "DENE",
+      "subject": "Magyar-sáv__d2",
+      "school_class": "11Cmf-1magyar-2angol-NAZO-HAEN"
+    },
+    {
+      "teacher": "PINE",
+      "subject": "Történelem-sáv",
+      "school_class": "11Cmf-1magyar-2tori-DOMI-PINE"
+    },
+    {
+      "teacher": "PINE",
+      "subject": "Történelem-sáv__d2",
+      "school_class": "11Cmf-1magyar-2tori-DOMI-PINE"
+    },
+    {
+      "teacher": "KMNE",
+      "subject": "Matematika-sáv",
+      "school_class": "11Cmf-mf-1matek-2fizika-NAZO-DENE"
+    },
+    {
+      "teacher": "KMNE",
+      "subject": "Matematika-sáv__d2",
+      "school_class": "11Cmf-mf-1matek-2fizika-NAZO-DENE"
+    },
+    {
+      "teacher": "MPNE",
+      "subject": "1. nyelv",
+      "school_class": "11Cspa-1biosz-2angol-NAZO-RANE"
+    },
+    {
+      "teacher": "MOLA",
+      "subject": "Informatika",
+      "school_class": "11Cspa-1biosz-2angol-NAZO-RANE"
+    },
+    {
+      "teacher": "UDZS",
+      "subject": "Matematika",
+      "school_class": "11Cspa-1biosz-2angol-NAZO-RANE"
+    },
+    {
+      "teacher": "KENE",
+      "subject": "1. nyelv",
+      "school_class": "11D1-1biosz-2kemia-1HAEN-FAMA"
+    },
+    {
+      "teacher": "FRNE",
+      "subject": "Biológia",
+      "school_class": "11D1-1biosz-2kemia-1HAEN-FAMA"
+    },
+    {
+      "teacher": "FRNE",
+      "subject": "Biológia-sáv",
+      "school_class": "11D1-1biosz-2kemia-1HAEN-FAMA"
+    },
+    {
+      "teacher": "FRNE",
+      "subject": "Biológia-sáv__d2",
+      "school_class": "11D1-1biosz-2kemia-1HAEN-FAMA"
+    },
+    {
+      "teacher": "FAMA",
+      "subject": "Hittan",
+      "school_class": "11D1-1biosz-2kemia-1HAEN-FAMA"
+    },
+    {
+      "teacher": "MOLA",
+      "subject": "Informatika",
+      "school_class": "11D1-1biosz-2kemia-1HAEN-FAMA"
+    },
+    {
+      "teacher": "RINE",
+      "subject": "Matematika",
+      "school_class": "11D1-1biosz-2kemia-1HAEN-FAMA"
+    },
+    {
+      "teacher": "NAZO",
+      "subject": "Hittan",
+      "school_class": "11D1-1biosz-2kemia-1HAEN-NAZO"
+    },
+    {
+      "teacher": "LENE",
+      "subject": "1. nyelv",
+      "school_class": "11D2-1foldrajz-2biosz-1HAEN-FAMA"
+    },
+    {
+      "teacher": "JONE",
+      "subject": "Biológia",
+      "school_class": "11D2-1foldrajz-2biosz-1HAEN-FAMA"
+    },
+    {
+      "teacher": "JONE",
+      "subject": "Biológia-sáv",
+      "school_class": "11D2-1foldrajz-2biosz-1HAEN-FAMA"
+    },
+    {
+      "teacher": "JONE",
+      "subject": "Biológia-sáv__d2",
+      "school_class": "11D2-1foldrajz-2biosz-1HAEN-FAMA"
+    },
+    {
+      "teacher": "BEGE",
+      "subject": "Informatika",
+      "school_class": "11D2-1foldrajz-2biosz-1HAEN-FAMA"
+    },
+    {
+      "teacher": "FINE",
+      "subject": "Matematika",
+      "school_class": "11D2-1foldrajz-2biosz-1HAEN-FAMA"
+    },
+    {
+      "teacher": "HAEN",
+      "subject": "2. nyelv",
+      "school_class": "11D2-1foldrajz-2biosz-2HAEN-NAZO"
+    },
+    {
+      "teacher": "SZIT",
+      "subject": "Kémia-sáv",
+      "school_class": "11D2-1kemia-2biosz-2HAEN-FAMA"
+    },
+    {
+      "teacher": "SZIT",
+      "subject": "Kémia-sáv__d2",
+      "school_class": "11D2-1kemia-2biosz-2HAEN-FAMA"
+    },
+    {
+      "teacher": "JSZK",
+      "subject": "1. nyelv@JSZK",
+      "school_class": "11E1-BINE-FAMA"
+    },
+    {
+      "teacher": "MOAL",
+      "subject": "1. nyelv@MOAL",
+      "school_class": "11E1-BINE-FAMA"
+    },
+    {
+      "teacher": "BINE",
+      "subject": "2. nyelv",
+      "school_class": "11E1-BINE-FAMA"
+    },
+    {
+      "teacher": "FAMA",
+      "subject": "Hittan",
+      "school_class": "11E1-BINE-FAMA"
+    },
+    {
+      "teacher": "KOKA",
+      "subject": "2. nyelv",
+      "school_class": "11E1-KOKA-FAMA"
+    },
+    {
+      "teacher": "DEBE",
+      "subject": "1. nyelv@DEBE",
+      "school_class": "11E2-BINE-FAMA"
+    },
+    {
+      "teacher": "MOAL",
+      "subject": "1. nyelv@MOAL",
+      "school_class": "11E2-BINE-FAMA"
+    },
+    {
+      "teacher": "NBCS",
+      "subject": "Hittan",
+      "school_class": "11E2-KOKA-NBCS"
+    },
+    {
+      "teacher": "KIGA",
+      "subject": "Biológia",
+      "school_class": "12.A"
+    },
+    {
+      "teacher": "HAEN",
+      "subject": "Filozófia",
+      "school_class": "12.A"
+    },
+    {
+      "teacher": "BEJA",
+      "subject": "Fizika",
+      "school_class": "12.A"
+    },
+    {
+      "teacher": "CSMA",
+      "subject": "Magyar",
+      "school_class": "12.A"
+    },
+    {
+      "teacher": "CSMA",
+      "subject": "Magyar__d2",
+      "school_class": "12.A"
+    },
+    {
+      "teacher": "CSMA",
+      "subject": "Osztályfőnöki",
+      "school_class": "12.A"
+    },
+    {
+      "teacher": "POGE",
+      "subject": "Testnevelés",
+      "school_class": "12.A"
+    },
+    {
+      "teacher": "KOKA",
+      "subject": "Történelem",
+      "school_class": "12.A"
+    },
+    {
+      "teacher": "KIGA",
+      "subject": "Biológia",
+      "school_class": "12.B"
+    },
+    {
+      "teacher": "HAEN",
+      "subject": "Filozófia",
+      "school_class": "12.B"
+    },
+    {
+      "teacher": "BEJA",
+      "subject": "Fizika",
+      "school_class": "12.B"
+    },
+    {
+      "teacher": "BINE",
+      "subject": "Osztályfőnöki",
+      "school_class": "12.B"
+    },
+    {
+      "teacher": "POGE",
+      "subject": "Testnevelés",
+      "school_class": "12.B"
+    },
+    {
+      "teacher": "HAEN",
+      "subject": "Filozófia",
+      "school_class": "12.C"
+    },
+    {
+      "teacher": "UDZS",
+      "subject": "Fizika",
+      "school_class": "12.C"
+    },
+    {
+      "teacher": "SIFE",
+      "subject": "Magyar",
+      "school_class": "12.C"
+    },
+    {
+      "teacher": "JONE",
+      "subject": "Osztályfőnöki",
+      "school_class": "12.C"
+    },
+    {
+      "teacher": "POGE",
+      "subject": "Testnevelés",
+      "school_class": "12.C"
+    },
+    {
+      "teacher": "CESA",
+      "subject": "Történelem",
+      "school_class": "12.C"
+    },
+    {
+      "teacher": "SAAN",
+      "subject": "Biológia",
+      "school_class": "12.D"
+    },
+    {
+      "teacher": "NATI",
+      "subject": "Fizika",
+      "school_class": "12.D"
+    },
+    {
+      "teacher": "DENE",
+      "subject": "Magyar",
+      "school_class": "12.D"
+    },
+    {
+      "teacher": "KMNE",
+      "subject": "Matematika",
+      "school_class": "12.D"
+    },
+    {
+      "teacher": "MPNE",
+      "subject": "Osztályfőnöki",
+      "school_class": "12.D"
+    },
+    {
+      "teacher": "PEZS",
+      "subject": "Rajz",
+      "school_class": "12.D"
+    },
+    {
+      "teacher": "BAIM",
+      "subject": "Testnevelés",
+      "school_class": "12.D"
+    },
+    {
+      "teacher": "CESA",
+      "subject": "Történelem",
+      "school_class": "12.D"
+    },
+    {
+      "teacher": "CSMA",
+      "subject": "1. nyelv",
+      "school_class": "12A1-1biosz-2fizika-NAZO-SZZS"
+    },
+    {
+      "teacher": "SZZS",
+      "subject": "2. nyelv",
+      "school_class": "12A1-1biosz-2fizika-NAZO-SZZS"
+    },
+    {
+      "teacher": "FRNE",
+      "subject": "Biológia-sáv",
+      "school_class": "12A1-1biosz-2fizika-NAZO-SZZS"
+    },
+    {
+      "teacher": "FRNE",
+      "subject": "Biológia-sáv__d2",
+      "school_class": "12A1-1biosz-2fizika-NAZO-SZZS"
+    },
+    {
+      "teacher": "NATI",
+      "subject": "Fizika-sáv",
+      "school_class": "12A1-1biosz-2fizika-NAZO-SZZS"
+    },
+    {
+      "teacher": "NATI",
+      "subject": "Fizika-sáv__d2",
+      "school_class": "12A1-1biosz-2fizika-NAZO-SZZS"
+    },
+    {
+      "teacher": "NAZO",
+      "subject": "Hittan",
+      "school_class": "12A1-1biosz-2fizika-NAZO-SZZS"
+    },
+    {
+      "teacher": "MOLA",
+      "subject": "Informatika",
+      "school_class": "12A1-1biosz-2fizika-NAZO-SZZS"
+    },
+    {
+      "teacher": "FINE",
+      "subject": "Matematika",
+      "school_class": "12A1-1biosz-2fizika-NAZO-SZZS"
+    },
+    {
+      "teacher": "FAMA",
+      "subject": "Hittan",
+      "school_class": "12A1-1biosz-2kemia-FAMA-RANE"
+    },
+    {
+      "teacher": "SZIT",
+      "subject": "Kémia-sáv",
+      "school_class": "12A1-1biosz-2kemia-FAMA-RANE"
+    },
+    {
+      "teacher": "SZIT",
+      "subject": "Kémia-sáv__d2",
+      "school_class": "12A1-1biosz-2kemia-FAMA-RANE"
+    },
+    {
+      "teacher": "CESA",
+      "subject": "Történelem-sáv",
+      "school_class": "12A1-1biosz-2tori-FAMA-RANE"
+    },
+    {
+      "teacher": "CESA",
+      "subject": "Történelem-sáv__d2",
+      "school_class": "12A1-1biosz-2tori-FAMA-RANE"
+    },
+    {
+      "teacher": "HAEN",
+      "subject": "2. nyelv",
+      "school_class": "12A1-1magyar-2tori-FAMA-HAEN"
+    },
+    {
+      "teacher": "SIFE",
+      "subject": "Magyar-sáv",
+      "school_class": "12A1-1magyar-2tori-FAMA-HAEN"
+    },
+    {
+      "teacher": "SIFE",
+      "subject": "Magyar-sáv__d2",
+      "school_class": "12A1-1magyar-2tori-FAMA-HAEN"
+    },
+    {
+      "teacher": "RINE",
+      "subject": "Matematika-sáv",
+      "school_class": "12A1-1matek-2fizika-FAMA-SZZS"
+    },
+    {
+      "teacher": "RINE",
+      "subject": "Matematika-sáv__d2",
+      "school_class": "12A1-1matek-2fizika-FAMA-SZZS"
+    },
+    {
+      "teacher": "PRGY",
+      "subject": "Informatika-sáv",
+      "school_class": "12A1-1matek-2info-FAMA-SZZS"
+    },
+    {
+      "teacher": "PRGY",
+      "subject": "Informatika-sáv__d2",
+      "school_class": "12A1-1matek-2info-FAMA-SZZS"
+    },
+    {
+      "teacher": "CSMA",
+      "subject": "1. nyelv",
+      "school_class": "12A2-1biosz-2kemia-FAMA-HAEN"
+    },
+    {
+      "teacher": "MOLA",
+      "subject": "Informatika",
+      "school_class": "12A2-1biosz-2kemia-FAMA-HAEN"
+    },
+    {
+      "teacher": "PRGY",
+      "subject": "Matematika",
+      "school_class": "12A2-1biosz-2kemia-FAMA-HAEN"
+    },
+    {
+      "teacher": "RANE",
+      "subject": "2. nyelv",
+      "school_class": "12A2-1matek-2tori-NAZO-RANE"
+    },
+    {
+      "teacher": "TANE",
+      "subject": "Magyar",
+      "school_class": "12Bmf-LTIS-2fizika-NAZO-LENE-KINE-LTIS-MOLA"
+    },
+    {
+      "teacher": "BINE",
+      "subject": "Történelem",
+      "school_class": "12Bmf-LTIS-2fizika-NAZO-LENE-KINE-LTIS-MOLA"
+    },
+    {
+      "teacher": "KOKA",
+      "subject": "2. nyelv",
+      "school_class": "12Bmf-LTIS-2fizika-NAZO-LENE-KOKA-LTIS-MOLA"
+    },
+    {
+      "teacher": "LENE",
+      "subject": "1. nyelv",
+      "school_class": "12Bmt-1biosz-2tori-FAMA-LENE-KINE-GULA-PRGY"
+    },
+    {
+      "teacher": "KINE",
+      "subject": "2. nyelv",
+      "school_class": "12Bmt-1biosz-2tori-FAMA-LENE-KINE-GULA-PRGY"
+    },
+    {
+      "teacher": "FAMA",
+      "subject": "Hittan",
+      "school_class": "12Bmt-1biosz-2tori-FAMA-LENE-KINE-GULA-PRGY"
+    },
+    {
+      "teacher": "JSZK",
+      "subject": "Magyar",
+      "school_class": "12Bmt-1biosz-2tori-FAMA-LENE-KINE-GULA-PRGY"
+    },
+    {
+      "teacher": "BINE",
+      "subject": "Történelem",
+      "school_class": "12Bmt-1biosz-2tori-FAMA-LENE-KINE-GULA-PRGY"
+    },
+    {
+      "teacher": "SZZS",
+      "subject": "2. nyelv",
+      "school_class": "12Bmt-1biosz-2tori-NAZO-LENE-SZZS-GULA-PRGY"
+    },
+    {
+      "teacher": "PRGY",
+      "subject": "Informatika",
+      "school_class": "12Bmt-1biosz-2tori-NAZO-LENE-SZZS-GULA-PRGY"
+    },
+    {
+      "teacher": "GULA",
+      "subject": "Matematika",
+      "school_class": "12Bmt-1biosz-2tori-NAZO-LENE-SZZS-GULA-PRGY"
+    },
+    {
+      "teacher": "KOER",
+      "subject": "1. nyelv",
+      "school_class": "12Bmt-1magyar-2tori-NAZO-KOER-BINE-GULA-PRGY"
+    },
+    {
+      "teacher": "BINE",
+      "subject": "2. nyelv",
+      "school_class": "12Bmt-1magyar-2tori-NAZO-KOER-BINE-GULA-PRGY"
+    },
+    {
+      "teacher": "NAZO",
+      "subject": "Hittan",
+      "school_class": "12Bmt-1magyar-2tori-NAZO-LENE-KINE-GULA-PRGY"
+    },
+    {
+      "teacher": "JSZK",
+      "subject": "Magyar-sáv",
+      "school_class": "12Bmt-1magyar-2tori-NAZO-LENE-KINE-GULA-PRGY"
+    },
+    {
+      "teacher": "JSZK",
+      "subject": "Magyar-sáv__d2",
+      "school_class": "12Bmt-1magyar-2tori-NAZO-LENE-KINE-GULA-PRGY"
+    },
+    {
+      "teacher": "BINE",
+      "subject": "Történelem-sáv",
+      "school_class": "12Bmt-1magyar-2tori-NAZO-LENE-KINE-GULA-PRGY"
+    },
+    {
+      "teacher": "BINE",
+      "subject": "Történelem-sáv__d2",
+      "school_class": "12Bmt-1magyar-2tori-NAZO-LENE-KINE-GULA-PRGY"
+    },
+    {
+      "teacher": "MOLA",
+      "subject": "Informatika",
+      "school_class": "12Bmt-LTIS-2tori-NAZO-KOER-BINE-LTIS-MOLA"
+    },
+    {
+      "teacher": "LTIS",
+      "subject": "Matematika",
+      "school_class": "12Bmt-LTIS-2tori-NAZO-KOER-BINE-LTIS-MOLA"
+    },
+    {
+      "teacher": "LTIS",
+      "subject": "Matematika-sáv",
+      "school_class": "12Bmt-LTIS-2tori-NAZO-KOER-BINE-LTIS-MOLA"
+    },
+    {
+      "teacher": "LTIS",
+      "subject": "Matematika-sáv__d2",
+      "school_class": "12Bmt-LTIS-2tori-NAZO-KOER-BINE-LTIS-MOLA"
+    },
+    {
+      "teacher": "KENE",
+      "subject": "1. nyelv",
+      "school_class": "12Cbk-1biosz-2info-KENE-NBCS-BOEV"
+    },
+    {
+      "teacher": "BOEV",
+      "subject": "2. nyelv",
+      "school_class": "12Cbk-1biosz-2info-KENE-NBCS-BOEV"
+    },
+    {
+      "teacher": "JONE",
+      "subject": "Biológia",
+      "school_class": "12Cbk-1biosz-2info-KENE-NBCS-BOEV"
+    },
+    {
+      "teacher": "JONE",
+      "subject": "Biológia-sáv",
+      "school_class": "12Cbk-1biosz-2info-KENE-NBCS-BOEV"
+    },
+    {
+      "teacher": "JONE",
+      "subject": "Biológia-sáv__d2",
+      "school_class": "12Cbk-1biosz-2info-KENE-NBCS-BOEV"
+    },
+    {
+      "teacher": "NBCS",
+      "subject": "Hittan",
+      "school_class": "12Cbk-1biosz-2info-KENE-NBCS-BOEV"
+    },
+    {
+      "teacher": "PRGY",
+      "subject": "Informatika",
+      "school_class": "12Cbk-1biosz-2info-KENE-NBCS-BOEV"
+    },
+    {
+      "teacher": "GULA",
+      "subject": "Matematika",
+      "school_class": "12Cbk-1biosz-2info-KENE-NBCS-BOEV"
+    },
+    {
+      "teacher": "FAMA",
+      "subject": "Hittan",
+      "school_class": "12Cbk-1biosz-2kemia-KENE-FAMA-BOEV"
+    },
+    {
+      "teacher": "DEBE",
+      "subject": "1. nyelv",
+      "school_class": "12Cspa-1magyar-2tori-DEBE-NBCS-BINE"
+    },
+    {
+      "teacher": "JONE",
+      "subject": "Biológia",
+      "school_class": "12Cspa-1magyar-2tori-DEBE-NBCS-BINE"
+    },
+    {
+      "teacher": "PRGY",
+      "subject": "Informatika",
+      "school_class": "12Cspa-1magyar-2tori-DEBE-NBCS-BINE"
+    },
+    {
+      "teacher": "AZNE",
+      "subject": "Matematika",
+      "school_class": "12Cspa-1magyar-2tori-DEBE-NBCS-BINE"
+    },
+    {
+      "teacher": "MPNE",
+      "subject": "1. nyelv",
+      "school_class": "12D1-1biosz-2kemia-SZZS-NBCS"
+    },
+    {
+      "teacher": "SZZS",
+      "subject": "2. nyelv",
+      "school_class": "12D1-1biosz-2kemia-SZZS-NBCS"
+    },
+    {
+      "teacher": "NBCS",
+      "subject": "Hittan",
+      "school_class": "12D1-1biosz-2kemia-SZZS-NBCS"
+    },
+    {
+      "teacher": "AUTO_12D1_1biosz_2kemia_SZZS_NBCS_Lyukas_ra",
+      "subject": "Lyukasóra",
+      "school_class": "12D1-1biosz-2kemia-SZZS-NBCS"
+    },
+    {
+      "teacher": "DENE",
+      "subject": "2. nyelv",
+      "school_class": "12D1-1biosz-2tori-DENE-NBCS"
+    },
+    {
+      "teacher": "KINE",
+      "subject": "2. nyelv",
+      "school_class": "12D1-1foci-2tori-KINE-NBCS"
+    },
+    {
+      "teacher": "DOMI",
+      "subject": "Hittan",
+      "school_class": "12D1-1magyar-2tori-KINE-DOMI"
+    },
+    {
+      "teacher": "MPNE",
+      "subject": "1. nyelv",
+      "school_class": "12D2-1biosz-2kemia-DENE-NBCS"
+    },
+    {
+      "teacher": "AUTO_12D2_1biosz_2kemia_DENE_NBCS_Lyukas_ra",
+      "subject": "Lyukasóra",
+      "school_class": "12D2-1biosz-2kemia-DENE-NBCS"
+    },
+    {
+      "teacher": "KIGA",
+      "subject": "Biológia",
+      "school_class": "5.A"
+    },
+    {
+      "teacher": "MOTU",
+      "subject": "Egyházi ének",
+      "school_class": "5.A"
+    },
+    {
+      "teacher": "JSZK",
+      "subject": "Magyar",
+      "school_class": "5.A"
+    },
+    {
+      "teacher": "UDZS",
+      "subject": "Matematika",
+      "school_class": "5.A"
+    },
+    {
+      "teacher": "JSZK",
+      "subject": "Osztályfőnöki",
+      "school_class": "5.A"
+    },
+    {
+      "teacher": "PEZS",
+      "subject": "Rajz",
+      "school_class": "5.A"
+    },
+    {
+      "teacher": "BAIM",
+      "subject": "Testnevelés",
+      "school_class": "5.A"
+    },
+    {
+      "teacher": "SINE",
+      "subject": "Történelem",
+      "school_class": "5.A"
+    },
+    {
+      "teacher": "KIGA",
+      "subject": "Életvitel",
+      "school_class": "5.A"
+    },
+    {
+      "teacher": "TANE",
+      "subject": "Ének",
+      "school_class": "5.A"
+    },
+    {
+      "teacher": "EDIT",
+      "subject": "Hittan",
+      "school_class": "5A1-EDIT"
+    },
+    {
+      "teacher": "JEER",
+      "subject": "1. nyelv",
+      "school_class": "5A1-NAZO"
+    },
+    {
+      "teacher": "BOEV",
+      "subject": "2. nyelv",
+      "school_class": "5A1-NAZO"
+    },
+    {
+      "teacher": "NAZO",
+      "subject": "Hittan",
+      "school_class": "5A1-NAZO"
+    },
+    {
+      "teacher": "DEBE",
+      "subject": "1. nyelv",
+      "school_class": "5A2-NAZO"
+    },
+    {
+      "teacher": "HAEN",
+      "subject": "2. nyelv",
+      "school_class": "5A2-NAZO"
+    },
+    {
+      "teacher": "CESA",
+      "subject": "2. nyelv",
+      "school_class": "6.A"
+    },
+    {
+      "teacher": "JONE",
+      "subject": "Biológia",
+      "school_class": "6.A"
+    },
+    {
+      "teacher": "CSMA",
+      "subject": "Magyar",
+      "school_class": "6.A"
+    },
+    {
+      "teacher": "RINE",
+      "subject": "Matematika",
+      "school_class": "6.A"
+    },
+    {
+      "teacher": "CESA",
+      "subject": "Osztályfőnöki",
+      "school_class": "6.A"
+    },
+    {
+      "teacher": "PEZS",
+      "subject": "Rajz",
+      "school_class": "6.A"
+    },
+    {
+      "teacher": "POGE",
+      "subject": "Testnevelés",
+      "school_class": "6.A"
+    },
+    {
+      "teacher": "CESA",
+      "subject": "Történelem",
+      "school_class": "6.A"
+    },
+    {
+      "teacher": "JONE",
+      "subject": "Életvitel",
+      "school_class": "6.A"
+    },
+    {
+      "teacher": "TANE",
+      "subject": "Ének",
+      "school_class": "6.A"
+    },
+    {
+      "teacher": "CSNE",
+      "subject": "1. nyelv",
+      "school_class": "6A1-DOMI"
+    },
+    {
+      "teacher": "DOMI",
+      "subject": "Hittan",
+      "school_class": "6A1-DOMI"
+    },
+    {
+      "teacher": "BEGE",
+      "subject": "Informatika",
+      "school_class": "6A1-DOMI"
+    },
+    {
+      "teacher": "NAZO",
+      "subject": "Hittan",
+      "school_class": "6A1-NAZO"
+    },
+    {
+      "teacher": "DEBE",
+      "subject": "1. nyelv",
+      "school_class": "6A2-DOMI"
+    },
+    {
+      "teacher": "BEGE",
+      "subject": "Informatika",
+      "school_class": "6A2-DOMI"
+    },
+    {
+      "teacher": "CSNE",
+      "subject": "1. nyelv",
+      "school_class": "7.A"
+    },
+    {
+      "teacher": "SZIT",
+      "subject": "Biológia",
+      "school_class": "7.A"
+    },
+    {
+      "teacher": "NATI",
+      "subject": "Fizika",
+      "school_class": "7.A"
+    },
+    {
+      "teacher": "VIPA",
+      "subject": "Földrajz",
+      "school_class": "7.A"
+    },
+    {
+      "teacher": "BEGE",
+      "subject": "Informatika",
+      "school_class": "7.A"
+    },
+    {
+      "teacher": "KIGA",
+      "subject": "Kémia",
+      "school_class": "7.A"
+    },
+    {
+      "teacher": "JSZK",
+      "subject": "Magyar",
+      "school_class": "7.A"
+    },
+    {
+      "teacher": "LTIS",
+      "subject": "Matematika",
+      "school_class": "7.A"
+    },
+    {
+      "teacher": "LTIS",
+      "subject": "Osztályfőnöki",
+      "school_class": "7.A"
+    },
+    {
+      "teacher": "PEZS",
+      "subject": "Rajz",
+      "school_class": "7.A"
+    },
+    {
+      "teacher": "BAIM",
+      "subject": "Testnevelés",
+      "school_class": "7.A"
+    },
+    {
+      "teacher": "VIPA",
+      "subject": "Történelem",
+      "school_class": "7.A"
+    },
+    {
+      "teacher": "TANE",
+      "subject": "Ének",
+      "school_class": "7.A"
+    },
+    {
+      "teacher": "DOMI",
+      "subject": "Hittan",
+      "school_class": "7.A-DOMI-SZZS"
+    },
+    {
+      "teacher": "KINE",
+      "subject": "2. nyelv",
+      "school_class": "7.A-NAZO-KINÉ"
+    },
+    {
+      "teacher": "SZZS",
+      "subject": "2. nyelv",
+      "school_class": "7.A-NAZO-SZZS"
+    },
+    {
+      "teacher": "NAZO",
+      "subject": "Hittan",
+      "school_class": "7.A-NAZO-SZZS"
+    },
+    {
+      "teacher": "SAAN",
+      "subject": "Biológia",
+      "school_class": "8.A"
+    },
+    {
+      "teacher": "BEJA",
+      "subject": "Fizika",
+      "school_class": "8.A"
+    },
+    {
+      "teacher": "VIPA",
+      "subject": "Földrajz",
+      "school_class": "8.A"
+    },
+    {
+      "teacher": "SZIT",
+      "subject": "Kémia",
+      "school_class": "8.A"
+    },
+    {
+      "teacher": "SIFE",
+      "subject": "Magyar",
+      "school_class": "8.A"
+    },
+    {
+      "teacher": "LTIS",
+      "subject": "Matematika",
+      "school_class": "8.A"
+    },
+    {
+      "teacher": "SINE",
+      "subject": "Osztályfőnöki",
+      "school_class": "8.A"
+    },
+    {
+      "teacher": "PEZS",
+      "subject": "Rajz",
+      "school_class": "8.A"
+    },
+    {
+      "teacher": "POGE",
+      "subject": "Testnevelés",
+      "school_class": "8.A"
+    },
+    {
+      "teacher": "SINE",
+      "subject": "Történelem",
+      "school_class": "8.A"
+    },
+    {
+      "teacher": "TANE",
+      "subject": "Ének",
+      "school_class": "8.A"
+    },
+    {
+      "teacher": "LENE",
+      "subject": "1. nyelv",
+      "school_class": "8A1-FAMA-CESA"
+    },
+    {
+      "teacher": "CESA",
+      "subject": "2. nyelv",
+      "school_class": "8A1-FAMA-CESA"
+    },
+    {
+      "teacher": "FAMA",
+      "subject": "Hittan",
+      "school_class": "8A1-FAMA-CESA"
+    },
+    {
+      "teacher": "BEGE",
+      "subject": "Informatika",
+      "school_class": "8A1-FAMA-CESA"
+    },
+    {
+      "teacher": "RANE",
+      "subject": "2. nyelv",
+      "school_class": "8A1-FAMA-RANE"
+    },
+    {
+      "teacher": "NAZO",
+      "subject": "Hittan",
+      "school_class": "8A1-NAZO-CESA"
+    },
+    {
+      "teacher": "JANE",
+      "subject": "2. nyelv",
+      "school_class": "8A1-NAZO-JANE"
+    },
+    {
+      "teacher": "JEER",
+      "subject": "1. nyelv",
+      "school_class": "8A2-FAMA-CESA"
+    },
+    {
+      "teacher": "BEGE",
+      "subject": "Informatika",
+      "school_class": "8A2-FAMA-CESA"
+    },
+    {
+      "teacher": "MOTU",
+      "subject": "Egyházi ének",
+      "school_class": "9.A"
+    },
+    {
+      "teacher": "VIPA",
+      "subject": "Földrajz",
+      "school_class": "9.A"
+    },
+    {
+      "teacher": "CSNE",
+      "subject": "Magyar",
+      "school_class": "9.A"
+    },
+    {
+      "teacher": "CSNE",
+      "subject": "Magyar__d2",
+      "school_class": "9.A"
+    },
+    {
+      "teacher": "CSNE",
+      "subject": "Osztályfőnöki",
+      "school_class": "9.A"
+    },
+    {
+      "teacher": "PEZS",
+      "subject": "Rajz",
+      "school_class": "9.A"
+    },
+    {
+      "teacher": "BAIM",
+      "subject": "Testnevelés",
+      "school_class": "9.A"
+    },
+    {
+      "teacher": "TANE",
+      "subject": "Ének",
+      "school_class": "9.A"
+    },
+    {
+      "teacher": "MOTU",
+      "subject": "Egyházi ének",
+      "school_class": "9.B"
+    },
+    {
+      "teacher": "VIPA",
+      "subject": "Földrajz",
+      "school_class": "9.B"
+    },
+    {
+      "teacher": "KINE",
+      "subject": "Magyar",
+      "school_class": "9.B"
+    },
+    {
+      "teacher": "KINE",
+      "subject": "Osztályfőnöki",
+      "school_class": "9.B"
+    },
+    {
+      "teacher": "PEZS",
+      "subject": "Rajz",
+      "school_class": "9.B"
+    },
+    {
+      "teacher": "BAIM",
+      "subject": "Testnevelés",
+      "school_class": "9.B"
+    },
+    {
+      "teacher": "MOTU",
+      "subject": "Ének",
+      "school_class": "9.B"
+    },
+    {
+      "teacher": "MOTU",
+      "subject": "Egyházi ének",
+      "school_class": "9.C"
+    },
+    {
+      "teacher": "VIPA",
+      "subject": "Földrajz",
+      "school_class": "9.C"
+    },
+    {
+      "teacher": "NATI",
+      "subject": "Osztályfőnöki",
+      "school_class": "9.C"
+    },
+    {
+      "teacher": "PEZS",
+      "subject": "Rajz",
+      "school_class": "9.C"
+    },
+    {
+      "teacher": "POGE",
+      "subject": "Testnevelés",
+      "school_class": "9.C"
+    },
+    {
+      "teacher": "MOTU",
+      "subject": "Ének",
+      "school_class": "9.C"
+    },
+    {
+      "teacher": "DOMI",
+      "subject": "Hittan",
+      "school_class": "9A1-DOMI-1-KOKA-BEGE"
+    },
+    {
+      "teacher": "DEBE",
+      "subject": "1. nyelv@DEBE",
+      "school_class": "9A1-NAZO-1-KOKA-BEGE"
+    },
+    {
+      "teacher": "MOAL",
+      "subject": "1. nyelv@MOAL",
+      "school_class": "9A1-NAZO-1-KOKA-BEGE"
+    },
+    {
+      "teacher": "KOKA",
+      "subject": "2. nyelv",
+      "school_class": "9A1-NAZO-1-KOKA-BEGE"
+    },
+    {
+      "teacher": "LTIS",
+      "subject": "Fizika",
+      "school_class": "9A1-NAZO-1-KOKA-BEGE"
+    },
+    {
+      "teacher": "NAZO",
+      "subject": "Hittan",
+      "school_class": "9A1-NAZO-1-KOKA-BEGE"
+    },
+    {
+      "teacher": "BEGE",
+      "subject": "Informatika",
+      "school_class": "9A1-NAZO-1-KOKA-BEGE"
+    },
+    {
+      "teacher": "SZIT",
+      "subject": "Kémia",
+      "school_class": "9A1-NAZO-1-KOKA-BEGE"
+    },
+    {
+      "teacher": "LTIS",
+      "subject": "Matematika",
+      "school_class": "9A1-NAZO-1-KOKA-BEGE"
+    },
+    {
+      "teacher": "SINE",
+      "subject": "Történelem",
+      "school_class": "9A1-NAZO-1-KOKA-BEGE"
+    },
+    {
+      "teacher": "MOLA",
+      "subject": "Informatika",
+      "school_class": "9A1-NAZO-1-KOKA-MOLA"
+    },
+    {
+      "teacher": "PINE",
+      "subject": "2. nyelv",
+      "school_class": "9A1-NAZO-1-PINE-BEGE"
+    },
+    {
+      "teacher": "RANE",
+      "subject": "2. nyelv",
+      "school_class": "9A1-NAZO-1-RANE-BEGE"
+    },
+    {
+      "teacher": "EDIT",
+      "subject": "Hittan",
+      "school_class": "9A2-EDIT-JEER-BOEV-BEGE"
+    },
+    {
+      "teacher": "JEER",
+      "subject": "1. nyelv",
+      "school_class": "9A2-NAZO-JEER-BOEV-BEGE"
+    },
+    {
+      "teacher": "JONE",
+      "subject": "Biológia",
+      "school_class": "9A2-NAZO-JEER-BOEV-BEGE"
+    },
+    {
+      "teacher": "BEJA",
+      "subject": "Fizika",
+      "school_class": "9A2-NAZO-JEER-BOEV-BEGE"
+    },
+    {
+      "teacher": "KIGA",
+      "subject": "Kémia",
+      "school_class": "9A2-NAZO-JEER-BOEV-BEGE"
+    },
+    {
+      "teacher": "MOLA",
+      "subject": "Matematika",
+      "school_class": "9A2-NAZO-JEER-BOEV-BEGE"
+    },
+    {
+      "teacher": "SINE",
+      "subject": "Történelem",
+      "school_class": "9A2-NAZO-JEER-BOEV-BEGE"
+    },
+    {
+      "teacher": "HAEN",
+      "subject": "2. nyelv",
+      "school_class": "9Bbk-bkNAZO-JEER-HAEN-mMOLA-SAAN"
+    },
+    {
+      "teacher": "SAAN",
+      "subject": "Biológia",
+      "school_class": "9Bbk-bkNAZO-JEER-HAEN-mMOLA-SAAN"
+    },
+    {
+      "teacher": "MOLA",
+      "subject": "Informatika",
+      "school_class": "9Bbk-bkNAZO-JEER-HAEN-mMOLA-SAAN"
+    },
+    {
+      "teacher": "KIGA",
+      "subject": "Kémia",
+      "school_class": "9Bbk-bkNAZO-JEER-HAEN-mMOLA-SAAN"
+    },
+    {
+      "teacher": "BOEV",
+      "subject": "2. nyelv",
+      "school_class": "9Bbk-bkNAZO-LENE-BOEV-mBEJA-JONE"
+    },
+    {
+      "teacher": "BEJA",
+      "subject": "Matematika",
+      "school_class": "9Bbk-bkNAZO-LENE-BOEV-mBEJA-JONE"
+    },
+    {
+      "teacher": "SZZS",
+      "subject": "2. nyelv",
+      "school_class": "9Bspa-spaFAMA-spa-SZZS-mBEJA-spa"
+    },
+    {
+      "teacher": "FAMA",
+      "subject": "Hittan",
+      "school_class": "9Bspa-spaFAMA-spa-SZZS-mBEJA-spa"
+    },
+    {
+      "teacher": "DEBE",
+      "subject": "1. nyelv@DEBE",
+      "school_class": "9Bspa-spaNAZO-spa-BINE-mBEJA-spa"
+    },
+    {
+      "teacher": "MOAL",
+      "subject": "1. nyelv@MOAL",
+      "school_class": "9Bspa-spaNAZO-spa-BINE-mBEJA-spa"
+    },
+    {
+      "teacher": "BINE",
+      "subject": "2. nyelv",
+      "school_class": "9Bspa-spaNAZO-spa-BINE-mBEJA-spa"
+    },
+    {
+      "teacher": "NAZO",
+      "subject": "Hittan",
+      "school_class": "9Bspa-spaNAZO-spa-BINE-mBEJA-spa"
+    },
+    {
+      "teacher": "BEGE",
+      "subject": "Informatika",
+      "school_class": "9Bspa-spaNAZO-spa-BINE-mBEJA-spa"
+    },
+    {
+      "teacher": "PINE",
+      "subject": "Történelem",
+      "school_class": "9Bspa-spaNAZO-spa-BINE-mBEJA-spa"
+    },
+    {
+      "teacher": "KINE",
+      "subject": "2. nyelv",
+      "school_class": "9Bspa-spaNAZO-spa-KINE-mBEJA-spa"
+    },
+    {
+      "teacher": "CSMA",
+      "subject": "1. nyelv",
+      "school_class": "9Cmf-CSMA-NAZO-BINE"
+    },
+    {
+      "teacher": "NATI",
+      "subject": "Fizika",
+      "school_class": "9Cmf-CSMA-NAZO-BINE"
+    },
+    {
+      "teacher": "MOLA",
+      "subject": "Informatika",
+      "school_class": "9Cmf-CSMA-NAZO-BINE"
+    },
+    {
+      "teacher": "SAAN",
+      "subject": "Kémia",
+      "school_class": "9Cmf-CSMA-NAZO-BINE"
+    },
+    {
+      "teacher": "SINE",
+      "subject": "Magyar",
+      "school_class": "9Cmf-CSMA-NAZO-BINE"
+    },
+    {
+      "teacher": "MOLA",
+      "subject": "Matematika",
+      "school_class": "9Cmf-CSMA-NAZO-BINE"
+    },
+    {
+      "teacher": "LENE",
+      "subject": "1. nyelv",
+      "school_class": "9Cmf-LENE-FAMA-SZZS"
+    },
+    {
+      "teacher": "UDZS",
+      "subject": "Fizika",
+      "school_class": "9Cmt-CSMA-NAZO-BINE"
+    },
+    {
+      "teacher": "TANE",
+      "subject": "Magyar",
+      "school_class": "9Cmt-CSMA-NAZO-BINE"
+    },
+    {
+      "teacher": "NATI",
+      "subject": "Matematika",
+      "school_class": "9Cmt-CSMA-NAZO-BINE"
+    },
+    {
+      "teacher": "KOKA",
+      "subject": "Történelem",
+      "school_class": "9Cmt-CSMA-NAZO-BINE"
+    },
+    {
+      "teacher": "MOLA",
+      "subject": "Informatika",
+      "school_class": "9Cmt-CSMA-NAZO-SZZS"
+    },
+    {
+      "teacher": "SAAN",
+      "subject": "Kémia",
+      "school_class": "9Cmt-CSMA-NAZO-SZZS"
+    }
+  ]
+}

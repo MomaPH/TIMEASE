@@ -1,0 +1,2355 @@
+{
+  "school": {
+    "name": "FET import: Gymnasio",
+    "academic_year": "2026-2027",
+    "city": "Imported"
+  },
+  "timeslot_config": {
+    "days": [
+      {
+        "name": "Δευτέρα",
+        "sessions": [
+          {
+            "name": "Journée",
+            "start_time": "08:00",
+            "end_time": "15:00"
+          }
+        ],
+        "breaks": []
+      },
+      {
+        "name": "Τρίτη",
+        "sessions": [
+          {
+            "name": "Journée",
+            "start_time": "08:00",
+            "end_time": "15:00"
+          }
+        ],
+        "breaks": []
+      },
+      {
+        "name": "Τετάρτη",
+        "sessions": [
+          {
+            "name": "Journée",
+            "start_time": "08:00",
+            "end_time": "15:00"
+          }
+        ],
+        "breaks": []
+      },
+      {
+        "name": "Πέμπτη",
+        "sessions": [
+          {
+            "name": "Journée",
+            "start_time": "08:00",
+            "end_time": "15:00"
+          }
+        ],
+        "breaks": []
+      },
+      {
+        "name": "Παρασκευή",
+        "sessions": [
+          {
+            "name": "Journée",
+            "start_time": "08:00",
+            "end_time": "15:00"
+          }
+        ],
+        "breaks": []
+      }
+    ],
+    "base_unit_minutes": 60
+  },
+  "subjects": [
+    {
+      "name": "Αγγ/ΦΑ",
+      "short_name": "Αγγ/ΦΑ",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Αγγ/ΦΑ@pe06_a",
+      "short_name": "Αγγ/ΦΑ@pe06_",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Αγγ/ΦΑ@pe06_b",
+      "short_name": "Αγγ/ΦΑ@pe06_",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Αγγ/ΦΑ@pe06_c",
+      "short_name": "Αγγ/ΦΑ@pe06_",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Αγγ/ΦΑ@pe11_b",
+      "short_name": "Αγγ/ΦΑ@pe11_",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "ΑρχΓλ",
+      "short_name": "ΑρχΓλ",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "ΑρχΜετ",
+      "short_name": "ΑρχΜετ",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Βιολογ",
+      "short_name": "Βιολογ",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Γεωγρ",
+      "short_name": "Γεωγρ",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "ΓλΔιδ",
+      "short_name": "ΓλΔιδ",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Γυμν",
+      "short_name": "Γυμν",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Θρησκ",
+      "short_name": "Θρησκ",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Ιστορ",
+      "short_name": "Ιστορ",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "ΚΠΑ",
+      "short_name": "ΚΠΑ",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Μαθημ",
+      "short_name": "Μαθημ",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Μουσ",
+      "short_name": "Μουσ",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "ΝέοΛογ",
+      "short_name": "ΝέοΛογ",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "ΝέοΛογ@pe02_a",
+      "short_name": "ΝέοΛογ@pe02_",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "ΝέοΛογ@pe02_e",
+      "short_name": "ΝέοΛογ@pe02_",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "ΞΓ2",
+      "short_name": "ΞΓ2",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "ΞΓ2-Γερ",
+      "short_name": "ΞΓ2-Γερ",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Οικιακή",
+      "short_name": "Οικιακή",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Πλ/ΣΕΠ",
+      "short_name": "Πλ/ΣΕΠ",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Πλη/Τεχ",
+      "short_name": "Πλη/Τεχ",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Φυσική",
+      "short_name": "Φυσική",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    },
+    {
+      "name": "Χημεία",
+      "short_name": "Χημεία",
+      "color": "#0d9488",
+      "required_room_type": null,
+      "needs_room": true
+    }
+  ],
+  "teachers": [
+    {
+      "name": "pe01-a",
+      "subjects": [
+        "Θρησκ"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "pe01-b",
+      "subjects": [
+        "Θρησκ"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "pe01-c",
+      "subjects": [
+        "Ιστορ"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "pe02-a",
+      "subjects": [
+        "ΑρχΓλ",
+        "ΑρχΜετ",
+        "ΓλΔιδ",
+        "ΝέοΛογ",
+        "ΝέοΛογ@pe02_a"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "pe02-b",
+      "subjects": [
+        "ΑρχΓλ",
+        "ΑρχΜετ",
+        "ΓλΔιδ",
+        "ΝέοΛογ"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "pe02-c",
+      "subjects": [
+        "ΑρχΓλ",
+        "ΑρχΜετ",
+        "ΓλΔιδ",
+        "Ιστορ"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "pe02-d",
+      "subjects": [
+        "ΑρχΓλ",
+        "ΓλΔιδ",
+        "Ιστορ",
+        "ΝέοΛογ"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "pe02-e",
+      "subjects": [
+        "ΑρχΜετ",
+        "ΓλΔιδ",
+        "ΝέοΛογ",
+        "ΝέοΛογ@pe02_e"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "pe02-f",
+      "subjects": [
+        "ΑρχΓλ",
+        "ΓλΔιδ",
+        "ΝέοΛογ"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "pe03-a",
+      "subjects": [
+        "Γεωγρ",
+        "Μαθημ"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "pe03-b",
+      "subjects": [
+        "Γεωγρ",
+        "Μαθημ"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "pe03-c",
+      "subjects": [
+        "Μαθημ"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "pe04-a",
+      "subjects": [
+        "Βιολογ",
+        "Φυσική",
+        "Χημεία"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "pe04-b",
+      "subjects": [
+        "Βιολογ",
+        "Γεωγρ",
+        "Φυσική",
+        "Χημεία"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "pe05-a",
+      "subjects": [
+        "ΞΓ2"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "pe06-a",
+      "subjects": [
+        "Αγγ/ΦΑ",
+        "Αγγ/ΦΑ@pe06_a"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "pe06-b",
+      "subjects": [
+        "Αγγ/ΦΑ@pe06_b"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "pe06-c",
+      "subjects": [
+        "Αγγ/ΦΑ",
+        "Αγγ/ΦΑ@pe06_c"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "pe07-a",
+      "subjects": [
+        "ΞΓ2-Γερ"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "pe07-b",
+      "subjects": [
+        "Ιστορ"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "pe11-a",
+      "subjects": [
+        "Γυμν"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "pe11-b",
+      "subjects": [
+        "Αγγ/ΦΑ@pe11_b"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "pe13",
+      "subjects": [
+        "ΚΠΑ"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "pe15",
+      "subjects": [
+        "Οικιακή"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "pe16",
+      "subjects": [
+        "Μουσ"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "pe19-a",
+      "subjects": [
+        "Πλ/ΣΕΠ",
+        "Πλη/Τεχ"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    },
+    {
+      "name": "pe19-b",
+      "subjects": [
+        "Πλ/ΣΕΠ"
+      ],
+      "max_hours_per_week": 80,
+      "unavailable_slots": []
+    }
+  ],
+  "classes": [
+    {
+      "name": "Α1",
+      "level": "Α1",
+      "student_count": 30
+    },
+    {
+      "name": "Α2",
+      "level": "Α2",
+      "student_count": 30
+    },
+    {
+      "name": "Α3",
+      "level": "Α3",
+      "student_count": 30
+    },
+    {
+      "name": "Β1",
+      "level": "Β1",
+      "student_count": 30
+    },
+    {
+      "name": "Β2",
+      "level": "Β2",
+      "student_count": 30
+    },
+    {
+      "name": "Β3",
+      "level": "Β3",
+      "student_count": 30
+    },
+    {
+      "name": "Β4",
+      "level": "Β4",
+      "student_count": 30
+    },
+    {
+      "name": "Γ1",
+      "level": "Γ1",
+      "student_count": 30
+    },
+    {
+      "name": "Γ2",
+      "level": "Γ2",
+      "student_count": 30
+    },
+    {
+      "name": "Γ3",
+      "level": "Γ3",
+      "student_count": 30
+    }
+  ],
+  "rooms": [
+    {
+      "name": "ΠΛΗΡ",
+      "capacity": 30000,
+      "types": [
+        "Salle standard"
+      ]
+    },
+    {
+      "name": "αυλή",
+      "capacity": 30000,
+      "types": [
+        "Salle standard"
+      ]
+    }
+  ],
+  "curriculum": [
+    {
+      "school_class": "Α1",
+      "subject": "Αγγ/ΦΑ",
+      "total_minutes_per_week": 360,
+      "sessions_per_week": 6,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Α1",
+      "subject": "ΑρχΓλ",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Α1",
+      "subject": "ΑρχΜετ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Α1",
+      "subject": "Βιολογ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Α1",
+      "subject": "Γεωγρ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Α1",
+      "subject": "ΓλΔιδ",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Α1",
+      "subject": "Θρησκ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Α1",
+      "subject": "Ιστορ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Α1",
+      "subject": "Μαθημ",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Α1",
+      "subject": "Μουσ",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Α1",
+      "subject": "ΝέοΛογ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Α1",
+      "subject": "ΞΓ2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Α1",
+      "subject": "Οικιακή",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Α1",
+      "subject": "Πλη/Τεχ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Α2",
+      "subject": "ΑρχΓλ",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Α2",
+      "subject": "ΑρχΜετ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Α2",
+      "subject": "Βιολογ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Α2",
+      "subject": "Γεωγρ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Α2",
+      "subject": "ΓλΔιδ",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Α2",
+      "subject": "Θρησκ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Α2",
+      "subject": "Ιστορ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Α2",
+      "subject": "Μαθημ",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Α2",
+      "subject": "Μουσ",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Α2",
+      "subject": "ΝέοΛογ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Α2",
+      "subject": "ΞΓ2-Γερ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Α2",
+      "subject": "Οικιακή",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Α2",
+      "subject": "Πλη/Τεχ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Α3",
+      "subject": "Αγγ/ΦΑ",
+      "total_minutes_per_week": 360,
+      "sessions_per_week": 6,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Α3",
+      "subject": "ΑρχΓλ",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Α3",
+      "subject": "ΑρχΜετ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Α3",
+      "subject": "Βιολογ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Α3",
+      "subject": "Γεωγρ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Α3",
+      "subject": "Θρησκ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Α3",
+      "subject": "Ιστορ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Α3",
+      "subject": "Μαθημ",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Α3",
+      "subject": "Μουσ",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Α3",
+      "subject": "ΝέοΛογ@pe02_a",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Α3",
+      "subject": "ΝέοΛογ@pe02_e",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Α3",
+      "subject": "ΞΓ2-Γερ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Α3",
+      "subject": "Οικιακή",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Α3",
+      "subject": "Πλη/Τεχ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Β1",
+      "subject": "Αγγ/ΦΑ",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Β1",
+      "subject": "ΑρχΓλ",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Β1",
+      "subject": "ΑρχΜετ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Β1",
+      "subject": "Γεωγρ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Β1",
+      "subject": "ΓλΔιδ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Β1",
+      "subject": "Γυμν",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Β1",
+      "subject": "Θρησκ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Β1",
+      "subject": "Ιστορ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Β1",
+      "subject": "Μαθημ",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Β1",
+      "subject": "Μουσ",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Β1",
+      "subject": "ΝέοΛογ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Β1",
+      "subject": "ΞΓ2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Β1",
+      "subject": "Οικιακή",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Β1",
+      "subject": "Πλη/Τεχ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Β1",
+      "subject": "Φυσική",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Β1",
+      "subject": "Χημεία",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Β2",
+      "subject": "ΑρχΓλ",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Β2",
+      "subject": "ΑρχΜετ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Β2",
+      "subject": "Γεωγρ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Β2",
+      "subject": "ΓλΔιδ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Β2",
+      "subject": "Γυμν",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Β2",
+      "subject": "Θρησκ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Β2",
+      "subject": "Ιστορ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Β2",
+      "subject": "Μαθημ",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Β2",
+      "subject": "Μουσ",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Β2",
+      "subject": "ΝέοΛογ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Β2",
+      "subject": "ΞΓ2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Β2",
+      "subject": "Οικιακή",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Β2",
+      "subject": "Πλη/Τεχ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Β2",
+      "subject": "Φυσική",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Β2",
+      "subject": "Χημεία",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Β3",
+      "subject": "Αγγ/ΦΑ@pe06_a",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Β3",
+      "subject": "Αγγ/ΦΑ@pe06_c",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Β3",
+      "subject": "ΑρχΓλ",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Β3",
+      "subject": "ΑρχΜετ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Β3",
+      "subject": "Γεωγρ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Β3",
+      "subject": "ΓλΔιδ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Β3",
+      "subject": "Γυμν",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Β3",
+      "subject": "Θρησκ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Β3",
+      "subject": "Ιστορ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Β3",
+      "subject": "Μαθημ",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Β3",
+      "subject": "Μουσ",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Β3",
+      "subject": "ΝέοΛογ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Β3",
+      "subject": "Οικιακή",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Β3",
+      "subject": "Πλη/Τεχ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Β3",
+      "subject": "Φυσική",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Β3",
+      "subject": "Χημεία",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Β4",
+      "subject": "ΑρχΓλ",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Β4",
+      "subject": "ΑρχΜετ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Β4",
+      "subject": "Γεωγρ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Β4",
+      "subject": "ΓλΔιδ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Β4",
+      "subject": "Γυμν",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Β4",
+      "subject": "Θρησκ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Β4",
+      "subject": "Ιστορ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Β4",
+      "subject": "Μαθημ",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Β4",
+      "subject": "Μουσ",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Β4",
+      "subject": "ΝέοΛογ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Β4",
+      "subject": "Οικιακή",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Β4",
+      "subject": "Πλη/Τεχ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Β4",
+      "subject": "Φυσική",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Β4",
+      "subject": "Χημεία",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Γ1",
+      "subject": "Αγγ/ΦΑ",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Γ1",
+      "subject": "ΑρχΓλ",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Γ1",
+      "subject": "ΑρχΜετ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Γ1",
+      "subject": "Βιολογ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Γ1",
+      "subject": "ΓλΔιδ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Γ1",
+      "subject": "Θρησκ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Γ1",
+      "subject": "Ιστορ",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Γ1",
+      "subject": "ΚΠΑ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Γ1",
+      "subject": "Μαθημ",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Γ1",
+      "subject": "Μουσ",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Γ1",
+      "subject": "ΝέοΛογ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Γ1",
+      "subject": "ΞΓ2",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Γ1",
+      "subject": "Πλ/ΣΕΠ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Γ1",
+      "subject": "Φυσική",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Γ1",
+      "subject": "Χημεία",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Γ2",
+      "subject": "ΑρχΓλ",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Γ2",
+      "subject": "ΑρχΜετ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Γ2",
+      "subject": "Βιολογ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Γ2",
+      "subject": "Θρησκ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Γ2",
+      "subject": "Ιστορ",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Γ2",
+      "subject": "ΚΠΑ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Γ2",
+      "subject": "Μαθημ",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Γ2",
+      "subject": "Μουσ",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Γ2",
+      "subject": "ΝέοΛογ",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Γ2",
+      "subject": "ΞΓ2-Γερ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Γ2",
+      "subject": "Πλ/ΣΕΠ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Γ2",
+      "subject": "Φυσική",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Γ2",
+      "subject": "Χημεία",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Γ3",
+      "subject": "Αγγ/ΦΑ@pe06_b",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Γ3",
+      "subject": "Αγγ/ΦΑ@pe11_b",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Γ3",
+      "subject": "ΑρχΓλ",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Γ3",
+      "subject": "ΑρχΜετ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Γ3",
+      "subject": "Βιολογ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Γ3",
+      "subject": "ΓλΔιδ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Γ3",
+      "subject": "Θρησκ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Γ3",
+      "subject": "Ιστορ",
+      "total_minutes_per_week": 180,
+      "sessions_per_week": 3,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Γ3",
+      "subject": "ΚΠΑ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Γ3",
+      "subject": "Μαθημ",
+      "total_minutes_per_week": 240,
+      "sessions_per_week": 4,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Γ3",
+      "subject": "Μουσ",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Γ3",
+      "subject": "ΝέοΛογ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Γ3",
+      "subject": "ΞΓ2-Γερ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Γ3",
+      "subject": "Πλ/ΣΕΠ",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Γ3",
+      "subject": "Φυσική",
+      "total_minutes_per_week": 120,
+      "sessions_per_week": 2,
+      "minutes_per_session": 60
+    },
+    {
+      "school_class": "Γ3",
+      "subject": "Χημεία",
+      "total_minutes_per_week": 60,
+      "sessions_per_week": 1,
+      "minutes_per_session": 60
+    }
+  ],
+  "constraints": [
+    {
+      "id": "C1",
+      "type": "hard",
+      "category": "teacher_no_overlap",
+      "description_fr": "Pas de chevauchement enseignant",
+      "priority": 10,
+      "parameters": {}
+    },
+    {
+      "id": "C2",
+      "type": "hard",
+      "category": "class_no_overlap",
+      "description_fr": "Pas de chevauchement classe",
+      "priority": 10,
+      "parameters": {}
+    },
+    {
+      "id": "C3",
+      "type": "hard",
+      "category": "teacher_subject_declared",
+      "description_fr": "Matière enseignant déclarée",
+      "priority": 10,
+      "parameters": {}
+    },
+    {
+      "id": "C4",
+      "type": "hard",
+      "category": "teacher_calendar_declared",
+      "description_fr": "Calendrier enseignant déclaré",
+      "priority": 10,
+      "parameters": {}
+    }
+  ],
+  "teacher_assignments": [
+    {
+      "teacher": "pe06-a",
+      "subject": "Αγγ/ΦΑ",
+      "school_class": "Α1"
+    },
+    {
+      "teacher": "pe02-d",
+      "subject": "ΑρχΓλ",
+      "school_class": "Α1"
+    },
+    {
+      "teacher": "pe02-b",
+      "subject": "ΑρχΜετ",
+      "school_class": "Α1"
+    },
+    {
+      "teacher": "pe04-a",
+      "subject": "Βιολογ",
+      "school_class": "Α1"
+    },
+    {
+      "teacher": "pe03-a",
+      "subject": "Γεωγρ",
+      "school_class": "Α1"
+    },
+    {
+      "teacher": "pe02-e",
+      "subject": "ΓλΔιδ",
+      "school_class": "Α1"
+    },
+    {
+      "teacher": "pe01-a",
+      "subject": "Θρησκ",
+      "school_class": "Α1"
+    },
+    {
+      "teacher": "pe02-d",
+      "subject": "Ιστορ",
+      "school_class": "Α1"
+    },
+    {
+      "teacher": "pe03-a",
+      "subject": "Μαθημ",
+      "school_class": "Α1"
+    },
+    {
+      "teacher": "pe16",
+      "subject": "Μουσ",
+      "school_class": "Α1"
+    },
+    {
+      "teacher": "pe02-e",
+      "subject": "ΝέοΛογ",
+      "school_class": "Α1"
+    },
+    {
+      "teacher": "pe05-a",
+      "subject": "ΞΓ2",
+      "school_class": "Α1"
+    },
+    {
+      "teacher": "pe15",
+      "subject": "Οικιακή",
+      "school_class": "Α1"
+    },
+    {
+      "teacher": "pe19-a",
+      "subject": "Πλη/Τεχ",
+      "school_class": "Α1"
+    },
+    {
+      "teacher": "pe02-a",
+      "subject": "ΑρχΓλ",
+      "school_class": "Α2"
+    },
+    {
+      "teacher": "pe02-b",
+      "subject": "ΑρχΜετ",
+      "school_class": "Α2"
+    },
+    {
+      "teacher": "pe04-a",
+      "subject": "Βιολογ",
+      "school_class": "Α2"
+    },
+    {
+      "teacher": "pe04-b",
+      "subject": "Γεωγρ",
+      "school_class": "Α2"
+    },
+    {
+      "teacher": "pe02-a",
+      "subject": "ΓλΔιδ",
+      "school_class": "Α2"
+    },
+    {
+      "teacher": "pe01-a",
+      "subject": "Θρησκ",
+      "school_class": "Α2"
+    },
+    {
+      "teacher": "pe02-d",
+      "subject": "Ιστορ",
+      "school_class": "Α2"
+    },
+    {
+      "teacher": "pe03-a",
+      "subject": "Μαθημ",
+      "school_class": "Α2"
+    },
+    {
+      "teacher": "pe16",
+      "subject": "Μουσ",
+      "school_class": "Α2"
+    },
+    {
+      "teacher": "pe02-e",
+      "subject": "ΝέοΛογ",
+      "school_class": "Α2"
+    },
+    {
+      "teacher": "pe07-a",
+      "subject": "ΞΓ2-Γερ",
+      "school_class": "Α2"
+    },
+    {
+      "teacher": "pe15",
+      "subject": "Οικιακή",
+      "school_class": "Α2"
+    },
+    {
+      "teacher": "pe19-a",
+      "subject": "Πλη/Τεχ",
+      "school_class": "Α2"
+    },
+    {
+      "teacher": "pe06-a",
+      "subject": "Αγγ/ΦΑ",
+      "school_class": "Α3"
+    },
+    {
+      "teacher": "pe02-a",
+      "subject": "ΑρχΓλ",
+      "school_class": "Α3"
+    },
+    {
+      "teacher": "pe02-a",
+      "subject": "ΑρχΜετ",
+      "school_class": "Α3"
+    },
+    {
+      "teacher": "pe04-b",
+      "subject": "Βιολογ",
+      "school_class": "Α3"
+    },
+    {
+      "teacher": "pe04-b",
+      "subject": "Γεωγρ",
+      "school_class": "Α3"
+    },
+    {
+      "teacher": "pe01-a",
+      "subject": "Θρησκ",
+      "school_class": "Α3"
+    },
+    {
+      "teacher": "pe02-d",
+      "subject": "Ιστορ",
+      "school_class": "Α3"
+    },
+    {
+      "teacher": "pe03-a",
+      "subject": "Μαθημ",
+      "school_class": "Α3"
+    },
+    {
+      "teacher": "pe16",
+      "subject": "Μουσ",
+      "school_class": "Α3"
+    },
+    {
+      "teacher": "pe02-a",
+      "subject": "ΝέοΛογ@pe02_a",
+      "school_class": "Α3"
+    },
+    {
+      "teacher": "pe02-e",
+      "subject": "ΝέοΛογ@pe02_e",
+      "school_class": "Α3"
+    },
+    {
+      "teacher": "pe07-a",
+      "subject": "ΞΓ2-Γερ",
+      "school_class": "Α3"
+    },
+    {
+      "teacher": "pe15",
+      "subject": "Οικιακή",
+      "school_class": "Α3"
+    },
+    {
+      "teacher": "pe19-a",
+      "subject": "Πλη/Τεχ",
+      "school_class": "Α3"
+    },
+    {
+      "teacher": "pe06-a",
+      "subject": "Αγγ/ΦΑ",
+      "school_class": "Β1"
+    },
+    {
+      "teacher": "pe02-b",
+      "subject": "ΑρχΓλ",
+      "school_class": "Β1"
+    },
+    {
+      "teacher": "pe02-e",
+      "subject": "ΑρχΜετ",
+      "school_class": "Β1"
+    },
+    {
+      "teacher": "pe03-b",
+      "subject": "Γεωγρ",
+      "school_class": "Β1"
+    },
+    {
+      "teacher": "pe02-b",
+      "subject": "ΓλΔιδ",
+      "school_class": "Β1"
+    },
+    {
+      "teacher": "pe11-a",
+      "subject": "Γυμν",
+      "school_class": "Β1"
+    },
+    {
+      "teacher": "pe01-a",
+      "subject": "Θρησκ",
+      "school_class": "Β1"
+    },
+    {
+      "teacher": "pe07-b",
+      "subject": "Ιστορ",
+      "school_class": "Β1"
+    },
+    {
+      "teacher": "pe03-a",
+      "subject": "Μαθημ",
+      "school_class": "Β1"
+    },
+    {
+      "teacher": "pe16",
+      "subject": "Μουσ",
+      "school_class": "Β1"
+    },
+    {
+      "teacher": "pe02-b",
+      "subject": "ΝέοΛογ",
+      "school_class": "Β1"
+    },
+    {
+      "teacher": "pe05-a",
+      "subject": "ΞΓ2",
+      "school_class": "Β1"
+    },
+    {
+      "teacher": "pe15",
+      "subject": "Οικιακή",
+      "school_class": "Β1"
+    },
+    {
+      "teacher": "pe19-a",
+      "subject": "Πλη/Τεχ",
+      "school_class": "Β1"
+    },
+    {
+      "teacher": "pe04-a",
+      "subject": "Φυσική",
+      "school_class": "Β1"
+    },
+    {
+      "teacher": "pe04-a",
+      "subject": "Χημεία",
+      "school_class": "Β1"
+    },
+    {
+      "teacher": "pe02-b",
+      "subject": "ΑρχΓλ",
+      "school_class": "Β2"
+    },
+    {
+      "teacher": "pe02-e",
+      "subject": "ΑρχΜετ",
+      "school_class": "Β2"
+    },
+    {
+      "teacher": "pe03-b",
+      "subject": "Γεωγρ",
+      "school_class": "Β2"
+    },
+    {
+      "teacher": "pe02-b",
+      "subject": "ΓλΔιδ",
+      "school_class": "Β2"
+    },
+    {
+      "teacher": "pe11-a",
+      "subject": "Γυμν",
+      "school_class": "Β2"
+    },
+    {
+      "teacher": "pe01-a",
+      "subject": "Θρησκ",
+      "school_class": "Β2"
+    },
+    {
+      "teacher": "pe07-b",
+      "subject": "Ιστορ",
+      "school_class": "Β2"
+    },
+    {
+      "teacher": "pe03-b",
+      "subject": "Μαθημ",
+      "school_class": "Β2"
+    },
+    {
+      "teacher": "pe16",
+      "subject": "Μουσ",
+      "school_class": "Β2"
+    },
+    {
+      "teacher": "pe02-b",
+      "subject": "ΝέοΛογ",
+      "school_class": "Β2"
+    },
+    {
+      "teacher": "pe05-a",
+      "subject": "ΞΓ2",
+      "school_class": "Β2"
+    },
+    {
+      "teacher": "pe15",
+      "subject": "Οικιακή",
+      "school_class": "Β2"
+    },
+    {
+      "teacher": "pe19-a",
+      "subject": "Πλη/Τεχ",
+      "school_class": "Β2"
+    },
+    {
+      "teacher": "pe04-a",
+      "subject": "Φυσική",
+      "school_class": "Β2"
+    },
+    {
+      "teacher": "pe04-a",
+      "subject": "Χημεία",
+      "school_class": "Β2"
+    },
+    {
+      "teacher": "pe06-a",
+      "subject": "Αγγ/ΦΑ@pe06_a",
+      "school_class": "Β3"
+    },
+    {
+      "teacher": "pe06-c",
+      "subject": "Αγγ/ΦΑ@pe06_c",
+      "school_class": "Β3"
+    },
+    {
+      "teacher": "pe02-d",
+      "subject": "ΑρχΓλ",
+      "school_class": "Β3"
+    },
+    {
+      "teacher": "pe02-e",
+      "subject": "ΑρχΜετ",
+      "school_class": "Β3"
+    },
+    {
+      "teacher": "pe03-b",
+      "subject": "Γεωγρ",
+      "school_class": "Β3"
+    },
+    {
+      "teacher": "pe02-d",
+      "subject": "ΓλΔιδ",
+      "school_class": "Β3"
+    },
+    {
+      "teacher": "pe11-a",
+      "subject": "Γυμν",
+      "school_class": "Β3"
+    },
+    {
+      "teacher": "pe01-a",
+      "subject": "Θρησκ",
+      "school_class": "Β3"
+    },
+    {
+      "teacher": "pe02-c",
+      "subject": "Ιστορ",
+      "school_class": "Β3"
+    },
+    {
+      "teacher": "pe03-b",
+      "subject": "Μαθημ",
+      "school_class": "Β3"
+    },
+    {
+      "teacher": "pe16",
+      "subject": "Μουσ",
+      "school_class": "Β3"
+    },
+    {
+      "teacher": "pe02-a",
+      "subject": "ΝέοΛογ",
+      "school_class": "Β3"
+    },
+    {
+      "teacher": "pe15",
+      "subject": "Οικιακή",
+      "school_class": "Β3"
+    },
+    {
+      "teacher": "pe19-a",
+      "subject": "Πλη/Τεχ",
+      "school_class": "Β3"
+    },
+    {
+      "teacher": "pe04-a",
+      "subject": "Φυσική",
+      "school_class": "Β3"
+    },
+    {
+      "teacher": "pe04-a",
+      "subject": "Χημεία",
+      "school_class": "Β3"
+    },
+    {
+      "teacher": "pe02-f",
+      "subject": "ΑρχΓλ",
+      "school_class": "Β4"
+    },
+    {
+      "teacher": "pe02-e",
+      "subject": "ΑρχΜετ",
+      "school_class": "Β4"
+    },
+    {
+      "teacher": "pe03-b",
+      "subject": "Γεωγρ",
+      "school_class": "Β4"
+    },
+    {
+      "teacher": "pe02-f",
+      "subject": "ΓλΔιδ",
+      "school_class": "Β4"
+    },
+    {
+      "teacher": "pe11-a",
+      "subject": "Γυμν",
+      "school_class": "Β4"
+    },
+    {
+      "teacher": "pe01-a",
+      "subject": "Θρησκ",
+      "school_class": "Β4"
+    },
+    {
+      "teacher": "pe02-c",
+      "subject": "Ιστορ",
+      "school_class": "Β4"
+    },
+    {
+      "teacher": "pe03-b",
+      "subject": "Μαθημ",
+      "school_class": "Β4"
+    },
+    {
+      "teacher": "pe16",
+      "subject": "Μουσ",
+      "school_class": "Β4"
+    },
+    {
+      "teacher": "pe02-d",
+      "subject": "ΝέοΛογ",
+      "school_class": "Β4"
+    },
+    {
+      "teacher": "pe15",
+      "subject": "Οικιακή",
+      "school_class": "Β4"
+    },
+    {
+      "teacher": "pe19-a",
+      "subject": "Πλη/Τεχ",
+      "school_class": "Β4"
+    },
+    {
+      "teacher": "pe04-a",
+      "subject": "Φυσική",
+      "school_class": "Β4"
+    },
+    {
+      "teacher": "pe04-a",
+      "subject": "Χημεία",
+      "school_class": "Β4"
+    },
+    {
+      "teacher": "pe06-c",
+      "subject": "Αγγ/ΦΑ",
+      "school_class": "Γ1"
+    },
+    {
+      "teacher": "pe02-f",
+      "subject": "ΑρχΓλ",
+      "school_class": "Γ1"
+    },
+    {
+      "teacher": "pe02-c",
+      "subject": "ΑρχΜετ",
+      "school_class": "Γ1"
+    },
+    {
+      "teacher": "pe04-b",
+      "subject": "Βιολογ",
+      "school_class": "Γ1"
+    },
+    {
+      "teacher": "pe02-c",
+      "subject": "ΓλΔιδ",
+      "school_class": "Γ1"
+    },
+    {
+      "teacher": "pe01-a",
+      "subject": "Θρησκ",
+      "school_class": "Γ1"
+    },
+    {
+      "teacher": "pe02-c",
+      "subject": "Ιστορ",
+      "school_class": "Γ1"
+    },
+    {
+      "teacher": "pe13",
+      "subject": "ΚΠΑ",
+      "school_class": "Γ1"
+    },
+    {
+      "teacher": "pe03-c",
+      "subject": "Μαθημ",
+      "school_class": "Γ1"
+    },
+    {
+      "teacher": "pe16",
+      "subject": "Μουσ",
+      "school_class": "Γ1"
+    },
+    {
+      "teacher": "pe02-f",
+      "subject": "ΝέοΛογ",
+      "school_class": "Γ1"
+    },
+    {
+      "teacher": "pe05-a",
+      "subject": "ΞΓ2",
+      "school_class": "Γ1"
+    },
+    {
+      "teacher": "pe19-b",
+      "subject": "Πλ/ΣΕΠ",
+      "school_class": "Γ1"
+    },
+    {
+      "teacher": "pe04-b",
+      "subject": "Φυσική",
+      "school_class": "Γ1"
+    },
+    {
+      "teacher": "pe04-b",
+      "subject": "Χημεία",
+      "school_class": "Γ1"
+    },
+    {
+      "teacher": "pe02-f",
+      "subject": "ΑρχΓλ",
+      "school_class": "Γ2"
+    },
+    {
+      "teacher": "pe02-c",
+      "subject": "ΑρχΜετ",
+      "school_class": "Γ2"
+    },
+    {
+      "teacher": "pe04-b",
+      "subject": "Βιολογ",
+      "school_class": "Γ2"
+    },
+    {
+      "teacher": "pe01-b",
+      "subject": "Θρησκ",
+      "school_class": "Γ2"
+    },
+    {
+      "teacher": "pe02-c",
+      "subject": "Ιστορ",
+      "school_class": "Γ2"
+    },
+    {
+      "teacher": "pe13",
+      "subject": "ΚΠΑ",
+      "school_class": "Γ2"
+    },
+    {
+      "teacher": "pe03-c",
+      "subject": "Μαθημ",
+      "school_class": "Γ2"
+    },
+    {
+      "teacher": "pe16",
+      "subject": "Μουσ",
+      "school_class": "Γ2"
+    },
+    {
+      "teacher": "pe02-f",
+      "subject": "ΝέοΛογ",
+      "school_class": "Γ2"
+    },
+    {
+      "teacher": "pe07-a",
+      "subject": "ΞΓ2-Γερ",
+      "school_class": "Γ2"
+    },
+    {
+      "teacher": "pe19-a",
+      "subject": "Πλ/ΣΕΠ",
+      "school_class": "Γ2"
+    },
+    {
+      "teacher": "pe04-b",
+      "subject": "Φυσική",
+      "school_class": "Γ2"
+    },
+    {
+      "teacher": "pe04-b",
+      "subject": "Χημεία",
+      "school_class": "Γ2"
+    },
+    {
+      "teacher": "pe06-b",
+      "subject": "Αγγ/ΦΑ@pe06_b",
+      "school_class": "Γ3"
+    },
+    {
+      "teacher": "pe11-b",
+      "subject": "Αγγ/ΦΑ@pe11_b",
+      "school_class": "Γ3"
+    },
+    {
+      "teacher": "pe02-c",
+      "subject": "ΑρχΓλ",
+      "school_class": "Γ3"
+    },
+    {
+      "teacher": "pe02-c",
+      "subject": "ΑρχΜετ",
+      "school_class": "Γ3"
+    },
+    {
+      "teacher": "pe04-b",
+      "subject": "Βιολογ",
+      "school_class": "Γ3"
+    },
+    {
+      "teacher": "pe02-e",
+      "subject": "ΓλΔιδ",
+      "school_class": "Γ3"
+    },
+    {
+      "teacher": "pe01-b",
+      "subject": "Θρησκ",
+      "school_class": "Γ3"
+    },
+    {
+      "teacher": "pe01-c",
+      "subject": "Ιστορ",
+      "school_class": "Γ3"
+    },
+    {
+      "teacher": "pe13",
+      "subject": "ΚΠΑ",
+      "school_class": "Γ3"
+    },
+    {
+      "teacher": "pe03-c",
+      "subject": "Μαθημ",
+      "school_class": "Γ3"
+    },
+    {
+      "teacher": "pe16",
+      "subject": "Μουσ",
+      "school_class": "Γ3"
+    },
+    {
+      "teacher": "pe02-f",
+      "subject": "ΝέοΛογ",
+      "school_class": "Γ3"
+    },
+    {
+      "teacher": "pe07-a",
+      "subject": "ΞΓ2-Γερ",
+      "school_class": "Γ3"
+    },
+    {
+      "teacher": "pe19-b",
+      "subject": "Πλ/ΣΕΠ",
+      "school_class": "Γ3"
+    },
+    {
+      "teacher": "pe04-b",
+      "subject": "Φυσική",
+      "school_class": "Γ3"
+    },
+    {
+      "teacher": "pe04-b",
+      "subject": "Χημεία",
+      "school_class": "Γ3"
+    }
+  ]
+}

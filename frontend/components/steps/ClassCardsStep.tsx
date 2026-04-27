@@ -1,9 +1,10 @@
 'use client'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Plus, Trash2, ChevronRight, ChevronDown, Info } from 'lucide-react'
 import type { SchoolData } from '@/lib/types'
 import { FORM_SCENARIOS } from '@/lib/test-scenarios'
 import { applyScenarioPreset } from '@/lib/scenario-prefill'
+import ChipInput from '@/components/ChipInput'
 
 const LEVELS = ['Maternelle', 'Primaire', 'Collège', 'Lycée', 'Autre']
 
@@ -210,6 +211,25 @@ const CATEGORY_ALIASES: Record<string, string> = {
   one_teacher_per_subject_class: 'one_teacher_per_subject_per_class',
 }
 
+const SUPPORTED_HARD_CATEGORIES = new Set([
+  'start_time',
+  'start_time_exceptions',
+  'day_off',
+  'max_consecutive',
+  'subject_on_days',
+  'subject_not_on_days',
+  'subject_not_last_slot',
+  'ritual_slots_blocked',
+  'min_break_between',
+  'fixed_assignment',
+  'one_teacher_per_subject_per_class',
+  'teacher_no_overlap',
+  'class_no_overlap',
+  'teacher_subject_declared',
+  'teacher_calendar_declared',
+  'min_sessions_per_day',
+])
+
 interface Props {
   data: SchoolData
   assignments: any[]
@@ -237,11 +257,6 @@ function parseSubjectsInput(raw: string): string[] {
     result.push(subject)
   }
   return result
-}
-
-function subjectsEqual(left: string[], right: string[]): boolean {
-  if (left.length !== right.length) return false
-  return left.every((value, index) => value.toLowerCase() === right[index].toLowerCase())
 }
 
 function getTeacherDeclaredSubjects(data: SchoolData): string[] {
@@ -278,48 +293,9 @@ function TeachersSection({
 }) {
   const teachers = data.teachers ?? []
   const [open, setOpen] = useState(teachers.length === 0)
-  const [subjectDrafts, setSubjectDrafts] = useState<string[]>(
-    teachers.map((teacher: any) => (teacher.subjects ?? []).join(', '))
-  )
-
-  useEffect(() => {
-    const canonicalSubjects = teachers.map((teacher: any) =>
-      (teacher.subjects ?? []).map((subject: any) => normalizeSubject(String(subject))).filter(Boolean)
-    )
-
-    setSubjectDrafts(previous => {
-      if (previous.length !== canonicalSubjects.length) {
-        return canonicalSubjects.map(subjects => subjects.join(', '))
-      }
-
-      let changed = false
-      const next = previous.map((draft, index) => {
-        const parsedDraft = parseSubjectsInput(draft)
-        if (subjectsEqual(parsedDraft, canonicalSubjects[index])) {
-          return draft
-        }
-        changed = true
-        return canonicalSubjects[index].join(', ')
-      })
-
-      return changed ? next : previous
-    })
-  }, [teachers])
-
-  function commitTeacherSubjects(idx: number) {
-    const raw = subjectDrafts[idx] ?? ''
-    updateTeacher(idx, 'subjects', raw)
-    const normalized = parseSubjectsInput(raw).join(', ')
-    setSubjectDrafts(previous => {
-      const next = [...previous]
-      next[idx] = normalized
-      return next
-    })
-  }
 
   function addTeacher() {
     onUpdateData({ ...data, teachers: [...teachers, { name: '', subjects: [] }] })
-    setSubjectDrafts(previous => [...previous, ''])
   }
 
   function updateTeacher(idx: number, field: string, val: string | string[]) {
@@ -356,7 +332,6 @@ function TeachersSection({
   function deleteTeacher(idx: number) {
     const deletedName = teachers[idx]?.name as string
     onUpdateData({ ...data, teachers: teachers.filter((_, i) => i !== idx) })
-    setSubjectDrafts(previous => previous.filter((_, i) => i !== idx))
     // remove assignments that reference the deleted teacher
     if (deletedName) {
       onUpdateAssignments(assignments.filter(a => a.teacher !== deletedName))
@@ -391,26 +366,10 @@ function TeachersSection({
                 placeholder="Nom de l'enseignant"
                 className="flex-1 min-w-0 px-2 py-1.5 text-xs border border-gray-200 dark:border-gray-700 rounded bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-1 focus:ring-teal-500"
               />
-              <input
-                value={subjectDrafts[idx] ?? (t.subjects ?? []).join(', ')}
-                onChange={e => {
-                  const raw = e.target.value
-                  setSubjectDrafts(previous => {
-                    const next = [...previous]
-                    next[idx] = raw
-                    return next
-                  })
-                }}
-                onBlur={() => commitTeacherSubjects(idx)}
-                onKeyDown={e => {
-                  if (e.key === 'Enter') {
-                    e.preventDefault()
-                    commitTeacherSubjects(idx)
-                    ;(e.currentTarget as HTMLInputElement).blur()
-                  }
-                }}
-                placeholder="Matières (ex: Maths, Physique, SVT)"
-                className="flex-1 min-w-0 px-2 py-1.5 text-xs border border-gray-200 dark:border-gray-700 rounded bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-1 focus:ring-teal-500"
+              <ChipInput
+                value={(t.subjects ?? []).map((s: any) => String(s))}
+                onChange={next => updateTeacher(idx, 'subjects', next)}
+                placeholder="Matières (ex: Maths Physique SVT)"
               />
               <button onClick={() => deleteTeacher(idx)} className="text-gray-400 hover:text-red-500 transition-colors flex-shrink-0">
                 <Trash2 size={13} />
@@ -854,6 +813,10 @@ function ConstraintsSection({
   function validateForm(entry: any): string[] {
     const def = getDef(entry.category)
     const errors: string[] = []
+    const normalizedCategory = aliasCategory(String(entry.category || ''))
+    if (def.type === 'hard' && !SUPPORTED_HARD_CATEGORIES.has(normalizedCategory)) {
+      errors.push(`Contrainte dure non supportée: ${normalizedCategory}`)
+    }
     for (const field of def.fields) {
       const value = entry.parameters?.[field.key]
       if (!field.required) continue
@@ -1174,9 +1137,9 @@ export default function ClassCardsStep({ data, assignments, onUpdateData, onUpda
   return (
     <div className="space-y-4">
       <div className="border border-indigo-200 dark:border-indigo-800 rounded-xl p-3 bg-indigo-50 dark:bg-indigo-900/20">
-        <p className="text-xs font-semibold text-indigo-800 dark:text-indigo-200">Remplissage rapide (tests progressifs)</p>
+        <p className="text-xs font-semibold text-indigo-800 dark:text-indigo-200">Remplissage rapide (datasets FET réels)</p>
         <p className="text-[11px] text-indigo-700 dark:text-indigo-300 mt-1">
-          Ces jeux remplissent toute la chaîne: École, jours/sessions, salles, classes, enseignants, programme, affectations et contraintes.
+          Jeux de données réels importés de FET, classés par difficulté: Easy, Medium, Hard.
         </p>
         <div className="mt-2 flex flex-wrap gap-2">
           {FORM_SCENARIOS.map((preset) => (
@@ -1195,7 +1158,7 @@ export default function ClassCardsStep({ data, assignments, onUpdateData, onUpda
           ))}
         </div>
         <p className="mt-2 text-[11px] text-indigo-700 dark:text-indigo-300">
-          Types: ✅ feature · ⚠️ fail attendu · 🏫 réaliste (voir infobulle du bouton).
+          Progression conseillée: E1 → E2 → M1 → M2 → H1 → H2.
         </p>
       </div>
 

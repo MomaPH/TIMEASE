@@ -345,11 +345,17 @@ class CurriculumEntry:
 
 @dataclass
 class TeacherAssignment:
-    """Explicit binding: this teacher teaches this subject to this class."""
+    """Explicit binding: this teacher teaches this subject to this class.
+
+    ``room`` is optional and set by the school, not the solver: when present,
+    every session for this (class, subject) pair will be placed in that room,
+    and the solver only has to decide *when*.
+    """
 
     teacher: str        # must match Teacher.name
     subject: str        # must match Subject.name
     school_class: str   # must match SchoolClass.name
+    room: str | None = None  # optional pre-assigned room
 
 # ---------------------------------------------------------------------------
 # Constraints
@@ -773,6 +779,7 @@ class TimetableResult:
     soft_constraints_violated: list[str] = field(default_factory=list)
     soft_constraint_details: list[dict] = field(default_factory=list)
     warnings: list[str] = field(default_factory=list)
+    solver_diagnostics: dict = field(default_factory=dict)
 
     def verify(self, school_data: "SchoolData") -> list[str]:
         """

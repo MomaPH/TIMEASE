@@ -53,83 +53,47 @@ describe('applyScenarioPreset', () => {
     expect(FORM_SCENARIOS[0].assignments[0]?.teacher).not.toBe('Mutated Teacher')
   })
 
-  it('contains a no-compromise realistic school scenario with expected complexity', () => {
-    const realistic = FORM_SCENARIOS.find((s) => s.id === 'r-l4-real-school')
-    expect(realistic).toBeTruthy()
-    if (!realistic) return
+  it('provides FET-based prefills grouped by easy, medium and hard with gradual complexity', () => {
+    const expectedIds = [
+      'fet-easy-01',
+      'fet-easy-02',
+      'fet-medium-01',
+      'fet-medium-02',
+      'fet-hard-01',
+      'fet-hard-02',
+    ]
+    expect(FORM_SCENARIOS.map((s) => s.id)).toEqual(expectedIds)
 
-    expect(realistic.schoolData.days?.length).toBe(5)
-    expect(realistic.schoolData.subjects?.length).toBe(14)
-    expect(realistic.schoolData.classes?.length).toBe(6)
-    expect(realistic.schoolData.teachers?.length).toBe(17)
-    expect(realistic.schoolData.rooms?.length).toBe(6)
-    expect(realistic.schoolData.curriculum?.length).toBe(84) // 6 classes * 14 subjects
-    expect(realistic.assignments.length).toBe(84)
+    const sizes = FORM_SCENARIOS.map((s) => ({
+      id: s.id,
+      classes: s.schoolData.classes?.length ?? 0,
+      teachers: s.schoolData.teachers?.length ?? 0,
+      curriculum: s.schoolData.curriculum?.length ?? 0,
+      assignments: s.assignments.length,
+      constraints: s.schoolData.constraints?.length ?? 0,
+      hardConstraints: (s.schoolData.constraints ?? []).filter((c: any) => c.type === 'hard').length,
+      softConstraints: (s.schoolData.constraints ?? []).filter((c: any) => c.type === 'soft').length,
+    }))
 
-    const ids = new Set((realistic.schoolData.constraints ?? []).map((c: any) => c.id))
-    for (const expected of ['C1', 'C2', 'C3', 'C4', 'C5', 'C6', 'S1', 'S2', 'S3', 'S4']) {
-      expect(ids.has(expected)).toBe(true)
+    expect(sizes[0].curriculum).toBeLessThan(sizes[1].curriculum)
+    expect(sizes[1].curriculum).toBeLessThan(sizes[2].curriculum)
+    expect(sizes[2].curriculum).toBeLessThan(sizes[3].curriculum)
+    expect(sizes[3].curriculum).toBeLessThan(sizes[4].curriculum)
+    expect(sizes[4].curriculum).toBeGreaterThanOrEqual(sizes[5].curriculum)
+
+    for (const row of sizes) {
+      expect(row.assignments).toBe(row.curriculum)
+      expect(row.classes).toBeGreaterThan(0)
+      expect(row.teachers).toBeGreaterThan(0)
+      expect(row.constraints).toBeGreaterThanOrEqual(8)
+      expect(row.hardConstraints).toBeGreaterThanOrEqual(5)
+      expect(row.softConstraints).toBeGreaterThanOrEqual(3)
     }
 
-    const teachers = realistic.schoolData.teachers ?? []
-    const manga = teachers.find((t: any) => t.name === 'T_MANGA')
-    const thiongane = teachers.find((t: any) => t.name === 'T_THIONGANE')
-    const diaw = teachers.find((t: any) => t.name === 'T_DIAW_YAHYA')
-    const evral = teachers.find((t: any) => t.name === 'T_EVRAL')
-
-    expect(manga?.unavailable_slots?.[0]?.day).toBe('jeudi')
-    expect(thiongane?.unavailable_slots?.[0]?.day).toBe('vendredi')
-    expect(diaw?.max_hours_per_week).toBe(28)
-    expect(evral?.max_hours_per_week).toBe(20)
-  })
-
-  it('aligns realistic curriculum hours with Senegal references while preserving non-typical subjects', () => {
-    const realistic = FORM_SCENARIOS.find((s) => s.id === 'r-l4-real-school')
-    expect(realistic).toBeTruthy()
-    if (!realistic) return
-
-    const curriculum = realistic.schoolData.curriculum ?? []
-    const subjects = new Set((realistic.schoolData.subjects ?? []).map((s: any) => s.name))
-
-    // Keep TIMEASE-specific non-typical subjects.
-    for (const subject of ['CORAN', 'EDU_ISL', 'SCI_PROJ', 'RENF', 'SS']) {
-      expect(subjects.has(subject)).toBe(true)
-    }
-
-    const findHours = (schoolClass: string, subject: string): number | undefined => {
-      const row = curriculum.find((c: any) => c.school_class === schoolClass && c.subject === subject)
-      return row?.weekly_hours
-    }
-
-    // Collège loads (realistic middle-cycle baseline, feasible profile).
-    expect(findHours('6e', 'FR')).toBe(4)
-    expect(findHours('6e', 'MATH')).toBe(4)
-    expect(findHours('6e', 'HG')).toBe(2)
-    expect(findHours('3e', 'ESP')).toBe(2)
-    expect(findHours('3e', 'ECO')).toBe(2)
-
-    // Lycée-aligned 2nde profiles (from official secondary credit table, adjusted to fit weekly capacity).
-    expect(findHours('2nde', 'FR')).toBe(4)
-    expect(findHours('2nde', 'MATH')).toBe(3)
-    expect(findHours('2nde', 'HG')).toBe(3)
-    expect(findHours('2nde_S', 'MATH')).toBe(4)
-    expect(findHours('2nde_S', 'PC')).toBe(4)
-    expect(findHours('2nde_S', 'FR')).toBe(4)
-  })
-
-  it('keeps an explicit overloaded realistic variant for breakage diagnostics', () => {
-    const overloaded = FORM_SCENARIOS.find((s) => s.id === 'r-l4-real-school-overloaded')
-    expect(overloaded).toBeTruthy()
-    if (!overloaded) return
-
-    const curriculum = overloaded.schoolData.curriculum ?? []
-    const totalByClass: Record<string, number> = {}
-    for (const entry of curriculum as any[]) {
-      const schoolClass = String(entry.school_class || '')
-      totalByClass[schoolClass] = (totalByClass[schoolClass] || 0) + Number(entry.weekly_hours || 0)
-    }
-
-    expect(totalByClass['2nde_S']).toBeGreaterThan(30)
-    expect(totalByClass['6e']).toBeGreaterThan(30)
+    const [e1, e2, m1, m2, h1, h2] = sizes
+    expect(m1.hardConstraints).toBeGreaterThan(e2.hardConstraints)
+    expect(m2.hardConstraints).toBeGreaterThan(e2.hardConstraints)
+    expect(h1.hardConstraints).toBeGreaterThan(m2.hardConstraints)
+    expect(h2.hardConstraints).toBeGreaterThan(m2.hardConstraints)
   })
 })

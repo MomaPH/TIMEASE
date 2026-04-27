@@ -39,7 +39,9 @@ from __future__ import annotations
 
 import logging
 import os
+import random
 import time
+import zlib
 from collections import defaultdict
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, NamedTuple
@@ -49,6 +51,7 @@ from ortools.sat.python.cp_model import Domain
 
 from timease.engine.analysis import SATISFACTION_THRESHOLD, SoftConstraintAnalyzer
 from timease.engine.constraints import ConstraintBuilder, SoftConstraintBuilder
+from timease.engine.greedy import greedy_warm_start
 from timease.engine.models import (
     Assignment,
     CurriculumEntry,
@@ -62,6 +65,21 @@ logger = logging.getLogger(__name__)
 # Default solver timeout.  30 s is enough for most schools (~100–300 sessions).
 # Pass timeout_seconds= to TimetableSolver.solve() to override per call.
 DEFAULT_SOLVE_TIMEOUT_SECONDS: int = 30
+
+# ---- Fast-mode LNS (Large Neighborhood Search) repair constants ----
+# Budget split when fast-mode multi-attempt CP-SAT fails.  Values apply only
+# when timeout_seconds >= FAST_MODE_LNS_MIN_TIMEOUT.
+FAST_MODE_CPSAT_BUDGET_RATIO: float = 0.40
+FAST_MODE_LNS_BUDGET_RATIO: float   = 0.55
+FAST_MODE_LNS_MIN_TIMEOUT: int      = 6      # seconds; below this LNS is disabled
+LNS_PER_ITER_SECONDS_MIN: float     = 0.8
+LNS_PER_ITER_SECONDS_MAX: float     = 2.0
+LNS_INITIAL_K: int                  = 6
+LNS_K_GROWTH: int                   = 4
+LNS_MAX_K: int                      = 40
+LNS_NO_IMPROVE_LIMIT: int           = 6
+LNS_RANDOM_NOISE_FRAC: float        = 0.15
+LNS_MIN_BUDGET_SECONDS: float       = 1.0
 
 
 # ---------------------------------------------------------------------------
@@ -132,6 +150,294 @@ def _session_overlaps_unavailability(
     u_start = unavail.get("start") or "00:00"
     u_end   = unavail.get("end")   or "23:59"
     return session_start < u_end and u_start < session_end
+
+
+# ---------------------------------------------------------------------------
+# LNS (Large Neighborhood Search) helpers — fast-mode feasibility repair
+# ---------------------------------------------------------------------------
+
+def _build_lns_feasibility_model(
+    sessions: list[_Session],
+    session_domains: list[list[int]],
+    sessions_by_class: dict[str, list[int]],
+    sessions_by_teacher: dict[str, list[int]],
+    sessions_by_subject: dict[str, list[int]],
+    hard_constraints: list,
+    data: SchoolData,
+    tc,
+    n_slots_per_day: int,
+    day_slot_times: dict[str, list[tuple[str, str]]],
+    locked_positions: dict[int, int],
+    hints: dict[int, int],
+) -> tuple[cp_model.CpModel, dict[int, cp_model.IntVar], list[str]]:
+    """Build a fresh CP-SAT feasibility model for one LNS iteration.
+
+    Sessions whose idx is in ``locked_positions`` receive a singleton start
+    domain (CP-SAT presolve eliminates them in O(1)); all others get their
+    full pre-filtered domain.
+
+    Room coupling is intentionally omitted — LNS only runs when the caller
+    passes ``enforce_room_conflicts=False`` (the benchmark/fast-mode path).
+
+    Hints are attached via ``add_hint`` for every session with a known
+    position to bias the search toward the current incumbent.
+    """
+    model = cp_model.CpModel()
+    start_vars: dict[int, cp_model.IntVar] = {}
+
+    for sess in sessions:
+        dom = session_domains[sess.idx]
+        if sess.idx in locked_positions:
+            pos = locked_positions[sess.idx]
+            # Guard: a locked position must lie in the domain.  If not, fall
+            # back to the full domain (the caller should not have locked an
+            # infeasible session, but defensive correctness matters more than
+            # strict locking for a single iteration).
+            if pos in dom:
+                dom_values = [pos]
+            else:
+                dom_values = dom
+        else:
+            dom_values = dom
+        var = model.new_int_var_from_domain(
+            Domain.from_values(dom_values),
+            f"s|{sess.idx}|{sess.class_name}|{sess.subject_name}|k{sess.k}",
+        )
+        start_vars[sess.idx] = var
+
+    # Symmetry breaking (same as main model) — cheap when vars are singletons.
+    interchangeable: dict[tuple, list[int]] = defaultdict(list)
+    for sess in sessions:
+        key = (
+            sess.class_name,
+            sess.subject_name,
+            sess.teacher_name,
+            sess.dur_slots,
+            tuple(session_domains[sess.idx]),
+        )
+        interchangeable[key].append(sess.idx)
+    for idxs in interchangeable.values():
+        if len(idxs) < 2:
+            continue
+        idxs.sort()
+        for left, right in zip(idxs, idxs[1:], strict=False):
+            model.add(start_vars[left] <= start_vars[right])
+
+    # Class no-overlap.
+    for s_idxs in sessions_by_class.values():
+        if len(s_idxs) < 2:
+            continue
+        ivars = [
+            model.new_fixed_size_interval_var(
+                start_vars[i], sessions[i].dur_slots, f"civ|{i}"
+            )
+            for i in s_idxs
+        ]
+        model.add_no_overlap(ivars)
+
+    # Teacher no-overlap.
+    for s_idxs in sessions_by_teacher.values():
+        if len(s_idxs) < 2:
+            continue
+        ivars = [
+            model.new_fixed_size_interval_var(
+                start_vars[i], sessions[i].dur_slots, f"tiv|{i}"
+            )
+            for i in s_idxs
+        ]
+        model.add_no_overlap(ivars)
+
+    # Hard constraints via ConstraintBuilder (H2/H4/H8/H9/H11).
+    lns_warnings: list[str] = []
+    if hard_constraints:
+        builder = ConstraintBuilder(
+            model=model,
+            data=data,
+            sessions=sessions,
+            start_vars=start_vars,
+            n_slots_per_day=n_slots_per_day,
+            day_slot_times=day_slot_times,
+            sessions_by_class=sessions_by_class,
+            sessions_by_subject=sessions_by_subject,
+            session_domains=session_domains,
+            tc=tc,
+        )
+        lns_warnings = builder.apply_all(hard_constraints)
+
+    # Hints: incumbent positions for free sessions bias CP-SAT toward the
+    # current solution; locked sessions already have singleton domains.
+    for i, pos in hints.items():
+        if i in start_vars and i not in locked_positions:
+            model.add_hint(start_vars[i], pos)
+
+    return model, start_vars, lns_warnings
+
+
+def _build_neighborhood(
+    unscheduled_idxs: set[int],
+    all_idxs: list[int],
+    sessions: list[_Session],
+    sessions_by_class: dict[str, list[int]],
+    sessions_by_teacher: dict[str, list[int]],
+    K: int,
+    rng: random.Random,
+) -> set[int]:
+    """Grow a free neighborhood around the unscheduled core.
+
+    Tier 1 — same class or same teacher as any unscheduled session.
+    Tier 2 — random noise drawn from remaining sessions for diversification.
+
+    Deterministic given a fixed ``rng``.
+    """
+    nbhd: set[int] = set(unscheduled_idxs)
+    tier1: set[int] = set()
+    for i in unscheduled_idxs:
+        s = sessions[i]
+        tier1.update(sessions_by_class.get(s.class_name, ()))
+        tier1.update(sessions_by_teacher.get(s.teacher_name, ()))
+    tier1 -= nbhd
+
+    structured_budget = max(0, K - int(K * LNS_RANDOM_NOISE_FRAC))
+    tier1_list = sorted(tier1)
+    rng.shuffle(tier1_list)
+    nbhd.update(tier1_list[:structured_budget])
+
+    added_so_far = len(nbhd) - len(unscheduled_idxs)
+    noise_budget = max(0, K - added_so_far)
+    remaining = sorted(i for i in all_idxs if i not in nbhd)
+    rng.shuffle(remaining)
+    nbhd.update(remaining[:noise_budget])
+
+    return nbhd
+
+
+def _run_lns_repair(
+    sessions: list[_Session],
+    session_domains: list[list[int]],
+    sessions_by_class: dict[str, list[int]],
+    sessions_by_teacher: dict[str, list[int]],
+    sessions_by_subject: dict[str, list[int]],
+    hard_constraints: list,
+    data: SchoolData,
+    tc,
+    n_slots_per_day: int,
+    day_slot_times: dict[str, list[tuple[str, str]]],
+    current_pos: dict[int, int | None],
+    budget_seconds: float,
+    n_workers: int,
+    rng: random.Random,
+) -> tuple[dict[int, int | None], int, bool]:
+    """Iteratively repair an incumbent by re-solving a small free neighborhood.
+
+    Returns ``(updated_pos, n_iters_run, improved_flag)``.  ``improved_flag``
+    is True iff at least one iteration strictly reduced the unscheduled count.
+    """
+    t_deadline = time.perf_counter() + budget_seconds
+    best_pos: dict[int, int | None] = dict(current_pos)
+    best_unscheduled: set[int] = {i for i, p in best_pos.items() if p is None}
+    if not best_unscheduled:
+        return best_pos, 0, False
+
+    all_idxs = sorted(best_pos.keys())
+    no_improve = 0
+    K = LNS_INITIAL_K
+    iters = 0
+    improved_ever = False
+    strategies = [
+        cp_model.FIXED_SEARCH,
+        cp_model.PORTFOLIO_SEARCH,
+        cp_model.AUTOMATIC_SEARCH,
+    ]
+
+    while (
+        best_unscheduled
+        and time.perf_counter() < t_deadline
+        and no_improve < LNS_NO_IMPROVE_LIMIT
+    ):
+        iters += 1
+        remaining = t_deadline - time.perf_counter()
+        if remaining <= LNS_PER_ITER_SECONDS_MIN:
+            per_iter = max(LNS_PER_ITER_SECONDS_MIN, remaining)
+        else:
+            per_iter = max(
+                LNS_PER_ITER_SECONDS_MIN,
+                min(LNS_PER_ITER_SECONDS_MAX, remaining / 3.0),
+            )
+
+        nbhd = _build_neighborhood(
+            unscheduled_idxs=best_unscheduled,
+            all_idxs=all_idxs,
+            sessions=sessions,
+            sessions_by_class=sessions_by_class,
+            sessions_by_teacher=sessions_by_teacher,
+            K=K,
+            rng=rng,
+        )
+        locked_positions = {
+            i: best_pos[i]
+            for i in all_idxs
+            if i not in nbhd and best_pos[i] is not None
+        }
+        hints = {i: p for i, p in best_pos.items() if p is not None}
+
+        try:
+            model, start_vars, _ = _build_lns_feasibility_model(
+                sessions=sessions,
+                session_domains=session_domains,
+                sessions_by_class=sessions_by_class,
+                sessions_by_teacher=sessions_by_teacher,
+                sessions_by_subject=sessions_by_subject,
+                hard_constraints=hard_constraints,
+                data=data,
+                tc=tc,
+                n_slots_per_day=n_slots_per_day,
+                day_slot_times=day_slot_times,
+                locked_positions=locked_positions,
+                hints=hints,
+            )
+        except Exception:  # pragma: no cover — build errors shouldn't happen
+            logger.exception("LNS model build failed at iter %d", iters)
+            break
+
+        solver = cp_model.CpSolver()
+        solver.parameters.max_time_in_seconds       = per_iter
+        solver.parameters.log_search_progress       = False
+        solver.parameters.stop_after_first_solution = True
+        solver.parameters.search_branching          = strategies[iters % 3]
+        solver.parameters.random_seed               = 1000 + 7 * iters
+        solver.parameters.num_search_workers        = n_workers
+        status = solver.solve(model)
+
+        if status in (cp_model.OPTIMAL, cp_model.FEASIBLE):
+            new_pos: dict[int, int | None] = {}
+            for i in all_idxs:
+                var = start_vars.get(i)
+                if var is None:
+                    new_pos[i] = best_pos[i]
+                else:
+                    new_pos[i] = int(solver.value(var))
+            new_unscheduled = {i for i, p in new_pos.items() if p is None}
+            if len(new_unscheduled) < len(best_unscheduled):
+                best_pos = new_pos
+                best_unscheduled = new_unscheduled
+                improved_ever = True
+                no_improve = 0
+                K = LNS_INITIAL_K
+                logger.info(
+                    "LNS iter %d: improved — unscheduled %d→%d (nbhd=%d, K=%d, time=%.2fs)",
+                    iters, len(new_unscheduled) + (len(best_unscheduled) - len(new_unscheduled)),
+                    len(new_unscheduled), len(nbhd), K, per_iter,
+                )
+                continue
+
+        no_improve += 1
+        K = min(LNS_MAX_K, K + LNS_K_GROWTH)
+        logger.info(
+            "LNS iter %d: no improvement (status=%s, nbhd=%d, next K=%d)",
+            iters, solver.status_name(status), len(nbhd), K,
+        )
+
+    return best_pos, iters, improved_ever
 
 
 # ---------------------------------------------------------------------------
@@ -239,6 +545,18 @@ class TimetableSolver:
             (ta.school_class, ta.subject): ta.teacher
             for ta in data.teacher_assignments
         }
+        # Optional room pre-assignment. When the school sets ta.room, we
+        # narrow the session's eligible-room set to that single room.
+        # Unknown / capacity-insufficient rooms fall back to the default
+        # logic with a warning.
+        room_preassignment: dict[tuple[str, str], str] = {
+            (ta.school_class, ta.subject): (ta.room or "").strip()
+            for ta in data.teacher_assignments
+            if (ta.room or "").strip()
+        }
+        room_name_to_idx: dict[str, int] = {
+            r.name: i for i, r in enumerate(data.rooms)
+        }
 
         # ==================================================================
         # Step 4 — Pre-process domain-filtering hard constraints
@@ -339,6 +657,59 @@ class TimetableSolver:
 
                 ritual_blocked_slots_by_day[day] = blocked_indices
 
+        # Prefix sums allow O(1) blocked-interval checks:
+        # blocked in [s, e) iff prefix[e] > prefix[s].
+        hard_blocked_prefix_by_day: dict[str, list[int]] = {}
+        ritual_blocked_prefix_by_day: dict[str, list[int]] = {}
+        for day in day_names:
+            slots = day_slot_times[day]
+            n_day = len(slots)
+
+            hard_blocked = [0] * n_day
+            blocked = blocked_day_info.get(day)
+            if blocked:
+                if "all" in blocked:
+                    hard_blocked = [1] * n_day
+                else:
+                    for i in range(n_day):
+                        if _is_slot_blocked(day, i, i + 1):
+                            hard_blocked[i] = 1
+
+            hard_prefix = [0] * (n_day + 1)
+            for i, value in enumerate(hard_blocked, start=1):
+                hard_prefix[i] = hard_prefix[i - 1] + value
+            hard_blocked_prefix_by_day[day] = hard_prefix
+
+            ritual_blocked = [0] * n_day
+            for i in ritual_blocked_slots_by_day.get(day, set()):
+                if 0 <= i < n_day:
+                    ritual_blocked[i] = 1
+            ritual_prefix = [0] * (n_day + 1)
+            for i, value in enumerate(ritual_blocked, start=1):
+                ritual_prefix[i] = ritual_prefix[i - 1] + value
+            ritual_blocked_prefix_by_day[day] = ritual_prefix
+
+        # Cache valid start slots by (day, duration) to avoid recomputing
+        # continuity checks for every generated session domain.
+        duration_values: set[int] = set()
+        for spec in spec_for.values():
+            duration_values.add(spec.duration_slots)
+            if spec.remainder_duration_slots:
+                duration_values.add(spec.remainder_duration_slots)
+        valid_starts_cache: dict[tuple[str, int], list[int]] = {}
+        for day in day_names:
+            slots = day_slot_times[day]
+            for dur in duration_values:
+                valid_starts_cache[(day, dur)] = _valid_start_slots(slots, dur)
+
+        # Pre-index teacher unavailability by (teacher, day) for fast filtering.
+        teacher_unavailable_by_day: dict[str, dict[str, list[dict]]] = defaultdict(lambda: defaultdict(list))
+        for teacher in data.teachers:
+            for u in teacher.unavailable_slots:
+                day = str(u.get("day") or "")
+                if day:
+                    teacher_unavailable_by_day[teacher.name][day].append(u)
+
         # ==================================================================
         # Step 5 — Build _Session objects and compute start_var domains
         # ==================================================================
@@ -385,7 +756,36 @@ class TimetableSolver:
                 preferred_room_idxs: list[int] = []  # Rooms that match required_room_type
                 fallback_room_idxs: list[int] = []   # Rooms without required_room_type match
 
-                if subject.needs_room and data.rooms:
+                # School-provided room pre-assignment short-circuits the
+                # eligibility computation: the solver no longer chooses a
+                # room, it just places the session in the given room.
+                preassigned_room = room_preassignment.get(
+                    (school_class.name, entry.subject), ""
+                )
+                if subject.needs_room and preassigned_room:
+                    r_idx = room_name_to_idx.get(preassigned_room, -1)
+                    if r_idx >= 0:
+                        room = data.rooms[r_idx]
+                        if room.capacity >= school_class.student_count:
+                            eligible_room_idxs = [r_idx]
+                        else:
+                            warn_msg = (
+                                f"'{entry.subject}' pour '{school_class.name}' : "
+                                f"la salle imposée '{preassigned_room}' a une "
+                                f"capacité insuffisante — attribution annulée."
+                            )
+                            if warn_msg not in solver_warnings:
+                                solver_warnings.append(warn_msg)
+                    else:
+                        warn_msg = (
+                            f"'{entry.subject}' pour '{school_class.name}' : "
+                            f"la salle imposée '{preassigned_room}' n'existe pas — "
+                            f"attribution annulée."
+                        )
+                        if warn_msg not in solver_warnings:
+                            solver_warnings.append(warn_msg)
+
+                if subject.needs_room and data.rooms and not eligible_room_idxs:
                     for r_idx, room in enumerate(data.rooms):
                         if room.capacity < school_class.student_count:
                             continue
@@ -406,9 +806,28 @@ class TimetableSolver:
                             else:
                                 preferred_room_idxs.append(r_idx)
 
-                    # Phase D: Use preferred rooms first, fallback if none available
+                    # Phase D: Use preferred rooms first, fallback if none available.
+                    #
+                    # For general subjects in room-tight schools (few standard rooms
+                    # compared with class count), we add one deterministic fallback
+                    # room candidate so CP-SAT can escape deadlocks without exploding
+                    # the room decision space.
                     if preferred_room_idxs:
-                        eligible_room_idxs = preferred_room_idxs
+                        eligible_room_idxs = list(preferred_room_idxs)
+                        if (
+                            not subject.required_room_type
+                            and prefer_standard_rooms_for_general_subjects
+                            and fallback_room_idxs
+                            and len(preferred_room_idxs) < len(data.classes)
+                        ):
+                            # crc32 keeps the pick deterministic across runs
+                            # (builtin hash() varies with PYTHONHASHSEED).
+                            pick_key = f"{school_class.name}|{entry.subject}".encode()
+                            fallback_pick = fallback_room_idxs[
+                                zlib.crc32(pick_key) % len(fallback_room_idxs)
+                            ]
+                            if fallback_pick not in eligible_room_idxs:
+                                eligible_room_idxs.append(fallback_pick)
                     elif fallback_room_idxs:
                         # Soft matching: use fallback rooms with a warning
                         eligible_room_idxs = fallback_room_idxs
@@ -468,7 +887,10 @@ class TimetableSolver:
                             continue
 
                         n_day = len(day_slot_times[day])
-                        for s in _valid_start_slots(day_slot_times[day], dur_slots_k):
+                        hard_prefix = hard_blocked_prefix_by_day[day]
+                        ritual_prefix = ritual_blocked_prefix_by_day[day]
+                        day_unavailability = teacher_unavailable_by_day.get(teacher.name, {}).get(day, [])
+                        for s in valid_starts_cache.get((day, dur_slots_k), []):
                             start_t = day_slot_times[day][s][0]
                             end_t   = day_slot_times[day][s + dur_slots_k - 1][1]
 
@@ -476,13 +898,10 @@ class TimetableSolver:
                             if start_t < global_min_start:
                                 continue
                             # H3 partial (session-block level)
-                            if _is_slot_blocked(day, s, s + dur_slots_k):
+                            if hard_prefix[s + dur_slots_k] > hard_prefix[s]:
                                 continue
                             # H12 ritual blocked slots
-                            if any(
-                                slot_idx in ritual_blocked_slots_by_day.get(day, set())
-                                for slot_idx in range(s, s + dur_slots_k)
-                            ):
+                            if ritual_prefix[s + dur_slots_k] > ritual_prefix[s]:
                                 continue
                             # H7
                             if entry.subject in subject_not_last:
@@ -490,9 +909,8 @@ class TimetableSolver:
                                     continue
                             # Teacher unavailability
                             if any(
-                                u["day"] == day
-                                and _session_overlaps_unavailability(start_t, end_t, u)
-                                for u in teacher.unavailable_slots
+                                _session_overlaps_unavailability(start_t, end_t, u)
+                                for u in day_unavailability
                             ):
                                 continue
 
@@ -640,6 +1058,7 @@ class TimetableSolver:
         # ==================================================================
         room_bvars: dict[tuple[int, int], cp_model.IntVar] = {}
         room_intervals: dict[int, list[cp_model.IntervalVar]] = defaultdict(list)
+        fixed_room_for_session: dict[int, int] = {}
 
         # Skip room assignment entirely if no rooms are defined or when
         # fast feasibility mode disables room coupling for speed.
@@ -654,6 +1073,15 @@ class TimetableSolver:
 
                 bvars: list[cp_model.IntVar] = []
                 for r_idx in sess.eligible_room_idxs:
+                    if len(sess.eligible_room_idxs) == 1:
+                        fixed_room_for_session[sess.idx] = r_idx
+                        room_intervals[r_idx].append(
+                            model.new_fixed_size_interval_var(
+                                start_vars[sess.idx], sess.dur_slots,
+                                f"riv_fixed|{sess.idx}|r{r_idx}",
+                            )
+                        )
+                        break
                     bv = model.new_bool_var(f"r|{sess.idx}|{r_idx}")
                     room_bvars[(sess.idx, r_idx)] = bv
                     bvars.append(bv)
@@ -664,9 +1092,7 @@ class TimetableSolver:
                         )
                     )
 
-                if len(bvars) == 1:
-                    model.add(bvars[0] == 1)
-                else:
+                if len(sess.eligible_room_idxs) > 1:
                     model.add_exactly_one(bvars)
 
             for r_idx, ivars in room_intervals.items():
@@ -700,42 +1126,17 @@ class TimetableSolver:
             )
 
         if not optimize_soft_constraints:
-            # Fast feasible hint: greedy non-overlap placement by constrained order.
-            hinted_starts: dict[int, int] = {}
-            class_busy: dict[str, dict[str, list[tuple[int, int]]]] = defaultdict(lambda: defaultdict(list))
-            teacher_busy: dict[str, dict[str, list[tuple[int, int]]]] = defaultdict(lambda: defaultdict(list))
-            for sess in sorted(
-                sessions,
-                key=lambda s: (len(session_domains[s.idx]), -s.dur_slots, s.idx),
-            ):
-                for gpos in sorted(session_domains[sess.idx]):
-                    d_idx = gpos // n_slots_per_day
-                    s = gpos % n_slots_per_day
-                    day = day_names[d_idx]
-                    start_min = d_idx * 24 * 60 + (
-                        int(day_slot_times[day][s][0][:2]) * 60
-                        + int(day_slot_times[day][s][0][3:])
-                    )
-                    end_min = d_idx * 24 * 60 + (
-                        int(day_slot_times[day][s + sess.dur_slots - 1][1][:2]) * 60
-                        + int(day_slot_times[day][s + sess.dur_slots - 1][1][3:])
-                    )
-                    c_overlap = any(
-                        start_min < e and b < end_min
-                        for b, e in class_busy[sess.class_name][day]
-                    )
-                    t_overlap = any(
-                        start_min < e and b < end_min
-                        for b, e in teacher_busy[sess.teacher_name][day]
-                    )
-                    if c_overlap or t_overlap:
-                        continue
-                    hinted_starts[sess.idx] = gpos
-                    class_busy[sess.class_name][day].append((start_min, end_min))
-                    teacher_busy[sess.teacher_name][day].append((start_min, end_min))
-                    break
-            for i, gpos in hinted_starts.items():
+            # Fast-feasibility path only: seed CP-SAT with a greedy non-overlap
+            # placement via hints. Skipped when soft constraints are active —
+            # the greedy walks domains in ascending order, which biases Phase A
+            # toward morning slots and can hurt time-of-day soft preferences.
+            greedy_placements = greedy_warm_start(sessions, session_domains)
+            for i, gpos in greedy_placements.items():
                 model.add_hint(start_vars[i], gpos)
+            logger.info(
+                "Greedy warm start: %d/%d sessions pre-placed",
+                len(greedy_placements), len(sessions),
+            )
 
         logger.info(
             "Model vars: %d start_vars + %d room BoolVars = %d total",
@@ -774,6 +1175,7 @@ class TimetableSolver:
         # Step 10 — Soft constraints and maximize objective
         # ==================================================================
         soft_constraints = [c for c in data.constraints if c.type == "soft"] if optimize_soft_constraints else []
+        obj_terms: list[tuple[int, cp_model.IntVar]] = []
         soft_sat_vars: dict[str, cp_model.IntVar | None] = {}
 
         if soft_constraints and optimize_soft_constraints:
@@ -811,26 +1213,208 @@ class TimetableSolver:
         else:
             logger.info("No soft constraints — solving for feasibility only.")
 
+        feasibility_model = model
+        if optimize_soft_constraints and obj_terms:
+            # Phase A should search feasibility without objective pressure.
+            feasibility_model = cp_model.CpModel()
+            feasibility_model.proto.copy_from(model.proto)
+            feasibility_model.proto.clear_objective()
+            feasibility_model.proto.clear_floating_point_objective()
+
         # ==================================================================
         # Step 11 — Solve
         # ==================================================================
-        solver = cp_model.CpSolver()
-        solver.parameters.max_time_in_seconds  = timeout_seconds
-        solver.parameters.log_search_progress  = False
-        solver.parameters.stop_after_first_solution = stop_at_first_solution
-        if not optimize_soft_constraints:
-            solver.parameters.search_branching = cp_model.FIXED_SEARCH
-        n_workers = min(8, max(1, os.cpu_count() or 1))
-        solver.parameters.num_search_workers   = n_workers
         build_time = time.perf_counter() - build_start
+        n_workers = min(8, max(1, os.cpu_count() or 1))
+        solver_diagnostics: dict = {
+            "phase": "init",
+            "build_time_seconds": round(build_time, 3),
+            "timeout_seconds": int(timeout_seconds),
+            "optimize_soft_constraints": bool(optimize_soft_constraints),
+            "stop_at_first_solution": bool(stop_at_first_solution),
+            "enforce_room_conflicts": bool(enforce_room_conflicts),
+            "session_count": len(sessions),
+            "domain_filtered_sessions": len(domain_filtered_sessions),
+        }
 
         logger.info(
             "Launching CP-SAT (limit: %ds, workers: %d, first_solution=%s, build=%.2fs)...",
             timeout_seconds, n_workers, stop_at_first_solution, build_time,
         )
-        solve_start = time.perf_counter()
-        status     = solver.solve(model)
-        solve_time = time.perf_counter() - solve_start
+
+        solver = cp_model.CpSolver()
+        status = cp_model.UNKNOWN
+        solve_time = 0.0
+        if optimize_soft_constraints:
+            # Solve contract for balanced/complete:
+            # 1) find a complete feasible timetable first
+            # 2) improve soft objective with remaining budget
+            phase_a_time = max(1.0, float(timeout_seconds) * 0.6)
+            phase_b_time = max(0.0, float(timeout_seconds) - phase_a_time)
+            solver_diagnostics["phase"] = "staged"
+            solver_diagnostics["phase_a_budget_seconds"] = round(phase_a_time, 3)
+            solver_diagnostics["phase_b_budget_seconds"] = round(phase_b_time, 3)
+
+            feas_solver = cp_model.CpSolver()
+            feas_solver.parameters.max_time_in_seconds = phase_a_time
+            feas_solver.parameters.log_search_progress = False
+            feas_solver.parameters.stop_after_first_solution = True
+            feas_solver.parameters.search_branching = cp_model.PORTFOLIO_SEARCH
+            feas_solver.parameters.num_search_workers = n_workers
+            feas_start = time.perf_counter()
+            feas_status = feas_solver.solve(feasibility_model)
+            feas_elapsed = time.perf_counter() - feas_start
+            solve_time += feas_elapsed
+            solver = feas_solver
+            status = feas_status
+            solver_diagnostics["feasibility_phase_status"] = feas_solver.status_name(feas_status)
+            solver_diagnostics["feasibility_phase_time_seconds"] = round(feas_elapsed, 3)
+            solver_diagnostics["feasibility_num_conflicts"] = int(feas_solver.num_conflicts)
+            solver_diagnostics["feasibility_num_branches"] = int(feas_solver.num_branches)
+
+            if feas_status in (cp_model.OPTIMAL, cp_model.FEASIBLE):
+                solver_diagnostics["feasible_solution_found"] = True
+
+                remaining_budget = max(0.0, float(timeout_seconds) - float(solve_time))
+                if remaining_budget >= 1.0 and obj_terms:
+                    for sess in sessions:
+                        model.add_hint(start_vars[sess.idx], feas_solver.value(start_vars[sess.idx]))
+                    for bv in room_bvars.values():
+                        model.add_hint(bv, feas_solver.value(bv))
+
+                    opt_solver = cp_model.CpSolver()
+                    opt_solver.parameters.max_time_in_seconds = min(phase_b_time, remaining_budget)
+                    opt_solver.parameters.log_search_progress = False
+                    opt_solver.parameters.stop_after_first_solution = False
+                    opt_solver.parameters.search_branching = cp_model.PORTFOLIO_SEARCH
+                    opt_solver.parameters.num_search_workers = n_workers
+                    # Stronger linear relaxation helps prove optimality on
+                    # the soft-objective phase. Keep feasibility paths on
+                    # the default (level 1) — they don't need the extra cuts.
+                    opt_solver.parameters.linearization_level = 2
+                    opt_start = time.perf_counter()
+                    opt_status = opt_solver.solve(model)
+                    opt_elapsed = time.perf_counter() - opt_start
+                    solve_time += opt_elapsed
+                    solver_diagnostics["optimization_phase_status"] = opt_solver.status_name(opt_status)
+                    solver_diagnostics["optimization_phase_time_seconds"] = round(opt_elapsed, 3)
+                    solver_diagnostics["optimization_num_conflicts"] = int(opt_solver.num_conflicts)
+                    solver_diagnostics["optimization_num_branches"] = int(opt_solver.num_branches)
+                    if opt_status in (cp_model.OPTIMAL, cp_model.FEASIBLE):
+                        solver = opt_solver
+                        status = opt_status
+            else:
+                solver_diagnostics["feasible_solution_found"] = False
+                remaining_budget = max(0.0, float(timeout_seconds) - float(solve_time))
+                if remaining_budget >= 1.0:
+                    # If stage A times out/gets stuck, run a short portfolio of
+                    # feasibility attempts instead of a single rescue solve.
+                    rescue_attempts = [
+                        ("fixed", cp_model.FIXED_SEARCH, 101),
+                        ("portfolio", cp_model.PORTFOLIO_SEARCH, 202),
+                        ("auto", cp_model.AUTOMATIC_SEARCH, 303),
+                    ]
+                    per_attempt = max(1.0, remaining_budget / len(rescue_attempts))
+                    last_rescue_status = feas_status
+                    for idx, (label, branching, seed) in enumerate(rescue_attempts):
+                        rescue_solver = cp_model.CpSolver()
+                        rescue_solver.parameters.max_time_in_seconds = max(1.0, per_attempt)
+                        rescue_solver.parameters.log_search_progress = False
+                        rescue_solver.parameters.stop_after_first_solution = True
+                        rescue_solver.parameters.search_branching = branching
+                        rescue_solver.parameters.random_seed = seed
+                        rescue_solver.parameters.num_search_workers = n_workers
+                        rescue_start = time.perf_counter()
+                        rescue_status = rescue_solver.solve(feasibility_model)
+                        rescue_elapsed = time.perf_counter() - rescue_start
+                        solve_time += rescue_elapsed
+                        solver_diagnostics[f"rescue_{idx+1}_status"] = rescue_solver.status_name(rescue_status)
+                        solver_diagnostics[f"rescue_{idx+1}_time_seconds"] = round(rescue_elapsed, 3)
+                        solver_diagnostics[f"rescue_{idx+1}_num_conflicts"] = int(rescue_solver.num_conflicts)
+                        solver_diagnostics[f"rescue_{idx+1}_num_branches"] = int(rescue_solver.num_branches)
+                        last_rescue_status = rescue_status
+                        solver = rescue_solver
+                        status = rescue_status
+                        if rescue_status in (cp_model.OPTIMAL, cp_model.FEASIBLE):
+                            break
+                    solver_diagnostics["rescue_phase_status"] = solver.status_name(last_rescue_status)
+        elif timeout_seconds >= 3:
+            # Multi-attempt feasibility search in fast mode:
+            # same model, different branching strategies/seeds under the same
+            # global timeout budget, stopping at first feasible solution.
+            attempt_configs = [
+                ("fixed", cp_model.FIXED_SEARCH, 101),
+                ("portfolio", cp_model.PORTFOLIO_SEARCH, 202),
+                ("auto", cp_model.AUTOMATIC_SEARCH, 303),
+            ]
+            # When LNS repair is available (fast mode + rooms decoupled + enough
+            # budget), reserve a share of the timeout for Phase C LNS. Otherwise
+            # Phase A gets the full budget (legacy behavior).
+            lns_reserved = (
+                not enforce_room_conflicts
+                and timeout_seconds >= FAST_MODE_LNS_MIN_TIMEOUT
+            )
+            phase_a_total = (
+                max(2, int(timeout_seconds * FAST_MODE_CPSAT_BUDGET_RATIO))
+                if lns_reserved
+                else timeout_seconds
+            )
+            per_attempt = max(1, phase_a_total // len(attempt_configs))
+            for attempt_idx, (label, branching, seed) in enumerate(attempt_configs):
+                remaining_attempts = len(attempt_configs) - attempt_idx
+                remaining_budget = max(1, phase_a_total - int(solve_time))
+                attempt_limit = (
+                    remaining_budget
+                    if remaining_attempts == 1
+                    else min(per_attempt, remaining_budget)
+                )
+                attempt_solver = cp_model.CpSolver()
+                attempt_solver.parameters.max_time_in_seconds = attempt_limit
+                attempt_solver.parameters.log_search_progress = False
+                attempt_solver.parameters.stop_after_first_solution = True
+                attempt_solver.parameters.search_branching = branching
+                attempt_solver.parameters.random_seed = seed
+                attempt_solver.parameters.num_search_workers = n_workers
+                attempt_start = time.perf_counter()
+                attempt_status = attempt_solver.solve(model)
+                attempt_elapsed = time.perf_counter() - attempt_start
+                solve_time += attempt_elapsed
+                logger.info(
+                    "Fast attempt %d/%d (%s): status=%s time=%.2fs seed=%d",
+                    attempt_idx + 1,
+                    len(attempt_configs),
+                    label,
+                    attempt_solver.status_name(attempt_status),
+                    attempt_elapsed,
+                    seed,
+                )
+                solver = attempt_solver
+                status = attempt_status
+                if status in (cp_model.OPTIMAL, cp_model.FEASIBLE):
+                    break
+                if solve_time >= phase_a_total:
+                    break
+            solver_diagnostics["phase"] = "multi_attempt"
+        else:
+            solver.parameters.max_time_in_seconds = timeout_seconds
+            solver.parameters.log_search_progress = False
+            solver.parameters.stop_after_first_solution = stop_at_first_solution
+            if not optimize_soft_constraints:
+                solver.parameters.search_branching = cp_model.FIXED_SEARCH
+            solver.parameters.num_search_workers = n_workers
+            solve_start = time.perf_counter()
+            status = solver.solve(model)
+            solve_time = time.perf_counter() - solve_start
+            solver_diagnostics["phase"] = "single_pass"
+            solver_diagnostics["solver_status"] = solver.status_name(status)
+            solver_diagnostics["num_conflicts"] = int(solver.num_conflicts)
+            solver_diagnostics["num_branches"] = int(solver.num_branches)
+            if obj_terms:
+                try:
+                    solver_diagnostics["best_objective_bound"] = float(solver.best_objective_bound)
+                    solver_diagnostics["objective_value"] = float(solver.objective_value)
+                except Exception:  # noqa: BLE001
+                    pass
 
         logger.info(
             "Solver finished — status: %s | solve time: %.2fs | total: %.2fs | conflicts: %d",
@@ -843,6 +1427,114 @@ class TimetableSolver:
         feasible = status in (cp_model.OPTIMAL, cp_model.FEASIBLE)
 
         if not feasible:
+            timeout_unknown = solver.status_name(status).upper() == "UNKNOWN"
+            # Fast-mode fallback: return a deterministic partial timetable instead
+            # of an empty timeout result when CP-SAT finds no feasible solution.
+            if timeout_unknown:
+                class_busy: dict[str, dict[str, list[tuple[int, int]]]] = defaultdict(lambda: defaultdict(list))
+                teacher_busy: dict[str, dict[str, list[tuple[int, int]]]] = defaultdict(lambda: defaultdict(list))
+                room_busy: dict[int, dict[str, list[tuple[int, int]]]] = defaultdict(lambda: defaultdict(list))
+
+                def _to_min(hm: str) -> int:
+                    h, m = hm.split(":")
+                    return int(h) * 60 + int(m)
+
+                greedy_assignments: list[Assignment] = []
+                greedy_unscheduled: list[dict] = []
+
+                ordered_sessions = sorted(
+                    sessions,
+                    key=lambda s: (len(session_domains[s.idx]), -s.dur_slots, s.idx),
+                )
+                for sess in ordered_sessions:
+                    placed = False
+                    for global_pos in session_domains[sess.idx]:
+                        d_idx = global_pos // n_slots_per_day
+                        s = global_pos % n_slots_per_day
+                        day = day_names[d_idx]
+                        start_time = day_slot_times[day][s][0]
+                        end_time = day_slot_times[day][s + sess.dur_slots - 1][1]
+                        start_min = _to_min(start_time)
+                        end_min = _to_min(end_time)
+
+                        has_class_overlap = any(
+                            start_min < e and b < end_min
+                            for b, e in class_busy[sess.class_name][day]
+                        )
+                        if has_class_overlap:
+                            continue
+                        has_teacher_overlap = any(
+                            start_min < e and b < end_min
+                            for b, e in teacher_busy[sess.teacher_name][day]
+                        )
+                        if has_teacher_overlap:
+                            continue
+
+                        room_name: str | None = None
+                        if sess.needs_room and enforce_room_conflicts and sess.eligible_room_idxs:
+                            selected_room: int | None = None
+                            for r_idx in sess.eligible_room_idxs:
+                                has_room_overlap = any(
+                                    start_min < e and b < end_min
+                                    for b, e in room_busy[r_idx][day]
+                                )
+                                if not has_room_overlap:
+                                    selected_room = r_idx
+                                    break
+                            if selected_room is None:
+                                continue
+                            room_busy[selected_room][day].append((start_min, end_min))
+                            room_name = data.rooms[selected_room].name
+
+                        class_busy[sess.class_name][day].append((start_min, end_min))
+                        teacher_busy[sess.teacher_name][day].append((start_min, end_min))
+                        greedy_assignments.append(
+                            Assignment(
+                                school_class=sess.class_name,
+                                subject=sess.subject_name,
+                                teacher=sess.teacher_name,
+                                room=room_name,
+                                day=day,
+                                start_time=start_time,
+                                end_time=end_time,
+                            )
+                        )
+                        placed = True
+                        break
+
+                    if not placed:
+                        greedy_unscheduled.append(
+                            {
+                                "class": sess.class_name,
+                                "subject": sess.subject_name,
+                                "session": sess.k,
+                                "reason": "No placement found in greedy fallback",
+                            }
+                        )
+
+                if greedy_assignments:
+                    day_order = {d: i for i, d in enumerate(day_names)}
+                    greedy_assignments.sort(
+                        key=lambda a: (a.school_class, day_order[a.day], a.start_time)
+                    )
+                    return TimetableResult(
+                        assignments=greedy_assignments,
+                        solved=False,
+                        partial=True,
+                        solve_time_seconds=round(solve_time, 3),
+                        conflicts=(
+                            conflicts
+                            + [{"reason": solver.status_name(status)}]
+                            + [{"reason": "GREEDY_FALLBACK_PARTIAL"}]
+                        ),
+                        unscheduled_sessions=domain_filtered_sessions + greedy_unscheduled,
+                        soft_constraints_satisfied=[],
+                        soft_constraints_violated=[],
+                        warnings=solver_warnings + [
+                            "Aucune solution complète trouvée dans le temps imparti: solution partielle générée par fallback glouton.",
+                        ],
+                        solver_diagnostics=solver_diagnostics,
+                    )
             return TimetableResult(
                 assignments=[],
                 solved=False,
@@ -852,42 +1544,10 @@ class TimetableSolver:
                 soft_constraints_satisfied=[],
                 soft_constraints_violated=[],
                 warnings=solver_warnings,
+                solver_diagnostics=solver_diagnostics,
             )
 
         assignments: list[Assignment] = []
-        greedy_room_for_session: dict[int, str] = {}
-        if data.rooms and not enforce_room_conflicts:
-            room_busy: dict[int, dict[str, list[tuple[int, int]]]] = defaultdict(lambda: defaultdict(list))
-
-            def _to_min(hm: str) -> int:
-                h, m = hm.split(":")
-                return int(h) * 60 + int(m)
-
-            for sess in sorted(
-                sessions,
-                key=lambda s: (solver.value(start_vars[s.idx]), -s.dur_slots),
-            ):
-                if not sess.needs_room or not sess.eligible_room_idxs:
-                    continue
-                global_pos = solver.value(start_vars[sess.idx])
-                d_idx = global_pos // n_slots_per_day
-                s = global_pos % n_slots_per_day
-                day = day_names[d_idx]
-                start_time = day_slot_times[day][s][0]
-                end_time = day_slot_times[day][s + sess.dur_slots - 1][1]
-                start_min = _to_min(start_time)
-                end_min = _to_min(end_time)
-
-                for r_idx in sess.eligible_room_idxs:
-                    overlaps = any(
-                        start_min < e and b < end_min
-                        for b, e in room_busy[r_idx][day]
-                    )
-                    if overlaps:
-                        continue
-                    room_busy[r_idx][day].append((start_min, end_min))
-                    greedy_room_for_session[sess.idx] = data.rooms[r_idx].name
-                    break
 
         for sess in sessions:
             global_pos = solver.value(start_vars[sess.idx])
@@ -899,13 +1559,17 @@ class TimetableSolver:
 
             room_name: str | None = None
             if sess.needs_room and enforce_room_conflicts:
-                for r_idx in sess.eligible_room_idxs:
-                    bv = room_bvars.get((sess.idx, r_idx))
-                    if bv is not None and solver.value(bv) == 1:
-                        room_name = data.rooms[r_idx].name
-                        break
-            elif sess.needs_room:
-                room_name = greedy_room_for_session.get(sess.idx)
+                fixed_r_idx = fixed_room_for_session.get(sess.idx)
+                if fixed_r_idx is not None:
+                    room_name = data.rooms[fixed_r_idx].name
+                else:
+                    for r_idx in sess.eligible_room_idxs:
+                        bv = room_bvars.get((sess.idx, r_idx))
+                        if bv is not None and solver.value(bv) == 1:
+                            room_name = data.rooms[r_idx].name
+                            break
+            # When room conflicts are disabled, room assignment is intentionally
+            # left empty (manual post-processing by the school).
 
             assignments.append(Assignment(
                 school_class=sess.class_name,
@@ -952,4 +1616,5 @@ class TimetableSolver:
             soft_constraints_violated=soft_violated,
             soft_constraint_details=soft_details,
             warnings=solver_warnings,
+            solver_diagnostics=solver_diagnostics,
         )

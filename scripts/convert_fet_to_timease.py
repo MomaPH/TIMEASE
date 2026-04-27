@@ -44,6 +44,32 @@ def _read_activities(root: ET.Element) -> list[FetActivity]:
     return activities
 
 
+def _normalize_missing_teachers(activities: list[FetActivity]) -> list[FetActivity]:
+    """
+    Replace missing/placeholder teachers with deterministic synthetic teachers.
+
+    Large official FET corpora often omit teacher tags in specific activity sets.
+    Mapping all such activities to a single UNASSIGNED teacher makes TIMEASE
+    infeasible by construction. We instead spread them by class+subject.
+    """
+    normalized: list[FetActivity] = []
+    for a in activities:
+        teacher = a.teacher.strip() if a.teacher else ""
+        if teacher and teacher.upper() != "UNASSIGNED":
+            normalized.append(a)
+            continue
+        synthetic = f"AUTO_{_safe_slug(a.students)}_{_safe_slug(a.subject)}"
+        normalized.append(
+            FetActivity(
+                teacher=synthetic,
+                subject=a.subject,
+                students=a.students,
+                duration=a.duration,
+            )
+        )
+    return normalized
+
+
 def _subject_variants(activities: list[FetActivity]) -> dict[tuple[str, str, str, int], str]:
     """
     TIMEASE requires one teacher assignment per (class, subject).
@@ -85,7 +111,7 @@ def _build_timease_payload(root: ET.Element, source_name: str) -> dict:
         for day in day_names
     ]
 
-    activities = _read_activities(root)
+    activities = _normalize_missing_teachers(_read_activities(root))
     variant_for = _subject_variants(activities)
 
     class_names = sorted({a.students for a in activities})
